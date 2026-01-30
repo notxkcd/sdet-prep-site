@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BNP Paribas | SDET Interview Preparation Kit</title>
     <link rel="stylesheet" href="//localhost:1315/css/style.css">
+    <link rel="stylesheet" href="//localhost:1315/css/terminal.css">
     
     
     <link rel="stylesheet" href="//localhost:1315/lib/katex/katex.min.css">
@@ -21,7 +22,8 @@
         });
     </script>
 </head>
-<body>
+<body id="theme-body">
+    <button id="theme-toggle">Switch Theme</button>
     <header>
         <nav>
             <ul>
@@ -72,10 +74,18 @@ tim	tom</li>
 </ol>
 <ul>
 <li>
-<!-- raw HTML omitted -->
+<table id="table">
 </li>
 </ul>
-<!-- raw HTML omitted -->
+<tr>
+<td>jack</td>
+<td>jack</td>
+</tr>
+<tr>
+<td>tim</td>
+<td>tim</td>
+</tr>
+</table>
 <ol start="8">
 <li>Given amazon link and asked to write xpath for a particular element which in under ul\li tag.</li>
 <li>which version of selenium you use in your project?</li>
@@ -84,7 +94,7 @@ tim	tom</li>
 <li>Tell me roadmap of your career as software tester.</li>
 </ol>
 <hr>
-<h2 id="answers-no-bs-java-qa--sdet-explanations">Answers (No-BS Java QA / SDET Explanations)</h2>
+<h2 id="answers">Answers</h2>
 <h3 id="1-tell-about-yourself-more-about-professional-experience-and-more-about-exposure-towards-automation">1. Tell about yourself more about professional experience and more about exposure towards automation.</h3>
 <p>This is a standard &ldquo;self-intro&rdquo; with an emphasis. Focus on your automation journey.
 &ldquo;I&rsquo;m a QA Automation Engineer with X years of experience, primarily focused on building robust and scalable test automation frameworks in Java. My expertise lies in designing end-to-end solutions for both UI (Selenium WebDriver) and API (REST-assured) testing. I&rsquo;ve been instrumental in migrating manual test suites to automated ones, reducing regression cycles by X% and integrating these into CI/CD pipelines using Jenkins. I particularly enjoy the challenge of designing reusable Page Object Models and implementing efficient test data management strategies to ensure test reliability and maintainability.&rdquo;</p>
@@ -243,5 +253,24 @@ Its main purpose is to set up the necessary preconditions for the scenario to ru
     <footer class="footer">
         <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
     </footer>
+
+    <script>
+        const body = document.getElementById('theme-body');
+        const btn = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme');
+
+        if (currentTheme === 'terminal') {
+            body.classList.add('theme-terminal');
+        }
+
+        btn.addEventListener('click', () => {
+            body.classList.toggle('theme-terminal');
+            let theme = 'natural';
+            if (body.classList.contains('theme-terminal')) {
+                theme = 'terminal';
+            }
+            localStorage.setItem('theme', theme);
+        });
+    </script>
 </body>
 </html>

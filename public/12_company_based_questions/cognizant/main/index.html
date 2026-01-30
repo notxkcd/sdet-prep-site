@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cognizant | SDET Interview Preparation Kit</title>
     <link rel="stylesheet" href="//localhost:1315/css/style.css">
+    <link rel="stylesheet" href="//localhost:1315/css/terminal.css">
     
     
     <link rel="stylesheet" href="//localhost:1315/lib/katex/katex.min.css">
@@ -21,7 +22,8 @@
         });
     </script>
 </head>
-<body>
+<body id="theme-body">
+    <button id="theme-toggle">Switch Theme</button>
     <header>
         <nav>
             <ul>
@@ -92,7 +94,7 @@ Round 1:</p>
 <li>about actions class.</li>
 </ol>
 <hr>
-<h2 id="answers-no-bs-java-qa--sdet-explanations">Answers (No-BS Java QA / SDET Explanations)</h2>
+<h2 id="answers">Answers</h2>
 <h3 id="round-1">Round 1</h3>
 <h4 id="1-tell-me-about-yourself">1) tell me about yourself</h4>
 <p>Standard. Role, responsibilities, tech stack, achievement. Keep it under 90 seconds.</p>
@@ -455,7 +457,7 @@ Round 1:</p>
 <li>In which area you want to improve yourself in next 1 year</li>
 </ol>
 <hr>
-<h2 id="answers-no-bs-java-qa--sdet-explanations-1">Answers (No-BS Java QA / SDET Explanations)</h2>
+<h2 id="answers-1">Answers</h2>
 <h3 id="1-tell-about-yourself-and-your-roles-and-responsibities">1. Tell about yourself and your roles and responsibities.</h3>
 <p>Standard.</p>
 <h3 id="2-how-will-you-validate-the-dropdown-options-in-selenium-write-code">2. how will you validate the dropdown options in selenium. write code</h3>
@@ -651,7 +653,7 @@ Round 1:</p>
 <li>pass values of five products using datatable and add to cart ?</li>
 </ul>
 <hr>
-<h2 id="answers-no-bs-java-qa--sdet-explanations-2">Answers (No-BS Java QA / SDET Explanations)</h2>
+<h2 id="answers-2">Answers</h2>
 <h3 id="tell-about-yourself-">Tell About yourself ?</h3>
 <p>Standard.</p>
 <h3 id="what-is-abstraction-">What is Abstraction ?</h3>
@@ -913,7 +915,7 @@ The only real solution is to <strong>re-find the element</strong> just before yo
 26 Http methods
 27 diff between put and post</p>
 <hr>
-<h2 id="answers-no-bs-java-qa--sdet-explanations-3">Answers (No-BS Java QA / SDET Explanations)</h2>
+<h2 id="answers-3">Answers</h2>
 <blockquote>
 <p>Many of these are repeats. See previous answers for details.</p>
 </blockquote>
@@ -988,7 +990,7 @@ String s3 =  new String(&ldquo;HELLO&rdquo;):</li>
 <li>System.out.println(s1 == s3); // false</li>
 </ul>
 <hr>
-<h2 id="answers-no-bs-java-qa--sdet-explanations-4">Answers (No-BS Java QA / SDET Explanations)</h2>
+<h2 id="answers-4">Answers</h2>
 <blockquote>
 <p>This section has some great, tricky questions mixed with repeats.</p>
 </blockquote>
@@ -1150,5 +1152,24 @@ This bypasses Selenium&rsquo;s visibility checks and tells the browser to fire t
     <footer class="footer">
         <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
     </footer>
+
+    <script>
+        const body = document.getElementById('theme-body');
+        const btn = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme');
+
+        if (currentTheme === 'terminal') {
+            body.classList.add('theme-terminal');
+        }
+
+        btn.addEventListener('click', () => {
+            body.classList.toggle('theme-terminal');
+            let theme = 'natural';
+            if (body.classList.contains('theme-terminal')) {
+                theme = 'terminal';
+            }
+            localStorage.setItem('theme', theme);
+        });
+    </script>
 </body>
 </html>

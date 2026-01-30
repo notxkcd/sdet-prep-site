@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GSR | SDET Interview Preparation Kit</title>
     <link rel="stylesheet" href="//localhost:1315/css/style.css">
+    <link rel="stylesheet" href="//localhost:1315/css/terminal.css">
     
     
     <link rel="stylesheet" href="//localhost:1315/lib/katex/katex.min.css">
@@ -21,7 +22,8 @@
         });
     </script>
 </head>
-<body>
+<body id="theme-body">
+    <button id="theme-toggle">Switch Theme</button>
     <header>
         <nav>
             <ul>
@@ -86,7 +88,7 @@
 22.Explain checked and unchecked Exception
 23.In your project bug will find at production side ,how will you handle.</p>
 <hr>
-<h2 id="answers-no-bs-java-qa--sdet-explanations">Answers (No-BS Java QA / SDET Explanations)</h2>
+<h2 id="answers">Answers</h2>
 <h3 id="1-how-to-round-decimal-without-using-any-methods">1. how to round decimal without using any methods</h3>
 <p>This is a trick question. You can&rsquo;t meaningfully round a decimal <em>value</em> without using a method or a cast. The interviewer might be looking for a simple type-casting solution to truncate the decimal.</p>
 <div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#859900;font-weight:bold">double</span> <span style="color:#268bd2">d</span> = <span style="color:#268bd2">10</span>.<span style="color:#268bd2">75</span>;
@@ -258,5 +260,24 @@ In our framework design, we&rsquo;ve also created our own interfaces, like an <c
     <footer class="footer">
         <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
     </footer>
+
+    <script>
+        const body = document.getElementById('theme-body');
+        const btn = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme');
+
+        if (currentTheme === 'terminal') {
+            body.classList.add('theme-terminal');
+        }
+
+        btn.addEventListener('click', () => {
+            body.classList.toggle('theme-terminal');
+            let theme = 'natural';
+            if (body.classList.contains('theme-terminal')) {
+                theme = 'terminal';
+            }
+            localStorage.setItem('theme', theme);
+        });
+    </script>
 </body>
 </html>

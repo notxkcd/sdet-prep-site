@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Qapitol_QA-2 | SDET Interview Preparation Kit</title>
     <link rel="stylesheet" href="//localhost:1315/css/style.css">
+    <link rel="stylesheet" href="//localhost:1315/css/terminal.css">
     
     
     <link rel="stylesheet" href="//localhost:1315/lib/katex/katex.min.css">
@@ -21,7 +22,8 @@
         });
     </script>
 </head>
-<body>
+<body id="theme-body">
+    <button id="theme-toggle">Switch Theme</button>
     <header>
         <nav>
             <ul>
@@ -65,7 +67,7 @@ What is the interface?
 What is the path and query param?
 Write a program the find count of palindrome strings in the given string and print the highest length palindrome.And also occurrence of each character count in that palindrome strings.</p>
 <hr>
-<h2 id="answers-no-bs-java-qa--sdet-explanations">Answers (No-BS Java QA / SDET Explanations)</h2>
+<h2 id="answers">Answers</h2>
 <h3 id="what-is-chaining-in-api-testing-">What is chaining in API Testing ?</h3>
 <p>API chaining refers to the process where the output (response) of one API request is used as the input (request) for a subsequent API request. This allows you to test complex workflows or business processes that involve multiple API calls.</p>
 <ul>
@@ -202,5 +204,24 @@ REST-assured supports this naturally with its fluent API, allowing you to extrac
     <footer class="footer">
         <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
     </footer>
+
+    <script>
+        const body = document.getElementById('theme-body');
+        const btn = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme');
+
+        if (currentTheme === 'terminal') {
+            body.classList.add('theme-terminal');
+        }
+
+        btn.addEventListener('click', () => {
+            body.classList.toggle('theme-terminal');
+            let theme = 'natural';
+            if (body.classList.contains('theme-terminal')) {
+                theme = 'terminal';
+            }
+            localStorage.setItem('theme', theme);
+        });
+    </script>
 </body>
 </html>

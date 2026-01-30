@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hexaware | SDET Interview Preparation Kit</title>
     <link rel="stylesheet" href="//localhost:1315/css/style.css">
+    <link rel="stylesheet" href="//localhost:1315/css/terminal.css">
     
     
     <link rel="stylesheet" href="//localhost:1315/lib/katex/katex.min.css">
@@ -21,7 +22,8 @@
         });
     </script>
 </head>
-<body>
+<body id="theme-body">
+    <button id="theme-toggle">Switch Theme</button>
     <header>
         <nav>
             <ul>
@@ -88,7 +90,7 @@
 <li>TestNg Annotation</li>
 </ol>
 <hr>
-<h2 id="answers-no-bs-java-qa--sdet-explanations">Answers (No-BS Java QA / SDET Explanations)</h2>
+<h2 id="answers">Answers</h2>
 <h3 id="1-explain-your-project">1) Explain your project</h3>
 <p>Standard opener. Be concise and technical. Mention the application domain, your specific responsibilities, the tech stack, and the scale. Example: &ldquo;I was the lead QA automation engineer for a B2B logistics platform. I was responsible for designing and maintaining the end-to-end test framework for the shipment tracking and invoicing modules. The stack was Java, Selenium, REST-assured, and Jenkins.&rdquo;</p>
 <h3 id="2-write-a-testcase-for-your-project">2) Write a TestCase for your Project.</h3>
@@ -519,7 +521,7 @@ Round 1:</li>
 <li>Why bdd is considered best.</li>
 </ol>
 <hr>
-<h2 id="answers-no-bs-java-qa--sdet-explanations-1">Answers (No-BS Java QA / SDET Explanations)</h2>
+<h2 id="answers-1">Answers</h2>
 <h3 id="round-1">Round 1</h3>
 <h4 id="1-tell-me-about-yourself">1) tell me about yourself</h4>
 <p>Standard opener. See previous answers.</p>
@@ -674,7 +676,7 @@ Round 1:</li>
 <li>what is glue in cucumber?</li>
 </ol>
 <hr>
-<h2 id="answers-no-bs-java-qa--sdet-explanations-2">Answers (No-BS Java QA / SDET Explanations)</h2>
+<h2 id="answers-2">Answers</h2>
 <h3 id="1-given-date-format-03-06-1995-and-output-should-be-in-this-format-03061995-write-a-java-program-for-it">1) Given date format: 03-06-1995 and output should be in this format: 03/06/1995. Write a java program for it.</h3>
 <p>This is a string manipulation question, but the <em>correct</em> way to handle dates is with Java&rsquo;s date/time APIs.</p>
 <div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">java.time.LocalDate</span>;
@@ -806,5 +808,24 @@ Round 1:</li>
     <footer class="footer">
         <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
     </footer>
+
+    <script>
+        const body = document.getElementById('theme-body');
+        const btn = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme');
+
+        if (currentTheme === 'terminal') {
+            body.classList.add('theme-terminal');
+        }
+
+        btn.addEventListener('click', () => {
+            body.classList.toggle('theme-terminal');
+            let theme = 'natural';
+            if (body.classList.contains('theme-terminal')) {
+                theme = 'terminal';
+            }
+            localStorage.setItem('theme', theme);
+        });
+    </script>
 </body>
 </html>

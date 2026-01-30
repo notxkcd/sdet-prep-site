@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Generic Questions-3 | SDET Interview Preparation Kit</title>
     <link rel="stylesheet" href="//localhost:1315/css/style.css">
+    <link rel="stylesheet" href="//localhost:1315/css/terminal.css">
     
     
     <link rel="stylesheet" href="//localhost:1315/lib/katex/katex.min.css">
@@ -21,7 +22,8 @@
         });
     </script>
 </head>
-<body>
+<body id="theme-body">
+    <button id="theme-toggle">Switch Theme</button>
     <header>
         <nav>
             <ul>
@@ -78,7 +80,7 @@
 <li>Have you developed any frameworks</li>
 </ul>
 <hr>
-<h2 id="answers-no-bs-java-qa--sdet-explanations">Answers (No-BS Java QA / SDET Explanations)</h2>
+<h2 id="answers">Answers</h2>
 <h3 id="how-you-will-be-using-the-constructor-in-selenium">How you will be using the constructor in selenium</h3>
 <p>Constructors are fundamental to the Page Object Model (POM).
 &ldquo;In my Selenium framework, I use constructors in every Page Object class. The primary purpose is <strong>dependency injection</strong>—specifically, to pass the <code>WebDriver</code> instance from the test class to the page object. This ensures that the page object has the necessary driver to find elements and perform actions.</p>
@@ -205,5 +207,24 @@ Even if you didn&rsquo;t build it from scratch, you can say: &ldquo;I haven&rsqu
     <footer class="footer">
         <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
     </footer>
+
+    <script>
+        const body = document.getElementById('theme-body');
+        const btn = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme');
+
+        if (currentTheme === 'terminal') {
+            body.classList.add('theme-terminal');
+        }
+
+        btn.addEventListener('click', () => {
+            body.classList.toggle('theme-terminal');
+            let theme = 'natural';
+            if (body.classList.contains('theme-terminal')) {
+                theme = 'terminal';
+            }
+            localStorage.setItem('theme', theme);
+        });
+    </script>
 </body>
 </html>
