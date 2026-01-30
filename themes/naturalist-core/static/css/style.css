@@ -1,360 +1,154 @@
 :root {
-    --bg: #fdf6e3;      /* Solarized Cream / Paper */
-    --text: #2e2e2e;    /* Off-black / Ink */
+    --bg: #fdf6e3;
+    --text: #2e2e2e;
     --accent: #2d5a27;  /* Forest Green */
-    --dim: #657b83;     /* Slate Gray */
-    --border: #d3ccbe;  /* Aged Paper Border */
-    --code-bg: #eee8d5; /* Light Parchment */
+    --dim: #657b83;
+    --border: #d3ccbe;
+    --code-bg: #eee8d5;
 }
+
+* { box-sizing: border-box; }
 
 body {
     background-color: var(--bg);
     color: var(--text);
-    font-family: 'Crimson Pro', 'Georgia', serif;
-    font-size: 1.2rem;
-    line-height: 1.7;
+    font-family: 'Crimson Pro', serif;
+    font-size: 1.15rem;
+    line-height: 1.6;
     max-width: 950px;
     margin: 0 auto;
-    padding: 3rem 1.5rem;
+    padding: 2rem 1rem;
 }
 
 header {
-...
-/* Typography */
+    border-bottom: 2px solid var(--accent);
+    margin-bottom: 2.5rem;
+    padding-bottom: 1rem;
+}
+
+.site-breadcrumb {
+    font-family: sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--dim);
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    font-family: sans-serif;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+}
+
+/* Typography - Bold Green Headings using same font */
 h1, h2, h3 {
     color: var(--accent);
-    font-family: 'Playfair Display', serif;
-    font-weight: bold;
+    font-family: 'Crimson Pro', serif;
+    font-weight: 700;
 }
 
-h1 {
-    font-size: 2.2rem;
-    margin-bottom: 0.5rem;
-}
+h1 { font-size: 2.2rem; }
+h2 { font-size: 1.6rem; border-bottom: 1px solid var(--border); margin-top: 2rem; padding-bottom: 0.3rem; }
 
-h2 {
-    font-variant: small-caps;
-    border-bottom: 1px solid var(--border);
-    margin-top: 2rem;
-}
+a { color: var(--accent); text-decoration: underline; }
+a:hover { background-color: var(--accent); color: white; }
 
-a {
-    color: var(--accent);
-    text-decoration: underline;
-    text-decoration-thickness: 1px;
-    text-underline-offset: 3px;
-}
-
-a:hover {
-    background-color: var(--accent);
-    color: white;
-}
-
-/* Tutorial Layout */
-.category-group {
-    margin-bottom: 4rem;
-}
-
-.category-title {
-    font-family: sans-serif;
-    font-size: 0.9rem;
-    font-weight: bold;
-    color: var(--dim);
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    margin-bottom: 1rem;
-}
-
-.tutorial-list {
-    list-style: none;
-    padding: 0;
-}
-
-.tutorial-item {
-    margin-bottom: 1.5rem;
-}
-
-.tutorial-title a {
-    font-size: 1.25rem;
-    font-weight: bold;
-    text-decoration: none;
-}
-
-.mastery-list {
-    list-style: none;
-    padding: 0;
-}
-
-.mastery-list li {
-    display: grid;
-    grid-template-columns: 220px 30px auto;
-    align-items: baseline;
-    margin-bottom: 0.8rem;
-}
-
-.mastery-title a {
-    font-weight: bold;
-    text-decoration: none;
-}
-
-.mastery-separator {
-    color: var(--border);
-    text-align: center;
-}
-
-.mastery-description {
-    color: var(--text);
-    font-style: italic;
-}
-
-/* Content */
-article {
-    text-align: justify;
-}
-
+/* Code Blocks - Fixed for Highlighting */
 pre {
-    background: var(--code-bg);
+    background-color: var(--code-bg) !important;
     border: 1px solid var(--border);
-    padding: 0.8rem 1.2rem;
+    padding: 1rem;
     overflow-x: auto;
     font-family: "Courier New", monospace;
     font-size: 0.9rem;
-    tab-size: 4;
-    -moz-tab-size: 4;
-    white-space: pre;
-    width: 100%;
-    box-sizing: border-box;
+    margin: 1.5rem 0;
+    border-radius: 4px;
 }
 
+/* Ensure syntax highlighting colors show through */
 pre code {
     background: transparent !important;
     padding: 0;
+    border: none;
 }
 
 code {
-    background: var(--code-bg);
+    background-color: var(--code-bg);
     padding: 0.1rem 0.3rem;
     font-family: "Courier New", monospace;
-    white-space: nowrap;
-    font-size: 0.85rem;
-}
-
-blockquote {
-    border-left: 4px solid var(--border);
-    margin-left: 0;
-    padding-left: 1.5rem;
-    font-style: italic;
-    color: var(--dim);
-}
-
-/* Footer */
-.footer {
-    margin-top: 4rem;
-    padding-top: 2rem;
-    border-top: 1px solid var(--border);
-    font-size: 0.8rem;
-    color: var(--dim);
-    text-align: center;
-}
-
-.nav-btn {
-    font-family: sans-serif;
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    text-decoration: none;
-    font-weight: bold;
-}
-
-/* Tables */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 2rem 0;
-    font-size: 1rem;
-    font-family: sans-serif;
-}
-
-th, td {
-    padding: 0.75rem;
-    border: 1px solid var(--border);
-    text-align: left;
-}
-
-th {
-    background-color: var(--code-bg);
-    color: var(--accent);
-    font-weight: bold;
-    text-transform: uppercase;
-    font-size: 0.85rem;
-    letter-spacing: 1px;
-}
-
-tr:nth-child(even) {
-    background-color: rgba(0,0,0,0.02);
-}
-
-
-
-/* Pronounced Hand-Drawn Checkbox Styling */
-ul li input[type="checkbox"], 
-table td input[type="checkbox"] {
-    appearance: none;
-    -webkit-appearance: none;
-    width: 1.2rem;
-    height: 1.2rem;
-    border: 2.5px solid var(--accent);
-    /* Organic, wobbly border radius */
-    border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
-    background-color: var(--bg);
-    cursor: pointer;
-    vertical-align: middle;
-    position: relative;
-    display: inline-block;
-    transition: all 0.05s ease;
-    box-shadow: 2px 2px 5px rgba(0,0,0,0.05);
-}
-
-ul li input[type="checkbox"]:checked,
-table td input[type="checkbox"]:checked {
-    background-color: var(--accent);
-    transform: rotate(1deg) scale(1.05);
-}
-
-ul li input[type="checkbox"]:checked::after,
-table td input[type="checkbox"]:checked::after {
-    content: '✓';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -55%);
-    color: var(--bg); /* Solarized cream check on dark green bg */
     font-size: 0.9rem;
-    font-weight: 900;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    word-wrap: break-word;
+    white-space: normal; /* Allows wrapping */
 }
 
-ul li input[type="checkbox"]:hover,
-table td input[type="checkbox"]:hover {
-    border-color: var(--accent);
-    background-color: rgba(45, 90, 39, 0.05);
-    transform: translateY(-1px);
-}
+.highlight { margin: 1.5rem 0; }
+.highlight pre { margin: 0; }
 
-/* Fix for centered columns in the table */
-table th:nth-child(1), table td:nth-child(1),
-table th:nth-child(3), table td:nth-child(3) {
-    text-align: center;
-    width: 60px;
-}
-
-/* Styling for Raw HTML Checkboxes */
+/* Checkboxes - Handdrawn Feel */
 input[type="checkbox"] {
     appearance: none;
     -webkit-appearance: none;
     width: 1.2rem;
     height: 1.2rem;
-    border: 2.5px solid var(--accent);
+    border: 2px solid var(--accent);
     border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
     background-color: var(--bg);
     cursor: pointer;
     vertical-align: middle;
     position: relative;
     display: inline-block;
-    transition: all 0.05s ease;
 }
 
-input[type="checkbox"]:checked {
-    background-color: var(--accent);
-}
-
+input[type="checkbox"]:checked { background-color: var(--accent); }
 input[type="checkbox"]:checked::after {
     content: '✓';
     position: absolute;
-    top: 50%;
-    left: 50%;
+    top: 50%; left: 50%;
     transform: translate(-50%, -55%);
     color: var(--bg);
-    font-size: 0.9rem;
     font-weight: 900;
 }
 
-/* Theme Toggle Button Base Style */
+/* Tables - Mobile Responsive */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    display: block;
+    overflow-x: auto;
+}
+
+th, td { padding: 0.6rem; border: 1px solid var(--border); }
+th { background-color: var(--code-bg); color: var(--accent); font-weight: bold; }
+
+/* Toggle Button */
 #theme-toggle {
     position: fixed;
-    top: 1rem;
-    right: 1rem;
-    padding: 0.4rem 0.8rem;
+    top: 0.5rem;
+    right: 0.5rem;
+    padding: 0.4rem 0.6rem;
     background: var(--accent);
     color: white;
-    border: 1px solid var(--accent);
+    border: none;
     font-family: sans-serif;
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     font-weight: bold;
     text-transform: uppercase;
     cursor: pointer;
-    z-index: 9999;
+    z-index: 10000;
     border-radius: 4px;
-    transition: all 0.1s ease;
 }
 
-#theme-toggle:hover {
-    transform: scale(1.05);
-}
+.footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border); text-align: center; font-size: 0.8rem; color: var(--dim); }
 
-/* Light Theme Code Improvements */
-code {
-    background-color: #eee8d5 !important;
-    color: #b58900;
-    border-radius: 3px;
-    border: 1px solid #d3ccbe;
-}
-
-pre {
-    background-color: #eee8d5 !important;
-    border: 1px solid #d3ccbe !important;
-    padding: 0.8rem 1.2rem !important;
-}
-
-pre code {
-    background-color: transparent !important;
-    border: none !important;
-    color: inherit !important;
-}
-
-/* Terminal Theme Code Improvements */
-.theme-terminal code {
-    font-family: 'Courier New', monospace !important;
-}
-
-.theme-terminal :not(pre) > code {
-    background-color: #161b22 !important;
-    color: var(--accent) !important;
-    border: 1px solid var(--border) !important;
-}
-
-.theme-terminal .highlight pre, 
-.theme-terminal pre {
-    background-color: #000000 !important;
-    border: 1px solid var(--accent) !important;
-    color: var(--accent) !important;
-    padding: 0.8rem 1.2rem !important;
-}
-
-.theme-terminal .highlight {
-    background-color: transparent !important;
-}
-
-/* Fix for Hugo's .highlight wrapper */
-.highlight pre {
-    margin: 0 !important;
-}
-
-.highlight {
-    border: 1px solid var(--border) !important;
-    margin: 1rem 0 !important;
-    width: 100% !important;
-    overflow-x: auto !important;
-}
-
-.theme-terminal .highlight {
-    border: 1px solid var(--accent) !important;
+@media (max-width: 600px) {
+    body { padding: 1rem; font-size: 1.1rem; }
+    h1 { font-size: 1.8rem; }
+    #theme-toggle { top: auto; bottom: 1rem; right: 1rem; } /* Move toggle to bottom on mobile */
 }
