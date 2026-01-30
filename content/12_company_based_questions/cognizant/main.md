@@ -6,7 +6,7 @@ draft: false
 
 ---
 
-## Original Questions (UNTOUCHED)
+## Original Questions
 
 Cognizant
 Round 1:
@@ -349,7 +349,7 @@ It's the `Actions` class. It's used for emulating complex user gestures that are
 
 ---
 
-## Original Questions (UNTOUCHED)
+## Original Questions
 
 - Cognizant round1
 
@@ -592,7 +592,7 @@ Shows you have a career plan.
 
 ---
 
-## Original Questions (UNTOUCHED)
+## Original Questions
 
 - Cognizant Interview Questions
 - Tell About yourself ?
@@ -885,7 +885,7 @@ public class CartSteps {
 
 ---
 
-## Original Questions (UNTOUCHED)
+## Original Questions
 
 Cognizant
 1 Tell me about your self
@@ -952,7 +952,7 @@ Cognizant
 
 ---
 
-## Original Questions (UNTOUCHED)
+## Original Questions
 
 Capgemini
 - Tell me about your project

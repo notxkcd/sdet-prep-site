@@ -6,7 +6,7 @@ draft: false
 
 ---
 
-## Original Questions (UNTOUCHED)
+## Original Questions
 
 Lt Mindtree level 1 interview questions :
 ----------------------------------------

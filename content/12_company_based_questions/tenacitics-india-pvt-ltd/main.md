@@ -6,7 +6,7 @@ draft: false
 
 ---
 
-## Original Questions (UNTOUCHED)
+## Original Questions
 
 - Tenacitics India Pvt Ltd Technical Round -
 

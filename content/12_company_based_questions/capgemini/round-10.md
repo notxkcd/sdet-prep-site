@@ -6,7 +6,7 @@ draft: false
 
 ---
 
-## Original Questions (UNTOUCHED)
+## Original Questions
 
 - Capgemini Interview Questions- First Round - F2F - Virtual- 35 mins
 1. Explain yourself

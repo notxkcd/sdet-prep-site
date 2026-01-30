@@ -6,7 +6,7 @@ draft: false
 
 ---
 
-## Original Questions (UNTOUCHED)
+## Original Questions
 
 - Capgemini L1 face to face interview(programing)
 ---------------------------------------------

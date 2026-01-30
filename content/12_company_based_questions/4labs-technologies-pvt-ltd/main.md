@@ -6,7 +6,7 @@ draft: false
 
 ---
 
-## Original Questions (UNTOUCHED)
+## Original Questions
 
 - Questions asked in 4Labs Technologies Pvt Ltd
 Self intro

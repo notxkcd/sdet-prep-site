@@ -6,7 +6,7 @@ draft: false
 
 ---
 
-## Original Questions (UNTOUCHED)
+## Original Questions
 
 - L1 in Infosys(virtual) one of the interviewer Asha
 -------------------------------------------------

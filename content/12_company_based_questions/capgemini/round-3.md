@@ -6,7 +6,7 @@ draft: false
 
 ---
 
-## Original Questions (UNTOUCHED)
+## Original Questions
 
 - Capgemini Level 1 Hr# Tadepalli
 ------------------------------

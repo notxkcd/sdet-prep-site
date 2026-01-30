@@ -6,7 +6,7 @@ draft: false
 
 ---
 
-## Original Questions (UNTOUCHED)
+## Original Questions
 
 First round:
 Self intro
@@ -439,7 +439,7 @@ This is four concepts in one. Let's break them down from a QA framework design p
 
 ---
 
-## Original Questions (UNTOUCHED)
+## Original Questions
 
 Second round:
 Self intro
@@ -958,7 +958,7 @@ driver.findElement(By.xpath("//label[text()='Username']/following-sibling::input
 
 ---
 
-## Original Questions (UNTOUCHED)
+## Original Questions
 
 Capgemini L2:
 - Tell me about your project

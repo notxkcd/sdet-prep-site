@@ -6,7 +6,7 @@ draft: false
 
 ---
 
-## Original Questions (UNTOUCHED)
+## Original Questions
 
 - How you will be using the constructor in selenium
 - What are the locators that is available in selenium

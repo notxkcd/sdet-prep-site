@@ -6,7 +6,7 @@ draft: false
 
 ---
 
-## Original Questions (UNTOUCHED)
+## Original Questions
 
 BNP Paribas interview Questions:
 1. Tell about yourself more about professional experience and more about exposure towards automation.

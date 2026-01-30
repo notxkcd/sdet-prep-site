@@ -6,7 +6,7 @@ draft: false
 
 ---
 
-## Original Questions (UNTOUCHED)
+## Original Questions
 
 Hexaware:
 
@@ -457,7 +457,7 @@ These are markers that tell TestNG how to treat a Java method.
 
 ---
 
-## Original Questions (UNTOUCHED)
+## Original Questions
 
 - Hexaware technology
 Round 1:
@@ -626,7 +626,7 @@ Again, "best" is a trap. BDD is a tool, and it's not always the right one.
 
 ---
 
-## Original Questions (UNTOUCHED)
+## Original Questions
 
 Hexaware technologies interview questions:
 1) Given date format: 03-06-1995 and output should be in this format: 03/06/1995. Write a java program for it.

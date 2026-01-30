@@ -6,7 +6,7 @@ draft: false
 
 ---
 
-## Original Questions (UNTOUCHED)
+## Original Questions
 
 - Infosys Interview Questions
 
@@ -346,7 +346,7 @@ This question is a bit ambiguous. It could mean:
 
 ---
 
-## Original Questions (UNTOUCHED)
+## Original Questions
 
 - Infosys Interview Questions - (Round 1)
 -------------------------------------------

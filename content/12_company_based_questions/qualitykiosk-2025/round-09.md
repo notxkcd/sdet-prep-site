@@ -6,7 +6,7 @@ draft: false
 
 ---
 
-## Original Questions (UNTOUCHED)
+## Original Questions
 
 - QualityKiosk -Kochin (28/09/2025)
 ---------------------------------

@@ -6,7 +6,7 @@ draft: false
 
 ---
 
-## Original Questions (UNTOUCHED)
+## Original Questions
 
 Maltras business economics pvt ltd Interview Questions:
 Round 1:

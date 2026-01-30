@@ -6,7 +6,7 @@ draft: false
 
 ---
 
-## Original Questions (UNTOUCHED)
+## Original Questions
 
 - CGI Interview Questions:- 45 Minutes
 -----------------------

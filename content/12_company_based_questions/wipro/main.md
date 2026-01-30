@@ -6,7 +6,7 @@ draft: false
 
 ---
 
-## Original Questions (UNTOUCHED)
+## Original Questions
 
 - WIPRO Interview Questions (Bangalore)
 -------------------------------------

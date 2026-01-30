@@ -6,7 +6,7 @@ draft: false
 
 ---
 
-## Original Questions (UNTOUCHED)
+## Original Questions
 
 Wipro Interview - First Round -F2F - 40 to 45 mins:
 --------------------------------------------------

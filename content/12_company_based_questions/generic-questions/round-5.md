@@ -6,7 +6,7 @@ draft: false
 
 ---
 
-## Original Questions (UNTOUCHED)
+## Original Questions
 
 1.Explain your frame work
 2.Write a test case for one component that you had used in your project

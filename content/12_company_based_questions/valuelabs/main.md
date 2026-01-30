@@ -6,7 +6,7 @@ draft: false
 
 ---
 
-## Original Questions (UNTOUCHED)
+## Original Questions
 
 - Valuelabs Interview Questions : SDET 4.5 to 6 years
 ------------------------------------------------

@@ -6,7 +6,7 @@ draft: false
 
 ---
 
-## Original Questions (UNTOUCHED)
+## Original Questions
 
 ComCost L1 and L2 rounds interview questions:
 --------------------------------------------

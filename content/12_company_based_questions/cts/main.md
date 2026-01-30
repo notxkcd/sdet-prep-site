@@ -6,7 +6,7 @@ draft: false
 
 ---
 
-## Original Questions (UNTOUCHED)
+## Original Questions
 
 - CTS interview questions:-
 1. You have test scenarios in the feature file already now you are going to write new additional scenarios,how do you generate snippets alone for new?

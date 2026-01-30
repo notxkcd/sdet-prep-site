@@ -6,7 +6,7 @@ draft: false
 
 ---
 
-## Original Questions (UNTOUCHED)
+## Original Questions
 
 Cognizant (Java Selenium) Interview Questions conducted on 15/02/25 (1Hour):
 --------------------------------------------------------------------------
