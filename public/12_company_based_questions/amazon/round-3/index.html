@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1315&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amazon-3 | SDET Interview Preparation Kit</title>
+    <link rel="stylesheet" href="//localhost:1315/css/style.css">
+    
+    
+    <link rel="stylesheet" href="//localhost:1315/lib/katex/katex.min.css">
+    <script defer src="//localhost:1315/lib/katex/katex.min.js"></script>
+    <script defer src="//localhost:1315/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="/">Index</a></li>
+                
+            </ul>
+        </nav>
+        <div class="site-breadcrumb">
+            <a href="/">Home</a>
+            
+            
+            
+
+            
+            
+                <span>/</span> Amazon-3
+            
+        </div>
+    </header>
+
+    <main>
+        
+<article>
+    <div class="category-title" style="margin-bottom: 0.5rem;">Amazon Interview Questions</div>
+    <h1>Amazon-3</h1>
+    <div class="content-body" style="margin-top: 2rem;">
+        <hr>
+<h2 id="original-questions-untouched">Original Questions (UNTOUCHED)</h2>
+<h2 id="amazon-1st-round">Amazon 1st Round</h2>
+<p>1.Tell About your Self?
+2.Explain Ploymorphism Concept?
+3.Explain Inheritance Concept and Where do use in your project?
+4.Explain your Project?
+5.Input = Same give output as Saammmeeee using java program?
+6.Where Java Store the memory?
+7.Can we declear a pointee in class?
+8.Where do you see word transee in java?
+9.Where does the deletion process take place in java?
+10.Difference between Method Overloading and Overriding and Explain it?</p>
+<hr>
+<h2 id="answers-no-bs-java-qa--sdet-explanations">Answers (No-BS Java QA / SDET Explanations)</h2>
+<h3 id="1-tell-about-your-self">1. Tell About your Self?</h3>
+<p>Standard opener. Focus on professional experience, automation skills, tech stack, and a key achievement.</p>
+<h3 id="2-explain-ploymorphism-concept">2. Explain Ploymorphism Concept?</h3>
+<p>Polymorphism means &ldquo;many forms.&rdquo; In OOP, it refers to the ability of an object to take on many forms, particularly an object of a subclass being treated as an object of its superclass. The key applications are:</p>
+<ul>
+<li><strong>Method Overriding:</strong> A subclass provides a specific implementation for a method already defined in its superclass. This is run-time polymorphism.</li>
+<li><strong>Method Overloading:</strong> Multiple methods in the same class share the same name but have different parameter lists. This is compile-time polymorphism.</li>
+</ul>
+<h3 id="3-explain-inheritance-concept-and-where-do-use-in-your-project">3. Explain Inheritance Concept and Where do use in your project?</h3>
+<ul>
+<li><strong>Inheritance:</strong> An OOP mechanism where one class (subclass) acquires properties and methods from another class (superclass). It promotes code reuse and establishes an &ldquo;is-a&rdquo; relationship.</li>
+<li><strong>Use in project:</strong> &ldquo;In our test automation framework, we extensively use inheritance. For instance, we have a <code>BaseTest</code> abstract class that contains common setup (<code>@BeforeMethod</code> for WebDriver initialization) and teardown (<code>@AfterMethod</code> for WebDriver quit) logic. All our specific test classes (e.g., <code>LoginTest</code>, <code>ProductSearchTest</code>) <code>extend</code> this <code>BaseTest</code> class, inheriting these common functionalities. Similarly, our Page Object classes <code>extend</code> a <code>BasePage</code> for shared page-level interactions.&rdquo;</li>
+</ul>
+<h3 id="4-explain-your-project">4. Explain your Project?</h3>
+<p>Standard. Describe the project domain, your role, the framework used (tools, architecture), challenges, and achievements.</p>
+<h3 id="5-input--same-give-output-as-saammmeeee-using-java-program">5. Input = Same give output as Saammmeeee using java program?</h3>
+<p>This implies increasing the count of repeating characters.</p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900">class</span> <span style="color:#cb4b16">RepeatCharacters</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#859900">static</span> <span style="color:#268bd2">String</span> <span style="color:#268bd2">transformString</span>(<span style="color:#268bd2">String</span> <span style="color:#268bd2">input</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">StringBuilder</span> <span style="color:#268bd2">output</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">StringBuilder</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">input</span> == <span style="color:#859900;font-weight:bold">null</span> || <span style="color:#268bd2">input</span>.<span style="color:#268bd2">isEmpty</span>()) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#2aa198">&#34;&#34;</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i</span> = <span style="color:#268bd2">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">input</span>.<span style="color:#268bd2">length</span>(); <span style="color:#268bd2">i</span>++) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900;font-weight:bold">char</span> <span style="color:#268bd2">currentChar</span> = <span style="color:#268bd2">input</span>.<span style="color:#268bd2">charAt</span>(<span style="color:#268bd2">i</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">output</span>.<span style="color:#268bd2">append</span>(<span style="color:#268bd2">currentChar</span>); <span style="color:#93a1a1;font-style:italic">// Append once</span>
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Count consecutive occurrences of the current character</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">count</span> = <span style="color:#268bd2">0</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">j</span> = <span style="color:#268bd2">i</span>; <span style="color:#268bd2">j</span> &lt; <span style="color:#268bd2">input</span>.<span style="color:#268bd2">length</span>(); <span style="color:#268bd2">j</span>++) {
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">if</span> (<span style="color:#268bd2">input</span>.<span style="color:#268bd2">charAt</span>(<span style="color:#268bd2">j</span>) == <span style="color:#268bd2">currentChar</span>) {
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">count</span>++;
+</span></span><span style="display:flex;"><span>                } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>                    <span style="color:#859900">break</span>;
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Append extra characters based on count (example: for 2 &#39;a&#39;s, add 1 more &#39;a&#39;)</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">k</span> = <span style="color:#268bd2">0</span>; <span style="color:#268bd2">k</span> &lt; <span style="color:#268bd2">count</span>; <span style="color:#268bd2">k</span>++) { <span style="color:#93a1a1;font-style:italic">// This logic needs adjustment based on exact output requirement</span>
+</span></span><span style="display:flex;"><span>                                              <span style="color:#93a1a1;font-style:italic">// The output example &#34;Same -&gt; Saammmeeee&#34; implies:</span>
+</span></span><span style="display:flex;"><span>                                              <span style="color:#93a1a1;font-style:italic">// S -&gt; S</span>
+</span></span><span style="display:flex;"><span>                                              <span style="color:#93a1a1;font-style:italic">// a -&gt; aa</span>
+</span></span><span style="display:flex;"><span>                                              <span style="color:#93a1a1;font-style:italic">// m -&gt; mmm</span>
+</span></span><span style="display:flex;"><span>                                              <span style="color:#93a1a1;font-style:italic">// e -&gt; eeee</span>
+</span></span><span style="display:flex;"><span>                                              <span style="color:#93a1a1;font-style:italic">// This is a custom logic, not a general pattern.</span>
+</span></span><span style="display:flex;"><span>                                              <span style="color:#93a1a1;font-style:italic">// Let&#39;s assume the question means &#34;repeat each character &#39;n&#39; times where &#39;n&#39; is its count&#34;.</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">if</span> (<span style="color:#268bd2">currentChar</span> == <span style="color:#2aa198">&#39;a&#39;</span> &amp;&amp; <span style="color:#268bd2">count</span> == <span style="color:#268bd2">2</span>) <span style="color:#268bd2">output</span>.<span style="color:#268bd2">append</span>(<span style="color:#2aa198">&#39;a&#39;</span>); <span style="color:#93a1a1;font-style:italic">// For &#34;Same&#34;, &#39;a&#39; is repeated 2 times</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">else</span> <span style="color:#859900">if</span> (<span style="color:#268bd2">currentChar</span> == <span style="color:#2aa198">&#39;m&#39;</span> &amp;&amp; <span style="color:#268bd2">count</span> == <span style="color:#268bd2">1</span>) <span style="color:#268bd2">output</span>.<span style="color:#268bd2">append</span>(<span style="color:#2aa198">&#34;mm&#34;</span>); <span style="color:#93a1a1;font-style:italic">// For &#34;Same&#34;, &#39;m&#39; is repeated 1 time</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">else</span> <span style="color:#859900">if</span> (<span style="color:#268bd2">currentChar</span> == <span style="color:#2aa198">&#39;e&#39;</span> &amp;&amp; <span style="color:#268bd2">count</span> == <span style="color:#268bd2">1</span>) <span style="color:#268bd2">output</span>.<span style="color:#268bd2">append</span>(<span style="color:#2aa198">&#34;eee&#34;</span>); <span style="color:#93a1a1;font-style:italic">// For &#34;Same&#34;, &#39;e&#39; is repeated 1 time</span>
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// The output example logic is very specific and not generalizable easily.</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Let&#39;s re-interpret the prompt based on &#34;Saammmeeee&#34; for input &#34;Same&#34;.</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// S (1st char) -&gt; S (1)</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// a (2nd char) -&gt; aa (2)</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// m (3rd char) -&gt; mmm (3)</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// e (4th char) -&gt; eeee (4)</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// This is &#34;repeat char N times, where N is its position (1-indexed)&#34;.</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Corrected interpretation: repeat char N times, where N is its position (1-indexed).</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">StringBuilder</span> <span style="color:#268bd2">finalOutput</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">StringBuilder</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i</span> = <span style="color:#268bd2">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">input</span>.<span style="color:#268bd2">length</span>(); <span style="color:#268bd2">i</span>++) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900;font-weight:bold">char</span> <span style="color:#268bd2">c</span> = <span style="color:#268bd2">input</span>.<span style="color:#268bd2">charAt</span>(<span style="color:#268bd2">i</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">j</span> = <span style="color:#268bd2">0</span>; <span style="color:#268bd2">j</span> &lt;= <span style="color:#268bd2">i</span>; <span style="color:#268bd2">j</span>++) { <span style="color:#93a1a1;font-style:italic">// Repeat (i+1) times</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">finalOutput</span>.<span style="color:#268bd2">append</span>(<span style="color:#268bd2">c</span>);
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">finalOutput</span>.<span style="color:#268bd2">toString</span>();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#859900">static</span> <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">main</span>(<span style="color:#268bd2">String</span>[] <span style="color:#268bd2">args</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>(<span style="color:#268bd2">transformString</span>(<span style="color:#2aa198">&#34;Same&#34;</span>)); <span style="color:#93a1a1;font-style:italic">// S aam mmm eeee. No, the output is &#34;Saammmeeee&#34;.</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// The output &#34;Saammmeeee&#34; for input &#34;Same&#34; means:</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// S -&gt; S</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// a -&gt; aa</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// m -&gt; mmm</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// e -&gt; eeee</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Each character is repeated its (1-based) index number of times.</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">String</span> <span style="color:#268bd2">input</span> = <span style="color:#2aa198">&#34;Same&#34;</span>; <span style="color:#93a1a1;font-style:italic">// S, a, m, e</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">StringBuilder</span> <span style="color:#268bd2">result</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">StringBuilder</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i</span> = <span style="color:#268bd2">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">input</span>.<span style="color:#268bd2">length</span>(); <span style="color:#268bd2">i</span>++) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900;font-weight:bold">char</span> <span style="color:#268bd2">c</span> = <span style="color:#268bd2">input</span>.<span style="color:#268bd2">charAt</span>(<span style="color:#268bd2">i</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">j</span> = <span style="color:#268bd2">0</span>; <span style="color:#268bd2">j</span> &lt;= <span style="color:#268bd2">i</span>; <span style="color:#268bd2">j</span>++) { <span style="color:#93a1a1;font-style:italic">// repeat i+1 times</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">result</span>.<span style="color:#268bd2">append</span>(<span style="color:#268bd2">c</span>);
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>(<span style="color:#268bd2">result</span>.<span style="color:#268bd2">toString</span>()); <span style="color:#93a1a1;font-style:italic">// Saammmeeee</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="6-where-java-store-the-memory">6. Where Java Store the memory?</h3>
+<p>Java uses different memory areas for different purposes:</p>
+<ul>
+<li><strong>Heap Memory:</strong> Where all objects (instances of classes) and arrays are stored. It&rsquo;s shared by all threads. Garbage Collection operates here.</li>
+<li><strong>Stack Memory:</strong> Each thread in a Java program has its own stack. This is where local variables, method call information, and primitive values are stored.</li>
+<li><strong>Method Area (Metaspace in Java 8+):</strong> Stores class-level data like bytecode, static variables, and method definitions.</li>
+<li><strong>PC Registers:</strong> Stores the address of the next instruction to be executed by a thread.</li>
+</ul>
+<h3 id="7-can-we-declear-a-pointee-in-class">7. Can we declear a pointee in class?</h3>
+<p>This is a C/C++ term. Java does <strong>not</strong> have pointers in the traditional sense like C/C++. All object variables in Java are &ldquo;references,&rdquo; which are conceptually similar to pointers but are type-safe and cannot be directly manipulated by the programmer. There&rsquo;s no concept of a &ldquo;pointee&rdquo; to explicitly declare.</p>
+<h3 id="8-where-do-you-see-word-transee-in-java">8. Where do you see word transee in java?</h3>
+<p>This is likely a typo or misheard word. There is no standard Java keyword or concept called &ldquo;transee.&rdquo; It might be &ldquo;transient&rdquo; (a keyword for serialization) or &ldquo;transitive&rdquo; (property of equals() method). If heard, ask for clarification.</p>
+<h3 id="9-where-does-the-deletion-process-take-place-in-java">9. Where does the deletion process take place in java?</h3>
+<p>Deletion of unused objects (memory deallocation) in Java is handled automatically by the <strong>Garbage Collector (GC)</strong>. The GC runs in the <strong>Heap Memory</strong> and reclaims space occupied by objects that are no longer referenced by the running program. Programmers do not explicitly delete objects like in C++.</p>
+<h3 id="10-difference-between-method-overloading-and-overriding-and-explain-it">10. Difference between Method Overloading and Overriding and Explain it?</h3>
+<ul>
+<li><strong>Method Overloading:</strong> Multiple methods in the same class with the same name but different parameter lists. It&rsquo;s compile-time polymorphism.</li>
+<li><strong>Method Overriding:</strong> A subclass provides a specific implementation for a method already defined in its superclass. It&rsquo;s run-time polymorphism.
+These are fundamental OOP concepts.</li>
+</ul>
+
+    </div>
+</article>
+
+<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
+    
+    <a href="//localhost:1315/12_company_based_questions/amazon/round-4/" class="nav-btn">← Previous</a>
+    
+    
+    <a href="//localhost:1315/12_company_based_questions/amazon/" class="nav-btn">Up</a>
+
+    
+    <a href="//localhost:1315/12_company_based_questions/amazon/round-2/" class="nav-btn">Next →</a>
+    
+</div>
+
+    </main>
+
+    <footer class="footer">
+        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
+    </footer>
+</body>
+</html>

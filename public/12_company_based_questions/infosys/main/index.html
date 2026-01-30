@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1315&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infosys | SDET Interview Preparation Kit</title>
+    <link rel="stylesheet" href="//localhost:1315/css/style.css">
+    
+    
+    <link rel="stylesheet" href="//localhost:1315/lib/katex/katex.min.css">
+    <script defer src="//localhost:1315/lib/katex/katex.min.js"></script>
+    <script defer src="//localhost:1315/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="/">Index</a></li>
+                
+            </ul>
+        </nav>
+        <div class="site-breadcrumb">
+            <a href="/">Home</a>
+            
+            
+            
+
+            
+            
+                <span>/</span> Infosys
+            
+        </div>
+    </header>
+
+    <main>
+        
+<article>
+    <div class="category-title" style="margin-bottom: 0.5rem;">Infosys Interview Questions</div>
+    <h1>Infosys</h1>
+    <div class="content-body" style="margin-top: 2rem;">
+        <hr>
+<h2 id="original-questions-untouched">Original Questions (UNTOUCHED)</h2>
+<p>Infosys Interview Questions</p>
+<ol>
+<li>Self Introduction</li>
+<li>Explain oops concepts?</li>
+<li>What is Interface?</li>
+<li>What is the key word to implement child classes in Inheritance?</li>
+<li>Screen share:
+*Reverse the String?
+<ul>
+<li>Print the Vowels?</li>
+<li>Screenshot?
+*Find the duplicate elements of                    <br>
+array?</li>
+</ul>
+</li>
+<li>How to handle window handles?</li>
+<li>How to handle the popup or alerts?</li>
+<li>Exception handling?</li>
+<li>How to troubleshoot the exception?</li>
+<li>What is BDD?</li>
+<li>How do you handle version issues, what approach you will handle to resolve?</li>
+<li>What is Constructor? Why do we need a constructor for our project? Give example.</li>
+<li>What is Ortho Response?</li>
+<li>505, 200, 404, ?</li>
+<li>Diff bet final, finally and finalize in Java?</li>
+<li>Can we change the variable once it declare final?</li>
+<li>Is Final can be overridden?</li>
+<li>Multiple Inheritance?</li>
+<li>Collections ? Diff between list, set and map?</li>
+<li>What is 429 response code?</li>
+<li>How you validate the request methods in API?</li>
+<li>POM ? Page Factory?</li>
+</ol>
+<hr>
+<h2 id="answers-no-bs-java-qa--sdet-explanations">Answers (No-BS Java QA / SDET Explanations)</h2>
+<h3 id="1-self-introduction">1. Self Introduction</h3>
+<p>Standard opener. Keep it brief, technical, and relevant. 60-90 seconds. Structure: Role, Responsibilities, Tech Stack, Key Achievement.</p>
+<h3 id="2-explain-oops-concepts">2. Explain oops concepts?</h3>
+<p>The four pillars. Use QA-centric examples.</p>
+<ul>
+<li><strong>Encapsulation:</strong> Page Object Model. Hiding locators and implementation logic within a page class. Tests only call public methods like <code>loginPage.login()</code>.</li>
+<li><strong>Abstraction:</strong> The <code>WebDriver</code> interface. You code against <code>WebDriver</code>, and you don&rsquo;t care about the specific implementation (<code>ChromeDriver</code>, <code>FirefoxDriver</code>).</li>
+<li><strong>Inheritance:</strong> A <code>BaseTest</code> class with common setup (<code>@BeforeMethod</code>) and teardown (<code>@AfterMethod</code>) logic that all your test classes extend.</li>
+<li><strong>Polymorphism:</strong> Method overriding. A <code>BasePage</code> has a <code>verifyPageLoad()</code> method. <code>HomePage</code> and <code>ProductPage</code> both override it to add their own specific verification steps.</li>
+</ul>
+<h3 id="3-what-is-interface">3. What is Interface?</h3>
+<p>An interface is a pure abstraction. It&rsquo;s a contract that defines a set of method signatures that a class <em>must</em> implement if it <code>implements</code> that interface.</p>
+<ul>
+<li>It contains only <code>public static final</code> variables and <code>public abstract</code> methods (by default).</li>
+<li>A class can implement multiple interfaces.</li>
+<li>It enforces a standard structure. In test automation, you could have an interface <code>Reporting</code> with methods like <code>logPass()</code> and <code>logFail()</code>, and have different classes implement it for ExtentReports or Allure.</li>
+</ul>
+<h3 id="4-what-is-the-key-word-to-implement-child-classes-in-inheritance">4. What is the key word to implement child classes in Inheritance?</h3>
+<p>The keyword is <code>extends</code>.
+<code>public class LoginPage extends BasePage { ... }</code></p>
+<h3 id="5-screen-share">5. Screen share</h3>
+<p>This is a live coding check. They want to see how you think and write code, not just if you know the answer.</p>
+<h4 id="reverse-the-string">*Reverse the String?</h4>
+<p>The <code>StringBuilder</code> approach is the clean, correct one.</p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#268bd2">String</span> <span style="color:#268bd2">reverseString</span>(<span style="color:#268bd2">String</span> <span style="color:#268bd2">str</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">str</span> == <span style="color:#859900;font-weight:bold">null</span>) <span style="color:#859900">return</span> <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#859900">new</span> <span style="color:#268bd2">StringBuilder</span>(<span style="color:#268bd2">str</span>).<span style="color:#268bd2">reverse</span>().<span style="color:#268bd2">toString</span>();
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="-print-the-vowels">* Print the Vowels?</h4>
+<p>Loop and check against a set of vowel characters.</p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">printVowels</span>(<span style="color:#268bd2">String</span> <span style="color:#268bd2">str</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">str</span> == <span style="color:#859900;font-weight:bold">null</span>) <span style="color:#859900">return</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">String</span> <span style="color:#268bd2">vowels</span> = <span style="color:#2aa198">&#34;aeiou&#34;</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">char</span> <span style="color:#268bd2">c</span> : <span style="color:#268bd2">str</span>.<span style="color:#268bd2">toLowerCase</span>().<span style="color:#268bd2">toCharArray</span>()) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">vowels</span>.<span style="color:#268bd2">indexOf</span>(<span style="color:#268bd2">c</span>) != -<span style="color:#268bd2">1</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">print</span>(<span style="color:#268bd2">c</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="-screenshot">* Screenshot?</h4>
+<p>This is a Selenium question. You use the <code>TakesScreenshot</code> interface.</p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">org.openqa.selenium.OutputType</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">org.openqa.selenium.TakesScreenshot</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">org.openqa.selenium.WebDriver</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">java.io.File</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">org.apache.commons.io.FileUtils</span>; <span style="color:#93a1a1;font-style:italic">// From Apache Commons IO library</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">takeScreenshot</span>(<span style="color:#268bd2">WebDriver</span> <span style="color:#268bd2">driver</span>, <span style="color:#268bd2">String</span> <span style="color:#268bd2">filePath</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">try</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// 1. Cast the driver to TakesScreenshot</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">TakesScreenshot</span> <span style="color:#268bd2">ts</span> = (<span style="color:#268bd2">TakesScreenshot</span>) <span style="color:#268bd2">driver</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// 2. Get the screenshot as a file</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">File</span> <span style="color:#268bd2">source</span> = <span style="color:#268bd2">ts</span>.<span style="color:#268bd2">getScreenshotAs</span>(<span style="color:#268bd2">OutputType</span>.<span style="color:#268bd2">FILE</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// 3. Copy the file to the desired destination</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">FileUtils</span>.<span style="color:#268bd2">copyFile</span>(<span style="color:#268bd2">source</span>, <span style="color:#859900">new</span> <span style="color:#268bd2">File</span>(<span style="color:#268bd2">filePath</span>));
+</span></span><span style="display:flex;"><span>    } <span style="color:#859900">catch</span> (<span style="color:#268bd2">Exception</span> <span style="color:#268bd2">e</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>(<span style="color:#2aa198">&#34;Exception while taking screenshot: &#34;</span> + <span style="color:#268bd2">e</span>.<span style="color:#268bd2">getMessage</span>());
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><blockquote>
+<p><strong>Side note:</strong> In a real framework, this logic is in a listener (<code>onTestFailure</code>) or a utility class.</p>
+</blockquote>
+<h4 id="find-the-duplicate-elements-of-array">*Find the duplicate elements of array?</h4>
+<p>Using a <code>Set</code> is the standard, efficient way.</p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">java.util.HashSet</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">java.util.Set</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">findDuplicates</span>(<span style="color:#859900;font-weight:bold">int</span>[] <span style="color:#268bd2">arr</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">Set</span>&lt;<span style="color:#268bd2">Integer</span>&gt; <span style="color:#268bd2">uniqueElements</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">HashSet</span>&lt;&gt;();
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">Set</span>&lt;<span style="color:#268bd2">Integer</span>&gt; <span style="color:#268bd2">duplicateElements</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">HashSet</span>&lt;&gt;();
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i</span> : <span style="color:#268bd2">arr</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (!<span style="color:#268bd2">uniqueElements</span>.<span style="color:#268bd2">add</span>(<span style="color:#268bd2">i</span>)) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">duplicateElements</span>.<span style="color:#268bd2">add</span>(<span style="color:#268bd2">i</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>(<span style="color:#2aa198">&#34;Duplicates: &#34;</span> + <span style="color:#268bd2">duplicateElements</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="6-how-to-handle-window-handles">6. How to handle window handles?</h3>
+<p>Selenium&rsquo;s focus is on one window/tab at a time. To handle a new one, you must switch context.</p>
+<ol>
+<li>Get the handle of the original window: <code>String originalHandle = driver.getWindowHandle();</code></li>
+<li>Trigger the action that opens the new window.</li>
+<li>Get all handles: <code>Set&lt;String&gt; allHandles = driver.getWindowHandles();</code></li>
+<li>Loop through <code>allHandles</code> and find the one that is not <code>originalHandle</code>.</li>
+<li>Switch to it: <code>driver.switchTo().window(newHandle);</code></li>
+<li>When done, <code>driver.close()</code> the new window and <code>driver.switchTo().window(originalHandle);</code> back to the original.</li>
+</ol>
+<h3 id="7-how-to-handle-the-popup-or-alerts">7. How to handle the popup or alerts?</h3>
+<p>There are two kinds of &ldquo;popups&rdquo;.</p>
+<ol>
+<li>
+<p><strong>JavaScript Alerts:</strong> These are native browser popups created by <code>alert()</code>, <code>confirm()</code>, or <code>prompt()</code>. They block the UI. You must handle them using Selenium&rsquo;s <code>Alert</code> interface.</p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Switch to the alert</span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">Alert</span> <span style="color:#268bd2">alert</span> = <span style="color:#268bd2">driver</span>.<span style="color:#268bd2">switchTo</span>().<span style="color:#268bd2">alert</span>();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Get its text</span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">String</span> <span style="color:#268bd2">alertText</span> = <span style="color:#268bd2">alert</span>.<span style="color:#268bd2">getText</span>();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Accept it (click OK) or dismiss it (click Cancel/Escape)</span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">alert</span>.<span style="color:#268bd2">accept</span>();
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// or</span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">alert</span>.<span style="color:#268bd2">dismiss</span>();
+</span></span></code></pre></div></li>
+<li>
+<p><strong>HTML &ldquo;Popups&rdquo; (Modals):</strong> These are just <code>div</code> elements styled to look like popups. They are part of the page&rsquo;s HTML. You handle them just like any other web element: find their locators and click the close button or whatever other element you need to interact with.</p>
+</li>
+</ol>
+<h3 id="8-exception-handling">8. Exception handling?</h3>
+<p>In Java, it&rsquo;s done with a <code>try-catch-finally</code> block.</p>
+<ul>
+<li><code>try</code>: The block of code that might throw an exception.</li>
+<li><code>catch</code>: The block that executes if an exception of a specific type is thrown in the <code>try</code> block. You handle the error here (log it, report it).</li>
+<li><code>finally</code>: This block <strong>always</strong> executes, whether an exception occurred or not. It&rsquo;s critical for cleanup code, like <code>driver.quit()</code>.</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#268bd2">WebDriver</span> <span style="color:#268bd2">driver</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span><span style="color:#859900">try</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">driver</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">ChromeDriver</span>();
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Do some test stuff...</span>
+</span></span><span style="display:flex;"><span>} <span style="color:#859900">catch</span> (<span style="color:#268bd2">Exception</span> <span style="color:#268bd2">e</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Log the error, maybe take a screenshot</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>(<span style="color:#2aa198">&#34;Test failed: &#34;</span> + <span style="color:#268bd2">e</span>.<span style="color:#268bd2">getMessage</span>());
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">throw</span> <span style="color:#268bd2">e</span>; <span style="color:#93a1a1;font-style:italic">// Re-throw the exception to fail the test</span>
+</span></span><span style="display:flex;"><span>} <span style="color:#859900">finally</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">driver</span> != <span style="color:#859900;font-weight:bold">null</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">driver</span>.<span style="color:#268bd2">quit</span>(); <span style="color:#93a1a1;font-style:italic">// This MUST run to prevent hanging browser processes.</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="9-how-to-troubleshoot-the-exception">9. How to troubleshoot the exception?</h3>
+<p>A systematic approach:</p>
+<ol>
+<li><strong>Read the Stack Trace:</strong> Don&rsquo;t just read the exception name (<code>NullPointerException</code>). Read the whole trace. The most important lines are usually the first few and the ones that mention your own code (<code>com.myproject...</code>). This tells you <em>where</em> the error happened.</li>
+<li><strong>Identify the Exception Type:</strong> What kind of exception is it?
+<ul>
+<li><code>NoSuchElementException</code>: Your locator is wrong or you have a timing issue.</li>
+<li><code>NullPointerException</code>: An object was <code>null</code> when you tried to use it. Why was it null? Did a previous method fail to initialize it?</li>
+<li><code>StaleElementReferenceException</code>: The DOM changed. You need to re-find the element.</li>
+</ul>
+</li>
+<li><strong>Analyze the Context:</strong> What was the test trying to do right before it failed? Look at the application state.</li>
+<li><strong>Reproduce It:</strong> Try to run the test again. If it fails consistently, it&rsquo;s a solid bug. If it&rsquo;s flaky, it&rsquo;s almost certainly a timing issue.</li>
+<li><strong>Use Debugging Tools:</strong> Set a breakpoint just before the line that throws the exception and inspect the state of all variables. Check if the element is actually present and visible in the browser at that exact moment.</li>
+</ol>
+<h3 id="10-what-is-bdd">10. What is BDD?</h3>
+<p>Behavior-Driven Development. It&rsquo;s an extension of TDD that focuses on defining application behavior in plain, human-readable language from a user&rsquo;s perspective.</p>
+<ul>
+<li><strong>Tool:</strong> Cucumber is the most common BDD tool in the Java world.</li>
+<li><strong>Language:</strong> Gherkin (<code>Given-When-Then</code> syntax) is used to write &ldquo;feature files.&rdquo;</li>
+<li><strong>Goal:</strong> To improve communication between developers, QAs, and business stakeholders. The feature files act as living documentation and acceptance criteria.</li>
+</ul>
+<h3 id="11-how-do-you-handle-version-issues-what-approach-you-will-handle-to-resolve">11. How do you handle version issues, what approach you will handle to resolve?</h3>
+<p>This usually means dependency management issues. The only correct answer is <strong>Maven</strong> (or Gradle).</p>
+<ul>
+<li><strong>The Problem:</strong> Manually managing JAR files is a nightmare. You get conflicts (e.g., Library A needs <code>guava-18.0</code> but Library B needs <code>guava-23.0</code>). This is &ldquo;JAR Hell.&rdquo;</li>
+<li><strong>The Solution:</strong> Maven&rsquo;s <code>pom.xml</code> centralizes all dependency declarations.
+<ul>
+<li><strong>Dependency Declaration:</strong> You specify the libraries and versions you need in the <code>&lt;dependencies&gt;</code> section.</li>
+<li><strong>Transitive Dependencies:</strong> Maven automatically downloads the dependencies <em>of your dependencies</em>.</li>
+<li><strong>Dependency Mediation:</strong> If there&rsquo;s a version conflict, Maven has a &ldquo;nearest definition&rdquo; strategy: it chooses the version closest to your project in the dependency tree.</li>
+<li><strong>Troubleshooting:</strong> You can use the <code>mvn dependency:tree</code> command to visualize the entire dependency tree and identify where conflicting versions are coming from. You can then use the <code>&lt;dependencyManagement&gt;</code> section in your POM to explicitly force a specific version of a library to be used everywhere.</li>
+</ul>
+</li>
+</ul>
+<h3 id="12-what-is-constructor-why-do-we-need-a-constructor-for-our-project-give-example">12. What is Constructor? Why do we need a constructor for our project? Give example.</h3>
+<p>A constructor is a special method that is called when an object is created (<code>new</code>). Its job is to initialize the state of the object. It has the same name as the class and has no return type.</p>
+<p><strong>Why we need it:</strong> To ensure an object is created in a valid and usable state.</p>
+<p><strong>Example in a test framework (Page Object Model):</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900">class</span> <span style="color:#cb4b16">LoginPage</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">private</span> <span style="color:#268bd2">WebDriver</span> <span style="color:#268bd2">driver</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">private</span> <span style="color:#268bd2">By</span> <span style="color:#268bd2">usernameField</span> = <span style="color:#268bd2">By</span>.<span style="color:#268bd2">id</span>(<span style="color:#2aa198">&#34;username&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Constructor: ensures that LoginPage always has a WebDriver instance to work with.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">LoginPage</span>(<span style="color:#268bd2">WebDriver</span> <span style="color:#268bd2">driver</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">driver</span> == <span style="color:#859900;font-weight:bold">null</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">throw</span> <span style="color:#859900">new</span> <span style="color:#268bd2">IllegalArgumentException</span>(<span style="color:#2aa198">&#34;Driver cannot be null&#34;</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">driver</span> = <span style="color:#268bd2">driver</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">enterUsername</span>(<span style="color:#268bd2">String</span> <span style="color:#268bd2">username</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// The &#39;driver&#39; object is guaranteed to be non-null here because of the constructor.</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">driver</span>.<span style="color:#268bd2">findElement</span>(<span style="color:#268bd2">usernameField</span>).<span style="color:#268bd2">sendKeys</span>(<span style="color:#268bd2">username</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Without the constructor, the <code>driver</code> would be <code>null</code>, and <code>enterUsername()</code> would throw a <code>NullPointerException</code>.</p>
+<h3 id="13-what-is-ortho-response">13. What is Ortho Response?</h3>
+<p>This is likely a misinterpretation or a niche term. The interviewer probably meant <strong>Idempotent</strong> or something related to API responses. If you hear a term you don&rsquo;t know, ask for clarification: &ldquo;I haven&rsquo;t heard that specific term before, could you spell it out or describe what it means?&rdquo;</p>
+<p>If they mean <strong>idempotent response</strong>, it&rsquo;s an operation that can be applied multiple times without changing the result beyond the initial application. <code>GET</code>, <code>PUT</code>, and <code>DELETE</code> requests should be idempotent. <code>POST</code> is not.</p>
+<h3 id="14-505-200-404-">14. 505, 200, 404, ?</h3>
+<p>Standard HTTP status codes.</p>
+<ul>
+<li><code>200 OK</code>: Success.</li>
+<li><code>404 Not Found</code>: The requested resource does not exist.</li>
+<li><code>505 HTTP Version Not Supported</code>: The server does not support the HTTP protocol version used in the request. This is very rare to see.</li>
+</ul>
+<h3 id="15-diff-bet-final-finally-and-finalize-in-java">15. Diff bet final, finally and finalize in Java?</h3>
+<p>A classic Java question to trip people up.</p>
+<ul>
+<li><strong><code>final</code> (keyword):</strong> A modifier to make something unchangeable.
+<ul>
+<li><code>final</code> variable: A constant.</li>
+<li><code>final</code> method: Cannot be overridden.</li>
+<li><code>final</code> class: Cannot be extended (<code>String</code> is a final class).</li>
+</ul>
+</li>
+<li><strong><code>finally</code> (block):</strong> Part of a <code>try-catch</code> statement. This block of code is <strong>always</strong> executed, regardless of whether an exception was thrown. It&rsquo;s used for resource cleanup (<code>driver.quit()</code>).</li>
+<li><strong><code>finalize()</code> (method):</strong> A method from the <code>Object</code> class that the garbage collector calls before destroying an object. <strong>You should never use this.</strong> It&rsquo;s deprecated and unreliable. Using a <code>finally</code> block is the correct way to manage resources.</li>
+</ul>
+<h3 id="16-can-we-change-the-variable-once-it-declare-final">16. Can we change the variable once it declare final?</h3>
+<p>No. That&rsquo;s the entire point of <code>final</code>.</p>
+<h3 id="17-is-final-can-be-overridden">17. Is Final can be overridden?</h3>
+<p>A <code>final</code> <strong>method</strong> cannot be overridden.
+A <code>final</code> <strong>class</strong> cannot be extended, so the concept of overriding doesn&rsquo;t even apply.</p>
+<h3 id="18-multiple-inheritance">18. Multiple Inheritance?</h3>
+<p>Java classes do <strong>not</strong> support multiple inheritance (a class cannot <code>extend</code> more than one other class). This is to avoid the &ldquo;Diamond Problem&rdquo; where a class inherits two different implementations of the same method.</p>
+<p>Java <strong>does</strong> support a form of multiple inheritance through <strong>interfaces</strong>. A class can <code>implement</code> multiple interfaces, inheriting their abstract methods and default method implementations.</p>
+<h3 id="19-collections--diff-between-list-set-and-map">19. Collections ? Diff between list, set and map?</h3>
+<ul>
+<li><strong><code>List</code>:</strong> An ordered collection of elements, allows duplicates. Access by index. <code>ArrayList</code>, <code>LinkedList</code>.</li>
+<li><strong><code>Set</code>:</strong> An unordered collection of unique elements. No duplicates. <code>HashSet</code>, <code>LinkedHashSet</code>.</li>
+<li><strong><code>Map</code>:</strong> A collection of key-value pairs. Keys must be unique. <code>HashMap</code>, <code>LinkedHashMap</code>.</li>
+</ul>
+<p><code>List</code> and <code>Set</code> implement the <code>Collection</code> interface. <code>Map</code> does not.</p>
+<h3 id="20-what-is-429-response-code">20. What is 429 response code?</h3>
+<p><code>429 Too Many Requests</code>. The client is being rate-limited. You have sent too many requests in a given period, and the server is telling you to slow down. The response headers often include a <code>Retry-After</code> header indicating how long to wait before trying again.</p>
+<h3 id="21-how-you-validate-the-request-methods-in-api">21. How you validate the request methods in API?</h3>
+<p>This question is a bit ambiguous. It could mean:</p>
+<ol>
+<li>
+<p><strong>How do you test the behavior of different HTTP methods?</strong></p>
+<ul>
+<li><strong>GET:</strong> Assert the status code is <code>200 OK</code> and the response body contains the expected data.</li>
+<li><strong>POST:</strong> Assert the status code is <code>201 Created</code>, and optionally hit the returned <code>Location</code> URL to verify the new resource exists.</li>
+<li><strong>PUT:</strong> Assert status code is <code>200 OK</code>. Then, do a <code>GET</code> request for that resource and assert the entire object was updated.</li>
+<li><strong>DELETE:</strong> Assert status code is <code>204 No Content</code>. Then, do a <code>GET</code> request for that resource and assert you get a <code>404 Not Found</code>.</li>
+</ul>
+</li>
+<li>
+<p><strong>How do you validate that an endpoint only allows certain methods?</strong></p>
+<ul>
+<li>Send a non-supported method and assert the right error code. For example, if an endpoint <code>GET /users</code> should not support <code>POST</code>, send a <code>POST</code> request to it and assert that the status code is <code>405 Method Not Allowed</code>.</li>
+</ul>
+</li>
+</ol>
+<h3 id="22-pom--page-factory">22. POM ? Page Factory?</h3>
+<ul>
+<li>
+<p><strong>POM (Page Object Model):</strong> A design pattern, not a tool. It&rsquo;s the concept of creating one class per page (or component) of your application. This class is responsible for encapsulating the locators and interaction methods for that page. It makes tests cleaner and more maintainable.</p>
+</li>
+<li>
+<p><strong>Page Factory:</strong> A specific implementation of the POM concept provided by Selenium. It uses annotations (<code>@FindBy</code>) to define locators and a static <code>initElements</code> method to initialize the <code>WebElement</code> fields in your page object class.</p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900">class</span> <span style="color:#cb4b16">LoginPage</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">@FindBy</span>(<span style="color:#268bd2">id</span> = <span style="color:#2aa198">&#34;username&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">private</span> <span style="color:#268bd2">WebElement</span> <span style="color:#268bd2">usernameField</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">@FindBy</span>(<span style="color:#268bd2">id</span> = <span style="color:#2aa198">&#34;password&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">private</span> <span style="color:#268bd2">WebElement</span> <span style="color:#268bd2">passwordField</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">LoginPage</span>(<span style="color:#268bd2">WebDriver</span> <span style="color:#268bd2">driver</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// PageFactory initializes the @FindBy elements</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">PageFactory</span>.<span style="color:#268bd2">initElements</span>(<span style="color:#268bd2">driver</span>, <span style="color:#859900">this</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div></li>
+</ul>
+<blockquote>
+<p><strong>Modern View:</strong> Many experienced engineers now advise <strong>against</strong> using Page Factory. It can be less efficient (elements are located every time they&rsquo;re used) and can hide <code>StaleElementReferenceException</code>s by re-finding the element, which can mask underlying timing issues in your tests. A plain POM class where you use <code>driver.findElement()</code> inside your methods is often more robust and easier to debug.</p>
+</blockquote>
+<hr>
+<h2 id="original-questions-untouched-1">Original Questions (UNTOUCHED)</h2>
+<h2 id="infosys-interview-questions---round-1">Infosys Interview Questions - (Round 1)</h2>
+<ol>
+<li>Self Intro</li>
+<li>Project Explanation and Frameworks and Tools Used in ur Previous Project?</li>
+<li>How do you validate the Broken Links Rest Assured using Automation?</li>
+<li>What are all the methods in Rest Assured?</li>
+<li>What is GET method does?</li>
+<li>What is Diff between Put and Post?</li>
+<li>What are the dependencies you use for Rest Assured?</li>
+<li>Write Get Request by using payload? In Which dependency .given().when() is coming?</li>
+<li>Diff between findElement() and findElements() ?</li>
+<li>Write Program
+String str = &quot; java is &amp;%#@!GoodABCD1234&quot;;
+Print How many character, Numbers and Special Character.</li>
+<li>Diff between StringBuffer and StringBuilder?</li>
+<li>Is it possible to change the string Variable once it assigned?</li>
+<li>Where did you execute the Script in Your Project?</li>
+<li>How do you configure Jenkins with Github?</li>
+<li>Diff between Abstraction and Encapsulation? Tell me the major/Common diff especially for users.</li>
+<li>How do we get data from POJO classes?</li>
+<li>Write pojo class for Username and password?</li>
+<li>Diff between This and Super ?</li>
+<li>How to Click a Button in the Child window from parent window?</li>
+<li>Scenario Based Question&quot;
+<ol>
+<li>There is 5 Test Boxes, Which have same Properties, values, Names, ancor tag, everything is same. How do find the Odd one?</li>
+<li>Explain Dynamic Xpath? what is its aspects?</li>
+</ol>
+</li>
+<li>Diff Between Relative and Absolute Xpath?</li>
+</ol>
+<hr>
+<h2 id="answers-no-bs-java-qa--sdet-explanations-1">Answers (No-BS Java QA / SDET Explanations)</h2>
+<h3 id="1-self-intro">1. Self Intro</h3>
+<p>Standard.</p>
+<h3 id="2-project-explanation-and-frameworks-and-tools-used-in-ur-previous-project">2. Project Explanation and Frameworks and Tools Used in ur Previous Project?</h3>
+<p>Standard. Be specific about tools and your role.</p>
+<h3 id="3-how-do-you-validate-the-broken-links-rest-assured-using-automation">3. How do you validate the Broken Links Rest Assured using Automation?</h3>
+<p>You don&rsquo;t use REST-assured for this. REST-assured is for testing APIs. You find broken links on a web page using Selenium.</p>
+<p><strong>The process:</strong></p>
+<ol>
+<li>Use Selenium to find all <code>&lt;a&gt;</code> tags on the page: <code>driver.findElements(By.tagName(&quot;a&quot;))</code>.</li>
+<li>Iterate through the list of <code>WebElement</code>s.</li>
+<li>For each element, get the <code>href</code> attribute.</li>
+<li>If the <code>href</code> is not null and not empty, use a standard Java HTTP client (like <code>HttpURLConnection</code> or Apache <code>HttpClient</code>) to send a <code>HEAD</code> or <code>GET</code> request to that URL. <strong>Do not use Selenium to <code>navigate()</code> to each link</strong>, that would be incredibly slow.</li>
+<li>Check the HTTP response code. Anything <code>400</code> or greater is a broken link.</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Simplified example</span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">List</span>&lt;<span style="color:#268bd2">WebElement</span>&gt; <span style="color:#268bd2">links</span> = <span style="color:#268bd2">driver</span>.<span style="color:#268bd2">findElements</span>(<span style="color:#268bd2">By</span>.<span style="color:#268bd2">tagName</span>(<span style="color:#2aa198">&#34;a&#34;</span>));
+</span></span><span style="display:flex;"><span><span style="color:#859900">for</span> (<span style="color:#268bd2">WebElement</span> <span style="color:#268bd2">link</span> : <span style="color:#268bd2">links</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">String</span> <span style="color:#268bd2">url</span> = <span style="color:#268bd2">link</span>.<span style="color:#268bd2">getAttribute</span>(<span style="color:#2aa198">&#34;href&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">url</span> != <span style="color:#859900;font-weight:bold">null</span> &amp;&amp; !<span style="color:#268bd2">url</span>.<span style="color:#268bd2">isEmpty</span>()) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">try</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">HttpURLConnection</span> <span style="color:#268bd2">connection</span> = (<span style="color:#268bd2">HttpURLConnection</span>) <span style="color:#859900">new</span> <span style="color:#268bd2">URL</span>(<span style="color:#268bd2">url</span>).<span style="color:#268bd2">openConnection</span>();
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">connection</span>.<span style="color:#268bd2">setRequestMethod</span>(<span style="color:#2aa198">&#34;HEAD&#34;</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">connection</span>.<span style="color:#268bd2">connect</span>();
+</span></span><span style="display:flex;"><span>            <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">responseCode</span> = <span style="color:#268bd2">connection</span>.<span style="color:#268bd2">getResponseCode</span>();
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">responseCode</span> &gt;= <span style="color:#268bd2">400</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>(<span style="color:#2aa198">&#34;Broken link: &#34;</span> + <span style="color:#268bd2">url</span> + <span style="color:#2aa198">&#34; - Response code: &#34;</span> + <span style="color:#268bd2">responseCode</span>);
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">catch</span> (<span style="color:#268bd2">IOException</span> <span style="color:#268bd2">e</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>(<span style="color:#2aa198">&#34;Error checking link: &#34;</span> + <span style="color:#268bd2">url</span> + <span style="color:#2aa198">&#34; - &#34;</span> + <span style="color:#268bd2">e</span>.<span style="color:#268bd2">getMessage</span>());
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="4-what-are-all-the-methods-in-rest-assured">4. What are all the methods in Rest Assured?</h3>
+<p>REST-assured uses a fluent, BDD-style syntax. The main &ldquo;methods&rdquo; are chained parts of this syntax.</p>
+<ul>
+<li><code>given()</code>: Where you set up the request (headers, cookies, body, auth).</li>
+<li><code>when()</code>: Where you specify the HTTP method (<code>get()</code>, <code>post()</code>, <code>put()</code>, <code>delete()</code>) and the endpoint URL.</li>
+<li><code>then()</code>: Where you perform assertions on the response (status code, body content, headers).</li>
+<li><code>log()</code>: For logging details of the request or response.</li>
+<li><code>extract()</code>: To extract values from the response for further use.</li>
+</ul>
+<h3 id="5-what-is-get-method-does">5. What is GET method does?</h3>
+<p>Retrieves a resource from the server. It&rsquo;s safe and idempotent.</p>
+<h3 id="6-what-is-diff-between-put-and-post">6. What is Diff between Put and Post?</h3>
+<ul>
+<li><strong>POST:</strong> Creates a new resource. Not idempotent.</li>
+<li><strong>PUT:</strong> Updates an existing resource <em>completely</em>. Is idempotent. You send the full representation of the resource.</li>
+</ul>
+<h3 id="7-what-are-the-dependencies-you-use-for-rest-assured">7. What are the dependencies you use for Rest Assured?</h3>
+<p>You need at least these in your <code>pom.xml</code>:</p>
+<ol>
+<li><strong><code>rest-assured</code></strong>: The core library.</li>
+<li><strong><code>json-path</code></strong>: For parsing JSON responses using JSONPath expressions.</li>
+<li><strong><code>xml-path</code></strong>: For parsing XML responses.</li>
+<li><strong><code>gson</code> or <code>jackson-databind</code></strong>: A JSON serialization/deserialization library. REST-assured uses one of these to automatically convert your POJOs to/from JSON. Jackson is more common.</li>
+<li><strong>A testing framework</strong>: <code>testng</code> or <code>junit</code>.</li>
+</ol>
+<h3 id="8-write-get-request-by-using-payload-in-which-dependency-givenwhen-is-coming">8. Write Get Request by using payload? In Which dependency .given().when() is coming?</h3>
+<p><code>GET</code> requests should <strong>not</strong> have a payload (body). This is a trick question. The HTTP spec says a body on a GET has no defined semantics and some servers will reject it. If you need to send parameters, you use query parameters in the URL.</p>
+<p>The <code>.given().when()</code> syntax comes from the main <strong><code>rest-assured</code></strong> dependency.</p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import static</span> <span style="color:#268bd2">io.restassured.RestAssured.*</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Correct GET with query parameters, NO payload</span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">given</span>()
+</span></span><span style="display:flex;"><span>    .<span style="color:#268bd2">baseUri</span>(<span style="color:#2aa198">&#34;https://api.example.com&#34;</span>)
+</span></span><span style="display:flex;"><span>    .<span style="color:#268bd2">param</span>(<span style="color:#2aa198">&#34;userId&#34;</span>, <span style="color:#2aa198">&#34;123&#34;</span>)
+</span></span><span style="display:flex;"><span>.<span style="color:#268bd2">when</span>()
+</span></span><span style="display:flex;"><span>    .<span style="color:#268bd2">get</span>(<span style="color:#2aa198">&#34;/user&#34;</span>)
+</span></span><span style="display:flex;"><span>.<span style="color:#268bd2">then</span>()
+</span></span><span style="display:flex;"><span>    .<span style="color:#268bd2">statusCode</span>(<span style="color:#268bd2">200</span>);
+</span></span></code></pre></div><h3 id="9-diff-between-findelement-and-findelements-">9. Diff between findElement() and findElements() ?</h3>
+<ul>
+<li>
+<p><strong><code>findElement(By locator)</code>:</strong></p>
+<ul>
+<li>Finds the <strong>first</strong> matching element on the page.</li>
+<li><strong>Return type:</strong> <code>WebElement</code>.</li>
+<li><strong>If no element is found:</strong> Throws a <code>NoSuchElementException</code>.</li>
+</ul>
+</li>
+<li>
+<p><strong><code>findElements(By locator)</code>:</strong></p>
+<ul>
+<li>Finds <strong>all</strong> matching elements on the page.</li>
+<li><strong>Return type:</strong> <code>List&lt;WebElement&gt;</code>.</li>
+<li><strong>If no elements are found:</strong> Returns an <strong>empty list</strong>. It does <strong>not</strong> throw an exception. This is useful for checking if an element exists without using a <code>try-catch</code> block (<code>driver.findElements(locator).isEmpty()</code>).</li>
+</ul>
+</li>
+</ul>
+<h3 id="10-write-program-string-str---java-is-goodabcd1234-print-how-many-character-numbers-and-special-character">10. Write Program String str = &quot; java is &amp;%#@!GoodABCD1234&quot;; Print How many character, Numbers and Special Character.</h3>
+<p>Iterate through the string and use <code>Character</code> class helper methods.</p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">countCharTypes</span>(<span style="color:#268bd2">String</span> <span style="color:#268bd2">str</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">letters</span> = <span style="color:#268bd2">0</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">numbers</span> = <span style="color:#268bd2">0</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">spaces</span> = <span style="color:#268bd2">0</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">specials</span> = <span style="color:#268bd2">0</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">char</span> <span style="color:#268bd2">c</span> : <span style="color:#268bd2">str</span>.<span style="color:#268bd2">toCharArray</span>()) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">Character</span>.<span style="color:#268bd2">isLetter</span>(<span style="color:#268bd2">c</span>)) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">letters</span>++;
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> <span style="color:#859900">if</span> (<span style="color:#268bd2">Character</span>.<span style="color:#268bd2">isDigit</span>(<span style="color:#268bd2">c</span>)) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">numbers</span>++;
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> <span style="color:#859900">if</span> (<span style="color:#268bd2">Character</span>.<span style="color:#268bd2">isWhitespace</span>(<span style="color:#268bd2">c</span>)) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">spaces</span>++;
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">specials</span>++;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>(<span style="color:#2aa198">&#34;Letters: &#34;</span> + <span style="color:#268bd2">letters</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>(<span style="color:#2aa198">&#34;Numbers: &#34;</span> + <span style="color:#268bd2">numbers</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>(<span style="color:#2aa198">&#34;Spaces: &#34;</span> + <span style="color:#268bd2">spaces</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>(<span style="color:#2aa198">&#34;Specials: &#34;</span> + <span style="color:#268bd2">specials</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="11-diff-between-stringbuffer-and-stringbuilder">11. Diff between StringBuffer and StringBuilder?</h3>
+<p>Both are mutable string classes.</p>
+<ul>
+<li><strong><code>StringBuilder</code>:</strong> Not thread-safe (not synchronized). It&rsquo;s faster. This is the one you should use by default for any single-threaded string manipulation.</li>
+<li><strong><code>StringBuffer</code>:</strong> Thread-safe (its methods are synchronized). This makes it slower due to the overhead of locking. You should only use it if you are sharing and modifying a string across multiple threads, which is a very rare scenario.</li>
+</ul>
+<h3 id="12-is-it-possible-to-change-the-string-variable-once-it-assigned">12. Is it possible to change the string Variable once it assigned?</h3>
+<p>You can change what a <code>String</code> reference variable points to, but you cannot change the <code>String</code> object itself. Strings are immutable.</p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#268bd2">String</span> <span style="color:#268bd2">s</span> = <span style="color:#2aa198">&#34;hello&#34;</span>; <span style="color:#93a1a1;font-style:italic">// s points to &#34;hello&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">s</span> = <span style="color:#2aa198">&#34;world&#34;</span>;        <span style="color:#93a1a1;font-style:italic">// s now points to a *new* string object &#34;world&#34;.</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#93a1a1;font-style:italic">// The original &#34;hello&#34; object is unchanged.</span>
+</span></span></code></pre></div><h3 id="13-where-did-you-execute-the-script-in-your-project">13. Where did you execute the Script in Your Project?</h3>
+<p>This is a CI/CD question.
+&ldquo;We executed our scripts in multiple environments:</p>
+<ol>
+<li><strong>Locally:</strong> On our own machines during development and debugging of new tests.</li>
+<li><strong>CI/CD Pipeline (Jenkins):</strong> This was the main execution environment. On every code commit, Jenkins would pull the latest code, build the project with Maven, and run the entire regression suite (<code>mvn test</code>) on a Selenium Grid.</li>
+<li><strong>Staging Environment:</strong> We had a dedicated nightly run against the staging environment to catch issues before a release.</li>
+<li><strong>Production (Smoke Tests):</strong> A small subset of critical smoke tests were run against the production environment immediately after a deployment to ensure the core functionality was up.&rdquo;</li>
+</ol>
+<h3 id="14-how-do-you-configure-jenkins-with-github">14. How do you configure Jenkins with Github?</h3>
+<p>You use a <strong>webhook</strong>.</p>
+<ol>
+<li><strong>In GitHub:</strong> Go to your repository settings -&gt; Webhooks. Add a new webhook. The &ldquo;Payload URL&rdquo; will be <code>http://&lt;your-jenkins-server&gt;/github-webhook/</code>. Set the content type to <code>application/json</code>. Choose which events should trigger the webhook (e.g., &ldquo;Just the <code>push</code> event&rdquo;).</li>
+<li><strong>In Jenkins:</strong>
+<ul>
+<li>Create a new pipeline job.</li>
+<li>In the &ldquo;Build Triggers&rdquo; section, check &ldquo;GitHub hook trigger for GITScm polling&rdquo;.</li>
+<li>In the &ldquo;Pipeline&rdquo; section, configure the source to be &ldquo;Pipeline script from SCM&rdquo;.</li>
+<li>Set the SCM to &ldquo;Git&rdquo; and provide your repository URL.</li>
+<li>This tells Jenkins to look for a <code>Jenkinsfile</code> in your repository.</li>
+</ul>
+</li>
+<li><strong><code>Jenkinsfile</code>:</strong> You create a file named <code>Jenkinsfile</code> in the root of your Git repository. This file defines your build pipeline in code.</li>
+</ol>
+<p>Now, when you <code>git push</code> to your repository, GitHub sends a notification to the webhook URL, which tells Jenkins to wake up, pull the code, and run the pipeline defined in your <code>Jenkinsfile</code>.</p>
+<h3 id="15-diff-between-abstraction-and-encapsulation-tell-me-the-majorcommon-diff-especially-for-users">15. Diff between Abstraction and Encapsulation? Tell me the major/Common diff especially for users.</h3>
+<ul>
+<li><strong>Encapsulation:</strong> About <strong>hiding complexity</strong>. It bundles data and methods together and protects the internal state from outside interference. The &ldquo;user&rdquo; of the class only sees the public methods. <strong>Think:</strong> A car&rsquo;s dashboard. You see the speedometer and steering wheel, you don&rsquo;t see the engine wiring.</li>
+<li><strong>Abstraction:</strong> About <strong>hiding implementation</strong>. It shows <em>what</em> an object does, but not <em>how</em> it does it. <strong>Think:</strong> The steering wheel itself. You know turning it left turns the car left, you don&rsquo;t need to know if it&rsquo;s rack-and-pinion or power steering. The <code>WebDriver</code> interface is the perfect example.</li>
+</ul>
+<p><strong>The simplest difference:</strong> Encapsulation hides data and internal workings. Abstraction hides the &ldquo;how&rdquo;.</p>
+<h3 id="16-how-do-we-get-data-from-pojo-classes">16. How do we get data from POJO classes?</h3>
+<p>You use <strong>getter</strong> methods. A POJO (Plain Old Java Object) encapsulates its fields by making them <code>private</code> and provides <code>public</code> getter and setter methods to access them.</p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#268bd2">User</span> <span style="color:#268bd2">user</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">User</span>(<span style="color:#2aa198">&#34;test&#34;</span>, <span style="color:#2aa198">&#34;pass&#34;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">String</span> <span style="color:#268bd2">username</span> = <span style="color:#268bd2">user</span>.<span style="color:#268bd2">getUsername</span>(); <span style="color:#93a1a1;font-style:italic">// Using the getter</span>
+</span></span></code></pre></div><h3 id="17-write-pojo-class-for-username-and-password">17. Write pojo class for Username and password?</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900">class</span> <span style="color:#cb4b16">User</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Private fields to encapsulate data</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">private</span> <span style="color:#268bd2">String</span> <span style="color:#268bd2">username</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">private</span> <span style="color:#268bd2">String</span> <span style="color:#268bd2">password</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// A no-arg constructor is often needed for libraries like Jackson</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">User</span>() {
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// A constructor to initialize the object</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">User</span>(<span style="color:#268bd2">String</span> <span style="color:#268bd2">username</span>, <span style="color:#268bd2">String</span> <span style="color:#268bd2">password</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">username</span> = <span style="color:#268bd2">username</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">password</span> = <span style="color:#268bd2">password</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Public getter for username</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">String</span> <span style="color:#268bd2">getUsername</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">username</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Public setter for username</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">setUsername</span>(<span style="color:#268bd2">String</span> <span style="color:#268bd2">username</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">username</span> = <span style="color:#268bd2">username</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Public getter for password</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">String</span> <span style="color:#268bd2">getPassword</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">password</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Public setter for password</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">setPassword</span>(<span style="color:#268bd2">String</span> <span style="color:#268bd2">password</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">password</span> = <span style="color:#268bd2">password</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="18-diff-between-this-and-super-">18. Diff between This and Super ?</h3>
+<p>Both are keywords used within a class.</p>
+<ul>
+<li>
+<p><strong><code>this</code>:</strong> Refers to the <strong>current instance</strong> of the class.</p>
+<ul>
+<li>Used to disambiguate between instance variables and local variables: <code>this.username = username;</code>.</li>
+<li>Used to call another constructor from within a constructor: <code>this(&quot;defaultUser&quot;);</code>.</li>
+</ul>
+</li>
+<li>
+<p><strong><code>super</code>:</strong> Refers to the <strong>parent class</strong> (superclass).</p>
+<ul>
+<li>Used to call the parent class&rsquo;s constructor: <code>super(driver);</code>. This must be the first line in a child class&rsquo;s constructor.</li>
+<li>Used to call a parent class&rsquo;s method if you&rsquo;ve overridden it: <code>super.verifyPageLoad();</code>.</li>
+</ul>
+</li>
+</ul>
+<h3 id="19-how-to-click-a-button-in-the-child-window-from-parent-window">19. How to Click a Button in the Child window from parent window?</h3>
+<p>You can&rsquo;t. Selenium&rsquo;s context is tied to a single window at a time. You must first <strong>switch the driver&rsquo;s context</strong> to the child window, and <em>then</em> you can find and click the button. See the answer to question 6 on window handling.</p>
+<h3 id="20-scenario-based-question">20. Scenario Based Question</h3>
+<h4 id="1-there-is-5-test-boxes-which-have-same-properties-values-names-ancor-tag-everything-is-same-how-do-find-the-odd-one">1. There is 5 Test Boxes, Which have same Properties, values, Names, ancor tag, everything is same. How do find the Odd one?</h4>
+<p>If all attributes are identical, you cannot distinguish them with a static locator. There must be something different.</p>
+<ul>
+<li><strong>Position:</strong> The most likely answer. You can get all of them with <code>findElements</code> and then select one by its index. <code>driver.findElements(By.xpath(&quot;//input[@class='same']&quot;)).get(2)</code> would get the third one.</li>
+<li><strong>Surrounding Text:</strong> Is there a unique label next to one of them? You could use XPath axes: <code>//label[text()='Unique Label']/following-sibling::input</code>.</li>
+<li><strong>Hidden Attribute:</strong> Use the browser&rsquo;s developer tools to inspect everything. There might be a hidden attribute or a difference in the computed CSS properties that you can&rsquo;t see on the surface.</li>
+</ul>
+<p>If they are truly, 100% identical in every way, then from a user&rsquo;s perspective, they are indistinguishable. This would be a UI design bug.</p>
+<h4 id="2-explain-dynamic-xpath-what-is-its-aspects">2. Explain Dynamic Xpath? what is its aspects?</h4>
+<p>A dynamic XPath is a locator strategy you use when element attributes (like <code>id</code>) are not static. Instead of relying on an exact match, you use XPath functions and axes to build a locator based on stable relationships.</p>
+<p><strong>The &ldquo;aspects&rdquo; or techniques are:</strong></p>
+<ul>
+<li><strong>Functions:</strong> <code>contains()</code>, <code>starts-with()</code>, <code>text()</code>.
+<ul>
+<li><code>//button[contains(@id, 'submit-btn-')]</code></li>
+</ul>
+</li>
+<li><strong>Axes:</strong> <code>ancestor</code>, <code>parent</code>, <code>following-sibling</code>, <code>preceding-sibling</code>.
+<ul>
+<li><code>//h2[text()='Login']/parent::div//button</code> (Find the button that is a descendant of the div that is the parent of the h2 with the text &lsquo;Login&rsquo;).</li>
+</ul>
+</li>
+<li><strong>Logical Operators:</strong> <code>and</code>, <code>or</code>.
+<ul>
+<li><code>//input[@type='text' and @name='username']</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="21-diff-between-relative-and-absolute-xpath">21. Diff Between Relative and Absolute Xpath?</h3>
+<ul>
+<li>
+<p><strong>Absolute XPath:</strong> Starts from the root of the HTML document (<code>/html</code>). It&rsquo;s a full path to the element.</p>
+<ul>
+<li>Example: <code>/html/body/div[1]/section/div[2]/form/input[1]</code></li>
+<li><strong>Why it&rsquo;s bad:</strong> Extremely brittle. If any element in that long path changes (e.g., a developer adds a new <code>div</code>), the XPath breaks. <strong>You should never use absolute XPaths.</strong></li>
+</ul>
+</li>
+<li>
+<p><strong>Relative XPath:</strong> Starts from a known, stable element, or anywhere in the document using <code>//</code>. It&rsquo;s relative to the current context.</p>
+<ul>
+<li>Example: <code>//input[@id='username']</code></li>
+<li><strong>Why it&rsquo;s good:</strong> It&rsquo;s shorter, more readable, and much more resilient to changes in the page structure. It only depends on the element itself or a nearby stable element, not the entire DOM tree.</li>
+</ul>
+</li>
+</ul>
+
+    </div>
+</article>
+
+<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
+    
+    <a href="//localhost:1315/12_company_based_questions/infosys/round-2/" class="nav-btn">← Previous</a>
+    
+    
+    <a href="//localhost:1315/12_company_based_questions/infosys/" class="nav-btn">Up</a>
+
+    
+    <span></span>
+    
+</div>
+
+    </main>
+
+    <footer class="footer">
+        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
+    </footer>
+</body>
+</html>

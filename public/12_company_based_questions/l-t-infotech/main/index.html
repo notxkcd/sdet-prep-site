@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1315&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>L &amp; T Infotech | SDET Interview Preparation Kit</title>
+    <link rel="stylesheet" href="//localhost:1315/css/style.css">
+    
+    
+    <link rel="stylesheet" href="//localhost:1315/lib/katex/katex.min.css">
+    <script defer src="//localhost:1315/lib/katex/katex.min.js"></script>
+    <script defer src="//localhost:1315/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="/">Index</a></li>
+                
+            </ul>
+        </nav>
+        <div class="site-breadcrumb">
+            <a href="/">Home</a>
+            
+            
+            
+
+            
+            
+                <span>/</span> L &amp; T Infotech
+            
+        </div>
+    </header>
+
+    <main>
+        
+<article>
+    <div class="category-title" style="margin-bottom: 0.5rem;">L T Infotech Interview Questions</div>
+    <h1>L &amp; T Infotech</h1>
+    <div class="content-body" style="margin-top: 2rem;">
+        <hr>
+<h2 id="original-questions-untouched">Original Questions (UNTOUCHED)</h2>
+<p>L &amp; T Infotech Interview Question :</p>
+<p>write a program to reverse a string?
+bug and defect difference
+oops concept
+bdd framework
+explain cucumber framework
+scenario outline
+defect leakage
+write all git commands for uploading a file
+regression testing and retesting
+boundary value analysis and equivalence partitioning
+what is rtm?
+what to do in test plan?
+what is in feature file?
+framework explanation</p>
+<hr>
+<h2 id="answers-no-bs-java-qa--sdet-explanations">Answers (No-BS Java QA / SDET Explanations)</h2>
+<h3 id="write-a-program-to-reverse-a-string">write a program to reverse a string?</h3>
+<p>The clean, modern way uses <code>StringBuilder</code>. Don&rsquo;t write a manual <code>for</code> loop unless they force you to.</p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900">class</span> <span style="color:#cb4b16">StringReverser</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#859900">static</span> <span style="color:#268bd2">String</span> <span style="color:#268bd2">reverse</span>(<span style="color:#268bd2">String</span> <span style="color:#268bd2">input</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">input</span> == <span style="color:#859900;font-weight:bold">null</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#859900">new</span> <span style="color:#268bd2">StringBuilder</span>(<span style="color:#268bd2">input</span>).<span style="color:#268bd2">reverse</span>().<span style="color:#268bd2">toString</span>();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>This shows you know the standard library and don&rsquo;t waste time reinventing solved problems.</p>
+<h3 id="bug-and-defect-difference">bug and defect difference</h3>
+<p>In practice, the terms are used interchangeably. Both refer to a flaw in the software that causes it to deviate from the expected requirements.</p>
+<p>If you are forced to make a distinction:</p>
+<ul>
+<li><strong>Defect:</strong> This is the formal term. It&rsquo;s a variance between the expected and actual result, found by the testing team <em>before</em> the product is released to the customer.</li>
+<li><strong>Bug:</strong> This is informal jargon. It&rsquo;s often used to describe a defect that is found in the production environment <em>after</em> release, typically reported by an end-user.</li>
+</ul>
+<p>For an interview, the best answer is: &ldquo;Functionally, they mean the same thing in modern Agile teams. A bug is a defect. Both are tracked in Jira, prioritized, and fixed. Any distinction is purely academic.&rdquo;</p>
+<h3 id="oops-concept">oops concept</h3>
+<p>The four pillars:</p>
+<ol>
+<li><strong>Encapsulation:</strong> Bundling data and methods within a class, hiding the implementation. The Page Object Model is a perfect example.</li>
+<li><strong>Abstraction:</strong> Hiding complexity. The <code>WebDriver</code> interface abstracts away the browser-specific details of <code>ChromeDriver</code> or <code>FirefoxDriver</code>.</li>
+<li><strong>Inheritance:</strong> Reusing code from a parent class. A <code>BaseTest</code> class with common setup/teardown logic is a classic use case.</li>
+<li><strong>Polymorphism:</strong> &ldquo;Many forms.&rdquo; Method overriding is the key application, where a child class provides a specific implementation of a parent&rsquo;s method.</li>
+</ol>
+<h3 id="bdd-framework">bdd framework</h3>
+<p>BDD (Behavior-Driven Development) is a software development approach that encourages collaboration between developers, QA, and non-technical business participants. A BDD framework is a set of tools and processes that support this.</p>
+<p>The core components are:</p>
+<ul>
+<li><strong>Gherkin:</strong> A human-readable language (<code>Given/When/Then</code>) used to write test scenarios in <code>.feature</code> files.</li>
+<li><strong>Cucumber (or similar tool):</strong> A test runner that parses the Gherkin and executes corresponding automation code.</li>
+<li><strong>Step Definitions:</strong> The &ldquo;glue code&rdquo; that connects the plain-text Gherkin steps to the actual implementation (e.g., Selenium or REST-assured calls).</li>
+</ul>
+<p>The goal is for the <code>.feature</code> files to serve as living documentation that is always in sync with the application&rsquo;s behavior.</p>
+<h3 id="explain-cucumber-framework">explain cucumber framework</h3>
+<p>See above. It&rsquo;s a specific tool that implements BDD. It reads <code>.feature</code> files, finds matching step definitions in your glue code, executes them, and generates reports. It integrates with existing testing frameworks like JUnit or TestNG to actually run the tests.</p>
+<h3 id="scenario-outline">scenario outline</h3>
+<p>In Cucumber/Gherkin, a <code>Scenario Outline</code> is a template for a test case that needs to be run multiple times with different sets of data. It uses <code>&lt;placeholders&gt;</code> in the steps, which are filled in by values from an <code>Examples</code> table. This is how you achieve data-driven testing in BDD.</p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-gherkin" data-lang="gherkin"><span style="display:flex;"><span><span style="color:#859900">Scenario Outline:</span><span style="color:#268bd2"> Login with different user types
+</span></span></span><span style="display:flex;"><span><span style="color:#268bd2"></span><span style="color:#859900">  When </span><span style="color:#268bd2">I login with user type &#34;</span><span style="color:#268bd2">&lt;user_type&gt;</span><span style="color:#268bd2">&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#268bd2">  </span><span style="color:#859900">Then </span><span style="color:#268bd2">I should see the &#34;</span><span style="color:#268bd2">&lt;page_title&gt;</span><span style="color:#268bd2">&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#268bd2">
+</span></span></span><span style="display:flex;"><span><span style="color:#268bd2">  </span><span style="color:#859900">Examples:
+</span></span></span><span style="display:flex;"><span><span style="color:#859900">    |</span><span style="color:#268bd2"> user_type</span><span style="color:#859900">   |</span><span style="color:#268bd2"> page_title</span><span style="color:#859900">      |</span><span style="color:#268bd2">
+</span></span></span><span style="display:flex;"><span><span style="color:#268bd2"></span><span style="color:#859900">    |</span><span style="color:#2aa198"> &#34;admin&#34;</span><span style="color:#859900">     |</span><span style="color:#2aa198"> &#34;Admin Dashboard&#34;</span><span style="color:#859900"> |</span><span style="color:#268bd2">
+</span></span></span><span style="display:flex;"><span><span style="color:#268bd2"></span><span style="color:#859900">    |</span><span style="color:#2aa198"> &#34;standard&#34;</span><span style="color:#859900">  |</span><span style="color:#2aa198"> &#34;My Account&#34;</span><span style="color:#859900">    |
+</span></span></span></code></pre></div><p>This will run the scenario twice, once for each row in the <code>Examples</code> table.</p>
+<h3 id="defect-leakage">defect leakage</h3>
+<p>Defect leakage is a metric that measures the percentage of defects that were <strong>missed</strong> by a particular testing phase and &ldquo;leaked&rdquo; into the next phase.</p>
+<ul>
+<li><strong>Formula:</strong> <code>(Defects found in a later phase / Defects found in the current phase) * 100</code></li>
+</ul>
+<p>The most common and important metric is <strong>production defect leakage</strong>: the number of bugs found by end-users in production compared to the number found by the QA team before release. A high defect leakage rate indicates a problem with the testing process.</p>
+<h3 id="write-all-git-commands-for-uploading-a-file">write all git commands for uploading a file</h3>
+<p>&ldquo;Uploading a file&rdquo; in Git means committing a new or modified file to your local repository and then pushing it to the remote repository (like GitHub).</p>
+<ol>
+<li><strong>Check Status (Good practice, optional):</strong> See what files have been changed.
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>git status
+</span></span></code></pre></div></li>
+<li><strong>Stage the File:</strong> Add the file to the staging area, marking it for the next commit.
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># For a specific file</span>
+</span></span><span style="display:flex;"><span>git add path/to/your/file.txt
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># To add all changed files</span>
+</span></span><span style="display:flex;"><span>git add .
+</span></span></code></pre></div></li>
+<li><strong>Commit the File:</strong> Save the staged changes to your local repository with a descriptive message.
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>git commit -m <span style="color:#2aa198">&#34;feat: Add new user profile component&#34;</span>
+</span></span></code></pre></div></li>
+<li><strong>Push to Remote:</strong> Upload your committed changes to the remote repository.
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># &#39;origin&#39; is the default name for your remote, &#39;main&#39; is the branch name.</span>
+</span></span><span style="display:flex;"><span>git push origin main
+</span></span></code></pre></div></li>
+</ol>
+<h3 id="regression-testing-and-retesting">regression testing and retesting</h3>
+<ul>
+<li>
+<p><strong>Retesting:</strong> This is specific and narrow. After a bug has been fixed by a developer, QA re-runs the <em>exact same test case</em> that originally found the bug to confirm that the fix works. The goal is to verify the fix.</p>
+</li>
+<li>
+<p><strong>Regression Testing:</strong> This is broad. After a bug fix or a new feature is added, you run a large suite of existing test cases to ensure that the new code has not unintentionally broken any other part of the application. The goal is to check for unintended side-effects.</p>
+</li>
+</ul>
+<p>You always do <strong>retesting</strong> first. If the fix is verified, you then perform <strong>regression testing</strong>.</p>
+<h3 id="boundary-value-analysis-and-equivalence-partitioning">boundary value analysis and equivalence partitioning</h3>
+<p>These are two black-box test design techniques used to select smart test data instead of testing everything.</p>
+<ul>
+<li>
+<p><strong>Equivalence Partitioning:</strong> Divide the input data into partitions or &ldquo;equivalence classes&rdquo; where all values in a class are expected to behave the same. You then test only <strong>one value</strong> from each class.</p>
+<ul>
+<li><strong>Example:</strong> An age field accepts 18-60.
+<ul>
+<li>Class 1: <code>&lt; 18</code> (e.g., 17) -&gt; Invalid</li>
+<li>Class 2: <code>18-60</code> (e.g., 35) -&gt; Valid</li>
+<li>Class 3: <code>&gt; 60</code> (e.g., 61) -&gt; Invalid
+You only need to test three numbers, not hundreds.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Boundary Value Analysis (BVA):</strong> An extension of equivalence partitioning. It focuses on testing the &ldquo;edges&rdquo; or boundaries of the equivalence classes, because this is where errors are most likely to occur.</p>
+<ul>
+<li><strong>Example (from above):</strong>
+<ul>
+<li>Test the values <em>at</em> the boundaries and just inside/outside:</li>
+<li><code>17</code> (just outside the lower bound)</li>
+<li><code>18</code> (at the lower bound)</li>
+<li><code>19</code> (just inside the lower bound)</li>
+<li><code>59</code> (just inside the upper bound)</li>
+<li><code>60</code> (at the upper bound)</li>
+<li><code>61</code> (just outside the upper bound)</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>You use both together to create a minimal yet powerful set of test cases.</p>
+<h3 id="what-is-rtm">what is rtm?</h3>
+<p>Requirements Traceability Matrix. It&rsquo;s a document (usually a spreadsheet or a report from a tool like Jira/Xray) that maps each requirement (user story) to the test case(s) that verify it.</p>
+<p><strong>Purpose:</strong></p>
+<ul>
+<li><strong>Ensure Coverage:</strong> Guarantees that every requirement has at least one test case.</li>
+<li><strong>Impact Analysis:</strong> If a requirement changes, the RTM instantly shows you which tests need to be updated.</li>
+</ul>
+<p>In modern agile teams, the linking functionality within Jira often serves as a dynamic, living RTM.</p>
+<h3 id="what-to-do-in-test-plan">what to do in test plan?</h3>
+<p>A test plan is a formal document that outlines the strategy, scope, resources, and schedule for testing.</p>
+<p><strong>Key Sections:</strong></p>
+<ol>
+<li><strong>Scope:</strong> What will be tested and what will <em>not</em> be tested.</li>
+<li><strong>Test Strategy:</strong> The overall approach (e.g., level of automation, types of testing to be performed).</li>
+<li><strong>Resources:</strong> The team members involved and the hardware/software required for the test environment.</li>
+<li><strong>Schedule &amp; Milestones:</strong> Key deadlines for test design, execution, and reporting.</li>
+<li><strong>Entry and Exit Criteria:</strong> What conditions must be met to start testing (e.g., build deployed, smoke test passed) and to end testing (e.g., 95% of critical tests passing, no Priority 1 bugs open).</li>
+<li><strong>Risks and Mitigation:</strong> What could go wrong and what&rsquo;s the plan to deal with it.</li>
+</ol>
+<h3 id="what-is-in-feature-file">what is in feature file?</h3>
+<p>A <code>.feature</code> file is the core of Cucumber. It contains:</p>
+<ol>
+<li><strong><code>Feature</code>:</strong> The name of the feature being described.</li>
+<li><strong><code>Background</code> (optional):</strong> A set of <code>Given</code> steps that run before every scenario in the file.</li>
+<li><strong><code>Scenario</code> or <code>Scenario Outline</code>:</strong> One or more test cases written in Gherkin.</li>
+<li><strong>Steps:</strong> The <code>Given</code>, <code>When</code>, <code>Then</code>, <code>And</code>, <code>But</code> steps that describe the test.</li>
+<li><strong><code>Tags</code> (optional):</strong> Annotations like <code>@smoke</code> or <code>@regression</code> to categorize scenarios.</li>
+<li><strong><code>Examples</code> table (for Scenario Outlines):</strong> The data used for data-driven tests.</li>
+</ol>
+<h3 id="frameworkexplanation">framework explanation</h3>
+<p>Standard question. Describe your framework&rsquo;s architecture: Core tools (Java, Selenium, TestNG), design pattern (POM), data management strategy (DataProvider, external files), reporting (ExtentReports), and CI/CD integration (Maven, Jenkins).</p>
+
+    </div>
+</article>
+
+<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
+    
+    <span></span>
+    
+    
+    <a href="//localhost:1315/12_company_based_questions/l-t-infotech/" class="nav-btn">Up</a>
+
+    
+    <span></span>
+    
+</div>
+
+    </main>
+
+    <footer class="footer">
+        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
+    </footer>
+</body>
+</html>

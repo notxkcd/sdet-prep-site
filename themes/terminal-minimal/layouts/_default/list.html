@@ -1,0 +1,24 @@
+{{ define "main" }}
+<div class="content panel" style="margin-bottom: 2rem;">
+    <div style="font-family: 'Courier New', monospace; font-size: 0.8rem; color: var(--secondary); margin-bottom: 1rem;">
+        [ DIRECTORY: {{ upper .Title }} ]
+    </div>
+    {{ .Content }}
+</div>
+
+<div class="category-group">
+    <div class="category-title">// AVAILABLE_PHASES</div>
+    <div class="tutorial-list">
+        {{ range .Pages.ByWeight }}
+        <div class="tutorial-item">
+            <div class="tutorial-title">
+                <a href="{{ .Permalink }}">{{ .Title }}</a>
+            </div>
+            {{ if .Params.description }}
+            <div class="tutorial-desc">{{ .Params.description }}</div>
+            {{ end }}
+        </div>
+        {{ end }}
+    </div>
+</div>
+{{ end }}

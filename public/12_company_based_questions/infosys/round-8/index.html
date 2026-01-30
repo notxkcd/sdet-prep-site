@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1315&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infosys-8 | SDET Interview Preparation Kit</title>
+    <link rel="stylesheet" href="//localhost:1315/css/style.css">
+    
+    
+    <link rel="stylesheet" href="//localhost:1315/lib/katex/katex.min.css">
+    <script defer src="//localhost:1315/lib/katex/katex.min.js"></script>
+    <script defer src="//localhost:1315/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="/">Index</a></li>
+                
+            </ul>
+        </nav>
+        <div class="site-breadcrumb">
+            <a href="/">Home</a>
+            
+            
+            
+
+            
+            
+                <span>/</span> Infosys-8
+            
+        </div>
+    </header>
+
+    <main>
+        
+<article>
+    <div class="category-title" style="margin-bottom: 0.5rem;">Infosys Interview Questions</div>
+    <h1>Infosys-8</h1>
+    <div class="content-body" style="margin-top: 2rem;">
+        <hr>
+<h2 id="original-questions-untouched">Original Questions (UNTOUCHED)</h2>
+<h2 id="infosys---virtual-mode---interviewer-rajiv">Infosys - Virtual mode - interviewer Rajiv</h2>
+<ol>
+<li>Self Introduction</li>
+<li>Project - role</li>
+<li>Java version, Selenium version</li>
+<li>write Take Screenshot</li>
+<li>what are the exception you have faced and how will you handle-  explain it?</li>
+<li>Explain Our Framework? BBD -Explain</li>
+<li>what is WebElement?</li>
+<li>what is NoStale element exception and how will you handle it?</li>
+<li>what is broken link?</li>
+<li>Explain n-1 approach?</li>
+<li>Difference between stateful and stateless?</li>
+<li>How comfortable are you with different Stack?</li>
+<li>Status code for Gateway Timeout and Request Timeout?</li>
+<li>digest auth?</li>
+<li>how will you get bearer token?</li>
+<li>Security Testing?</li>
+</ol>
+<hr>
+<h2 id="answers-no-bs-java-qa--sdet-explanations">Answers (No-BS Java QA / SDET Explanations)</h2>
+<h3 id="1-self-introduction">1. Self Introduction</h3>
+<p>Standard. Keep it concise, professional, and focus on your relevant experience (automation skills, tech stack, achievements).</p>
+<h3 id="2-project---role">2. Project - role</h3>
+<p>Standard. Describe the project domain, your specific role and contributions as an automation engineer.</p>
+<h3 id="3-java-version-selenium-version">3. Java version, Selenium version</h3>
+<p>&ldquo;I am currently using <strong>Java 11 (or 17)</strong> and <strong>Selenium WebDriver 4.x</strong> (e.g., 4.1.2). We upgraded to Selenium 4 to take advantage of its W3C WebDriver protocol compliance and new features like Relative Locators.&rdquo;</p>
+<h3 id="4-write-take-screenshot">4. write Take Screenshot</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">org.openqa.selenium.OutputType</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">org.openqa.selenium.TakesScreenshot</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">org.openqa.selenium.WebDriver</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">java.io.File</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">java.io.IOException</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">org.apache.commons.io.FileUtils</span>; <span style="color:#93a1a1;font-style:italic">// Requires Apache Commons IO</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">captureScreenshot</span>(<span style="color:#268bd2">WebDriver</span> <span style="color:#268bd2">driver</span>, <span style="color:#268bd2">String</span> <span style="color:#268bd2">filePath</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">try</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">File</span> <span style="color:#268bd2">srcFile</span> = ((<span style="color:#268bd2">TakesScreenshot</span>) <span style="color:#268bd2">driver</span>).<span style="color:#268bd2">getScreenshotAs</span>(<span style="color:#268bd2">OutputType</span>.<span style="color:#268bd2">FILE</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">FileUtils</span>.<span style="color:#268bd2">copyFile</span>(<span style="color:#268bd2">srcFile</span>, <span style="color:#859900">new</span> <span style="color:#268bd2">File</span>(<span style="color:#268bd2">filePath</span>));
+</span></span><span style="display:flex;"><span>    } <span style="color:#859900">catch</span> (<span style="color:#268bd2">IOException</span> <span style="color:#268bd2">e</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">System</span>.<span style="color:#268bd2">err</span>.<span style="color:#268bd2">println</span>(<span style="color:#2aa198">&#34;Failed to take screenshot: &#34;</span> + <span style="color:#268bd2">e</span>.<span style="color:#268bd2">getMessage</span>());
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="5-what-are-the-exception-you-have-faced-and-how-will-you-handle--explain-it">5. what are the exception you have faced and how will you handle- explain it?</h3>
+<ul>
+<li><strong><code>NoSuchElementException</code>:</strong> Handled by using robust locators and, more importantly, <strong>explicit waits</strong> before interacting with elements.</li>
+<li><strong><code>StaleElementReferenceException</code>:</strong> Handled by re-finding the element just before interaction or by making the explicit waits intelligent enough to re-locate.</li>
+<li><strong><code>TimeoutException</code>:</strong> Indicates a genuine application performance issue or a too-short wait. Handled by investigating the application or adjusting the wait time if justified.</li>
+<li><strong>Java Exceptions:</strong> Use <code>try-catch</code> blocks for expected situations like <code>IOException</code> during file operations. Unhandled runtime exceptions should fail the test.</li>
+</ul>
+<h3 id="6-explain-our-framework-bbd--explain">6. Explain Our Framework? BBD -Explain</h3>
+<p>This is likely a typo for &ldquo;BDD - Explain&rdquo;.
+&ldquo;Our framework is a Java-based automation framework. It uses <strong>Selenium WebDriver</strong> for UI tests and <strong>REST-assured</strong> for API tests. The core design pattern is the <strong>Page Object Model</strong>. We leverage <strong>TestNG</strong> as our test runner for its advanced features like parallel execution and data providers. We primarily follow a <strong>BDD (Behavior-Driven Development)</strong> approach using <strong>Cucumber</strong>. This means our test scenarios are written in human-readable Gherkin in <code>.feature</code> files, which serve as living documentation and bridge the gap between technical and non-technical stakeholders.&rdquo;</p>
+<h3 id="7-what-is-webelement">7. what is WebElement?</h3>
+<p>In Selenium, a <code>WebElement</code> is an interface that represents an HTML element on a web page. It&rsquo;s the primary way to interact with elements like buttons, input fields, links, etc., using methods like <code>click()</code>, <code>sendKeys()</code>, <code>getText()</code>, <code>getAttribute()</code>.</p>
+<h3 id="8-what-is-nostale-element-exception-and-how-will-you-handle-it">8. what is NoStale element exception and how will you handle it?</h3>
+<p>This is a typo for <strong><code>StaleElementReferenceException</code></strong>.</p>
+<ul>
+<li><strong>What it is:</strong> Occurs when a <code>WebElement</code> reference you previously located becomes &ldquo;stale&rdquo; because the element is no longer attached to the DOM (e.g., due to an AJAX update or page navigation).</li>
+<li><strong>How to handle:</strong> The most reliable way is to <strong>re-find the element</strong> just before you interact with it. Avoid storing <code>WebElement</code> instances as class variables if they might become stale. Use explicit waits that re-locate elements (like <code>ExpectedConditions.elementToBeClickable()</code>).</li>
+</ul>
+<h3 id="9-what-is-broken-link">9. what is broken link?</h3>
+<p>A broken link is a hyperlink that no longer works. When you try to access it, it returns an HTTP status code indicating an error (most commonly <code>404 Not Found</code>). In automated testing, you check for broken links by sending <code>HEAD</code> (or <code>GET</code>) requests to all <code>href</code> attributes on a page and verifying the HTTP response codes.</p>
+<h3 id="10-explain-n-1-approach">10. Explain n-1 approach?</h3>
+<p>The &ldquo;n-1 approach&rdquo; in testing typically refers to the strategy of supporting and testing against the <strong>current major version (n)</strong> of a software component (like a browser or operating system) and the <strong>previous major version (n-1)</strong>. This helps ensure compatibility with the most common user environments without excessively increasing the testing matrix.</p>
+<h3 id="11-difference-between-stateful-and-stateless">11. Difference between stateful and stateless?</h3>
+<ul>
+<li><strong>Stateful:</strong> A system or application is stateful if it retains information about past interactions or the current context between requests. The server remembers the client&rsquo;s state. (e.g., A traditional web session where the server stores user data).</li>
+<li><strong>Stateless:</strong> A system or application is stateless if each request from a client to the server contains all the information necessary to understand the request. The server does not store any client state between requests. (e.g., A RESTful API, where each request must include authentication tokens, data, etc.).</li>
+</ul>
+<h3 id="12-how-comfortable-are-you-with-different-stack">12. How comfortable are you with different Stack?</h3>
+<p>This asks about your versatility with different technology stacks.
+&ldquo;I am very comfortable working with <strong>Java-based test automation stacks</strong> (Selenium, TestNG, REST-assured). I have a foundational understanding of JavaScript and some exposure to Python for scripting. I am always keen to learn and adapt to new technologies required by the project.&rdquo;</p>
+<h3 id="13-status-code-for-gateway-timeout-and-request-timeout">13. Status code for Gateway Timeout and Request Timeout?</h3>
+<ul>
+<li><strong><code>504 Gateway Timeout</code>:</strong> The server, while acting as a gateway or proxy, did not receive a timely response from an upstream server it needed to access to complete the request.</li>
+<li><strong><code>408 Request Timeout</code>:</strong> The server did not receive a complete request message within the time that it was prepared to wait.</li>
+</ul>
+<h3 id="14-digest-auth">14. digest auth?</h3>
+<p><strong>Digest Authentication</strong> is a simple challenge-response authentication mechanism in HTTP. It&rsquo;s an improvement over Basic Authentication because it sends a hash of the username, password, and a server-generated nonce (number used once), rather than sending credentials in plain text. This makes it more secure against eavesdropping.</p>
+<h3 id="15-how-will-you-get-bearer-token">15. how will you get bearer token?</h3>
+<p>You typically obtain a bearer token by making a <code>POST</code> request to a specific authentication endpoint of the API, sending your username and password in the request body. The API then responds with the bearer token (usually a JWT) in its response body. This token is then used in the <code>Authorization: Bearer &lt;token&gt;</code> header for subsequent protected API calls.</p>
+<h3 id="16-security-testing">16. Security Testing?</h3>
+<p>Security testing is a type of software testing that aims to uncover vulnerabilities in an application that could lead to data breaches, unauthorized access, or system compromise.</p>
+<ul>
+<li><strong>Types:</strong> Penetration testing, vulnerability scanning, ethical hacking, security auditing.</li>
+<li><strong>QA&rsquo;s Role:</strong> While specialized security testers do deep dives, QAs contribute by:
+<ul>
+<li>Testing authentication and authorization controls.</li>
+<li>Validating input fields for common injection attacks (e.g., SQL injection, XSS).</li>
+<li>Ensuring sensitive data is handled securely (e.g., encrypted in transit).</li>
+<li>Verifying session management.</li>
+<li>Checking for secure default configurations.</li>
+</ul>
+</li>
+</ul>
+
+    </div>
+</article>
+
+<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
+    
+    <span></span>
+    
+    
+    <a href="//localhost:1315/12_company_based_questions/infosys/" class="nav-btn">Up</a>
+
+    
+    <a href="//localhost:1315/12_company_based_questions/infosys/round-7/" class="nav-btn">Next →</a>
+    
+</div>
+
+    </main>
+
+    <footer class="footer">
+        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
+    </footer>
+</body>
+</html>

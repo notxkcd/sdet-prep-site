@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1315&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generic Questions-4 | SDET Interview Preparation Kit</title>
+    <link rel="stylesheet" href="//localhost:1315/css/style.css">
+    
+    
+    <link rel="stylesheet" href="//localhost:1315/lib/katex/katex.min.css">
+    <script defer src="//localhost:1315/lib/katex/katex.min.js"></script>
+    <script defer src="//localhost:1315/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="/">Index</a></li>
+                
+            </ul>
+        </nav>
+        <div class="site-breadcrumb">
+            <a href="/">Home</a>
+            
+            
+            
+
+            
+            
+                <span>/</span> Generic Questions-4
+            
+        </div>
+    </header>
+
+    <main>
+        
+<article>
+    <div class="category-title" style="margin-bottom: 0.5rem;">Generic Questions Interview Questions</div>
+    <h1>Generic Questions-4</h1>
+    <div class="content-body" style="margin-top: 2rem;">
+        <hr>
+<h2 id="original-questions-untouched">Original Questions (UNTOUCHED)</h2>
+<p>Explain about your project and experience
+Explain about your project stracture
+Roles and Responsibilities
+what framework using in your project explain it detail
+Test data&rsquo;s where you maintain
+oops concepts  where you  applied
+what challenge you faced
+are you in part of regression or script writing
+Explain-Jenkins-Continuous integration
+method overloading
+reverse string
+Xpath
+Testng order of execution</p>
+<hr>
+<h2 id="answers-no-bs-java-qa--sdet-explanations">Answers (No-BS Java QA / SDET Explanations)</h2>
+<h3 id="explain-about-your-project-and-experience">Explain about your project and experience</h3>
+<p>Standard opener. Be concise and structured.</p>
+<ol>
+<li><strong>Project:</strong> &ldquo;I worked on a large-scale e-commerce platform, focusing on the backend services for order processing and inventory management.&rdquo;</li>
+<li><strong>Experience:</strong> &ldquo;My experience is primarily in building and maintaining the automated test suites for these services. I developed a Java-based framework using REST-assured for API testing and TestNG as the runner. I was responsible for the full lifecycle, from test design and script writing to integrating the tests into our Jenkins pipeline.&rdquo;</li>
+</ol>
+<h3 id="explain-about-your-project-stracture">Explain about your project stracture</h3>
+<p>The interviewer likely means &ldquo;project structure&rdquo;. Describe your framework&rsquo;s directory layout.
+&ldquo;Our Maven project follows a standard structure:</p>
+<ul>
+<li><code>src/main/java</code>: This is for application source code, which we don&rsquo;t typically modify, but we might have some shared utility libraries here.</li>
+<li><code>src/test/java</code>: This is where all our test code lives. We have packages for:
+<ul>
+<li><code>pages</code> or <code>endpoints</code>: Contains our Page Objects or API endpoint classes.</li>
+<li><code>tests</code>: Contains the actual TestNG test classes.</li>
+<li><code>utils</code>: For helper classes like <code>ConfigReader</code>, <code>WebDriverFactory</code>, etc.</li>
+</ul>
+</li>
+<li><code>src/test/resources</code>: Contains non-code test assets like:
+<ul>
+<li><code>features</code>: Gherkin <code>.feature</code> files (if using Cucumber).</li>
+<li><code>testdata</code>: JSON or Excel files for test data.</li>
+<li><code>config</code>: <code>.properties</code> files for environment configuration.</li>
+</ul>
+</li>
+<li><code>pom.xml</code>: At the root, defining all project dependencies and build configurations.</li>
+<li><code>testng.xml</code>: At the root, defining our test suites and execution logic.&rdquo;</li>
+</ul>
+<h3 id="roles-and-responsibilities">Roles and Responsibilities</h3>
+<p>Be specific about what <em>you</em> did.</p>
+<ul>
+<li>&ldquo;I designed and developed automated test scripts for both UI and API layers.&rdquo;</li>
+<li>&ldquo;I was responsible for maintaining and enhancing our test automation framework.&rdquo;</li>
+<li>&ldquo;I performed code reviews for test scripts written by other team members.&rdquo;</li>
+<li>&ldquo;I configured and maintained Jenkins jobs to run our regression suites automatically.&rdquo;</li>
+<li>&ldquo;I analyzed test failures, reported bugs in Jira, and worked with developers to ensure they were resolved.&rdquo;</li>
+<li>&ldquo;I participated in all agile ceremonies, including sprint planning and providing testing estimates.&rdquo;</li>
+</ul>
+<h3 id="what-framework-using-in-your-project-explain-it-detail">what framework using in your project explain it detail</h3>
+<p>This is the core &ldquo;explain your framework&rdquo; question.
+&ldquo;We use a hybrid, data-driven framework built on Java.</p>
+<ul>
+<li><strong>Core:</strong> TestNG is our test runner, Selenium WebDriver for UI tests, and REST-assured for API tests.</li>
+<li><strong>Design:</strong> It&rsquo;s built on the Page Object Model (POM) to keep UI locators and methods separate from test logic. We have a <code>BaseTest</code> class that handles <code>WebDriver</code> setup and teardown for all tests.</li>
+<li><strong>Data Management:</strong> We use TestNG&rsquo;s <code>@DataProvider</code> to feed data into our tests. This data is read from external JSON files using the Jackson library.</li>
+<li><strong>Reporting:</strong> We use ExtentReports, integrated via a custom TestNG listener, to generate detailed HTML reports with screenshots for failed tests.</li>
+<li><strong>Build &amp; CI:</strong> The entire project is managed by Maven for dependencies and build lifecycle. We use Jenkins for continuous integration, with jobs that trigger our <code>mvn test</code> command on every code commit.&rdquo;</li>
+</ul>
+<h3 id="test-datas-where-you-maintain">Test data&rsquo;s where you maintain</h3>
+<p>&ldquo;We maintain our test data externally to separate it from the test code.</p>
+<ul>
+<li>For simple, static configuration (like URLs, usernames, passwords for different environments), we use <code>.properties</code> files.</li>
+<li>For more complex, structured data needed for our test cases, we use <strong>JSON files</strong>. Each test suite might have its own JSON file. Our <code>@DataProvider</code> methods use a JSON parser like Jackson to read this data and provide it to the tests.&rdquo;</li>
+<li>(Alternative) &ldquo;We used <strong>Excel sheets</strong> managed by Apache POI, as this allowed our manual QA team and business analysts to easily contribute and review test data.&rdquo;</li>
+</ul>
+<h3 id="oops-concepts-where-you-applied">oops concepts where you applied</h3>
+<ul>
+<li><strong>Encapsulation:</strong> &ldquo;Our entire Page Object Model is an application of encapsulation. Each page class hides its locators (<code>private By</code>) and exposes functionality through public methods (<code>public void login()</code>).&rdquo;</li>
+<li><strong>Abstraction:</strong> &ldquo;We code against the <code>WebDriver</code> interface (<code>WebDriver driver = new ChromeDriver();</code>), which abstracts away the browser-specific implementation details.&rdquo;</li>
+<li><strong>Inheritance:</strong> &ldquo;All of our test classes <code>extend</code> a <code>BaseTest</code> class to inherit common setup and teardown logic. Similarly, all page objects <code>extend</code> a <code>BasePage</code> to inherit common page methods like waiting for page load.&rdquo;</li>
+<li><strong>Polymorphism:</strong> &ldquo;We use method overriding. For example, our <code>BasePage</code> has a <code>verifyElements()</code> method, which is overridden in child page classes like <code>HomePage</code> and <code>DashboardPage</code> to verify their own unique elements.&rdquo;</li>
+</ul>
+<h3 id="what-challenge-you-faced">what challenge you faced</h3>
+<p>Have a specific, technical example ready.
+&ldquo;One of the biggest challenges was dealing with flaky tests caused by a highly dynamic, AJAX-heavy user interface. Initially, the suite was littered with <code>Thread.sleep()</code>, which was unreliable. I led the effort to refactor our framework&rsquo;s waiting strategy, implementing a centralized explicit wait utility. We replaced all hardcoded sleeps with calls to <code>wait.until(ExpectedConditions...)</code>. This made our tests far more stable and reduced the false-failure rate by over 80%.&rdquo;</p>
+<h3 id="are-you-in-part-of-regression-or-script-writing">are you in part of regression or script writing</h3>
+<p>&ldquo;Both. My role involves the full spectrum of automation. I write new scripts for features being developed in the current sprint. Once those features are stable, those same scripts are integrated into our main regression suite, which I also help maintain and execute.&rdquo;</p>
+<h3 id="explain-jenkins-continuous-integration">Explain-Jenkins-Continuous integration</h3>
+<ul>
+<li><strong>Jenkins:</strong> An open-source automation server.</li>
+<li><strong>Continuous Integration (CI):</strong> A development practice where developers frequently merge their code changes into a central repository. After each merge, an automated build and automated test run (unit, integration, and our regression suite) are triggered.</li>
+<li><strong>How we use it:</strong> &ldquo;We use a Jenkins pipeline. When a developer pushes code, a GitHub webhook triggers our Jenkins job. Jenkins pulls the latest code, uses Maven to compile it and run all the tests (<code>mvn test</code>). If the tests pass, the build is marked as successful, giving us immediate feedback that the new change didn&rsquo;t break anything. If it fails, the team is notified immediately.&rdquo;</li>
+</ul>
+<h3 id="method-overloading">method overloading</h3>
+<p>Same method name, different parameter list (number or type of parameters), within the same class.</p>
+<h3 id="reverse-string">reverse string</h3>
+<p><code>new StringBuilder(str).reverse().toString();</code></p>
+<h3 id="xpath">Xpath</h3>
+<p>A query language for selecting nodes from an XML/HTML document. It&rsquo;s one of the primary locator strategies in Selenium, essential for finding elements without stable IDs or for complex DOM traversal.</p>
+<h3 id="testng-order-of-execution">Testng order of execution</h3>
+<p>The standard annotation execution order:
+<code>@BeforeSuite -&gt; @BeforeTest -&gt; @BeforeClass -&gt; @BeforeMethod -&gt; @Test -&gt; @AfterMethod -&gt; @AfterClass -&gt; @AfterTest -&gt; @AfterSuite</code>.</p>
+
+    </div>
+</article>
+
+<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
+    
+    <a href="//localhost:1315/12_company_based_questions/generic-questions/round-5/" class="nav-btn">← Previous</a>
+    
+    
+    <a href="//localhost:1315/12_company_based_questions/generic-questions/" class="nav-btn">Up</a>
+
+    
+    <a href="//localhost:1315/12_company_based_questions/generic-questions/round-3/" class="nav-btn">Next →</a>
+    
+</div>
+
+    </main>
+
+    <footer class="footer">
+        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
+    </footer>
+</body>
+</html>

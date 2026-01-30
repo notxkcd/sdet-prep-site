@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1315&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Qapitol Qa Interview Questions | SDET Interview Preparation Kit</title>
+    <link rel="stylesheet" href="//localhost:1315/css/style.css">
+    
+    
+    <link rel="stylesheet" href="//localhost:1315/lib/katex/katex.min.css">
+    <script defer src="//localhost:1315/lib/katex/katex.min.js"></script>
+    <script defer src="//localhost:1315/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="/">Index</a></li>
+                
+            </ul>
+        </nav>
+        <div class="site-breadcrumb">
+            <a href="/">Home</a>
+            
+            
+            
+
+            
+            
+                <span>/</span> Qapitol Qa Interview Questions
+            
+        </div>
+    </header>
+
+    <main>
+        
+<article>
+    <div class="category-title" style="margin-bottom: 0.5rem;">Qapitol Qa Interview Questions</div>
+    <h1>Qapitol Qa Interview Questions</h1>
+    <div class="content-body" style="margin-top: 2rem;">
+        <p>import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;</p>
+<p>public class PalindromeAnalyzer {</p>
+<pre><code>// Helper to check if a string is a palindrome (ignoring case and non-alphanumeric)
+private static boolean isPalindrome(String s) {
+    String cleaned = s.replaceAll(&quot;[^a-zA-Z0-9]&quot;, &quot;&quot;).toLowerCase();
+    if (cleaned.isEmpty()) return false; // An empty string is not a palindrome for this context
+    return cleaned.equals(new StringBuilder(cleaned).reverse().toString());
+}
+
+// Main method to find palindromes and analyze
+public static void analyzePalindromes(String text) {
+    if (text == null || text.isEmpty()) {
+        System.out.println(&quot;Input string is empty.&quot;);
+        return;
+    }
+
+    // Pattern to find words. \b matches word boundaries, \w+ matches one or more word characters.
+    Pattern pattern = Pattern.compile(&quot;\\b\\w+\\b&quot;); 
+    Matcher matcher = pattern.matcher(text); // Use original text for word finding
+
+    int palindromeCount = 0;
+    String longestPalindromeWord = &quot;&quot;;
+    
+    while (matcher.find()) {
+        String word = matcher.group();
+        if (isPalindrome(word)) {
+            palindromeCount++;
+            if (word.length() &gt; longestPalindromeWord.length()) {
+                longestPalindromeWord = word;
+            }
+        }
+    }
+
+    System.out.println(&quot;Total palindrome words found: &quot; + palindromeCount);
+    System.out.println(&quot;Highest length palindrome word: &quot; + longestPalindromeWord);
+
+    if (!longestPalindromeWord.isEmpty()) {
+        System.out.println(&quot;Occurrence of each character in longest palindrome ('&quot; + longestPalindromeWord + &quot;'):&quot;);
+        Map&lt;Character, Integer&gt; charCounts = new HashMap&lt;&gt;();
+        String cleanedLongest = longestPalindromeWord.replaceAll(&quot;[^a-zA-Z0-9]&quot;, &quot;&quot;).toLowerCase();
+        for (char c : cleanedLongest.toCharArray()) {
+            charCounts.put(c, charCounts.getOrDefault(c, 0) + 1);
+        }
+        charCounts.forEach((c, count) -&gt; System.out.println(&quot;'&quot; + c + &quot;': &quot; + count));
+    }
+}
+
+public static void main(String[] args) {
+    String input = &quot;Madam is a civic engineer. Racecar is another example. A man, a plan, a canal: Panama.&quot;;
+    analyzePalindromes(input);
+    /* Expected output for input &quot;Madam is a civic engineer. Racecar is another example. A man, a plan, a canal: Panama.&quot;:
+    Total palindrome words found: 4 (Madam, a, civic, Racecar)
+    Highest length palindrome word: Racecar
+    Occurrence of each character in longest palindrome ('racecar'):
+    'r': 2
+    'a': 2
+    'c': 2
+    'e': 1
+    */
+    
+    // Example for a phrase as a palindrome:
+    String input2 = &quot;A man, a plan, a canal: Panama&quot;;
+    // To count this as one palindrome, you would process the entire cleaned string:
+    if (isPalindrome(input2)) {
+        System.out.println(&quot;\nFull phrase is a palindrome: &quot; + input2);
+        Map&lt;Character, Integer&gt; charCounts = new HashMap&lt;&gt;();
+        String cleanedPhrase = input2.replaceAll(&quot;[^a-zA-Z0-9]&quot;, &quot;&quot;).toLowerCase();
+        for (char c : cleanedPhrase.toCharArray()) {
+            charCounts.put(c, charCounts.getOrDefault(c, 0) + 1);
+        }
+        System.out.println(&quot;Char counts in phrase: &quot; + charCounts);
+    }
+}
+</code></pre>
+<p>}</p>
+
+    </div>
+</article>
+
+<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
+    
+    <a href="//localhost:1315/12_company_based_questions/qapitol-qa/round-2/" class="nav-btn">← Previous</a>
+    
+    
+    <a href="//localhost:1315/12_company_based_questions/qapitol-qa/" class="nav-btn">Up</a>
+
+    
+    <span></span>
+    
+</div>
+
+    </main>
+
+    <footer class="footer">
+        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1315&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valuelabs | SDET Interview Preparation Kit</title>
+    <link rel="stylesheet" href="//localhost:1315/css/style.css">
+    
+    
+    <link rel="stylesheet" href="//localhost:1315/lib/katex/katex.min.css">
+    <script defer src="//localhost:1315/lib/katex/katex.min.js"></script>
+    <script defer src="//localhost:1315/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="/">Index</a></li>
+                
+            </ul>
+        </nav>
+        <div class="site-breadcrumb">
+            <a href="/">Home</a>
+            
+            
+            
+
+            
+            
+                <span>/</span> Valuelabs
+            
+        </div>
+    </header>
+
+    <main>
+        
+<article>
+    <div class="category-title" style="margin-bottom: 0.5rem;">Valuelabs Interview Questions</div>
+    <h1>Valuelabs</h1>
+    <div class="content-body" style="margin-top: 2rem;">
+        <hr>
+<h2 id="original-questions-untouched">Original Questions (UNTOUCHED)</h2>
+<h2 id="valuelabs-interview-questions--sdet-45-to-6-years">Valuelabs Interview Questions : SDET 4.5 to 6 years</h2>
+<ol>
+<li>Please introduce yourself.</li>
+<li>Please explain your Automation Framework, all the components.</li>
+<li>What is a Page Object Model?</li>
+<li>How do you run your test cases in parallel in Cucumber?</li>
+<li>Explain the contents of the Runner File in Cucumber?</li>
+<li>What is a Singleton Design Pattern?</li>
+<li>What are the advantages and disadvantages of the Page Object Model?</li>
+<li>What is Selenium Grid?</li>
+<li>Explain the WebDriver create statement line?</li>
+<li>Explain the Maven Lifecycle?</li>
+<li>How do you run the failed test cases?</li>
+<li>How do you generate Reports in Selenium?</li>
+<li>How do you customise reports after your test execution?</li>
+<li>What kind of waits are there in Selenium?</li>
+<li>Write the Code Snippet for Explicit Wait?</li>
+<li>Write the Code Snippet for Drag and Drop in Selenium?</li>
+<li>How do you switch to different Windows in Selenium?</li>
+<li>Why do we use SET in Window Handles?</li>
+<li>Write the Code for taking screenshot in Selenium?</li>
+<li>What is the difference between Scenario and Scenario Outline in Cucumber?</li>
+<li>How do you pass data to your Selenium Scripts?</li>
+<li>How do you decide the priorities of your Test Cases?</li>
+<li>If you want to execute one test case again and again how do you do that?</li>
+<li>What are the different annotations used in TestNG?</li>
+<li>Write the hierarchy of annotations in TestNG?</li>
+<li>What is the defect life cycle?</li>
+<li>What is the difference between Agile and Waterfall Model?</li>
+<li>What is the difference between 201 and 204 Status Code?</li>
+<li>What is the difference between 401 and 403 Status Code?</li>
+<li>What are the components of an API Request?</li>
+<li>What is the difference between Query Parameters and Path Parameters?</li>
+<li>How do you resolve Conflicts in Git?</li>
+<li>What is the difference between git pull and git patch?</li>
+<li>Explain the use of Jenkins in the Automation Framework?</li>
+</ol>
+<hr>
+<h2 id="answers-no-bs-java-qa--sdet-explanations">Answers (No-BS Java QA / SDET Explanations)</h2>
+<h3 id="1-please-introduce-yourself">1. Please introduce yourself.</h3>
+<p>Standard opener. Focus on professional experience, automation skills, tech stack, and achievements relevant to an SDET role.</p>
+<h3 id="2-please-explain-your-automation-framework-all-the-components">2. Please explain your Automation Framework, all the components.</h3>
+<p>&ldquo;Our automation framework is a Java-based, hybrid, data-driven framework.</p>
+<ul>
+<li><strong>Core Tools:</strong> TestNG for test execution, Selenium WebDriver for UI automation, REST-assured for API automation, Maven for build/dependency management.</li>
+<li><strong>Design:</strong> It follows the <strong>Page Object Model (POM)</strong> for UI and uses a custom API client for API tests. We have <code>BaseTest</code> classes for common setup/teardown.</li>
+<li><strong>Data:</strong> Test data is externalized in JSON files and supplied via TestNG <code>@DataProvider</code>.</li>
+<li><strong>Reporting:</strong> We use <strong>ExtentReports</strong> integrated via TestNG listeners for rich HTML reports with screenshots on failure.</li>
+<li><strong>CI/CD:</strong> Tests are executed via <strong>Jenkins</strong> pipelines.&rdquo;</li>
+</ul>
+<h3 id="3-what-is-a-page-object-model">3. What is a Page Object Model?</h3>
+<p>A design pattern for UI test automation where each page (or significant component) of a web application is represented as a class. This class encapsulates all the locators and interaction methods for that page, abstracting the UI details from the test scripts. It improves maintainability, reusability, and readability.</p>
+<h3 id="4-how-do-you-run-your-test-cases-in-parallel-in-cucumber">4. How do you run your test cases in parallel in Cucumber?</h3>
+<p>Cucumber itself doesn&rsquo;t directly handle parallel execution of scenarios. You rely on the test runner.</p>
+<ul>
+<li><strong>TestNG:</strong> If you use TestNG to run Cucumber, you can configure <code>testng.xml</code> with <code>parallel=&quot;methods&quot;</code> and <code>thread-count</code>. Each scenario would typically be run in a separate thread.</li>
+<li><strong>JUnit:</strong> For JUnit, you can use <code>maven-failsafe-plugin</code> with forks, or specific JUnit 5 parallel execution strategies.</li>
+<li><strong>JVM Arguments:</strong> For Cucumber-JVM, you can configure <code>max-threads</code> in the <code>cucumber.properties</code> file or via JVM arguments to specify the maximum number of parallel threads.</li>
+<li><strong>Selenium Grid:</strong> The actual browsers are typically run in parallel on a Selenium Grid.</li>
+</ul>
+<h3 id="5-explain-the-contents-of-the-runner-file-in-cucumber">5. Explain the contents of the Runner File in Cucumber?</h3>
+<p>A Cucumber Runner file (a Java class) is the entry point for executing Cucumber tests.</p>
+<ul>
+<li><strong><code>@RunWith(Cucumber.class)</code>:</strong> Tells JUnit how to run the class.</li>
+<li><strong><code>@CucumberOptions</code>:</strong> Configures Cucumber:
+<ul>
+<li><code>features</code>: Path to <code>.feature</code> files.</li>
+<li><code>glue</code>: Path to step definition packages.</li>
+<li><code>plugin</code>: Reporting formats (e.g., <code>html</code>, <code>json</code>).</li>
+<li><code>tags</code>: Filters scenarios to run (e.g., <code>@smoke</code>).</li>
+<li><code>dryRun</code>: Checks for undefined steps without execution.</li>
+</ul>
+</li>
+</ul>
+<h3 id="6-what-is-a-singleton-design-pattern">6. What is a Singleton Design Pattern?</h3>
+<p>A Singleton is a creational design pattern that restricts the instantiation of a class to a <strong>single object</strong>. It ensures that there&rsquo;s only one instance of the class and provides a global point of access to that instance.</p>
+<ul>
+<li><strong>Use in Project:</strong> &ldquo;In our framework, we implemented the <code>WebDriverFactory</code> class using the Singleton pattern. This ensures that only one instance of the WebDriver (browser) is created and managed throughout the test run, which is crucial for controlling browser lifecycle and preventing multiple, unmanaged browser instances.&rdquo;</li>
+</ul>
+<h3 id="7-what-are-the-advantages-and-disadvantages-of-the-page-object-model">7. What are the advantages and disadvantages of the Page Object Model?</h3>
+<ul>
+<li><strong>Advantages:</strong>
+<ul>
+<li><strong>Maintainability:</strong> Changes to the UI only require updates in the page object, not across multiple test scripts.</li>
+<li><strong>Reusability:</strong> Page object methods can be reused across different test cases.</li>
+<li><strong>Readability:</strong> Test scripts become cleaner, more business-readable, and free of UI implementation details.</li>
+<li><strong>Abstraction:</strong> Abstracts the technical details of the UI from the test logic.</li>
+</ul>
+</li>
+<li><strong>Disadvantages:</strong>
+<ul>
+<li><strong>Initial Setup Time:</strong> Requires more time to set up initially.</li>
+<li><strong>Increased Codebase:</strong> Can lead to a larger number of classes for complex applications.</li>
+<li><strong>Learning Curve:</strong> Team members need to understand the pattern.</li>
+</ul>
+</li>
+</ul>
+<h3 id="8-what-is-selenium-grid">8. What is Selenium Grid?</h3>
+<p>Selenium Grid is a proxy server that allows you to run Selenium WebDriver tests in parallel on multiple machines, using different browsers and operating systems. It consists of a Hub (central server) and multiple Nodes (machines running browser instances).</p>
+<h3 id="9-explain-the-webdriver-create-statement-line">9. Explain the WebDriver create statement line?</h3>
+<p><code>WebDriver driver = new ChromeDriver();</code></p>
+<ul>
+<li><strong><code>WebDriver</code>:</strong> This is an <strong>interface</strong> in Selenium. It defines the contract for browser automation.</li>
+<li><strong><code>driver</code>:</strong> This is a reference variable of type <code>WebDriver</code>.</li>
+<li><strong><code>new ChromeDriver()</code>:</strong> This creates an actual object (an instance) of the <code>ChromeDriver</code> class, which is a concrete implementation of the <code>WebDriver</code> interface specific to Google Chrome.</li>
+<li><strong>Polymorphism:</strong> This line demonstrates polymorphism (coding to an interface), allowing the <code>driver</code> variable to control any browser that implements the <code>WebDriver</code> interface.</li>
+</ul>
+<h3 id="11-explain-the-maven-lifecycle">11. Explain the Maven Lifecycle?</h3>
+<p>Maven has three built-in build lifecycles, each composed of phases:</p>
+<ol>
+<li><strong><code>default</code>:</strong> Handles project deployment (e.g., <code>validate</code>, <code>compile</code>, <code>test</code>, <code>package</code>, <code>install</code>, <code>deploy</code>). <code>mvn test</code> runs up to the <code>test</code> phase.</li>
+<li><strong><code>clean</code>:</strong> Handles project cleaning (e.g., <code>clean</code> phase deletes <code>target</code> directory).</li>
+<li><strong><code>site</code>:</strong> Handles creation of project site documentation.</li>
+</ol>
+<h3 id="12-how-do-you-run-the-failed-test-cases">12. How do you run the failed test cases?</h3>
+<ul>
+<li><strong>TestNG:</strong> <code>testng-failed.xml</code> is generated after a run. Execute this XML file.</li>
+<li><strong>Cucumber:</strong> You can specify <code>@CucumberOptions(tags = &quot;@rerun&quot;)</code> if your framework supports it after a rerun file is generated, or run a dynamically created rerun file.</li>
+<li><strong><code>IRetryAnalyzer</code> (TestNG):</strong> Implement this interface to automatically re-run failed tests a specified number of times.</li>
+</ul>
+<h3 id="13-how-do-you-generate-reports-in-selenium">13. How do you generate Reports in Selenium?</h3>
+<p>Selenium WebDriver itself doesn&rsquo;t generate reports. It&rsquo;s usually done via:</p>
+<ul>
+<li><strong>TestNG/JUnit:</strong> These test runners generate basic HTML/XML reports.</li>
+<li><strong>Third-party Libraries:</strong> Integrate tools like <strong>ExtentReports</strong> or <strong>Allure Reports</strong> with your test runner (e.g., via TestNG listeners) to produce rich, interactive HTML reports.</li>
+</ul>
+<h3 id="14-how-do-you-customise-reports-after-your-test-execution">14. How do you customise reports after your test execution?</h3>
+<p>&ldquo;We customize our reports using <strong>ExtentReports</strong>.</p>
+<ul>
+<li><strong>Configuration:</strong> We configure the <code>ExtentSparkReporter</code> to set the report name, theme, and title.</li>
+<li><strong>Logging:</strong> We use <code>ExtentTest</code> objects to log test steps, status (pass/fail/skip), and embed screenshots for failures.</li>
+<li><strong>Listeners:</strong> All this is automated via a custom TestNG <code>ITestListener</code> that manages the lifecycle of the ExtentReport and logs events.&rdquo;</li>
+</ul>
+<h3 id="15-what-kind-of-waits-are-there-in-selenium">15. What kind of waits are there in Selenium?</h3>
+<ul>
+<li><strong>Implicit Wait (Avoid):</strong> Global setting.</li>
+<li><strong>Explicit Wait (Recommended):</strong> <code>WebDriverWait</code> for specific <code>ExpectedConditions</code>.</li>
+<li><strong>Fluent Wait:</strong> Highly configurable explicit wait.</li>
+</ul>
+<h3 id="16-write-the-code-snippet-for-explicit-wait">16. Write the Code Snippet for Explicit Wait?</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">org.openqa.selenium.support.ui.ExpectedConditions</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">org.openqa.selenium.support.ui.WebDriverWait</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">java.time.Duration</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">waitForElement</span>(<span style="color:#268bd2">WebDriver</span> <span style="color:#268bd2">driver</span>, <span style="color:#268bd2">By</span> <span style="color:#268bd2">locator</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">WebDriverWait</span> <span style="color:#268bd2">wait</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">WebDriverWait</span>(<span style="color:#268bd2">driver</span>, <span style="color:#268bd2">Duration</span>.<span style="color:#268bd2">ofSeconds</span>(<span style="color:#268bd2">15</span>)); <span style="color:#93a1a1;font-style:italic">// Max 15 seconds</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">WebElement</span> <span style="color:#268bd2">element</span> = <span style="color:#268bd2">wait</span>.<span style="color:#268bd2">until</span>(<span style="color:#268bd2">ExpectedConditions</span>.<span style="color:#268bd2">elementToBeClickable</span>(<span style="color:#268bd2">locator</span>));
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">element</span>.<span style="color:#268bd2">click</span>(); <span style="color:#93a1a1;font-style:italic">// Now safe to click</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="17-write-the-code-snippet-for-drag-and-drop-in-selenium">17. Write the Code Snippet for Drag and Drop in Selenium?</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">org.openqa.selenium.interactions.Actions</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">dragAndDropElement</span>(<span style="color:#268bd2">WebDriver</span> <span style="color:#268bd2">driver</span>, <span style="color:#268bd2">WebElement</span> <span style="color:#268bd2">source</span>, <span style="color:#268bd2">WebElement</span> <span style="color:#268bd2">target</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">Actions</span> <span style="color:#268bd2">actions</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">Actions</span>(<span style="color:#268bd2">driver</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">actions</span>.<span style="color:#268bd2">dragAndDrop</span>(<span style="color:#268bd2">source</span>, <span style="color:#268bd2">target</span>).<span style="color:#268bd2">perform</span>();
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="18-how-do-you-switch-to-different-windows-in-selenium">18. How do you switch to different Windows in Selenium?</h3>
+<p>Using window handles.</p>
+<ol>
+<li>Get all handles: <code>Set&lt;String&gt; allHandles = driver.getWindowHandles();</code></li>
+<li>Iterate to find the target window (e.g., by title): <code>for (String handle : allHandles) { driver.switchTo().window(handle); if (driver.getTitle().contains(&quot;Desired Title&quot;)) break; }</code></li>
+<li>Switch back: <code>driver.switchTo().window(originalHandle);</code></li>
+</ol>
+<h3 id="19-why-do-we-use-set-in-window-handles">19. Why do we use SET in Window Handles?</h3>
+<p><code>Set&lt;String&gt;</code> is used for window handles because each window handle is <strong>unique</strong>, and the order in which they appear is <strong>not guaranteed</strong> to be consistent across different test runs or browsers. A <code>Set</code> naturally handles unique, unordered collections.</p>
+<h3 id="20-write-the-code-for-taking-screenshot-in-selenium">20. Write the Code for taking screenshot in Selenium?</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">org.openqa.selenium.OutputType</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">org.openqa.selenium.TakesScreenshot</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">java.io.File</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">org.apache.commons.io.FileUtils</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">takeScreenshot</span>(<span style="color:#268bd2">WebDriver</span> <span style="color:#268bd2">driver</span>, <span style="color:#268bd2">String</span> <span style="color:#268bd2">filePath</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">File</span> <span style="color:#268bd2">src</span> = ((<span style="color:#268bd2">TakesScreenshot</span>) <span style="color:#268bd2">driver</span>).<span style="color:#268bd2">getScreenshotAs</span>(<span style="color:#268bd2">OutputType</span>.<span style="color:#268bd2">FILE</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">FileUtils</span>.<span style="color:#268bd2">copyFile</span>(<span style="color:#268bd2">src</span>, <span style="color:#859900">new</span> <span style="color:#268bd2">File</span>(<span style="color:#268bd2">filePath</span>));
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="21-what-is-the-difference-between-scenario-and-scenario-outline-in-cucumber">21. What is the difference between Scenario and Scenario Outline in Cucumber?</h3>
+<ul>
+<li><strong><code>Scenario</code>:</strong> A single, concrete test case that runs once.</li>
+<li><strong><code>Scenario Outline</code>:</strong> A template for a scenario that runs multiple times with different data provided in an <code>Examples</code> table. Used for data-driven testing.</li>
+</ul>
+<h3 id="22-how-do-you-pass-data-to-your-selenium-scripts">22. How do you pass data to your Selenium Scripts?</h3>
+<ul>
+<li><strong><code>@DataProvider</code> (TestNG):</strong> Reads data from external sources (JSON, Excel) and supplies it to test methods.</li>
+<li><strong>Cucumber <code>Scenario Outline</code> with <code>Examples</code> table:</strong> For data-driven BDD.</li>
+<li><strong>Configuration Files:</strong> <code>.properties</code> or JSON files for environment-specific parameters.</li>
+</ul>
+<h3 id="23-how-do-you-decide-the-priorities-of-your-test-cases">23. How do you decide the priorities of your Test Cases?</h3>
+<p>Test case priorities are typically determined by:</p>
+<ul>
+<li><strong>Business Criticality:</strong> How important is the feature to the business? (e.g., Login, Checkout are high).</li>
+<li><strong>Frequency of Use:</strong> How often is the feature used by end-users?</li>
+<li><strong>Risk Assessment:</strong> What is the impact if this feature fails?</li>
+<li><strong>Dependency:</strong> Tests that are prerequisites for other tests might have higher priority.</li>
+</ul>
+<h3 id="24-if-you-want-to-execute-one-test-case-again-and-again-how-do-you-do-that">24. If you want to execute one test case again and again how do you do that?</h3>
+<ul>
+<li><strong>TestNG <code>invocationCount</code>:</strong> Use <code>@Test(invocationCount = X)</code> to run a test method X times.</li>
+<li><strong>Loops (in code):</strong> Wrap the test logic in a <code>for</code> loop, though generally less preferred for TestNG.</li>
+</ul>
+<h3 id="25-what-are-the-different-annotations-used-in-testng">25. What are the different annotations used in TestNG?</h3>
+<ul>
+<li><code>@Test</code></li>
+<li><code>@BeforeSuite</code>, <code>@AfterSuite</code></li>
+<li><code>@BeforeTest</code>, <code>@AfterTest</code></li>
+<li><code>@BeforeClass</code>, <code>@AfterClass</code></li>
+<li><code>@BeforeMethod</code>, <code>@AfterMethod</code></li>
+<li><code>@DataProvider</code>, <code>@Parameters</code></li>
+<li><code>@Listeners</code></li>
+</ul>
+<h3 id="26-write-the-hierarchy-of-annotations-in-testng">26. Write the hierarchy of annotations in TestNG?</h3>
+<p><code>@BeforeSuite -&gt; @BeforeTest -&gt; @BeforeClass -&gt; @BeforeMethod -&gt; @Test -&gt; @AfterMethod -&gt; @AfterClass -&gt; @AfterTest -&gt; @AfterSuite</code>.</p>
+<h3 id="27-what-is-the-defect-life-cycle">27. What is the defect life cycle?</h3>
+<p>(Bug life cycle). New -&gt; Open/Assigned -&gt; Fixed -&gt; Ready for QA -&gt; Closed (or Reopened).</p>
+<h3 id="28-what-is-the-difference-between-agile-and-waterfall-model">28. What is the difference between Agile and Waterfall Model?</h3>
+<ul>
+<li><strong>Agile:</strong> Iterative, incremental, flexible, customer collaboration, short sprints.</li>
+<li><strong>Waterfall:</strong> Linear, sequential, rigid, phases completed in order, less flexible to changes.</li>
+</ul>
+<h3 id="29-what-is-the-difference-between-201-and-204-status-code">29. What is the difference between 201 and 204 Status Code?</h3>
+<ul>
+<li><strong><code>201 Created</code>:</strong> Indicates successful resource <strong>creation</strong> (typically after a <code>POST</code>). Response often contains the newly created resource or a link to it.</li>
+<li><strong><code>204 No Content</code>:</strong> Indicates successful request processing, but there is <strong>no content</strong> to return in the response body (typically after a <code>DELETE</code> or <code>PUT</code> that doesn&rsquo;t need to send data back).</li>
+</ul>
+<h3 id="30-what-is-the-difference-between-401-and-403-status-code">30. What is the difference between 401 and 403 Status Code?</h3>
+<ul>
+<li><strong><code>401 Unauthorized</code>:</strong> Client <strong>lacks valid authentication credentials</strong>. You are not logged in or your token is invalid.</li>
+<li><strong><code>403 Forbidden</code>:</strong> Client is <strong>authenticated, but does not have permission</strong> to access the requested resource. You are logged in, but you&rsquo;re not allowed to do that.</li>
+</ul>
+<h3 id="31-what-are-the-components-of-an-api-request">31. What are the components of an API Request?</h3>
+<ol>
+<li><strong>URL (Endpoint):</strong> The address of the resource (e.g., <code>https://api.example.com/users</code>).</li>
+<li><strong>HTTP Method (Verb):</strong> <code>GET</code>, <code>POST</code>, <code>PUT</code>, <code>DELETE</code>.</li>
+<li><strong>Headers:</strong> Metadata about the request (e.g., <code>Content-Type</code>, <code>Authorization</code>).</li>
+<li><strong>Request Body (Payload):</strong> Data sent with the request (for <code>POST</code>, <code>PUT</code>, <code>PATCH</code>), usually in JSON format.</li>
+</ol>
+<h3 id="32-what-is-the-difference-between-query-parameters-and-path-parameters">32. What is the difference between Query Parameters and Path Parameters?</h3>
+<ul>
+<li><strong>Query Parameters:</strong> Key-value pairs after <code>?</code> in URL, used for filtering, sorting (e.g., <code>/products?category=electronics</code>).</li>
+<li><strong>Path Parameters:</strong> Variables embedded directly in the URL path, used to identify a specific resource (e.g., <code>/users/{id}</code>).</li>
+</ul>
+<h3 id="33-how-do-you-resolve-conflicts-in-git">33. How do you resolve Conflicts in Git?</h3>
+<ol>
+<li>Pull latest changes from remote.</li>
+<li>Git will indicate conflicted files.</li>
+<li>Manually edit the conflicted files, choosing which changes to keep.</li>
+<li><code>git add</code> the resolved files.</li>
+<li><code>git commit</code> to finalize the merge.</li>
+</ol>
+<h3 id="34-what-is-the-difference-between-git-pull-and-git-patch">34. What is the difference between git pull and git patch?</h3>
+<ul>
+<li><strong><code>git pull</code>:</strong> Fetches changes from a remote repository and automatically merges them into your current local branch. It&rsquo;s a combination of <code>git fetch</code> and <code>git merge</code>.</li>
+<li><strong><code>git patch</code>:</strong> (<code>git format-patch</code> to create, <code>git apply</code> to apply) Creates a small file (a &ldquo;patch&rdquo;) that represents the changes between two commits. This patch file can then be emailed or shared, and another developer can apply these changes to their repository. It&rsquo;s a way to transfer changes without a full merge, often used in open-source projects or when direct repository access isn&rsquo;t available.</li>
+</ul>
+<h3 id="35-explain-the-use-of-jenkins-in-the-automation-framework">35. Explain the use of Jenkins in the Automation Framework?</h3>
+<p>Jenkins serves as our <strong>Continuous Integration (CI)</strong> server. It automates the execution of our test automation framework.</p>
+<ul>
+<li><strong>Triggers:</strong> Configured to automatically run our tests (unit, API, UI regression) upon every code commit or on a schedule.</li>
+<li><strong>Execution:</strong> Pulls the latest code, builds the project (Maven), and executes the test suite.</li>
+<li><strong>Reporting:</strong> Publishes test reports and notifies the team of failures.</li>
+<li><strong>Benefits:</strong> Provides immediate feedback on code quality, helps catch bugs early, and ensures the test suite is always running against the latest code.</li>
+</ul>
+
+    </div>
+</article>
+
+<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
+    
+    <span></span>
+    
+    
+    <a href="//localhost:1315/12_company_based_questions/valuelabs/" class="nav-btn">Up</a>
+
+    
+    <span></span>
+    
+</div>
+
+    </main>
+
+    <footer class="footer">
+        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
+    </footer>
+</body>
+</html>

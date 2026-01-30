@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1315&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Colan Infotech | SDET Interview Preparation Kit</title>
+    <link rel="stylesheet" href="//localhost:1315/css/style.css">
+    
+    
+    <link rel="stylesheet" href="//localhost:1315/lib/katex/katex.min.css">
+    <script defer src="//localhost:1315/lib/katex/katex.min.js"></script>
+    <script defer src="//localhost:1315/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="/">Index</a></li>
+                
+            </ul>
+        </nav>
+        <div class="site-breadcrumb">
+            <a href="/">Home</a>
+            
+            
+            
+
+            
+            
+                <span>/</span> Colan Infotech
+            
+        </div>
+    </header>
+
+    <main>
+        
+<article>
+    <div class="category-title" style="margin-bottom: 0.5rem;">Colan Infotech Interview Questions</div>
+    <h1>Colan Infotech</h1>
+    <div class="content-body" style="margin-top: 2rem;">
+        <hr>
+<h2 id="original-questions-untouched">Original Questions (UNTOUCHED)</h2>
+<p>Colan Infotech Interview Questions:
+Round 1:
+Reverse the string
+Browser launch code
+About Get and navigate
+Git steps
+Bdd explaination
+Introduce urself
+Find element and find elements difference
+Explain Oops concept
+Alert handle
+Frame handle
+Get window handle
+Select class
+Broken links handle
+Select class alternate
+Hard and soft assert
+Return type of find element and find elements.
+Frames
+Difference between manual and automation responsibilities
+Critical bug identify in your project
+Reason for change</p>
+<hr>
+<h2 id="answers-no-bs-java-qa--sdet-explanations">Answers (No-BS Java QA / SDET Explanations)</h2>
+<h3 id="reverse-the-string">Reverse the string</h3>
+<p>The most efficient and readable way is using <code>StringBuilder</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#268bd2">String</span> <span style="color:#268bd2">reverseString</span>(<span style="color:#268bd2">String</span> <span style="color:#268bd2">str</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">str</span> == <span style="color:#859900;font-weight:bold">null</span>) <span style="color:#859900">return</span> <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#859900">new</span> <span style="color:#268bd2">StringBuilder</span>(<span style="color:#268bd2">str</span>).<span style="color:#268bd2">reverse</span>().<span style="color:#268bd2">toString</span>();
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="browser-launch-code">Browser launch code</h3>
+<p>This typically involves setting up the WebDriver and initializing a browser instance.</p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">org.openqa.selenium.WebDriver</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">org.openqa.selenium.chrome.ChromeDriver</span>;
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// import org.openqa.selenium.firefox.FirefoxDriver;</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// import org.openqa.selenium.edge.EdgeDriver;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900">class</span> <span style="color:#cb4b16">BrowserLauncher</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">WebDriver</span> <span style="color:#268bd2">launchChrome</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Option 1: Using WebDriverManager (recommended for local execution)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// WebDriverManager.chromedriver().setup();</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Option 2: Manually setting system property (if driver is on PATH or specified)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">System</span>.<span style="color:#268bd2">setProperty</span>(<span style="color:#2aa198">&#34;webdriver.chrome.driver&#34;</span>, <span style="color:#2aa198">&#34;/path/to/chromedriver&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">WebDriver</span> <span style="color:#268bd2">driver</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">ChromeDriver</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">driver</span>.<span style="color:#268bd2">manage</span>().<span style="color:#268bd2">window</span>().<span style="color:#268bd2">maximize</span>(); <span style="color:#93a1a1;font-style:italic">// Maximise browser window</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">driver</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><blockquote>
+<p><strong>Side note:</strong> In a real framework, this would be handled in a <code>BaseTest</code> class&rsquo;s <code>@BeforeMethod</code> with proper configuration from <code>testng.xml</code> or properties files.</p>
+</blockquote>
+<h3 id="about-get-and-navigate">About Get and navigate</h3>
+<ul>
+<li><code>driver.get(url)</code>: Loads a new web page and waits for it to load.</li>
+<li><code>driver.navigate().to(url)</code>: Does the same as <code>get()</code>, but <code>driver.navigate()</code> also provides additional methods to move back, forward, and refresh the page (<code>back()</code>, <code>forward()</code>, <code>refresh()</code>).</li>
+</ul>
+<h3 id="git-steps">Git steps</h3>
+<p>These are the core Git workflow steps:</p>
+<ol>
+<li><code>git add .</code> (or <code>git add &lt;file&gt;</code>): Stage changes.</li>
+<li><code>git commit -m &quot;Your commit message&quot;</code>: Commit staged changes to local repository.</li>
+<li><code>git push origin &lt;branch_name&gt;</code>: Push committed changes to the remote repository.</li>
+<li><code>git pull origin &lt;branch_name&gt;</code>: Fetch and merge changes from the remote repository.</li>
+</ol>
+<h3 id="bdd-explaination">Bdd explaination</h3>
+<p>Behavior-Driven Development (BDD) is an agile software development process that encourages collaboration among developers, QA, and business stakeholders. It uses a common, human-readable language (Gherkin, e.g., <code>Given/When/Then</code>) to describe application behavior from the user&rsquo;s perspective. Tools like Cucumber then execute these specifications as automated tests, making the tests themselves living documentation.</p>
+<h3 id="introduce-urself">Introduce urself</h3>
+<p>Standard opener. Keep it concise, professional, and highlight your relevant experience and skills.</p>
+<h3 id="find-element-and-find-elements-difference">Find element and find elements difference</h3>
+<ul>
+<li><code>findElement(By locator)</code>: Returns the <strong>first</strong> matching <code>WebElement</code>. Throws <code>NoSuchElementException</code> if no element is found.</li>
+<li><code>findElements(By locator)</code>: Returns a <code>List&lt;WebElement&gt;</code> containing <strong>all</strong> matching elements. Returns an <strong>empty list</strong> if no elements are found (does not throw an exception).</li>
+</ul>
+<h3 id="explain-oops-concept">Explain Oops concept</h3>
+<p>The four pillars:</p>
+<ul>
+<li><strong>Encapsulation:</strong> Hiding data and implementation details (e.g., Page Object Model).</li>
+<li><strong>Abstraction:</strong> Showing only essential features, hiding background details (e.g., <code>WebDriver</code> interface).</li>
+<li><strong>Inheritance:</strong> Creating new classes from existing ones to reuse code (e.g., <code>BaseTest</code>).</li>
+<li><strong>Polymorphism:</strong> &ldquo;Many forms.&rdquo; Method overloading and overriding.</li>
+</ul>
+<h3 id="alert-handle">Alert handle</h3>
+<p>For native browser JavaScript alerts (not HTML modals), you use <code>driver.switchTo().alert()</code>.</p>
+<ul>
+<li><code>alert.accept()</code>: Click &ldquo;OK&rdquo;.</li>
+<li><code>alert.dismiss()</code>: Click &ldquo;Cancel&rdquo; or close.</li>
+<li><code>alert.getText()</code>: Get the text of the alert.</li>
+<li><code>alert.sendKeys(&quot;text&quot;)</code>: Type into a prompt alert.</li>
+</ul>
+<h3 id="frame-handle">Frame handle</h3>
+<p>For HTML <code>iframe</code>s, you must switch Selenium&rsquo;s context.</p>
+<ol>
+<li><code>driver.switchTo().frame(&quot;frameNameOrId&quot;)</code> (by name or ID).</li>
+<li><code>driver.switchTo().frame(index)</code> (by 0-based index).</li>
+<li><code>driver.switchTo().frame(webElement)</code> (by locating the frame element itself).
+After interacting with elements inside the frame, switch back to the main content: <code>driver.switchTo().defaultContent()</code>.</li>
+</ol>
+<h3 id="get-window-handle">Get window handle</h3>
+<p>This is about <code>driver.getWindowHandle()</code> (current window) and <code>driver.getWindowHandles()</code> (all open windows). Used to switch between multiple browser windows or tabs.</p>
+<h3 id="select-class">Select class</h3>
+<p>Selenium&rsquo;s <code>Select</code> class is used to interact with <code>&lt;select&gt;</code> HTML dropdown elements.</p>
+<ul>
+<li><code>new Select(WebElement dropdownElement)</code></li>
+<li><code>selectByVisibleText(&quot;Option Text&quot;)</code></li>
+<li><code>selectByValue(&quot;option_value&quot;)</code></li>
+<li><code>selectByIndex(index)</code></li>
+</ul>
+<h3 id="broken-links-handle">Broken links handle</h3>
+<p>You find all <code>&lt;a&gt;</code> elements, extract their <code>href</code> attributes, and then use a Java HTTP client (<code>HttpURLConnection</code>) to send a <code>HEAD</code> request to each URL. Check for HTTP status codes <code>400</code> or higher to identify broken links.</p>
+<h3 id="select-class-alternate">Select class alternate</h3>
+<p>If a dropdown is <em>not</em> a standard <code>&lt;select&gt;</code> HTML element (e.g., it&rsquo;s a custom-built dropdown using <code>div</code>s and <code>span</code>s), you cannot use the <code>Select</code> class.</p>
+<ul>
+<li>You handle it like any other web element:
+<ol>
+<li>Click the dropdown&rsquo;s visible element to expand the options.</li>
+<li>Use an explicit wait to wait for the desired option to become visible.</li>
+<li>Click the desired option.</li>
+</ol>
+</li>
+</ul>
+<h3 id="hard-and-soft-assert">Hard and soft assert</h3>
+<ul>
+<li><strong>Hard Assert:</strong> (<code>org.testng.Assert</code>) Fails immediately and stops the test execution on the first assertion failure.</li>
+<li><strong>Soft Assert:</strong> (<code>org.testng.asserts.SoftAssert</code>) Records all failures during the test but continues execution. Only fails the test at the very end when <code>softAssert.assertAll()</code> is called.</li>
+</ul>
+<h3 id="return-type-of-find-element-and-find-elements">Return type of find element and find elements.</h3>
+<ul>
+<li><code>findElement()</code>: Returns a <code>WebElement</code>.</li>
+<li><code>findElements()</code>: Returns <code>List&lt;WebElement&gt;</code>.</li>
+</ul>
+<h3 id="frames">Frames</h3>
+<p>Same as &ldquo;Frame handle&rdquo;. It&rsquo;s about HTML <code>iframe</code>s.</p>
+<h3 id="difference-between-manual-and-automation-responsibilities">Difference between manual and automation responsibilities</h3>
+<ul>
+<li><strong>Manual Tester:</strong> Focuses on exploratory testing, usability, ad-hoc testing, and scenarios where human intuition is crucial. Writes manual test cases.</li>
+<li><strong>Automation Engineer/SDET:</strong> Focuses on designing, building, and maintaining automated test suites (unit, API, UI). Integrates tests into CI/CD. Often performs framework development and contributes to test strategy.
+A good QA team has both roles. Automation handles the repetitive, regression checks. Manual/exploratory testing finds the new and complex bugs.</li>
+</ul>
+<h3 id="critical-bug-identify-in-your-project">Critical bug identify in your project</h3>
+<p>Be prepared with a real example.
+&ldquo;In my last project, I identified a critical bug where, under specific conditions (e.g., using a non-standard browser and certain privacy settings), the &lsquo;Forgot Password&rsquo; functionality would intermittently fail with an internal server error. This meant users could be locked out of their accounts. It was critical because it directly impacted user access and could lead to support ticket overflow.&rdquo;</p>
+<h3 id="reason-for-change">Reason for change</h3>
+<p>Standard interview question. Positive, forward-looking reasons.
+&ldquo;I&rsquo;m looking for a new challenge in a dynamic environment where I can apply my automation skills to a more complex product/system. I&rsquo;m also keen on opportunities for professional growth and contributing to test strategy at a higher level.&rdquo;</p>
+
+    </div>
+</article>
+
+<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
+    
+    <span></span>
+    
+    
+    <a href="//localhost:1315/12_company_based_questions/colan-infotech/" class="nav-btn">Up</a>
+
+    
+    <span></span>
+    
+</div>
+
+    </main>
+
+    <footer class="footer">
+        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
+    </footer>
+</body>
+</html>

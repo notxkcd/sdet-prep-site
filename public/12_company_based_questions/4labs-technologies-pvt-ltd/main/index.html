@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1315&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>4Labs Technologies Pvt Ltd | SDET Interview Preparation Kit</title>
+    <link rel="stylesheet" href="//localhost:1315/css/style.css">
+    
+    
+    <link rel="stylesheet" href="//localhost:1315/lib/katex/katex.min.css">
+    <script defer src="//localhost:1315/lib/katex/katex.min.js"></script>
+    <script defer src="//localhost:1315/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="/">Index</a></li>
+                
+            </ul>
+        </nav>
+        <div class="site-breadcrumb">
+            <a href="/">Home</a>
+            
+            
+            
+
+            
+            
+                <span>/</span> 4Labs Technologies Pvt Ltd
+            
+        </div>
+    </header>
+
+    <main>
+        
+<article>
+    <div class="category-title" style="margin-bottom: 0.5rem;">4Labs Technologies Pvt Ltd Interview Questions</div>
+    <h1>4Labs Technologies Pvt Ltd</h1>
+    <div class="content-body" style="margin-top: 2rem;">
+        <hr>
+<h2 id="original-questions-untouched">Original Questions (UNTOUCHED)</h2>
+<p>Questions asked in 4Labs Technologies Pvt Ltd
+Self intro
+Xpath uses
+Assertion in selenium
+Headerfile
+Screenshot
+How to hanlde window in selenium
+Mobile application
+moveToElement,doubleClick uses
+POM in selenium usage
+Selenium Grid usage
+Types of exception in selenium</p>
+<hr>
+<h2 id="answers-no-bs-java-qa--sdet-explanations">Answers (No-BS Java QA / SDET Explanations)</h2>
+<h3 id="self-intro">Self intro</h3>
+<p>Standard. Keep it brief and focused on your professional experience and relevant skills.</p>
+<h3 id="xpath-uses">Xpath uses</h3>
+<p>XPath is a query language used for selecting nodes from an XML document. In Selenium, it&rsquo;s crucial for navigating and locating elements in HTML documents (which are structured like XML).</p>
+<ul>
+<li><strong>Locating Elements:</strong> When an element doesn&rsquo;t have a stable ID or name, XPath is the most powerful way to find it using its attributes, text, or its relationship to other elements.</li>
+<li><strong>Navigating the DOM:</strong> It allows traversing the DOM both forwards (descendants, siblings) and backwards (parents, ancestors), which CSS selectors cannot do.</li>
+<li><strong>Dynamic Elements:</strong> Essential for creating robust locators for elements whose attributes change dynamically, using functions like <code>contains()</code>, <code>starts-with()</code>, or axes.</li>
+</ul>
+<h3 id="assertion-in-selenium">Assertion in selenium</h3>
+<p>Assertions are used to verify that the actual behavior of the application matches the expected behavior. If an assertion fails, the test fails.</p>
+<ul>
+<li><strong>Hard Assert (<code>org.testng.Assert</code> or <code>org.junit.Assert</code>):</strong>
+<ul>
+<li>When a hard assertion fails, the test method is <strong>immediately terminated</strong> and marked as failed.</li>
+<li>Use for critical checks where further execution is pointless (e.g., login failed, so no point checking dashboard).</li>
+<li>Example: <code>Assert.assertEquals(driver.getTitle(), &quot;Expected Title&quot;);</code></li>
+</ul>
+</li>
+<li><strong>Soft Assert (<code>org.testng.asserts.SoftAssert</code>):</strong>
+<ul>
+<li>When a soft assertion fails, the test method <strong>continues execution</strong>, but the failure is recorded.</li>
+<li>At the end of the test, <code>softAssert.assertAll()</code> is called to report all accumulated failures. If any soft assertions failed, the test method will then be marked as failed.</li>
+<li>Use when you want to check multiple conditions on a page and collect all failures, rather than stopping at the first one.</li>
+</ul>
+</li>
+</ul>
+<h3 id="headerfile">Headerfile</h3>
+<p>The term &ldquo;header file&rdquo; (<code>.h</code> or <code>.hpp</code>) is specific to C/C++ programming. It&rsquo;s where declarations (function prototypes, class definitions) are stored, separated from their implementations.</p>
+<p><strong>In Java, there is no direct equivalent to a header file.</strong> Java uses packages and imports to manage code organization and dependencies. The compiler gets all the necessary information directly from the <code>.java</code> source files or compiled <code>.class</code> files.</p>
+<p>If the interviewer means something else (e.g., HTTP headers in API testing), clarify the context. But in a Java context, it&rsquo;s a non-term.</p>
+<h3 id="screenshot">Screenshot</h3>
+<p>Taking screenshots is crucial for debugging failed UI tests. When a test fails, a screenshot captured at the moment of failure provides immediate visual context.</p>
+<ul>
+<li><strong>How:</strong> You use Selenium&rsquo;s <code>TakesScreenshot</code> interface.
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#268bd2">File</span> <span style="color:#268bd2">screenshotFile</span> = ((<span style="color:#268bd2">TakesScreenshot</span>)<span style="color:#268bd2">driver</span>).<span style="color:#268bd2">getScreenshotAs</span>(<span style="color:#268bd2">OutputType</span>.<span style="color:#268bd2">FILE</span>);
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">FileUtils</span>.<span style="color:#268bd2">copyFile</span>(<span style="color:#268bd2">screenshotFile</span>, <span style="color:#859900">new</span> <span style="color:#268bd2">File</span>(<span style="color:#2aa198">&#34;target/screenshots/failure.png&#34;</span>));
+</span></span></code></pre></div></li>
+<li><strong>Integration:</strong> Typically integrated into TestNG/JUnit listeners (e.g., <code>onTestFailure()</code> method) so that a screenshot is automatically taken whenever a test fails.</li>
+</ul>
+<h3 id="how-to-hanlde-window-in-selenium">How to hanlde window in selenium</h3>
+<p>This refers to handling multiple browser windows or tabs.</p>
+<ol>
+<li><strong>Get Current Handle:</strong> <code>String originalWindow = driver.getWindowHandle();</code> (unique ID of the current window).</li>
+<li><strong>Trigger New Window:</strong> Perform an action (e.g., click a link) that opens a new window/tab.</li>
+<li><strong>Get All Handles:</strong> <code>Set&lt;String&gt; allWindows = driver.getWindowHandles();</code> (set of all open window IDs).</li>
+<li><strong>Switch to New:</strong> Loop through <code>allWindows</code> to find the handle that is not <code>originalWindow</code>, then <code>driver.switchTo().window(newWindowHandle);</code>.</li>
+<li><strong>Interact:</strong> Perform actions in the new window.</li>
+<li><strong>Close &amp; Switch Back:</strong> <code>driver.close();</code> (closes the current window) then <code>driver.switchTo().window(originalWindow);</code> (switches back to the original).</li>
+</ol>
+<h3 id="mobile-application">Mobile application</h3>
+<p>Testing of applications designed for mobile devices. This can be:</p>
+<ul>
+<li><strong>Native Mobile Apps:</strong> Applications developed specifically for iOS or Android. Tested using frameworks like <strong>Appium</strong> (which uses the WebDriver protocol) or native testing frameworks (XCUITest for iOS, Espresso for Android).</li>
+<li><strong>Mobile Web Apps:</strong> Websites accessed through a mobile browser. Tested using standard Selenium/WebDriver, but configuring the browser to emulate a mobile device or running tests on real mobile devices/emulators.</li>
+</ul>
+<h3 id="movetoelementdoubleclick-uses">moveToElement,doubleClick uses</h3>
+<p>These are methods of the Selenium <code>Actions</code> class.</p>
+<ul>
+<li><strong><code>moveToElement(WebElement target)</code>:</strong> Simulates hovering the mouse cursor over a specific <code>WebElement</code>. Useful for testing dropdown menus that appear on hover, or tooltips.</li>
+<li><strong><code>doubleClick(WebElement target)</code>:</strong> Simulates a double-click action on a <code>WebElement</code>.</li>
+</ul>
+<p>Both are part of building complex user gestures that are then executed by calling <code>.perform()</code>.</p>
+<h3 id="pom-in-selenium-usage">POM in selenium usage</h3>
+<p>POM here means Page Object Model. It&rsquo;s a design pattern, not a tool, for making UI automation tests more maintainable and readable.</p>
+<ul>
+<li><strong>How:</strong> Each page (or significant component) of the web application gets its own Java class.</li>
+<li><strong>Content:</strong> This class encapsulates all the WebElements (locators) and all the interactions (methods) possible on that page.</li>
+<li><strong>Usage:</strong> Test scripts then interact with the pages through these Page Object methods, abstracting away the low-level Selenium details.</li>
+<li><strong>Benefit:</strong> If the UI changes, you only update the Page Object class, not every test script that uses that page.</li>
+</ul>
+<h3 id="selenium-grid-usage">Selenium Grid usage</h3>
+<p>Selenium Grid is a proxy server that allows you to run Selenium WebDriver tests in parallel on multiple machines, using different browsers and operating systems.</p>
+<ul>
+<li><strong>Components:</strong>
+<ul>
+<li><strong>Hub:</strong> The central server that receives test requests.</li>
+<li><strong>Nodes:</strong> The machines (physical or virtual) that actually run the WebDriver instances (browsers).</li>
+</ul>
+</li>
+<li><strong>Purpose:</strong>
+<ul>
+<li><strong>Scale Test Execution:</strong> Run large test suites much faster by distributing them.</li>
+<li><strong>Cross-Browser/Platform Testing:</strong> Test your application simultaneously across various browser-OS combinations.</li>
+</ul>
+</li>
+<li><strong>How it works:</strong> Your test script sends commands to the Hub, which then routes them to an available Node that matches the requested capabilities (e.g., &ldquo;Chrome on Windows 10&rdquo;).</li>
+</ul>
+<h3 id="types-of-exception-in-selenium">Types of exception in selenium</h3>
+<p>Common Selenium-specific exceptions:</p>
+<ul>
+<li><strong><code>NoSuchElementException</code></strong>: Element specified by the locator is not found.</li>
+<li><strong><code>StaleElementReferenceException</code></strong>: The element reference is no longer valid because the DOM has changed.</li>
+<li><strong><code>TimeoutException</code></strong>: An explicit wait condition was not met within the specified time limit.</li>
+<li><strong><code>ElementNotInteractableException</code></strong>: Element is found but cannot be interacted with (e.g., hidden, disabled, covered).</li>
+<li><strong><code>InvalidSelectorException</code></strong>: The syntax of the XPath or CSS selector is incorrect.</li>
+<li><strong><code>WebDriverException</code></strong>: A generic exception for various WebDriver-related issues.</li>
+</ul>
+
+    </div>
+</article>
+
+<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
+    
+    <span></span>
+    
+    
+    <a href="//localhost:1315/12_company_based_questions/4labs-technologies-pvt-ltd/" class="nav-btn">Up</a>
+
+    
+    <span></span>
+    
+</div>
+
+    </main>
+
+    <footer class="footer">
+        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
+    </footer>
+</body>
+</html>

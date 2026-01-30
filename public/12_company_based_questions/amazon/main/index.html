@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1315&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amazon | SDET Interview Preparation Kit</title>
+    <link rel="stylesheet" href="//localhost:1315/css/style.css">
+    
+    
+    <link rel="stylesheet" href="//localhost:1315/lib/katex/katex.min.css">
+    <script defer src="//localhost:1315/lib/katex/katex.min.js"></script>
+    <script defer src="//localhost:1315/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="/">Index</a></li>
+                
+            </ul>
+        </nav>
+        <div class="site-breadcrumb">
+            <a href="/">Home</a>
+            
+            
+            
+
+            
+            
+                <span>/</span> Amazon
+            
+        </div>
+    </header>
+
+    <main>
+        
+<article>
+    <div class="category-title" style="margin-bottom: 0.5rem;">Amazon Interview Questions</div>
+    <h1>Amazon</h1>
+    <div class="content-body" style="margin-top: 2rem;">
+        <hr>
+<h2 id="original-questions-untouched">Original Questions (UNTOUCHED)</h2>
+<h2 id="amazon">Amazon</h2>
+<ol>
+<li>Tell about yourself</li>
+<li>Manual vs automation testing</li>
+<li>Prerequisites of automation testing</li>
+<li>I have a prime video app to check if it is opening and write manual test cases</li>
+<li>How will you automate the above test cases</li>
+<li>Locators</li>
+<li>Functions of the driver explain.</li>
+<li>What is regression testing and why it is needed</li>
+<li>What is selenium</li>
+<li>Scenario and test coverage</li>
+<li>What is the test case
+<em>Second round</em>
+All scenario based questions bro</li>
+<li>50 test cases are there, how will you choose which test case to automate</li>
+<li>You said you configure jenkins , does it mean it is 100% CI</li>
+<li>CI/CD, so once we configure to jenkins it do mean it is 100% CI/CD</li>
+<li>What challenge you have faced in last project</li>
+<li>Did your company leave you abruptly.</li>
+<li>Completed graduation in 2012 have only 4.3 experience</li>
+<li>Load vs stress testing</li>
+<li>Smoke vs sanity</li>
+<li>Locators</li>
+<li>Different types of xpath</li>
+<li>Syntax for absolute and relative xpath</li>
+</ol>
+<hr>
+<h2 id="answers-no-bs-java-qa--sdet-explanations">Answers (No-BS Java QA / SDET Explanations)</h2>
+<h3 id="1-tell-about-yourself">1. Tell about yourself</h3>
+<p>Standard.</p>
+<h3 id="2-manual-vs-automation-testing">2. Manual vs automation testing</h3>
+<ul>
+<li><strong>Manual Testing:</strong> A human tester executes test cases, exploring the application to find bugs. It&rsquo;s good for exploratory, usability, and ad-hoc testing where human intuition is valuable. It&rsquo;s slow, prone to human error, and not scalable for regression.</li>
+<li><strong>Automation Testing:</strong> A software tool (like Selenium) executes pre-scripted tests. It&rsquo;s excellent for repetitive tasks like regression testing, performance testing, and data-driven testing. It&rsquo;s fast, reliable (when well-written), and scalable.</li>
+</ul>
+<h3 id="3-prerequisites-of-automation-testing">3. Prerequisites of automation testing</h3>
+<ol>
+<li><strong>Stable Application:</strong> The application under test should be relatively stable. Automating a constantly changing UI is inefficient.</li>
+<li><strong>Clear Test Cases:</strong> A well-defined set of manual test cases to be automated.</li>
+<li><strong>Skilled Resources:</strong> A team with programming knowledge (e.g., Java) and expertise in automation tools (e.g., Selenium).</li>
+<li><strong>Right Tools:</strong> Selection of appropriate tools for the application technology (e.g., Selenium for web, Appium for mobile).</li>
+<li><strong>Dedicated Environment:</strong> A stable test environment is crucial to avoid false failures.</li>
+</ol>
+<h3 id="4-i-have-a-prime-video-app-to-check-if-it-is-opening-and-write-manual-test-cases">4. I have a prime video app to check if it is opening and write manual test cases</h3>
+<p><strong>Feature:</strong> Prime Video App Launch</p>
+<p><strong>Test Cases:</strong></p>
+<ul>
+<li><strong>TC-01 (Happy Path):</strong>
+<ul>
+<li><strong>Step:</strong> Tap on the Prime Video app icon.</li>
+<li><strong>Expected:</strong> App launches, splash screen is displayed, and user is taken to the main home/profile screen within an acceptable time (e.g., &lt; 3 seconds).</li>
+</ul>
+</li>
+<li><strong>TC-02 (Interruption - during launch):</strong>
+<ul>
+<li><strong>Step 1:</strong> Tap on the app icon.</li>
+<li><strong>Step 2:</strong> While the app is launching, receive a phone call.</li>
+<li><strong>Step 3:</strong> Answer and end the call.</li>
+<li><strong>Expected:</strong> The app should resume its launch process or be in a stable state when returned to.</li>
+</ul>
+</li>
+<li><strong>TC-03 (No Network):</strong>
+<ul>
+<li><strong>Step 1:</strong> Turn on airplane mode.</li>
+<li><strong>Step 2:</strong> Tap on the app icon.</li>
+<li><strong>Expected:</strong> App launches and displays a clear &ldquo;No Internet Connection&rdquo; error message instead of crashing or hanging.</li>
+</ul>
+</li>
+<li><strong>TC-04 (Low Memory):</strong>
+<ul>
+<li><strong>Step 1:</strong> Open several other memory-intensive apps.</li>
+<li><strong>Step 2:</strong> Tap on the Prime Video app icon.</li>
+<li><strong>Expected:</strong> App launches successfully and performs acceptably, or handles the low-memory situation gracefully.</li>
+</ul>
+</li>
+</ul>
+<h3 id="5-how-will-you-automate-the-above-test-cases">5. How will you automate the above test cases</h3>
+<p>You would use a mobile automation tool like <strong>Appium</strong>.</p>
+<ul>
+<li><strong>TC-01 (Happy Path):</strong> The script would launch the app (defined in Desired Capabilities) and then assert that a key element from the home screen (e.g., the profile icon) is visible within a certain timeout.</li>
+<li><strong>TC-02 (Interruption):</strong> Appium has limited capabilities for this. You could use device-specific commands or Android Debug Bridge (ADB) to simulate events, but it&rsquo;s complex.</li>
+<li><strong>TC-03 (No Network):</strong> The script would use Appium&rsquo;s built-in methods to turn off WiFi/Data on the device (<code>driver.setConnection(new ConnectionStateBuilder().withWiFiDisabled().build());</code>), then launch the app and assert that the &ldquo;No Connection&rdquo; element is displayed.</li>
+</ul>
+<h3 id="6-locators">6. Locators</h3>
+<p>The 8 standard Selenium locators: <code>id</code>, <code>name</code>, <code>className</code>, <code>tagName</code>, <code>linkText</code>, <code>partialLinkText</code>, <code>cssSelector</code>, <code>xpath</code>.</p>
+<h3 id="7-functions-of-the-driver-explain">7. Functions of the driver explain.</h3>
+<p>The <code>WebDriver</code> object (<code>driver</code>) is the main entry point for controlling a browser. Its key functions are:</p>
+<ul>
+<li><strong>Navigation:</strong> <code>driver.get(url)</code>, <code>driver.navigate().to/back/forward/refresh()</code>.</li>
+<li><strong>Finding Elements:</strong> <code>driver.findElement(By)</code> and <code>driver.findElements(By)</code>.</li>
+<li><strong>Window/Context Management:</strong> <code>driver.manage()</code> (for timeouts, cookies, window size), <code>driver.switchTo()</code> (for frames, windows, alerts).</li>
+<li><strong>Lifecycle:</strong> <code>driver.quit()</code> to end the session.</li>
+</ul>
+<h3 id="8-what-is-regression-testing-and-why-it-is-needed">8. What is regression testing and why it is needed</h3>
+<p>Regression testing is re-running existing tests to ensure that new code changes have not broken old, previously working functionality. It&rsquo;s needed because software is complex and a change in one area can have unforeseen consequences in another. It provides a safety net that builds confidence for releases.</p>
+<h3 id="9-what-is-selenium">9. What is selenium</h3>
+<p>Selenium is an open-source suite of tools for automating web browsers. It&rsquo;s primarily used for writing automated tests for web applications. Its core component is <strong>Selenium WebDriver</strong>.</p>
+<h3 id="10-scenario-and-test-coverage">10. Scenario and test coverage</h3>
+<ul>
+<li><strong>Scenario:</strong> In BDD/Cucumber, a scenario is a single, executable test case that describes a specific behavior of the system.</li>
+<li><strong>Test Coverage:</strong> A metric used to measure the extent to which testing has &ldquo;covered&rdquo; the application. It can mean different things:
+<ul>
+<li><strong>Requirements Coverage:</strong> What percentage of the specified requirements have at least one test case?</li>
+<li><strong>Code Coverage:</strong> What percentage of the application&rsquo;s source code is executed by the tests (usually unit tests)?</li>
+<li>The goal is to increase test coverage to reduce the risk of undiscovered bugs.</li>
+</ul>
+</li>
+</ul>
+<h3 id="11-what-is-the-test-case">11. What is the test case</h3>
+<p>A test case is a set of actions executed to verify a particular feature or functionality. It consists of a title, preconditions, a sequence of steps (actions and expected results), and postconditions.</p>
+<h3 id="second-round"><em>Second round</em></h3>
+<h4 id="1-50-test-cases-are-there-how-will-you-choose-which-test-case-to-automate">1. 50 test cases are there, how will you choose which test case to automate</h4>
+<p>You use a risk-based and ROI-based approach. I would prioritize automating tests that are:</p>
+<ol>
+<li><strong>Business Critical:</strong> Tests for core business workflows (e.g., login, checkout, payment).</li>
+<li><strong>Repetitive:</strong> Tests that are part of the regression or smoke suite and run frequently.</li>
+<li><strong>Data-Driven:</strong> Tests that need to be run with many different data combinations.</li>
+<li><strong>Stable:</strong> Tests for features that are not expected to change frequently.</li>
+<li><strong>Hard to Perform Manually:</strong> Tests that involve complex calculations or setups that are prone to human error.</li>
+</ol>
+<p>I would <em>not</em> prioritize automating one-time tests, usability tests, or tests for highly unstable features.</p>
+<h4 id="2-you-said-you-configure-jenkins--does-it-mean-it-is-100-ci">2. You said you configure jenkins , does it mean it is 100% CI</h4>
+<p>&ldquo;No, configuring Jenkins is a necessary step, but it doesn&rsquo;t automatically mean you have 100% Continuous Integration. CI is a <em>practice</em>, not just a tool. True CI means that <strong>every developer on the team merges their code into the main branch at least once a day</strong>, and each merge triggers an automated build and test run. If developers are working on long-lived feature branches for weeks without merging, you are not practicing CI, even if you have Jenkins.&rdquo;</p>
+<h4 id="3-cicd-so-once-we-configure-to-jenkins-it-do-mean-it-is-100-cicd">3. CI/CD, so once we configure to jenkins it do mean it is 100% CI/CD</h4>
+<p>&ldquo;No. CI (Continuous Integration) is the &lsquo;build and test&rsquo; part. CD (Continuous Delivery/Deployment) is the next step.</p>
+<ul>
+<li><strong>Continuous Delivery:</strong> Means that every change that passes the CI tests is automatically deployed to a production-like staging environment. The final push to production is a manual, business decision.</li>
+<li><strong>Continuous Deployment:</strong> Is the most advanced stage, where every change that passes all automated tests is <strong>automatically deployed to production</strong> without any human intervention.
+Just setting up Jenkins to run tests achieves the &lsquo;automated build and test&rsquo; part, but you need automated deployment scripts and a high degree of confidence in your test suite to achieve true CI/CD.&rdquo;</li>
+</ul>
+<h4 id="4-what-challenge-you-have-faced-in-last-project">4. What challenge you have faced in last project</h4>
+<p>Have a specific, technical example ready (e.g., flaky tests due to timing, test data management for parallel runs, unstable locators).</p>
+<h4 id="5-did-your-company-leave-you-abruptly">5. Did your company leave you abruptly.</h4>
+<p>This is an HR question to check for red flags. Be professional. &ldquo;No, my departure was planned. I&rsquo;m seeking a new role to pursue different challenges and opportunities for growth.&rdquo;</p>
+<h4 id="6-completed-graduation-in-2012-have-only-43-experience">6. Completed graduation in 2012 have only 4.3 experience</h4>
+<p>This is a question about a potential gap in your resume. Be prepared to explain it honestly and briefly (e.g., &ldquo;I took some time off for personal reasons/to explore another field, and re-entered the IT industry in [Year], where I have been focused ever since.&rdquo;).</p>
+<h4 id="7-load-vs-stress-testing">7. Load vs stress testing</h4>
+<ul>
+<li><strong>Load Testing:</strong> Measures system performance under expected, realistic load conditions. The goal is to identify performance bottlenecks and determine the system&rsquo;s normal capacity.</li>
+<li><strong>Stress Testing:</strong> Pushes the system beyond its normal capacity to see how and when it breaks. The goal is to determine the system&rsquo;s breaking point and check its failure recovery behavior.</li>
+</ul>
+<h4 id="8-smoke-vs-sanity">8. Smoke vs sanity</h4>
+<ul>
+<li><strong>Smoke Test:</strong> Broad and shallow. Checks if a new build is stable enough to test.</li>
+<li><strong>Sanity Test:</strong> Narrow and deep. Checks if a small bug fix or change works as expected.</li>
+</ul>
+<h4 id="9-locators">9. Locators</h4>
+<p>(Repeated) The 8 types used by Selenium to find elements.</p>
+<h4 id="10-different-types-of-xpath">10. Different types of xpath</h4>
+<ul>
+<li><strong>Absolute:</strong> From the root of the document (<code>/html/...</code>). Brittle.</li>
+<li><strong>Relative:</strong> From anywhere in the document (<code>//...</code>). Flexible and preferred.</li>
+</ul>
+<p>You can also talk about using <strong>axes</strong> (<code>following-sibling</code>, <code>ancestor</code>), <strong>functions</strong> (<code>contains()</code>, <code>text()</code>), and <strong>logical operators</strong> (<code>and</code>, <code>or</code>) to build complex relative XPaths.</p>
+<h4 id="11-syntax-for-absolute-and-relative-xpath">11. Syntax for absolute and relative xpath</h4>
+<ul>
+<li><strong>Absolute:</strong> <code>/html/body/div[1]/div/h1</code></li>
+<li><strong>Relative:</strong> <code>//h1[@id='main-title']</code></li>
+</ul>
+
+    </div>
+</article>
+
+<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
+    
+    <a href="//localhost:1315/12_company_based_questions/amazon/round-2/" class="nav-btn">← Previous</a>
+    
+    
+    <a href="//localhost:1315/12_company_based_questions/amazon/" class="nav-btn">Up</a>
+
+    
+    <span></span>
+    
+</div>
+
+    </main>
+
+    <footer class="footer">
+        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
+    </footer>
+</body>
+</html>

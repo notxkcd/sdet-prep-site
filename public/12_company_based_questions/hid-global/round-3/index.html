@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1315&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HID_Global-3 | SDET Interview Preparation Kit</title>
+    <link rel="stylesheet" href="//localhost:1315/css/style.css">
+    
+    
+    <link rel="stylesheet" href="//localhost:1315/lib/katex/katex.min.css">
+    <script defer src="//localhost:1315/lib/katex/katex.min.js"></script>
+    <script defer src="//localhost:1315/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="/">Index</a></li>
+                
+            </ul>
+        </nav>
+        <div class="site-breadcrumb">
+            <a href="/">Home</a>
+            
+            
+            
+
+            
+            
+                <span>/</span> HID_Global-3
+            
+        </div>
+    </header>
+
+    <main>
+        
+<article>
+    <div class="category-title" style="margin-bottom: 0.5rem;">Hid Global Interview Questions</div>
+    <h1>HID_Global-3</h1>
+    <div class="content-body" style="margin-top: 2rem;">
+        <hr>
+<h2 id="original-questions-untouched">Original Questions (UNTOUCHED)</h2>
+<h2 id="hid-level-2---1-hour-20-mins---virtual">HID Level 2 - 1 hour 20 mins - Virtual</h2>
+<ol>
+<li>Introduce yourself with your current projects</li>
+<li>Java code strings and char Duplicates</li>
+<li>How to handle multiple browser</li>
+<li>What is constructor</li>
+<li>What is collections</li>
+<li>Difference between List and Set</li>
+<li>What is break and continue in Java</li>
+<li>What are types of string</li>
+<li>Whats is overload and Override with example</li>
+<li>Explain wrapper class</li>
+<li>Name few methods you are using for string and collection</li>
+<li>Explain Appium Architecture</li>
+<li>What are the pre requisite before starting the device automation</li>
+<li>What are types of applications</li>
+<li>What are the challenges you are facing in Appium testing</li>
+<li>What are the limitations in appium</li>
+<li>How to handle the drop-down in appium</li>
+<li>How to handle Touch actions in appium</li>
+<li>How will you handle drop-down in appium</li>
+<li>What is find element and elements differentiate it</li>
+<li>Which syntax you are using for scroll up and scroll down in mobile testing</li>
+<li>What are version you are testing currently in android and iOS</li>
+<li>Explain the cucumber framework</li>
+<li>What are the TestNG annotation</li>
+<li>How will you test the automation for different browser parallely</li>
+<li>How will you find element in appium testing</li>
+<li>What is most fastest locators in appium</li>
+<li>List out not possible scenarios while performing device automation</li>
+</ol>
+<hr>
+<h2 id="answers-no-bs-java-qa--sdet-explanations">Answers (No-BS Java QA / SDET Explanations)</h2>
+<h3 id="1-introduce-yourself-with-your-current-projects">1. Introduce yourself with your current projects</h3>
+<p>Standard.</p>
+<h3 id="2-java-code-strings-and-char-duplicates">2. Java code strings and char Duplicates</h3>
+<p>To find duplicate characters in a string, a <code>Map</code> is the most common approach to count frequencies.</p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">java.util.Map</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">java.util.function.Function</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">java.util.stream.Collectors</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900">class</span> <span style="color:#cb4b16">DuplicateChars</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">findDuplicates</span>(<span style="color:#268bd2">String</span> <span style="color:#268bd2">input</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">input</span>.<span style="color:#268bd2">chars</span>()
+</span></span><span style="display:flex;"><span>             .<span style="color:#268bd2">mapToObj</span>(<span style="color:#268bd2">c</span> -&gt; (<span style="color:#859900;font-weight:bold">char</span>) <span style="color:#268bd2">c</span>)
+</span></span><span style="display:flex;"><span>             .<span style="color:#268bd2">collect</span>(<span style="color:#268bd2">Collectors</span>.<span style="color:#268bd2">groupingBy</span>(<span style="color:#268bd2">Function</span>.<span style="color:#268bd2">identity</span>(), <span style="color:#268bd2">Collectors</span>.<span style="color:#268bd2">counting</span>()))
+</span></span><span style="display:flex;"><span>             .<span style="color:#268bd2">entrySet</span>().<span style="color:#268bd2">stream</span>()
+</span></span><span style="display:flex;"><span>             .<span style="color:#268bd2">filter</span>(<span style="color:#268bd2">entry</span> -&gt; <span style="color:#268bd2">entry</span>.<span style="color:#268bd2">getValue</span>() &gt; <span style="color:#268bd2">1</span>)
+</span></span><span style="display:flex;"><span>             .<span style="color:#268bd2">forEach</span>(<span style="color:#268bd2">entry</span> -&gt; <span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>(<span style="color:#2aa198">&#34;Char &#39;&#34;</span> + <span style="color:#268bd2">entry</span>.<span style="color:#268bd2">getKey</span>() + <span style="color:#2aa198">&#34;&#39; found &#34;</span> + <span style="color:#268bd2">entry</span>.<span style="color:#268bd2">getValue</span>() + <span style="color:#2aa198">&#34; times.&#34;</span>));
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="3-how-to-handle-multiple-browser">3. How to handle multiple browser</h3>
+<p>This is cross-browser testing.</p>
+<ul>
+<li><strong>Configuration:</strong> Use a parameter in your <code>testng.xml</code> to specify the browser.</li>
+<li><strong>Instantiation:</strong> In a <code>@BeforeMethod</code> (or similar setup method), use a <code>switch</code> statement or factory pattern to instantiate the correct <code>WebDriver</code> (<code>ChromeDriver</code>, <code>FirefoxDriver</code>, etc.) based on the parameter.</li>
+<li><strong>Execution:</strong> Run the tests in parallel using Selenium Grid to test on different browsers simultaneously.</li>
+</ul>
+<h3 id="4-what-is-constructor">4. What is constructor</h3>
+<p>A special method in a class that is called when an object is created. Its purpose is to initialize the object&rsquo;s state. It has the same name as the class and no return type.</p>
+<h3 id="5-what-is-collections">5. What is collections</h3>
+<p>The Java Collections Framework is a set of interfaces (<code>List</code>, <code>Set</code>, <code>Map</code>) and classes (<code>ArrayList</code>, <code>HashSet</code>, <code>HashMap</code>) for storing and manipulating groups of objects.</p>
+<h3 id="6-difference-between-list-and-set">6. Difference between List and Set</h3>
+<ul>
+<li><strong><code>List</code>:</strong> Ordered, indexed collection. Allows duplicate elements.</li>
+<li><strong><code>Set</code>:</strong> Unordered collection. Does not allow duplicate elements.</li>
+</ul>
+<h3 id="7-what-is-break-and-continue-in-java">7. What is break and continue in Java</h3>
+<ul>
+<li><strong><code>break</code>:</strong> Immediately terminates the innermost loop (<code>for</code>, <code>while</code>) or <code>switch</code> statement.</li>
+<li><strong><code>continue</code>:</strong> Skips the current iteration of the loop and proceeds to the next one.</li>
+</ul>
+<h3 id="8-what-are-types-of-string">8. What are types of string</h3>
+<p>In Java, there are two main &ldquo;types&rdquo; in terms of how they are created and stored, although both result in a <code>String</code> object:</p>
+<ol>
+<li><strong>String Literal:</strong> <code>String s1 = &quot;hello&quot;;</code>. These are stored in the String Constant Pool for efficiency.</li>
+<li><strong>String Object (using <code>new</code>):</strong> <code>String s2 = new String(&quot;hello&quot;);</code>. This forces the creation of a new object on the heap every time.</li>
+</ol>
+<p>There are also the mutable string classes: <code>StringBuilder</code> (faster, not thread-safe) and <code>StringBuffer</code> (slower, thread-safe).</p>
+<h3 id="9-whats-is-overload-and-override-with-example">9. Whats is overload and Override with example</h3>
+<ul>
+<li><strong>Overload:</strong> Same method name, different parameters, same class. Example: <code>public void click(WebElement e)</code> and <code>public void click(By locator)</code>.</li>
+<li><strong>Override:</strong> Same method signature in a child class as in a parent class. Example: A child test class overriding a <code>setup()</code> method from a <code>BaseTest</code> class.</li>
+</ul>
+<h3 id="10-explain-wrapper-class">10. Explain wrapper class</h3>
+<p>A class that &ldquo;wraps&rdquo; a primitive data type into an object (e.g., <code>int</code> -&gt; <code>Integer</code>). This is necessary for using primitive values in collections like <code>ArrayList&lt;Integer&gt;</code>.</p>
+<h3 id="11-name-few-methods-you-are-using-for-string-and-collection">11. Name few methods you are using for string and collection</h3>
+<ul>
+<li><strong>String:</strong> <code>.length()</code>, <code>.charAt()</code>, <code>.substring()</code>, <code>.equals()</code>, <code>.equalsIgnoreCase()</code>, <code>.contains()</code>, <code>.split()</code>, <code>.trim()</code>.</li>
+<li><strong>Collection (List/Set):</strong> <code>.add()</code>, <code>.remove()</code>, <code>.size()</code>, <code>.isEmpty()</code>, <code>.contains()</code>, <code>.clear()</code>.</li>
+<li><strong>Map:</strong> <code>.put()</code>, <code>.get()</code>, <code>.containsKey()</code>, <code>.size()</code>, <code>.keySet()</code>.</li>
+</ul>
+<h3 id="12-explain-appium-architecture">12. Explain Appium Architecture</h3>
+<p>Appium is an HTTP server that acts as a middleman. Your test script (client) sends commands using the JSON Wire Protocol to the Appium server. The server interprets these and uses a vendor-specific framework (<strong>XCUITest</strong> for iOS, <strong>UIAutomator2</strong> for Android) to execute the command on the device/emulator. The result is then sent back to your script.</p>
+<h3 id="13-what-are-the-pre-requisite-before-starting-the-device-automation">13. What are the pre requisite before starting the device automation</h3>
+<ul>
+<li><strong>Software:</strong> Java JDK, Node.js (for Appium server), Android Studio (for Android SDK, emulators), Xcode (for iOS simulators, drivers), an IDE (IntelliJ/Eclipse).</li>
+<li><strong>Appium Setup:</strong> Appium server installed, Appium Inspector for locating elements.</li>
+<li><strong>Device/Emulator:</strong> A configured Android emulator or iOS simulator, or a real device with developer mode enabled and connected via USB.</li>
+<li><strong>Application:</strong> The <code>.apk</code> (Android) or <code>.app</code> (iOS) file of the application to be tested.</li>
+<li><strong>Desired Capabilities:</strong> A set of key-value pairs defining the test session (e.g., <code>platformName</code>, <code>deviceName</code>, <code>app</code> path, <code>automationName</code>).</li>
+</ul>
+<h3 id="14-what-are-types-of-applications">14. What are types of applications</h3>
+<ul>
+<li><strong>Native:</strong> Built specifically for one OS (iOS/Android).</li>
+<li><strong>Mobile Web:</strong> A website accessed via a mobile browser.</li>
+<li><strong>Hybrid:</strong> A web app wrapped in a native shell.</li>
+</ul>
+<h3 id="15-what-are-the-challenges-you-are-facing-in-appium-testing">15. What are the challenges you are facing in Appium testing</h3>
+<ul>
+<li><strong>Locator Strategy:</strong> Locators can be less stable than on web. <code>accessibilityId</code> is preferred.</li>
+<li><strong>Synchronization:</strong> App screen transitions and network calls require robust explicit waits.</li>
+<li><strong>Setup Complexity:</strong> Managing different OS versions, Appium versions, and device configurations can be complex.</li>
+<li><strong>Gestures:</strong> Automating complex gestures like multi-touch or precise swipes can be tricky.</li>
+<li><strong>Execution Speed:</strong> Emulators/simulators can be slow, making test runs long.</li>
+</ul>
+<h3 id="16-what-are-the-limitations-in-appium">16. What are the limitations in appium</h3>
+<ul>
+<li>Cannot automate OS-level settings or notifications outside the context of your app.</li>
+<li>Slower than native testing frameworks like Espresso/XCUITest.</li>
+<li>Cannot directly test interactions between two different applications.</li>
+<li>Limited support for testing hardware-dependent features (e.g., camera, fingerprint scanner).</li>
+</ul>
+<h3 id="17-how-to-handle-the-drop-down-in-appium">17. How to handle the drop-down in appium</h3>
+<p>There is no <code>Select</code> class like in Selenium. You treat dropdowns as a series of taps.</p>
+<ol>
+<li>Tap the dropdown element to open the list of options.</li>
+<li>The options will appear in a new view or overlay.</li>
+<li>Locate the desired option element (e.g., by its text) and tap it.</li>
+</ol>
+<h3 id="18-how-to-handle-touch-actions-in-appium">18. How to handle Touch actions in appium</h3>
+<p>You use the <code>TouchAction</code> class (or the newer W3C Actions API).</p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Legacy TouchAction example for a swipe</span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">TouchAction</span> <span style="color:#268bd2">action</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">TouchAction</span>(<span style="color:#268bd2">driver</span>);
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">action</span>.<span style="color:#268bd2">press</span>(<span style="color:#268bd2">PointOption</span>.<span style="color:#268bd2">point</span>(<span style="color:#268bd2">startX</span>, <span style="color:#268bd2">startY</span>))
+</span></span><span style="display:flex;"><span>      .<span style="color:#268bd2">waitAction</span>(<span style="color:#268bd2">WaitOptions</span>.<span style="color:#268bd2">waitOptions</span>(<span style="color:#268bd2">Duration</span>.<span style="color:#268bd2">ofMillis</span>(<span style="color:#268bd2">500</span>)))
+</span></span><span style="display:flex;"><span>      .<span style="color:#268bd2">moveTo</span>(<span style="color:#268bd2">PointOption</span>.<span style="color:#268bd2">point</span>(<span style="color:#268bd2">endX</span>, <span style="color:#268bd2">endY</span>))
+</span></span><span style="display:flex;"><span>      .<span style="color:#268bd2">release</span>()
+</span></span><span style="display:flex;"><span>      .<span style="color:#268bd2">perform</span>();
+</span></span></code></pre></div><h3 id="19-how-will-you-handle-drop-down-in-appium">19. How will you handle drop-down in appium</h3>
+<p>Duplicate of question 17.</p>
+<h3 id="20-what-is-find-element-and-elements-differentiate-it">20. What is find element and elements differentiate it</h3>
+<ul>
+<li><code>findElement()</code>: Returns one <code>WebElement</code>. Throws exception if not found.</li>
+<li><code>findElements()</code>: Returns a <code>List&lt;WebElement&gt;</code>. Returns an empty list if none are found.</li>
+</ul>
+<h3 id="21-which-syntax-you-are-using-for-scroll-up-and-scroll-down-in-mobile-testing">21. Which syntax you are using for scroll up and scroll down in mobile testing</h3>
+<p>You typically use the <code>TouchAction</code> class or JavaScript Executor. There is no simple <code>.scroll()</code> method.</p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Example using TouchAction to scroll down</span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">Dimension</span> <span style="color:#268bd2">size</span> = <span style="color:#268bd2">driver</span>.<span style="color:#268bd2">manage</span>().<span style="color:#268bd2">window</span>().<span style="color:#268bd2">getSize</span>();
+</span></span><span style="display:flex;"><span><span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">startX</span> = <span style="color:#268bd2">size</span>.<span style="color:#268bd2">getWidth</span>() / <span style="color:#268bd2">2</span>;
+</span></span><span style="display:flex;"><span><span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">startY</span> = (<span style="color:#859900;font-weight:bold">int</span>) (<span style="color:#268bd2">size</span>.<span style="color:#268bd2">getHeight</span>() * <span style="color:#268bd2">0</span>.<span style="color:#268bd2">8</span>);
+</span></span><span style="display:flex;"><span><span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">endY</span> = (<span style="color:#859900;font-weight:bold">int</span>) (<span style="color:#268bd2">size</span>.<span style="color:#268bd2">getHeight</span>() * <span style="color:#268bd2">0</span>.<span style="color:#268bd2">2</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">new</span> <span style="color:#268bd2">TouchAction</span>(<span style="color:#268bd2">driver</span>)
+</span></span><span style="display:flex;"><span>    .<span style="color:#268bd2">press</span>(<span style="color:#268bd2">PointOption</span>.<span style="color:#268bd2">point</span>(<span style="color:#268bd2">startX</span>, <span style="color:#268bd2">startY</span>))
+</span></span><span style="display:flex;"><span>    .<span style="color:#268bd2">waitAction</span>(<span style="color:#268bd2">WaitOptions</span>.<span style="color:#268bd2">waitOptions</span>(<span style="color:#268bd2">Duration</span>.<span style="color:#268bd2">ofMillis</span>(<span style="color:#268bd2">200</span>)))
+</span></span><span style="display:flex;"><span>    .<span style="color:#268bd2">moveTo</span>(<span style="color:#268bd2">PointOption</span>.<span style="color:#268bd2">point</span>(<span style="color:#268bd2">startX</span>, <span style="color:#268bd2">endY</span>))
+</span></span><span style="display:flex;"><span>    .<span style="color:#268bd2">release</span>()
+</span></span><span style="display:flex;"><span>    .<span style="color:#268bd2">perform</span>();
+</span></span></code></pre></div><h3 id="22-what-are-version-you-are-testing-currently-in-android-and-ios">22. What are version you are testing currently in android and iOS</h3>
+<p>Be specific. &ldquo;We primarily target recent versions. For Android, our test devices run Android 11 and 12. For iOS, we focus on iOS 14 and 15.&rdquo;</p>
+<h3 id="23-explain-the-cucumber-framework">23. Explain the cucumber framework</h3>
+<p>It&rsquo;s a BDD framework that allows writing tests in human-readable Gherkin, which are then linked to executable Java code (step definitions).</p>
+<h3 id="24-what-are-the-testng-annotation">24. What are the TestNG annotation</h3>
+<p><code>@Test</code>, <code>@BeforeSuite</code>, <code>@AfterSuite</code>, <code>@BeforeTest</code>, <code>@AfterTest</code>, <code>@BeforeClass</code>, <code>@AfterClass</code>, <code>@BeforeMethod</code>, <code>@AfterMethod</code>, <code>@DataProvider</code>.</p>
+<h3 id="25-how-will-you-test-the-automation-for-different-browser-parallely">25. How will you test the automation for different browser parallely</h3>
+<p>Using <strong>Selenium Grid</strong> and <strong>TestNG&rsquo;s parallel execution</strong> feature. You define a suite in <code>testng.xml</code> with multiple <code>&lt;test&gt;</code> tags, each with a different browser parameter. Then you set <code>parallel=&quot;tests&quot;</code> on the <code>&lt;suite&gt;</code> tag.</p>
+<h3 id="26-how-will-you-find-element-in-appium-testing">26. How will you find element in appium testing</h3>
+<p>Appium supports several locator strategies:</p>
+<ul>
+<li><strong><code>accessibilityId</code>:</strong> <strong>Most preferred.</strong> A unique ID for accessibility. Cross-platform.</li>
+<li><strong><code>id</code>:</strong> Uses the native <code>resource-id</code> on Android and <code>name</code> on iOS.</li>
+<li><strong><code>xpath</code>:</strong> Powerful but slowest. Use as a last resort.</li>
+<li><strong><code>className</code>:</strong> Uses the native class name (e.g., <code>android.widget.TextView</code>).</li>
+<li><strong><code>name</code>:</strong> (Deprecated)</li>
+<li><strong>UIAutomator (Android only) / Predicate String (iOS only):</strong> Native, powerful search capabilities.</li>
+</ul>
+<h3 id="27-what-is-most-fastest-locators-in-appium">27. What is most fastest locators in appium</h3>
+<p><strong><code>accessibilityId</code></strong> and <strong><code>id</code></strong> are generally the fastest and most recommended. <code>xpath</code> is the slowest.</p>
+<h3 id="28-list-out-not-possible-scenarios-while-performing-device-automation">28. List out not possible scenarios while performing device automation</h3>
+<p>Same as &ldquo;limitations of Appium&rdquo;.</p>
+<ul>
+<li>Automating OS settings.</li>
+<li>Testing interactions between different apps.</li>
+<li>Testing system-level notifications or incoming calls.</li>
+<li>Biometric authentication (fingerprint, face ID).</li>
+<li>Testing complex hardware sensor inputs.</li>
+</ul>
+
+    </div>
+</article>
+
+<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
+    
+    <a href="//localhost:1315/12_company_based_questions/hid-global/round-4/" class="nav-btn">← Previous</a>
+    
+    
+    <a href="//localhost:1315/12_company_based_questions/hid-global/" class="nav-btn">Up</a>
+
+    
+    <a href="//localhost:1315/12_company_based_questions/hid-global/round-2/" class="nav-btn">Next →</a>
+    
+</div>
+
+    </main>
+
+    <footer class="footer">
+        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
+    </footer>
+</body>
+</html>

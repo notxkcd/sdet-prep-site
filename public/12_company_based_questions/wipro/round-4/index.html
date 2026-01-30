@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1315&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wipro-4 | SDET Interview Preparation Kit</title>
+    <link rel="stylesheet" href="//localhost:1315/css/style.css">
+    
+    
+    <link rel="stylesheet" href="//localhost:1315/lib/katex/katex.min.css">
+    <script defer src="//localhost:1315/lib/katex/katex.min.js"></script>
+    <script defer src="//localhost:1315/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="/">Index</a></li>
+                
+            </ul>
+        </nav>
+        <div class="site-breadcrumb">
+            <a href="/">Home</a>
+            
+            
+            
+
+            
+            
+                <span>/</span> Wipro-4
+            
+        </div>
+    </header>
+
+    <main>
+        
+<article>
+    <div class="category-title" style="margin-bottom: 0.5rem;">Wipro Interview Questions</div>
+    <h1>Wipro-4</h1>
+    <div class="content-body" style="margin-top: 2rem;">
+        <hr>
+<h2 id="original-questions-untouched">Original Questions (UNTOUCHED)</h2>
+<h2 id="wipro-l1">Wipro L1:</h2>
+<p>How to integration testing perform in your project.what approach you used
+2.explain your project and roles and responsibilities
+3.in your project how to test regression testing,if any one monitor regression testing and where you check status.
+4.which tool you using version control.and how it&rsquo;s run.local or cloud.
+5.waits concepts
+6.instead of using explicit wait and fluent wait,can we use for loop , can we give condition in this forloop
+7.you need to scroll particular element and accept popup. You give some x and y axis values ,and you completed qa test and signoff done.but it&rsquo;s not working in UAT environment,they use different window size,they didn&rsquo;t get that popup, how to you handle this situation.
+8.one table having 3 columns (name,product id,quantity).another table having 3 columns(item id,price,productname).
+3rd table contains name and multiplication of product price and quantity.
+Resultset  gives that 3rd table values. Write program for this.
+9.what are all the object mappers used in your project.
+10.Do we really need retrospective meeting.why
+11.in that meeting did you receive comments like you need to improve anything from your scrum master .
+12.what are all the components you handle in your project.
+14.@after suit ,what you are mention</p>
+<hr>
+<h2 id="answers-no-bs-java-qa--sdet-explanations">Answers (No-BS Java QA / SDET Explanations)</h2>
+<h3 id="1-how-to-integration-testing-perform-in-your-projectwhat-approach-you-used">1. How to integration testing perform in your project.what approach you used</h3>
+<p>&ldquo;We perform integration testing primarily at the <strong>API layer</strong>.</p>
+<ul>
+<li><strong>Approach:</strong> We use <strong>REST-assured</strong> to write automated tests that verify the communication and data flow between our microservices. For example, after an order creation API call, we might verify that the order service correctly invoked the inventory service to deduct stock.</li>
+<li><strong>Database Integration:</strong> We also integrate with the database using <strong>JDBC</strong>. After an API call that modifies data, we perform direct database queries to confirm that the data was correctly persisted.&rdquo;</li>
+<li><strong>Mocking/Stubbing:</strong> For external third-party services, we use <strong>WireMock</strong> to mock their responses, allowing us to test our internal service&rsquo;s integration logic in isolation.</li>
+</ul>
+<h3 id="2-explain-your-project-and-roles-and-responsibilities">2. explain your project and roles and responsibilities</h3>
+<p>Standard.</p>
+<h3 id="3-in-your-project-how-to-test-regression-testingif-any-one-monitor-regression-testing-and-where-you-check-status">3. in your project how to test regression testing,if any one monitor regression testing and where you check status.</h3>
+<p>&ldquo;Our regression testing is fully automated.</p>
+<ul>
+<li><strong>Execution:</strong> Our entire regression suite is triggered automatically by <strong>Jenkins</strong> on every code commit to the <code>develop</code> branch and nightly against our QA environment.</li>
+<li><strong>Monitoring:</strong> The status is monitored in two main places:
+<ol>
+<li><strong>Jenkins Dashboard:</strong> We have a dedicated Jenkins view that shows the status of the regression build. If it fails, the team is notified immediately via Slack.</li>
+<li><strong>ExtentReports:</strong> After each run, Jenkins publishes a detailed <strong>ExtentReport</strong>, which provides a clear HTML dashboard of passed, failed, and skipped tests, along with screenshots for failures.</li>
+</ol>
+</li>
+<li><strong>Team Involvement:</strong> Developers and product owners can also access these reports to see the quality status of the latest build.&rdquo;</li>
+</ul>
+<h3 id="4-which-tool-you-using-version-controland-how-its-runlocal-or-cloud">4. which tool you using version control.and how it&rsquo;s run.local or cloud.</h3>
+<p>&ldquo;We use <strong>Git</strong> as our version control system. Our remote repositories are hosted on <strong>GitHub</strong> (which is a cloud-based service). All development and testing code is version-controlled in Git, and we follow a feature-branching workflow with pull requests for code reviews.&rdquo;</p>
+<h3 id="5-waits-concepts">5. waits concepts</h3>
+<ul>
+<li><strong>Implicit Wait (Bad):</strong> A global setting that tells Selenium to poll the DOM for a certain amount of time. Hides timing issues, slows tests.</li>
+<li><strong>Explicit Wait (Good):</strong> (<code>WebDriverWait</code>) Waits for a <em>specific condition</em> to be true before proceeding. Reliable, precise.</li>
+<li><strong>Fluent Wait (Advanced Explicit Wait):</strong> Configurable polling interval and exceptions to ignore.</li>
+</ul>
+<h3 id="6-instead-of-using-explicit-wait-and-fluent-waitcan-we-use-for-loop--can-we-give-condition-in-this-forloop">6. instead of using explicit wait and fluent wait,can we use for loop , can we give condition in this forloop</h3>
+<p>&ldquo;You <em>could</em> theoretically implement a custom wait using a <code>for</code> loop combined with <code>Thread.sleep()</code> and a condition check. However, this would be reinventing the wheel and is a <strong>bad practice</strong>.</p>
+<ul>
+<li><strong>Reasons:</strong>
+<ul>
+<li><strong>Less Readable:</strong> It makes your code more verbose and harder to understand.</li>
+<li><strong>Error Prone:</strong> You&rsquo;d have to manage exceptions, timeouts, and polling logic manually.</li>
+<li><strong>Already Solved:</strong> <code>WebDriverWait</code> and <code>FluentWait</code> already provide robust, tested, and optimized implementations for this exact problem.</li>
+<li><strong>Maintainability:</strong> Any changes or improvements to the waiting strategy would require updating custom loops across the entire test suite, rather than in a single <code>WebDriverWait</code> configuration.&rdquo;</li>
+</ul>
+</li>
+</ul>
+<h3 id="7-you-need-to-scroll-particular-element-and-accept-popup-you-give-some-x-and-y-axis-values-and-you-completed-qa-test-and-signoff-donebut-its-not-working-in-uat-environmentthey-use-different-window-sizethey-didnt-get-that-popup-how-to-you-handle-this-situation">7. you need to scroll particular element and accept popup. You give some x and y axis values ,and you completed qa test and signoff done.but it&rsquo;s not working in UAT environment,they use different window size,they didn&rsquo;t get that popup, how to you handle this situation.</h3>
+<p>This is a real-world scenario testing your understanding of robust automation.
+&ldquo;Using fixed X and Y coordinates for scrolling or clicking is a <strong>very brittle</strong> approach and a common cause of flakiness. It breaks when the screen size, element position, or resolution changes.
+<strong>How to handle it:</strong></p>
+<ol>
+<li><strong>Scroll to Element:</strong> Instead of coordinates, use <code>JavascriptExecutor</code> to scroll the <em>element itself</em> into view: <code>js.executeScript(&quot;arguments[0].scrollIntoView(true);&quot;, element);</code>. This is dynamic and works regardless of screen size.</li>
+<li><strong>Pop-up Handling:</strong>
+<ul>
+<li><strong>Explicit Wait:</strong> For the popup, use an explicit wait: <code>wait.until(ExpectedConditions.alertIsPresent());</code> for JavaScript alerts, or <code>wait.until(ExpectedConditions.visibilityOfElementLocated(By.id(&quot;popup-id&quot;)));</code> for HTML modals. This waits for the popup to <em>actually appear</em>.</li>
+<li><strong>Dynamic Locators:</strong> For the &ldquo;accept&rdquo; button on the popup, use a reliable locator (ID, CSS, or dynamic XPath) rather than fixed coordinates.</li>
+</ul>
+</li>
+<li><strong>Root Cause Analysis:</strong> For the UAT issue, I&rsquo;d investigate:
+<ul>
+<li>Why the popup wasn&rsquo;t appearing (environment issue? A/B test? different user settings?).</li>
+<li>Why the scroll failed (responsive design issue? element not present?).</li>
+<li>Then I&rsquo;d update the automation script to use dynamic, reliable methods for scrolling and element interaction.&rdquo;</li>
+</ul>
+</li>
+</ol>
+<h3 id="8-one-table-having-3-columns-nameproduct-idquantityanother-table-having-3-columnsitem-idpriceproductname-3rd-table-contains-name-and-multiplication-of-product-price-and-quantity-resultset-gives-that-3rd-table-values-write-program-for-this">8. one table having 3 columns (name,product id,quantity).another table having 3 columns(item id,price,productname). 3rd table contains name and multiplication of product price and quantity. Resultset gives that 3rd table values. Write program for this.</h3>
+<p>This is a SQL <code>JOIN</code> and aggregation problem, then processed in Java.</p>
+<p><strong>SQL Query (assuming <code>product id</code> and <code>item id</code> are joinable):</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#859900">SELECT</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">T1</span>.<span style="color:#268bd2">name</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">T1</span>.<span style="color:#268bd2">quantity</span> * <span style="color:#268bd2">T2</span>.<span style="color:#268bd2">price</span> <span style="color:#859900">AS</span> <span style="color:#268bd2">total_value</span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">FROM</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">Table1</span> <span style="color:#268bd2">T1</span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">INNER</span> <span style="color:#859900">JOIN</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">Table2</span> <span style="color:#268bd2">T2</span> <span style="color:#859900">ON</span> <span style="color:#268bd2">T1</span>.<span style="color:#268bd2">product_id</span> = <span style="color:#268bd2">T2</span>.<span style="color:#268bd2">item_id</span>;
+</span></span></code></pre></div><p><strong>Java Program (JDBC):</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">java.sql.*</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">java.util.HashMap</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">java.util.Map</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900">class</span> <span style="color:#cb4b16">ProductValueCalculator</span> {
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">Map</span>&lt;<span style="color:#268bd2">String</span>, <span style="color:#268bd2">Double</span>&gt; <span style="color:#268bd2">calculateProductValues</span>(<span style="color:#268bd2">Connection</span> <span style="color:#268bd2">connection</span>) <span style="color:#859900">throws</span> <span style="color:#268bd2">SQLException</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">Map</span>&lt;<span style="color:#268bd2">String</span>, <span style="color:#268bd2">Double</span>&gt; <span style="color:#268bd2">productValues</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">HashMap</span>&lt;&gt;();
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">String</span> <span style="color:#268bd2">sql</span> = <span style="color:#2aa198">&#34;SELECT T1.name, T1.quantity * T2.price AS total_value &#34;</span> +
+</span></span><span style="display:flex;"><span>                     <span style="color:#2aa198">&#34;FROM Table1 T1 INNER JOIN Table2 T2 ON T1.product_id = T2.item_id&#34;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">try</span> (<span style="color:#268bd2">Statement</span> <span style="color:#268bd2">statement</span> = <span style="color:#268bd2">connection</span>.<span style="color:#268bd2">createStatement</span>();
+</span></span><span style="display:flex;"><span>             <span style="color:#268bd2">ResultSet</span> <span style="color:#268bd2">resultSet</span> = <span style="color:#268bd2">statement</span>.<span style="color:#268bd2">executeQuery</span>(<span style="color:#268bd2">sql</span>)) {
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">while</span> (<span style="color:#268bd2">resultSet</span>.<span style="color:#268bd2">next</span>()) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">String</span> <span style="color:#268bd2">name</span> = <span style="color:#268bd2">resultSet</span>.<span style="color:#268bd2">getString</span>(<span style="color:#2aa198">&#34;name&#34;</span>);
+</span></span><span style="display:flex;"><span>                <span style="color:#859900;font-weight:bold">double</span> <span style="color:#268bd2">totalValue</span> = <span style="color:#268bd2">resultSet</span>.<span style="color:#268bd2">getDouble</span>(<span style="color:#2aa198">&#34;total_value&#34;</span>);
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">productValues</span>.<span style="color:#268bd2">put</span>(<span style="color:#268bd2">name</span>, <span style="color:#268bd2">totalValue</span>);
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">productValues</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#859900">static</span> <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">main</span>(<span style="color:#268bd2">String</span>[] <span style="color:#268bd2">args</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Example usage (replace with actual connection details)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">String</span> <span style="color:#268bd2">url</span> = <span style="color:#2aa198">&#34;jdbc:mysql://localhost:3306/mydatabase&#34;</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">String</span> <span style="color:#268bd2">user</span> = <span style="color:#2aa198">&#34;user&#34;</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">String</span> <span style="color:#268bd2">password</span> = <span style="color:#2aa198">&#34;password&#34;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">try</span> (<span style="color:#268bd2">Connection</span> <span style="color:#268bd2">conn</span> = <span style="color:#268bd2">DriverManager</span>.<span style="color:#268bd2">getConnection</span>(<span style="color:#268bd2">url</span>, <span style="color:#268bd2">user</span>, <span style="color:#268bd2">password</span>)) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">ProductValueCalculator</span> <span style="color:#268bd2">calculator</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">ProductValueCalculator</span>();
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">Map</span>&lt;<span style="color:#268bd2">String</span>, <span style="color:#268bd2">Double</span>&gt; <span style="color:#268bd2">values</span> = <span style="color:#268bd2">calculator</span>.<span style="color:#268bd2">calculateProductValues</span>(<span style="color:#268bd2">conn</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">values</span>.<span style="color:#268bd2">forEach</span>((<span style="color:#268bd2">name</span>, <span style="color:#268bd2">value</span>) -&gt; <span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>(<span style="color:#2aa198">&#34;Product: &#34;</span> + <span style="color:#268bd2">name</span> + <span style="color:#2aa198">&#34;, Total Value: &#34;</span> + <span style="color:#268bd2">value</span>));
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">catch</span> (<span style="color:#268bd2">SQLException</span> <span style="color:#268bd2">e</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">e</span>.<span style="color:#268bd2">printStackTrace</span>();
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="9-what-are-all-the-object-mappers-used-in-your-project">9. what are all the object mappers used in your project.</h3>
+<p>&ldquo;We primarily use <strong>Jackson</strong> (<code>ObjectMapper</code>) for JSON serialization and deserialization. This is crucial for our API tests where we:</p>
+<ol>
+<li><strong>Serialize:</strong> Convert Java POJOs (Plain Old Java Objects) into JSON request bodies before sending them via REST-assured.</li>
+<li><strong>Deserialize:</strong> Convert JSON responses from API calls back into Java POJOs for easier data validation using standard Java assertions.&rdquo;</li>
+</ol>
+<h3 id="10-do-we-really-need-retrospective-meetingwhy">10. Do we really need retrospective meeting.why</h3>
+<p>&ldquo;Yes, absolutely. The retrospective meeting is critical for the continuous improvement aspect of Agile.</p>
+<ul>
+<li><strong>Purpose:</strong> It&rsquo;s the dedicated time for the team to reflect on the past sprint. We discuss what went well, what could have gone better, and identify actionable improvements for the next sprint.</li>
+<li><strong>Why it&rsquo;s needed:</strong> Without it, teams risk repeating mistakes, missing opportunities for efficiency, and not addressing underlying process issues. It&rsquo;s how we adapt and evolve as a team.&rdquo;</li>
+</ul>
+<h3 id="11-in-that-meeting-did-you-receive-comments-like-you-need-to-improve-anything-from-your-scrum-master-">11. in that meeting did you receive comments like you need to improve anything from your scrum master .</h3>
+<p>&ldquo;Yes, I appreciate constructive feedback. For example, in one retrospective, my Scrum Master suggested that I could improve my early engagement with developers during story grooming, to identify testability concerns even sooner. I took that feedback and started attending more design discussions, which helped prevent issues before development even began.&rdquo;</p>
+<h3 id="12-what-are-all-the-components-you-handle-in-your-project">12. what are all the components you handle in your project.</h3>
+<p>&ldquo;In my project, I primarily handle:</p>
+<ul>
+<li><strong>Test Automation Framework:</strong> Design, development, and maintenance.</li>
+<li><strong>Automated Test Suites:</strong> Writing and debugging UI (Selenium) and API (REST-assured) tests.</li>
+<li><strong>CI/CD Integration:</strong> Managing Jenkins jobs for our test runs.</li>
+<li><strong>Test Data Management:</strong> Creating and managing test data for automation.</li>
+<li><strong>Defect Management:</strong> Reporting, tracking, and verifying bugs in Jira.</li>
+<li><strong>Test Reporting:</strong> Generating and analyzing test execution reports.&rdquo;</li>
+</ul>
+<h3 id="14-after-suit-what-you-are-mention">14. @after suit ,what you are mention</h3>
+<p>This should be <code>@AfterSuite</code>.
+&ldquo;In the <code>@AfterSuite</code> method, I typically perform global teardown operations that need to run only once after all tests in the entire suite have completed.</p>
+<ul>
+<li><strong>Example:</strong> Tearing down the Selenium Grid (if it was launched programmatically).</li>
+<li><strong>Example:</strong> Generating and publishing the final consolidated ExtentReport, as all test results would have been collected by then.&rdquo;</li>
+</ul>
+
+    </div>
+</article>
+
+<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
+    
+    <a href="//localhost:1315/12_company_based_questions/wipro/round-5/" class="nav-btn">← Previous</a>
+    
+    
+    <a href="//localhost:1315/12_company_based_questions/wipro/" class="nav-btn">Up</a>
+
+    
+    <a href="//localhost:1315/12_company_based_questions/wipro/round-3/" class="nav-btn">Next →</a>
+    
+</div>
+
+    </main>
+
+    <footer class="footer">
+        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
+    </footer>
+</body>
+</html>

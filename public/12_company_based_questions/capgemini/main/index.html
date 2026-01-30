@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1315&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Capgemini | SDET Interview Preparation Kit</title>
+    <link rel="stylesheet" href="//localhost:1315/css/style.css">
+    
+    
+    <link rel="stylesheet" href="//localhost:1315/lib/katex/katex.min.css">
+    <script defer src="//localhost:1315/lib/katex/katex.min.js"></script>
+    <script defer src="//localhost:1315/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="/">Index</a></li>
+                
+            </ul>
+        </nav>
+        <div class="site-breadcrumb">
+            <a href="/">Home</a>
+            
+            
+            
+
+            
+            
+                <span>/</span> Capgemini
+            
+        </div>
+    </header>
+
+    <main>
+        
+<article>
+    <div class="category-title" style="margin-bottom: 0.5rem;">Capgemini Interview Questions</div>
+    <h1>Capgemini</h1>
+    <div class="content-body" style="margin-top: 2rem;">
+        <hr>
+<h2 id="original-questions-untouched">Original Questions (UNTOUCHED)</h2>
+<p>First round:
+Self intro
+wap String reverse and swap
+wap even and odd nos in given array
+stateelement exception'
+Four exception and explanation
+Garbage collector
+Cucumber explain
+Hooks
+diff bw hooks and background
+Jira tool
+RTM
+diff bw smoke sanity and regression
+diff bw adhoc and explaoratory test
+collection list and set
+why xml interact with html
+iframe
+dropdown
+action Class
+example for abstract and interface encapsulation
+inheritance</p>
+<hr>
+<h2 id="answers-no-bs-java-qa--sdet-explanations">Answers (No-BS Java QA / SDET Explanations)</h2>
+<h3 id="self-intro">Self intro</h3>
+<p>This is a filter. They&rsquo;re checking if you can communicate. Structure your answer like this:</p>
+<ol>
+<li><strong>Who you are:</strong> &ldquo;I&rsquo;m a QA Engineer specializing in Java test automation.&rdquo;</li>
+<li><strong>What you do:</strong> &ldquo;I build and maintain automated test suites for enterprise web applications, focusing on API and UI testing.&rdquo;</li>
+<li><strong>Your core skills:</strong> &ldquo;My main tools are Java, Selenium, and REST-assured. I&rsquo;m responsible for designing frameworks, writing tests, and integrating them into the CI/CD pipeline.&rdquo;</li>
+<li><strong>Your recent achievement:</strong> &ldquo;Recently, I reduced our regression suite&rsquo;s runtime by 30% by parallelizing tests and refactoring our wait strategy.&rdquo;</li>
+</ol>
+<p>Don&rsquo;t tell your life story. Keep it to 60-90 seconds.</p>
+<h3 id="wap-string-reverse-and-swap">wap String reverse and swap</h3>
+<p>They&rsquo;re testing basic coding fluency. &ldquo;Swap&rdquo; is ambiguous here, it could mean swapping characters or words. Let&rsquo;s assume character-level operations. A competent engineer provides a clean, readable solution.</p>
+<p><strong>String Reverse:</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900">class</span> <span style="color:#cb4b16">StringManipulation</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// The simple, correct way. Don&#39;t write a for loop unless they force you.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#859900">static</span> <span style="color:#268bd2">String</span> <span style="color:#268bd2">reverseString</span>(<span style="color:#268bd2">String</span> <span style="color:#268bd2">str</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">str</span> == <span style="color:#859900;font-weight:bold">null</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#859900">new</span> <span style="color:#268bd2">StringBuilder</span>(<span style="color:#268bd2">str</span>).<span style="color:#268bd2">reverse</span>().<span style="color:#268bd2">toString</span>();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><blockquote>
+<p><strong>What this shows:</strong> You know the standard library. You&rsquo;re not going to reinvent the wheel for a solved problem. This is a good thing. Only a junior developer thinks writing a C-style for-loop here is impressive.</p>
+</blockquote>
+<p><strong>String &ldquo;Swap&rdquo;:</strong> This is a weird question. It probably means swapping the first and last characters, or pairs of characters. Let&rsquo;s assume swapping the first and last.</p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900">static</span> <span style="color:#268bd2">String</span> <span style="color:#268bd2">swapFirstAndLast</span>(<span style="color:#268bd2">String</span> <span style="color:#268bd2">str</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">str</span> == <span style="color:#859900;font-weight:bold">null</span> || <span style="color:#268bd2">str</span>.<span style="color:#268bd2">length</span>() &lt;= <span style="color:#268bd2">1</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">str</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">char</span>[] <span style="color:#268bd2">chars</span> = <span style="color:#268bd2">str</span>.<span style="color:#268bd2">toCharArray</span>();
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">char</span> <span style="color:#268bd2">first</span> = <span style="color:#268bd2">chars</span>[<span style="color:#268bd2">0</span>];
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">chars</span>[<span style="color:#268bd2">0</span>] = <span style="color:#268bd2">chars</span>[<span style="color:#268bd2">chars</span>.<span style="color:#268bd2">length</span> - <span style="color:#268bd2">1</span>];
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">chars</span>[<span style="color:#268bd2">chars</span>.<span style="color:#268bd2">length</span> - <span style="color:#268bd2">1</span>] = <span style="color:#268bd2">first</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#859900">new</span> <span style="color:#268bd2">String</span>(<span style="color:#268bd2">chars</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><blockquote>
+<p><strong>Side note:</strong> Clarify the ambiguity. Ask: &ldquo;When you say &lsquo;swap,&rsquo; do you mean swapping adjacent characters, the first and last, or something else?&rdquo; This shows you think before you code.</p>
+</blockquote>
+<h3 id="wap-even-and-odd-nos-in-given-array">wap even and odd nos in given array</h3>
+<p>Another basic filter. Can you loop and use the modulo operator?</p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">java.util.ArrayList</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">java.util.List</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">java.util.Map</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">java.util.stream.Collectors</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">java.util.Arrays</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900">class</span> <span style="color:#cb4b16">ArraySorters</span> {
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// The classic for-loop. It&#39;s fine.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#859900">static</span> <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">printEvenAndOdd</span>(<span style="color:#859900;font-weight:bold">int</span>[] <span style="color:#268bd2">arr</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">List</span>&lt;<span style="color:#268bd2">Integer</span>&gt; <span style="color:#268bd2">even</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">ArrayList</span>&lt;&gt;();
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">List</span>&lt;<span style="color:#268bd2">Integer</span>&gt; <span style="color:#268bd2">odd</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">ArrayList</span>&lt;&gt;();
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">num</span> : <span style="color:#268bd2">arr</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">num</span> % <span style="color:#268bd2">2</span> == <span style="color:#268bd2">0</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">even</span>.<span style="color:#268bd2">add</span>(<span style="color:#268bd2">num</span>);
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">odd</span>.<span style="color:#268bd2">add</span>(<span style="color:#268bd2">num</span>);
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>(<span style="color:#2aa198">&#34;Even: &#34;</span> + <span style="color:#268bd2">even</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>(<span style="color:#2aa198">&#34;Odd: &#34;</span> + <span style="color:#268bd2">odd</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// The Java 8+ way. Shows you&#39;re modern.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#859900">static</span> <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">printEvenAndOddStreams</span>(<span style="color:#859900;font-weight:bold">int</span>[] <span style="color:#268bd2">arr</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">Map</span>&lt;<span style="color:#268bd2">Boolean</span>, <span style="color:#268bd2">List</span>&lt;<span style="color:#268bd2">Integer</span>&gt;&gt; <span style="color:#268bd2">parts</span> = <span style="color:#268bd2">Arrays</span>.<span style="color:#268bd2">stream</span>(<span style="color:#268bd2">arr</span>)
+</span></span><span style="display:flex;"><span>                                                   .<span style="color:#268bd2">boxed</span>()
+</span></span><span style="display:flex;"><span>                                                   .<span style="color:#268bd2">collect</span>(<span style="color:#268bd2">Collectors</span>.<span style="color:#268bd2">partitioningBy</span>(<span style="color:#268bd2">i</span> -&gt; <span style="color:#268bd2">i</span> % <span style="color:#268bd2">2</span> == <span style="color:#268bd2">0</span>));
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>(<span style="color:#2aa198">&#34;Even: &#34;</span> + <span style="color:#268bd2">parts</span>.<span style="color:#268bd2">get</span>(<span style="color:#859900;font-weight:bold">true</span>));
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>(<span style="color:#2aa198">&#34;Odd: &#34;</span> + <span style="color:#268bd2">parts</span>.<span style="color:#268bd2">get</span>(<span style="color:#859900;font-weight:bold">false</span>));
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><blockquote>
+<p><strong>What they&rsquo;re testing:</strong> The stream-based solution is better. It&rsquo;s declarative. You&rsquo;re saying <em>what</em> you want (&ldquo;partition by even/odd&rdquo;), not <em>how</em> to do it (manual loop and <code>if</code> statement). In test automation, declarative code is easier to maintain.</p>
+</blockquote>
+<h3 id="stateelement-exception">stateelement exception`</h3>
+<p>It&rsquo;s <code>StaleElementReferenceException</code>. You get this when you locate a web element, the DOM changes (e.g., due to an AJAX call or navigation), and you try to interact with the element you <em>used</em> to have a reference to. The reference is now &ldquo;stale&rdquo; because the element it pointed to is gone or has been replaced.</p>
+<p><strong>The QA mindset answer:</strong> This isn&rsquo;t just an exception; it&rsquo;s a symptom of a race condition between your test script and the application&rsquo;s frontend. The root cause is almost always an issue with waiting.</p>
+<p><strong>How to fix it:</strong></p>
+<ol>
+<li><strong>Don&rsquo;t use <code>Thread.sleep()</code>:</strong> It&rsquo;s a guarantee of flaky tests.</li>
+<li><strong>Use explicit waits:</strong> Use <code>WebDriverWait</code> to wait for a specific condition (e.g., <code>ExpectedConditions.elementToBeClickable</code>) before interacting.</li>
+<li><strong>Re-find the element:</strong> If you perform an action that you know refreshes a part of the page, find the element again before the next interaction. This is the most robust solution.</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Bad: Prone to StaleElementReferenceException</span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">WebElement</span> <span style="color:#268bd2">button</span> = <span style="color:#268bd2">driver</span>.<span style="color:#268bd2">findElement</span>(<span style="color:#268bd2">By</span>.<span style="color:#268bd2">id</span>(<span style="color:#2aa198">&#34;submit&#34;</span>));
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// some action that refreshes the button</span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">button</span>.<span style="color:#268bd2">click</span>(); <span style="color:#93a1a1;font-style:italic">// BOOM! Stale</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Good: Re-finding the element</span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">driver</span>.<span style="color:#268bd2">findElement</span>(<span style="color:#268bd2">By</span>.<span style="color:#268bd2">id</span>(<span style="color:#2aa198">&#34;submit&#34;</span>)).<span style="color:#268bd2">click</span>(); <span style="color:#93a1a1;font-style:italic">// Action 1</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// some action that refreshes the button</span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">driver</span>.<span style="color:#268bd2">findElement</span>(<span style="color:#268bd2">By</span>.<span style="color:#268bd2">id</span>(<span style="color:#2aa198">&#34;submit&#34;</span>)).<span style="color:#268bd2">click</span>(); <span style="color:#93a1a1;font-style:italic">// Action 2, element is re-found</span>
+</span></span></code></pre></div><h3 id="four-exception-and-explanation">Four exception and explanation</h3>
+<p>They want to see if you&rsquo;ve actually written code and seen it fail. Don&rsquo;t give them textbook definitions. Give them QA scenarios.</p>
+<ol>
+<li><strong><code>NullPointerException</code>:</strong> The classic. You called a method on an object reference that was <code>null</code>. In testing, this often happens when a <code>findElement</code> call fails to find an element and returns <code>null</code> (though modern Selenium throws <code>NoSuchElementException</code> instead), or when you&rsquo;re handling test data and an expected object isn&rsquo;t there.</li>
+<li><strong><code>NoSuchElementException</code> (Selenium):</strong> You tried to find an element with a locator (<code>By.id</code>, <code>By.xpath</code>, etc.) but it wasn&rsquo;t in the DOM when Selenium looked. This is a timing issue 99% of the time. The fix is an explicit wait.</li>
+<li><strong><code>TimeoutException</code> (Selenium):</strong> Your <code>WebDriverWait</code> gave up. You told it to wait for a condition for X seconds, and the condition never became true. This tells you the application is slower than your test expects, or something is broken. It&rsquo;s a test failure, and a good one. It caught a real issue.</li>
+<li><strong><code>InvalidSelectorException</code> (Selenium):</strong> Your XPath or CSS selector is garbage. The syntax is wrong. This is a coding error in your test itself. It should be caught and fixed immediately.</li>
+</ol>
+<h3 id="garbage-collector">Garbage collector</h3>
+<p>The GC&rsquo;s job is to free up memory by deleting objects that are no longer reachable. In Java, you don&rsquo;t <code>free()</code> memory yourself. The JVM does it for you.</p>
+<p><strong>Why a QA engineer should care:</strong></p>
+<ul>
+<li><strong>Memory Leaks:</strong> If your application (or your test suite) has a memory leak, performance will degrade over time until it crashes with an <code>OutOfMemoryError</code>. Long-running regression suites can expose these leaks.</li>
+<li><strong>Test Performance:</strong> GC pauses can affect test execution time. If you&rsquo;re creating millions of objects in a tight loop in a performance test, the GC will be working overtime, and its pauses will skew your measurements. You need to be aware of this.</li>
+<li><strong>Object Scope:</strong> Understanding when an object becomes eligible for garbage collection is key to writing clean code. In a test, if you create a <code>WebDriver</code> instance, you must call <code>driver.quit()</code> in a <code>finally</code> block or using a <code>@After</code> hook. If you don&rsquo;t, the browser process might hang around, and the resources won&rsquo;t be cleaned up properly.</li>
+</ul>
+<h3 id="cucumber-explain">Cucumber explain</h3>
+<p>Cucumber is a tool that runs automated tests written in a human-readable language called Gherkin. It&rsquo;s supposed to enable BDD (Behavior-Driven Development).</p>
+<p><strong>The No-BS take:</strong></p>
+<ul>
+<li><strong>The Good:</strong> Gherkin (<code>Given</code>/<code>When</code>/<code>Then</code>) can, in theory, let non-technical people (like product owners) understand what tests do. It provides a layer of abstraction over your Java code.</li>
+<li><strong>The Bad:</strong> In 90% of teams, this abstraction becomes a liability. The Gherkin files get out of sync with the step definitions (the Java code). Only the developers write the Gherkin anyway, so the &ldquo;non-technical person&rdquo; benefit is lost. It adds another layer of indirection that makes debugging harder.</li>
+</ul>
+<p><strong>A typical Gherkin scenario:</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-gherkin" data-lang="gherkin"><span style="display:flex;"><span><span style="color:#859900">Scenario:</span><span style="color:#268bd2"> User logs in with valid credentials
+</span></span></span><span style="display:flex;"><span><span style="color:#268bd2"></span><span style="color:#859900">  Given </span><span style="color:#268bd2">the user is on the login page
+</span></span></span><span style="display:flex;"><span><span style="color:#268bd2">  </span><span style="color:#859900">When </span><span style="color:#268bd2">the user enters &#34;</span><span style="color:#2aa198">testuser</span><span style="color:#268bd2">&#34; and &#34;</span><span style="color:#2aa198">password123</span><span style="color:#268bd2">&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#268bd2">  </span><span style="color:#859900">Then </span><span style="color:#268bd2">the user should be redirected to the dashboard
+</span></span></span></code></pre></div><p>Each of those lines maps to a Java method in a &ldquo;Step Definition&rdquo; file. The real work happens in the Java. Cucumber just parses the text and calls the right methods.</p>
+<h3 id="hooks">Hooks</h3>
+<p>In Cucumber, hooks are blocks of code that run at specific points in the test cycle. They are for setup and teardown.</p>
+<ul>
+<li><code>@Before</code>: Runs before each scenario. Good for setting up a <code>WebDriver</code> instance, clearing cookies, or seeding a database.</li>
+<li><code>@After</code>: Runs after each scenario, even if it fails. <strong>CRITICAL</strong> for cleanup. This is where you put <code>driver.quit()</code> and screenshot logic for failures.</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900">class</span> <span style="color:#cb4b16">Hooks</span> {
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">private</span> <span style="color:#268bd2">WebDriver</span> <span style="color:#268bd2">driver</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">@Before</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">setup</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">driver</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">ChromeDriver</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">driver</span>.<span style="color:#268bd2">manage</span>().<span style="color:#268bd2">window</span>().<span style="color:#268bd2">maximize</span>();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">@After</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">teardown</span>(<span style="color:#268bd2">Scenario</span> <span style="color:#268bd2">scenario</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">scenario</span>.<span style="color:#268bd2">isFailed</span>()) {
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Take a screenshot</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">final</span> <span style="color:#859900;font-weight:bold">byte</span>[] <span style="color:#268bd2">screenshot</span> = ((<span style="color:#268bd2">TakesScreenshot</span>) <span style="color:#268bd2">driver</span>).<span style="color:#268bd2">getScreenshotAs</span>(<span style="color:#268bd2">OutputType</span>.<span style="color:#268bd2">BYTES</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">scenario</span>.<span style="color:#268bd2">attach</span>(<span style="color:#268bd2">screenshot</span>, <span style="color:#2aa198">&#34;image/png&#34;</span>, <span style="color:#2aa198">&#34;failure-screenshot&#34;</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">driver</span> != <span style="color:#859900;font-weight:bold">null</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">driver</span>.<span style="color:#268bd2">quit</span>();
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><blockquote>
+<p><strong>What this shows:</strong> You understand test lifecycle management. Unmanaged resources (like leftover browser windows) are a sign of an amateur.</p>
+</blockquote>
+<h3 id="diff-bw-hooks-and-background">diff bw hooks and background</h3>
+<ul>
+<li><strong><code>Background</code>:</strong> It&rsquo;s Gherkin syntax. It&rsquo;s a set of <code>Given</code> steps that run before <em>every single scenario</em> in a feature file. It&rsquo;s for setting up a common state that all scenarios in that file need. It&rsquo;s part of the test&rsquo;s narrative.</li>
+<li><strong><code>@Before</code> Hook:</strong> It&rsquo;s Java code. It also runs before every scenario, but it&rsquo;s invisible in the Gherkin feature file. It&rsquo;s for technical setup (starting a browser, setting up a mock server) that the business-facing Gherkin doesn&rsquo;t need to know about.</li>
+</ul>
+<p><strong>Rule of thumb:</strong></p>
+<ul>
+<li>If a product owner would understand and care about the step, put it in <code>Background</code>. (e.g., <code>Given the user is logged in as an administrator</code>)</li>
+<li>If it&rsquo;s a purely technical setup step, use a <code>@Before</code> hook. (e.g., <code>startWebDriver()</code>)</li>
+</ul>
+<h3 id="jira-tool">Jira tool</h3>
+<p>Jira is a project management tool. For a QA engineer, it&rsquo;s the source of truth.</p>
+<ul>
+<li><strong>Bug Tracking:</strong> This is our bread and butter. You find a bug, you write a Jira ticket. A good bug report is not a complaint; it&rsquo;s a technical document. It must include:
+<ul>
+<li>A clear, concise title.</li>
+<li>Steps to reproduce (unambiguous and minimal).</li>
+<li>Expected result vs. Actual result.</li>
+<li>Environment details (browser, OS, app version).</li>
+<li>Logs, screenshots, video recordings.</li>
+</ul>
+</li>
+<li><strong>Test Case Management:</strong> Jira can be used for this (with plugins like Zephyr or Xray), linking test cases to user stories and bugs. This creates traceability.</li>
+<li><strong>Traceability:</strong> You should be able to link a user story to the test cases that validate it, and to the bugs that were found while testing it. RTM is about this.</li>
+</ul>
+<h3 id="rtm">RTM</h3>
+<p>Requirements Traceability Matrix. It&rsquo;s a table that maps requirements (user stories) to test cases.</p>
+<table>
+  <thead>
+      <tr>
+          <th style="text-align: left">Requirement ID</th>
+          <th style="text-align: left">Requirement Description</th>
+          <th style="text-align: left">Test Case ID(s)</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td style="text-align: left">PROJ-123</td>
+          <td style="text-align: left">User can log in</td>
+          <td style="text-align: left">TC-001, TC-002</td>
+      </tr>
+      <tr>
+          <td style="text-align: left">PROJ-124</td>
+          <td style="text-align: left">User can log out</td>
+          <td style="text-align: left">TC-003</td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Why it matters (sometimes):</strong></p>
+<ul>
+<li><strong>Coverage:</strong> It shows you have tests for every requirement. No gaps.</li>
+<li><strong>Impact Analysis:</strong> If a requirement changes, you can instantly see which tests need to be updated.</li>
+<li><strong>Regulated Industries:</strong> In finance or healthcare, you are often <em>required</em> by auditors to prove this traceability.</li>
+</ul>
+<p><strong>The modern take:</strong> In many Agile teams, the direct link inside Jira between a story and its associated tests (and the CI/CD build results) has replaced the formal RTM document. The principle is the same; the implementation is just more dynamic.</p>
+<h3 id="diff-bw-smoke-sanity-and-regression">diff bw smoke sanity and regression</h3>
+<p>These are scopes of testing. People argue about the definitions, but here&rsquo;s the practical breakdown.</p>
+<ul>
+<li><strong>Smoke Test:</strong> A shallow, wide test of the most critical functionality. Does the app start? Can you log in? Can you get to the main page? It&rsquo;s the first thing you run on a new build. If the smoke test fails, the build is rejected immediately. Don&rsquo;t waste time on further testing. It&rsquo;s a &ldquo;build verification test.&rdquo;</li>
+<li><strong>Sanity Test:</strong> A narrow, deep test of a specific area of functionality, usually after a small change or bug fix. Did the fix I just made work, and did it not break anything obviously related? It&rsquo;s a quick check to see if the change is &ldquo;sane.&rdquo;</li>
+<li><strong>Regression Test:</strong> The big one. A broad and deep set of tests designed to ensure that new code hasn&rsquo;t broken <em>any</em> existing functionality. This suite grows with the application and is usually automated. This is what you run before a release.</li>
+</ul>
+<table>
+  <thead>
+      <tr>
+          <th style="text-align: left">Type</th>
+          <th style="text-align: left">Goal</th>
+          <th style="text-align: left">Scope</th>
+          <th style="text-align: left">When to Run</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td style="text-align: left"><strong>Smoke</strong></td>
+          <td style="text-align: left">Is the build stable enough to test?</td>
+          <td style="text-align: left">Wide, Shallow</td>
+          <td style="text-align: left">On every new build</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong>Sanity</strong></td>
+          <td style="text-align: left">Did my recent change work?</td>
+          <td style="text-align: left">Narrow, Deep</td>
+          <td style="text-align: left">After a small code change or fix</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong>Regression</strong></td>
+          <td style="text-align: left">Did the new changes break old features?</td>
+          <td style="text-align: left">Wide, Deep</td>
+          <td style="text-align: left">Before a release / on a schedule</td>
+      </tr>
+  </tbody>
+</table>
+<h3 id="diff-bw-adhoc-and-exploratory-test">diff bw adhoc and exploratory test</h3>
+<ul>
+<li><strong>Ad-hoc Testing:</strong> Completely informal. You&rsquo;re just clicking around with no plan, hoping to find a bug. It&rsquo;s random and depends entirely on the tester&rsquo;s luck and mood. It&rsquo;s not structured and it&rsquo;s not repeatable.</li>
+<li><strong>Exploratory Testing:</strong> It&rsquo;s structured and systematic, but not scripted. It&rsquo;s a &ldquo;thinking&rdquo; activity. You have a mission or a charter (e.g., &ldquo;Explore the user profile update functionality for security vulnerabilities&rdquo;). You design and execute tests on the fly, and you document what you do and what you find. It&rsquo;s about learning the application while you test it.</li>
+</ul>
+<p>Exploratory testing is a formal discipline. Ad-hoc testing is what your cousin does when you show them your new app.</p>
+<h3 id="collection-list-and-set">collection list and set</h3>
+<p>Both are interfaces in the Java Collections Framework that extend <code>Collection</code>.</p>
+<ul>
+<li>
+<p><strong><code>List</code>:</strong> An <strong>ordered</strong> collection. Elements have an index. You can access elements by their integer position. It <strong>allows duplicates</strong>.</p>
+<ul>
+<li>Common implementations: <code>ArrayList</code> (fast for random access), <code>LinkedList</code> (fast for adding/removing from the middle).</li>
+<li><strong>QA Use Case:</strong> When you get a list of web elements from <code>findElements</code>, it&rsquo;s a <code>List</code>. The order is the order they appear in the DOM. You might assert that the first element has a specific text.</li>
+</ul>
+</li>
+<li>
+<p><strong><code>Set</code>:</strong> An <strong>unordered</strong> collection. It <strong>does not allow duplicates</strong>. If you try to add an element that&rsquo;s already in the set, the add operation does nothing.</p>
+<ul>
+<li>Common implementations: <code>HashSet</code> (fast, uses <code>hashCode</code>), <code>LinkedHashSet</code> (maintains insertion order), <code>TreeSet</code> (maintains natural sorting order).</li>
+<li><strong>QA Use Case:</strong> You need to verify that all the links on a page are unique. Scrape them all into a <code>List</code>, then add them all to a <code>HashSet</code>. If <code>list.size() != set.size()</code>, you have duplicate links.</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// List example</span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">List</span>&lt;<span style="color:#268bd2">String</span>&gt; <span style="color:#268bd2">names</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">ArrayList</span>&lt;&gt;();
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">names</span>.<span style="color:#268bd2">add</span>(<span style="color:#2aa198">&#34;Alice&#34;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">names</span>.<span style="color:#268bd2">add</span>(<span style="color:#2aa198">&#34;Bob&#34;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">names</span>.<span style="color:#268bd2">add</span>(<span style="color:#2aa198">&#34;Alice&#34;</span>); <span style="color:#93a1a1;font-style:italic">// Duplicate is allowed</span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>(<span style="color:#268bd2">names</span>.<span style="color:#268bd2">get</span>(<span style="color:#268bd2">0</span>)); <span style="color:#93a1a1;font-style:italic">// &#34;Alice&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>(<span style="color:#268bd2">names</span>.<span style="color:#268bd2">size</span>()); <span style="color:#93a1a1;font-style:italic">// 3</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Set example</span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">Set</span>&lt;<span style="color:#268bd2">String</span>&gt; <span style="color:#268bd2">uniqueNames</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">HashSet</span>&lt;&gt;();
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">uniqueNames</span>.<span style="color:#268bd2">add</span>(<span style="color:#2aa198">&#34;Alice&#34;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">uniqueNames</span>.<span style="color:#268bd2">add</span>(<span style="color:#2aa198">&#34;Bob&#34;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">uniqueNames</span>.<span style="color:#268bd2">add</span>(<span style="color:#2aa198">&#34;Alice&#34;</span>); <span style="color:#93a1a1;font-style:italic">// Duplicate is ignored</span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>(<span style="color:#268bd2">uniqueNames</span>.<span style="color:#268bd2">size</span>()); <span style="color:#93a1a1;font-style:italic">// 2</span>
+</span></span></code></pre></div><h3 id="why-xml-interact-with-html">why xml interact with html</h3>
+<p>This question is poorly phrased. &ldquo;Interact&rdquo; is the wrong word. The real connection is <code>XPath</code>, and historically, <code>XML</code> was the predecessor to many web technologies.</p>
+<ul>
+<li><strong>XPath:</strong> XPath (XML Path Language) is a query language for selecting nodes from an XML document. Since HTML (especially older XHTML) is structured like an XML document (with tags, attributes, and a tree structure), you can use XPath to navigate the HTML DOM.</li>
+<li><strong>Selenium:</strong> Selenium uses XPath as one of its primary locator strategies to find elements on a web page. <code>driver.findElement(By.xpath(&quot;//div[@id='login']&quot;))</code> is using an XPath expression.</li>
+</ul>
+<p>So, it&rsquo;s not that XML &ldquo;interacts with&rdquo; HTML. It&rsquo;s that a technology designed for XML (XPath) is also extremely useful for navigating HTML.</p>
+<h3 id="iframe">iframe</h3>
+<p>An <code>iframe</code> (inline frame) is an HTML element that loads another HTML document within the current one. It&rsquo;s like a window into another webpage.</p>
+<p><strong>From a QA perspective:</strong></p>
+<ul>
+<li><strong>The Problem:</strong> Selenium&rsquo;s context is, by default, the main page. If an element you want to interact with is inside an <code>iframe</code>, <code>driver.findElement()</code> will fail with <code>NoSuchElementException</code> because it&rsquo;s not looking in the right document.</li>
+<li><strong>The Solution:</strong> You must explicitly switch Selenium&rsquo;s context into the <code>iframe</code> before you can find elements inside it, and then switch back out when you&rsquo;re done.</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// 1. Switch into the iframe (by name, id, or as a WebElement)</span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">driver</span>.<span style="color:#268bd2">switchTo</span>().<span style="color:#268bd2">frame</span>(<span style="color:#2aa198">&#34;my-iframe&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// 2. Now you can find elements inside the iframe</span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">WebElement</span> <span style="color:#268bd2">buttonInFrame</span> = <span style="color:#268bd2">driver</span>.<span style="color:#268bd2">findElement</span>(<span style="color:#268bd2">By</span>.<span style="color:#268bd2">id</span>(<span style="color:#2aa198">&#34;button-inside&#34;</span>));
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">buttonInFrame</span>.<span style="color:#268bd2">click</span>();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// 3. CRITICAL: Switch back to the main document context</span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">driver</span>.<span style="color:#268bd2">switchTo</span>().<span style="color:#268bd2">defaultContent</span>();
+</span></span></code></pre></div><h3 id="dropdown">dropdown</h3>
+<p>A dropdown is a UI element that lets you select one or more options from a list. In HTML, this is usually a <code>&lt;select&gt;</code> tag with <code>&lt;option&gt;</code> tags inside.</p>
+<p><strong>How to handle it in Selenium:</strong>
+Selenium has a dedicated <code>Select</code> class to make this easy. Don&rsquo;t try to just click the options manually unless you have to (e.g., if it&rsquo;s a custom-built dropdown made of <code>div</code>s and <code>span</code>s).</p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">org.openqa.selenium.support.ui.Select</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">WebElement</span> <span style="color:#268bd2">dropdownElement</span> = <span style="color:#268bd2">driver</span>.<span style="color:#268bd2">findElement</span>(<span style="color:#268bd2">By</span>.<span style="color:#268bd2">id</span>(<span style="color:#2aa198">&#34;my-dropdown&#34;</span>));
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">Select</span> <span style="color:#268bd2">dropdown</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">Select</span>(<span style="color:#268bd2">dropdownElement</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// 3 ways to select an option:</span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">dropdown</span>.<span style="color:#268bd2">selectByVisibleText</span>(<span style="color:#2aa198">&#34;Option 3&#34;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">dropdown</span>.<span style="color:#268bd2">selectByValue</span>(<span style="color:#2aa198">&#34;value_3&#34;</span>); <span style="color:#93a1a1;font-style:italic">// based on the &#39;value&#39; attribute of &lt;option&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">dropdown</span>.<span style="color:#268bd2">selectByIndex</span>(<span style="color:#268bd2">2</span>); <span style="color:#93a1a1;font-style:italic">// 0-indexed</span>
+</span></span></code></pre></div><blockquote>
+<p><strong>Side note:</strong> If the dropdown is not a <code>&lt;select&gt;</code> element, you can&rsquo;t use the <code>Select</code> class. You have to treat it like any other custom UI component: click the main element to open the options, then wait for the desired option to be visible, then click it.</p>
+</blockquote>
+<h3 id="action-class">action Class</h3>
+<p>It&rsquo;s <code>Actions</code> class in Selenium. You use it for complex user gestures that a simple <code>.click()</code> or <code>.sendKeys()</code> can&rsquo;t handle.</p>
+<p><strong>What it&rsquo;s for:</strong></p>
+<ul>
+<li><strong>Mouse Hover:</strong> <code>moveToElement()</code> (e.g., to make a hidden menu appear).</li>
+<li><strong>Right-Click:</strong> <code>contextClick()</code>.</li>
+<li><strong>Double-Click:</strong> <code>doubleClick()</code>.</li>
+<li><strong>Drag and Drop:</strong> <code>dragAndDrop()</code>.</li>
+</ul>
+<p><strong>How it works:</strong> You build a sequence of actions and then call <code>.perform()</code> to execute them.</p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">org.openqa.selenium.interactions.Actions</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">Actions</span> <span style="color:#268bd2">actions</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">Actions</span>(<span style="color:#268bd2">driver</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">WebElement</span> <span style="color:#268bd2">menu</span> = <span style="color:#268bd2">driver</span>.<span style="color:#268bd2">findElement</span>(<span style="color:#268bd2">By</span>.<span style="color:#268bd2">id</span>(<span style="color:#2aa198">&#34;main-menu&#34;</span>));
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">WebElement</span> <span style="color:#268bd2">subMenuItem</span> = <span style="color:#268bd2">driver</span>.<span style="color:#268bd2">findElement</span>(<span style="color:#268bd2">By</span>.<span style="color:#268bd2">id</span>(<span style="color:#2aa198">&#34;sub-menu-item&#34;</span>));
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Build the action sequence: hover over menu, then click submenu item</span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">actions</span>.<span style="color:#268bd2">moveToElement</span>(<span style="color:#268bd2">menu</span>).<span style="color:#268bd2">click</span>(<span style="color:#268bd2">subMenuItem</span>).<span style="color:#268bd2">build</span>().<span style="color:#268bd2">perform</span>();
+</span></span></code></pre></div><blockquote>
+<p><strong>What they&rsquo;re testing:</strong> Do you know how to handle interactive, modern web UIs? Not every element is just a simple click away.</p>
+</blockquote>
+<h3 id="example-for-abstract-and-interface-encapsulation-inheritance">example for abstract and interface encapsulation inheritance</h3>
+<p>This is four concepts in one. Let&rsquo;s break them down from a QA framework design perspective.</p>
+<ul>
+<li>
+<p><strong>Encapsulation:</strong> Hiding the implementation details of an object and only exposing a public interface. A Page Object Model (POM) is a perfect example.</p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// The details of the locators and the click logic are hidden.</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// The test only knows it can &#34;login&#34;.</span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900">class</span> <span style="color:#cb4b16">LoginPage</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">private</span> <span style="color:#268bd2">By</span> <span style="color:#268bd2">usernameField</span> = <span style="color:#268bd2">By</span>.<span style="color:#268bd2">id</span>(<span style="color:#2aa198">&#34;username&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">private</span> <span style="color:#268bd2">By</span> <span style="color:#268bd2">passwordField</span> = <span style="color:#268bd2">By</span>.<span style="color:#268bd2">id</span>(<span style="color:#2aa198">&#34;password&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">private</span> <span style="color:#268bd2">By</span> <span style="color:#268bd2">loginButton</span> = <span style="color:#268bd2">By</span>.<span style="color:#268bd2">id</span>(<span style="color:#2aa198">&#34;login&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">private</span> <span style="color:#268bd2">WebDriver</span> <span style="color:#268bd2">driver</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">LoginPage</span>(<span style="color:#268bd2">WebDriver</span> <span style="color:#268bd2">driver</span>) { <span style="color:#859900">this</span>.<span style="color:#268bd2">driver</span> = <span style="color:#268bd2">driver</span>; }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">login</span>(<span style="color:#268bd2">String</span> <span style="color:#268bd2">username</span>, <span style="color:#268bd2">String</span> <span style="color:#268bd2">password</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">driver</span>.<span style="color:#268bd2">findElement</span>(<span style="color:#268bd2">usernameField</span>).<span style="color:#268bd2">sendKeys</span>(<span style="color:#268bd2">username</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">driver</span>.<span style="color:#268bd2">findElement</span>(<span style="color:#268bd2">passwordField</span>).<span style="color:#268bd2">sendKeys</span>(<span style="color:#268bd2">password</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">driver</span>.<span style="color:#268bd2">findElement</span>(<span style="color:#268bd2">loginButton</span>).<span style="color:#268bd2">click</span>();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div></li>
+<li>
+<p><strong>Inheritance:</strong> Creating a new class that is a type of an existing class. You use it for code reuse. In a test framework, you might have a <code>BasePage</code> that all your other page objects extend.</p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// BasePage has common functionality (header, footer, waits)</span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900">abstract</span> <span style="color:#859900">class</span> <span style="color:#cb4b16">BasePage</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">protected</span> <span style="color:#268bd2">WebDriver</span> <span style="color:#268bd2">driver</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">BasePage</span>(<span style="color:#268bd2">WebDriver</span> <span style="color:#268bd2">driver</span>) { <span style="color:#859900">this</span>.<span style="color:#268bd2">driver</span> = <span style="color:#268bd2">driver</span>; }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">clickLogo</span>() { <span style="color:#268bd2">driver</span>.<span style="color:#268bd2">findElement</span>(<span style="color:#268bd2">By</span>.<span style="color:#268bd2">id</span>(<span style="color:#2aa198">&#34;logo&#34;</span>)).<span style="color:#268bd2">click</span>(); }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// LoginPage inherits from BasePage</span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900">class</span> <span style="color:#cb4b16">LoginPage</span> <span style="color:#859900">extends</span> <span style="color:#268bd2">BasePage</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">LoginPage</span>(<span style="color:#268bd2">WebDriver</span> <span style="color:#268bd2">driver</span>) { <span style="color:#859900">super</span>(<span style="color:#268bd2">driver</span>); }
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// ... login-specific methods</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div></li>
+<li>
+<p><strong>Abstract Class:</strong> A class that cannot be instantiated. It&rsquo;s a blueprint. <code>BasePage</code> above is a good candidate to be <code>abstract</code>. It exists only to be extended. It can have both abstract methods (that subclasses <em>must</em> implement) and concrete methods (that subclasses inherit).</p>
+</li>
+<li>
+<p><strong>Interface:</strong> A contract. It defines what methods a class <em>must</em> implement, but provides no implementation. For example, you could define a <code>Searchable</code> interface for pages that have a search bar.</p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900">interface</span> <span style="color:#cb4b16">Searchable</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">searchFor</span>(<span style="color:#268bd2">String</span> <span style="color:#268bd2">query</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900">class</span> <span style="color:#cb4b16">HomePage</span> <span style="color:#859900">extends</span> <span style="color:#268bd2">BasePage</span> <span style="color:#859900">implements</span> <span style="color:#268bd2">Searchable</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">searchFor</span>(<span style="color:#268bd2">String</span> <span style="color:#268bd2">query</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// implementation for searching from the home page</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900">class</span> <span style="color:#cb4b16">SearchResultsPage</span> <span style="color:#859900">extends</span> <span style="color:#268bd2">BasePage</span> <span style="color:#859900">implements</span> <span style="color:#268bd2">Searchable</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">searchFor</span>(<span style="color:#268bd2">String</span> <span style="color:#268bd2">query</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// implementation for searching from the results page</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div></li>
+</ul>
+<blockquote>
+<p><strong>What this shows:</strong> Can you think about software architecture? A test suite isn&rsquo;t just a pile of scripts. It&rsquo;s a software project. These concepts are how you keep it from turning into an unmaintainable mess.</p>
+</blockquote>
+<hr>
+<h2 id="original-questions-untouched-1">Original Questions (UNTOUCHED)</h2>
+<p>Second round:
+Self intro
+Framework
+Abstract use on my project
+Interface use in my project
+Method overload and override in my project
+Waits
+Which wait used in my project and syntex
+Iframe and method syntax
+Window handle
+Diff between list and set
+Final, finally, finalize
+Access modifiers
+Wap for a count in given string
+Wap for word count in gvn sentence
+Swap the nos
+Remove duplicate in array
+Updates for current and previous project
+Test case for ATM
+Priority and severity
+Synyax for oops and array and literal and non literal string
+Report generation
+cucumber plugins
+xpath related ancestor, following, siblings, parent</p>
+<hr>
+<h2 id="answers-no-bs-java-qa--sdet-explanations-1">Answers (No-BS Java QA / SDET Explanations)</h2>
+<h3 id="framework">Framework</h3>
+<p>&ldquo;Tell me about your framework&rdquo; is not about listing tools. It&rsquo;s about explaining the architecture you used to make testing scalable and maintainable.</p>
+<p>A good answer has layers:</p>
+<ol>
+<li><strong>Core Tools:</strong> &ldquo;We used a Java-based stack with Selenium WebDriver for UI automation and REST-assured for API testing. TestNG was our test runner.&rdquo;</li>
+<li><strong>Design Pattern:</strong> &ldquo;We built it around the Page Object Model (POM) to separate UI interaction logic from our test logic. This keeps our tests clean and readable.&rdquo;</li>
+<li><strong>Data Management:</strong> &ldquo;Test data was managed using property files for static data and a TestDataFactory class for generating dynamic data like unique usernames.&rdquo;</li>
+<li><strong>Reporting:</strong> &ldquo;For reporting, we used ExtentReports, integrated with TestNG listeners to automatically capture screenshots on failure.&rdquo;</li>
+<li><strong>CI/CD Integration:</strong> &ldquo;The entire suite was run via Maven from a Jenkins pipeline. Tests were triggered on every commit to the dev branch and run in parallel on a Selenium Grid.&rdquo;</li>
+</ol>
+<p>This answer shows you didn&rsquo;t just write scripts; you built a system.</p>
+<h3 id="abstract-use-on-my-project">Abstract use on my project</h3>
+<p>See the answer in the first round. The canonical example is a <code>BasePage</code> or <code>BaseTest</code> class.</p>
+<p><code>BaseTest</code>:</p>
+<ul>
+<li><strong>What it does:</strong> Holds setup and teardown logic common to all tests.</li>
+<li><strong>Why abstract?</strong> You never want to create an instance of <code>BaseTest</code> itself. It&rsquo;s not a real test. It&rsquo;s a template for other tests.</li>
+<li><strong>Example methods:</strong> <code>@BeforeMethod</code> to initialize <code>WebDriver</code>, <code>@AfterMethod</code> to quit the driver.</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900">abstract</span> <span style="color:#859900">class</span> <span style="color:#cb4b16">BaseTest</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">protected</span> <span style="color:#268bd2">WebDriver</span> <span style="color:#268bd2">driver</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">@BeforeMethod</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">setup</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Driver initialization logic here</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">driver</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">ChromeDriver</span>();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">@AfterMethod</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">teardown</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">driver</span> != <span style="color:#859900;font-weight:bold">null</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">driver</span>.<span style="color:#268bd2">quit</span>();
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900">class</span> <span style="color:#cb4b16">LoginTest</span> <span style="color:#859900">extends</span> <span style="color:#268bd2">BaseTest</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">@Test</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">testSuccessfulLogin</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// &#39;driver&#39; is inherited from BaseTest</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">LoginPage</span> <span style="color:#268bd2">loginPage</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">LoginPage</span>(<span style="color:#268bd2">driver</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">loginPage</span>.<span style="color:#268bd2">login</span>(<span style="color:#2aa198">&#34;user&#34;</span>, <span style="color:#2aa198">&#34;pass&#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// ... assertions</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="interface-use-in-my-project">Interface use in my project</h3>
+<p>See the answer in the first round. Interfaces define a contract.</p>
+<p>A sharper example for test automation: Different third-party integrations.</p>
+<p>Imagine your application can get user data from a database, a REST API, or a CSV file. You can abstract this away.</p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// The contract: any user data source MUST be able to get a user by ID.</span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900">interface</span> <span style="color:#cb4b16">UserDataSource</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">User</span> <span style="color:#268bd2">getUserById</span>(<span style="color:#268bd2">String</span> <span style="color:#268bd2">id</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Implementations</span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900">class</span> <span style="color:#cb4b16">ApiUserSource</span> <span style="color:#859900">implements</span> <span style="color:#268bd2">UserDataSource</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">User</span> <span style="color:#268bd2">getUserById</span>(<span style="color:#268bd2">String</span> <span style="color:#268bd2">id</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// ... logic to call a REST API</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900">class</span> <span style="color:#cb4b16">DbUserSource</span> <span style="color:#859900">implements</span> <span style="color:#268bd2">UserDataSource</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">User</span> <span style="color:#268bd2">getUserById</span>(<span style="color:#268bd2">String</span> <span style="color:#268bd2">id</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// ... logic to query a database</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Your test uses the interface, so it doesn&#39;t care about the implementation.</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// This allows you to easily swap out the data source for different test environments.</span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900">class</span> <span style="color:#cb4b16">UserProfileTest</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">private</span> <span style="color:#268bd2">UserDataSource</span> <span style="color:#268bd2">dataSource</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">UserProfileTest</span>(<span style="color:#268bd2">UserDataSource</span> <span style="color:#268bd2">source</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">dataSource</span> = <span style="color:#268bd2">source</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">@Test</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">testUserProfileData</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">User</span> <span style="color:#268bd2">user</span> = <span style="color:#268bd2">dataSource</span>.<span style="color:#268bd2">getUserById</span>(<span style="color:#2aa198">&#34;123&#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// ... now test the UI against this user object</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>This is dependency injection. It&rsquo;s a hallmark of a well-designed system, including a test framework.</p>
+<h3 id="method-overload-and-override-in-my-project">Method overload and override in my project</h3>
+<ul>
+<li>
+<p><strong>Overriding:</strong> This is runtime polymorphism. A subclass provides a specific implementation for a method that is already defined in its superclass. The <code>@Override</code> annotation is used.</p>
+<ul>
+<li><strong>Project Example:</strong> You have a <code>BasePage</code> with a <code>verifyPageLoad()</code> method that just checks the title. A specific <code>DashboardPage</code> might override it to also check for the presence of a specific chart element, because just the title isn&rsquo;t enough to prove the page loaded correctly.</li>
+</ul>
+</li>
+<li>
+<p><strong>Overloading:</strong> This is compile-time polymorphism. You have multiple methods with the same name but different parameters (different type, different number, or both).</p>
+<ul>
+<li><strong>Project Example:</strong> A common one is a custom <code>click()</code> method in a utility class.</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900">class</span> <span style="color:#cb4b16">ClickUtils</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Simple click</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">click</span>(<span style="color:#268bd2">WebElement</span> <span style="color:#268bd2">element</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">element</span>.<span style="color:#268bd2">click</span>();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Click using JavaScript, as a fallback</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">click</span>(<span style="color:#268bd2">WebElement</span> <span style="color:#268bd2">element</span>, <span style="color:#268bd2">JavascriptExecutor</span> <span style="color:#268bd2">js</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">js</span>.<span style="color:#268bd2">executeScript</span>(<span style="color:#2aa198">&#34;arguments[0].click();&#34;</span>, <span style="color:#268bd2">element</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Click and wait for an element to disappear</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">click</span>(<span style="color:#268bd2">WebElement</span> <span style="color:#268bd2">elementToClick</span>, <span style="color:#268bd2">WebElement</span> <span style="color:#268bd2">elementToDisappear</span>, <span style="color:#268bd2">WebDriverWait</span> <span style="color:#268bd2">wait</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">elementToClick</span>.<span style="color:#268bd2">click</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">wait</span>.<span style="color:#268bd2">until</span>(<span style="color:#268bd2">ExpectedConditions</span>.<span style="color:#268bd2">invisibilityOf</span>(<span style="color:#268bd2">elementToDisappear</span>));
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div></li>
+</ul>
+<h3 id="waits">Waits</h3>
+<p>There are three types. One of them is garbage.</p>
+<ol>
+<li><strong>Implicit Wait:</strong> Garbage. Don&rsquo;t use it. It&rsquo;s a global setting on the <code>WebDriver</code> instance that tells it to wait a certain amount of time when trying to find an element. It sounds good, but it slows down your tests (it always waits for the full duration if an element is <em>not</em> present) and it can&rsquo;t handle conditions other than presence. It hides timing issues instead of fixing them.</li>
+<li><strong>Explicit Wait:</strong> The correct choice. You use <code>WebDriverWait</code> and <code>ExpectedConditions</code> to wait for a <em>specific</em> condition to be true before proceeding. It&rsquo;s precise and deals with the actual state of the application.</li>
+<li><strong>Fluent Wait:</strong> A more configurable version of <code>WebDriverWait</code>. You can specify the polling interval and exceptions to ignore. <code>WebDriverWait</code> is actually a subclass of <code>FluentWait</code>. You&rsquo;d use it if you need fine-grained control, like checking for an element every 200ms instead of the default 500ms.</li>
+</ol>
+<h3 id="which-wait-used-in-my-project-and-syntex">Which wait used in my project and syntex</h3>
+<p>&ldquo;I exclusively use explicit waits because they are deterministic and target specific application states, which is the only reliable way to write non-flaky UI tests.&rdquo;</p>
+<p><strong>Syntax:</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">org.openqa.selenium.support.ui.WebDriverWait</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">org.openqa.selenium.support.ui.ExpectedConditions</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">java.time.Duration</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Setup the wait object, typically once per page or test</span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">WebDriverWait</span> <span style="color:#268bd2">wait</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">WebDriverWait</span>(<span style="color:#268bd2">driver</span>, <span style="color:#268bd2">Duration</span>.<span style="color:#268bd2">ofSeconds</span>(<span style="color:#268bd2">10</span>));
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Use it before an interaction</span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">WebElement</span> <span style="color:#268bd2">myElement</span> = <span style="color:#268bd2">wait</span>.<span style="color:#268bd2">until</span>(<span style="color:#268bd2">ExpectedConditions</span>.<span style="color:#268bd2">elementToBeClickable</span>(<span style="color:#268bd2">By</span>.<span style="color:#268bd2">id</span>(<span style="color:#2aa198">&#34;my-button&#34;</span>)));
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">myElement</span>.<span style="color:#268bd2">click</span>();
+</span></span></code></pre></div><p>The key is <code>.until()</code>. It polls the condition until it returns true or the timeout is reached. If it times out, it throws a <code>TimeoutException</code>.</p>
+<h3 id="iframe-and-method-syntax">Iframe and method syntax</h3>
+<p>Answered in the first round. The key methods are:</p>
+<ul>
+<li><code>driver.switchTo().frame(String nameOrId)</code></li>
+<li><code>driver.switchTo().frame(int index)</code></li>
+<li><code>driver.switchTo().frame(WebElement frameElement)</code></li>
+<li><code>driver.switchTo().defaultContent()</code></li>
+<li><code>driver.switchTo().parentFrame()</code> (to go up one level if you have nested iframes)</li>
+</ul>
+<h3 id="window-handle">Window handle</h3>
+<p>This is for when your application opens a new browser window or tab (e.g., by clicking a link with <code>target=&quot;_blank&quot;</code>). Selenium&rsquo;s context remains on the original window. You have to explicitly switch to the new one.</p>
+<p>Each window/tab has a unique ID, called a &ldquo;window handle.&rdquo;</p>
+<p><strong>The process:</strong></p>
+<ol>
+<li>Get the handle of the current window.</li>
+<li>Perform the action that opens a new window.</li>
+<li>Get all current window handles.</li>
+<li>Loop through the handles to find the one that is not the original handle.</li>
+<li>Switch to the new window.</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#268bd2">String</span> <span style="color:#268bd2">originalWindow</span> = <span style="color:#268bd2">driver</span>.<span style="color:#268bd2">getWindowHandle</span>();
+</span></span><span style="display:flex;"><span><span style="color:#859900">assert</span> <span style="color:#268bd2">driver</span>.<span style="color:#268bd2">getWindowHandles</span>().<span style="color:#268bd2">size</span>() == <span style="color:#268bd2">1</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">driver</span>.<span style="color:#268bd2">findElement</span>(<span style="color:#268bd2">By</span>.<span style="color:#268bd2">linkText</span>(<span style="color:#2aa198">&#34;open new window&#34;</span>)).<span style="color:#268bd2">click</span>();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Wait for the new window to open</span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">wait</span>.<span style="color:#268bd2">until</span>(<span style="color:#268bd2">ExpectedConditions</span>.<span style="color:#268bd2">numberOfWindowsToBe</span>(<span style="color:#268bd2">2</span>));
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">for</span> (<span style="color:#268bd2">String</span> <span style="color:#268bd2">windowHandle</span> : <span style="color:#268bd2">driver</span>.<span style="color:#268bd2">getWindowHandles</span>()) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span>(!<span style="color:#268bd2">originalWindow</span>.<span style="color:#268bd2">contentEquals</span>(<span style="color:#268bd2">windowHandle</span>)) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">driver</span>.<span style="color:#268bd2">switchTo</span>().<span style="color:#268bd2">window</span>(<span style="color:#268bd2">windowHandle</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">break</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Now you are in the new window/tab</span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>(<span style="color:#2aa198">&#34;New window title: &#34;</span> + <span style="color:#268bd2">driver</span>.<span style="color:#268bd2">getTitle</span>());
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Close the new window and switch back</span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">driver</span>.<span style="color:#268bd2">close</span>();
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">driver</span>.<span style="color:#268bd2">switchTo</span>().<span style="color:#268bd2">window</span>(<span style="color:#268bd2">originalWindow</span>);
+</span></span></code></pre></div><h3 id="diff-between-list-and-set">Diff between list and set</h3>
+<p>Answered in first round. List is ordered and allows duplicates. Set is unordered and requires uniqueness.</p>
+<h3 id="final-finally-finalize">Final, finally, finalize</h3>
+<p>They&rsquo;re testing if you know the difference between a language keyword, an exception handling block, and an object lifecycle method.</p>
+<ul>
+<li>
+<p><strong><code>final</code>:</strong> A keyword.</p>
+<ul>
+<li><strong>Variable:</strong> You can&rsquo;t change its value. A constant.</li>
+<li><strong>Method:</strong> You can&rsquo;t override it in a subclass.</li>
+<li><strong>Class:</strong> You can&rsquo;t extend it (e.g., <code>String</code> is a final class).</li>
+</ul>
+</li>
+<li>
+<p><strong><code>finally</code>:</strong> A block in a <code>try-catch</code> statement. The code inside <code>finally</code> is <strong>always executed</strong>, whether an exception was thrown or not. This is absolutely critical for cleanup.</p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#268bd2">WebDriver</span> <span style="color:#268bd2">driver</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span><span style="color:#859900">try</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">driver</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">ChromeDriver</span>();
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// do test stuff... might throw an exception</span>
+</span></span><span style="display:flex;"><span>} <span style="color:#859900">finally</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">driver</span> != <span style="color:#859900;font-weight:bold">null</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">driver</span>.<span style="color:#268bd2">quit</span>(); <span style="color:#93a1a1;font-style:italic">// CRITICAL: This must always run to close the browser.</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div></li>
+<li>
+<p><strong><code>finalize()</code>:</strong> A method from the <code>Object</code> class. The garbage collector calls this method on an object just before it&rsquo;s about to be destroyed. <strong>You should almost never use this.</strong> It&rsquo;s unpredictable when (or even if) it will be called. It&rsquo;s a deprecated concept for resource cleanup. Use <code>finally</code> blocks or <code>try-with-resources</code> instead. If you say you use <code>finalize()</code> in an interview, you&rsquo;ve failed the question.</p>
+</li>
+</ul>
+<h3 id="access-modifiers">Access modifiers</h3>
+<p>They control visibility.</p>
+<ul>
+<li><strong><code>public</code>:</strong> Accessible from anywhere.</li>
+<li><strong><code>protected</code>:</strong> Accessible within the same package, and by subclasses in other packages.</li>
+<li><strong>Default (no modifier):</strong> Accessible only within the same package.</li>
+<li><strong><code>private</code>:</strong> Accessible only within the same class.</li>
+</ul>
+<p><strong>In a test framework:</strong></p>
+<ul>
+<li>Test methods (<code>@Test</code>) must be <code>public</code>.</li>
+<li>Page Object methods that tests call (like <code>login()</code>) should be <code>public</code>.</li>
+<li>Locators and internal helper methods within a page object should be <code>private</code>. This is encapsulation.</li>
+<li><code>BaseTest</code> fields like <code>WebDriver driver</code> are often <code>protected</code> so that subclass tests can access them.</li>
+</ul>
+<h3 id="wap-for-a-count-in-given-string">Wap for a count in given string</h3>
+<p>Assuming they mean character count. A <code>HashMap</code> is the classic way.</p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">java.util.HashMap</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">java.util.Map</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900">class</span> <span style="color:#cb4b16">CharCounter</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#859900">static</span> <span style="color:#268bd2">Map</span>&lt;<span style="color:#268bd2">Character</span>, <span style="color:#268bd2">Integer</span>&gt; <span style="color:#268bd2">countChars</span>(<span style="color:#268bd2">String</span> <span style="color:#268bd2">str</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">str</span> == <span style="color:#859900;font-weight:bold">null</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#859900">new</span> <span style="color:#268bd2">HashMap</span>&lt;&gt;();
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">Map</span>&lt;<span style="color:#268bd2">Character</span>, <span style="color:#268bd2">Integer</span>&gt; <span style="color:#268bd2">charCount</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">HashMap</span>&lt;&gt;();
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">char</span> <span style="color:#268bd2">c</span> : <span style="color:#268bd2">str</span>.<span style="color:#268bd2">toCharArray</span>()) {
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// getOrDefault is cleaner than checking if the key exists</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">charCount</span>.<span style="color:#268bd2">put</span>(<span style="color:#268bd2">c</span>, <span style="color:#268bd2">charCount</span>.<span style="color:#268bd2">getOrDefault</span>(<span style="color:#268bd2">c</span>, <span style="color:#268bd2">0</span>) + <span style="color:#268bd2">1</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">charCount</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="wap-for-word-count-in-gvn-sentence">Wap for word count in gvn sentence</h3>
+<p>Split by whitespace. Be careful about punctuation and multiple spaces.</p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">java.util.Arrays</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">java.util.Map</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">java.util.stream.Collectors</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900">class</span> <span style="color:#cb4b16">WordCounter</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#859900">static</span> <span style="color:#859900;font-weight:bold">long</span> <span style="color:#268bd2">countWords</span>(<span style="color:#268bd2">String</span> <span style="color:#268bd2">sentence</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">sentence</span> == <span style="color:#859900;font-weight:bold">null</span> || <span style="color:#268bd2">sentence</span>.<span style="color:#268bd2">trim</span>().<span style="color:#268bd2">isEmpty</span>()) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#268bd2">0</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// A simple regex to split by one or more whitespace characters</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">sentence</span>.<span style="color:#268bd2">trim</span>().<span style="color:#268bd2">split</span>(<span style="color:#2aa198">&#34;\\s+&#34;</span>).<span style="color:#268bd2">length</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// If they want frequency of each word</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#859900">static</span> <span style="color:#268bd2">Map</span>&lt;<span style="color:#268bd2">String</span>, <span style="color:#268bd2">Long</span>&gt; <span style="color:#268bd2">getWordFrequency</span>(<span style="color:#268bd2">String</span> <span style="color:#268bd2">sentence</span>) {
+</span></span><span style="display:flex;"><span>         <span style="color:#859900">if</span> (<span style="color:#268bd2">sentence</span> == <span style="color:#859900;font-weight:bold">null</span> || <span style="color:#268bd2">sentence</span>.<span style="color:#268bd2">trim</span>().<span style="color:#268bd2">isEmpty</span>()) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#268bd2">Map</span>.<span style="color:#268bd2">of</span>();
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">Arrays</span>.<span style="color:#268bd2">stream</span>(<span style="color:#268bd2">sentence</span>.<span style="color:#268bd2">trim</span>().<span style="color:#268bd2">toLowerCase</span>().<span style="color:#268bd2">split</span>(<span style="color:#2aa198">&#34;\\s+&#34;</span>))
+</span></span><span style="display:flex;"><span>                     .<span style="color:#268bd2">collect</span>(<span style="color:#268bd2">Collectors</span>.<span style="color:#268bd2">groupingBy</span>(<span style="color:#268bd2">word</span> -&gt; <span style="color:#268bd2">word</span>, <span style="color:#268bd2">Collectors</span>.<span style="color:#268bd2">counting</span>()));
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="swap-the-nos">Swap the nos</h3>
+<p>This is a classic trick question. They want to see if you know the XOR swap or if you just use a temporary variable.</p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900">class</span> <span style="color:#cb4b16">Swapper</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#859900">static</span> <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">swapWithTemp</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">a</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">b</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>(<span style="color:#2aa198">&#34;Before: a=&#34;</span> + <span style="color:#268bd2">a</span> + <span style="color:#2aa198">&#34;, b=&#34;</span> + <span style="color:#268bd2">b</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">temp</span> = <span style="color:#268bd2">a</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">a</span> = <span style="color:#268bd2">b</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">b</span> = <span style="color:#268bd2">temp</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>(<span style="color:#2aa198">&#34;After: a=&#34;</span> + <span style="color:#268bd2">a</span> + <span style="color:#2aa198">&#34;, b=&#34;</span> + <span style="color:#268bd2">b</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// The &#34;clever&#34; way. Don&#39;t do this in production code. It&#39;s less readable.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// But it&#39;s good to know for an interview.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#859900">static</span> <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">swapWithoutTemp</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">a</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">b</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>(<span style="color:#2aa198">&#34;Before: a=&#34;</span> + <span style="color:#268bd2">a</span> + <span style="color:#2aa198">&#34;, b=&#34;</span> + <span style="color:#268bd2">b</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">a</span> = <span style="color:#268bd2">a</span> + <span style="color:#268bd2">b</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">b</span> = <span style="color:#268bd2">a</span> - <span style="color:#268bd2">b</span>; <span style="color:#93a1a1;font-style:italic">// b is now original a</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">a</span> = <span style="color:#268bd2">a</span> - <span style="color:#268bd2">b</span>; <span style="color:#93a1a1;font-style:italic">// a is now original b</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>(<span style="color:#2aa198">&#34;After: a=&#34;</span> + <span style="color:#268bd2">a</span> + <span style="color:#2aa198">&#34;, b=&#34;</span> + <span style="color:#268bd2">b</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><blockquote>
+<p><strong>Side note:</strong> The temporary variable solution is better. It&rsquo;s clearer and expresses intent perfectly. The no-temp-var swap is a party trick. Show you know it, but also state that you&rsquo;d use the clearer version in real code.</p>
+</blockquote>
+<h3 id="remove-duplicate-in-array">Remove duplicate in array</h3>
+<p>The cleanest way is to use a <code>Set</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">java.util.Arrays</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">java.util.LinkedHashSet</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">java.util.Set</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900">class</span> <span style="color:#cb4b16">DuplicateRemover</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#859900">static</span> <span style="color:#268bd2">Integer</span>[] <span style="color:#268bd2">removeDuplicates</span>(<span style="color:#859900;font-weight:bold">int</span>[] <span style="color:#268bd2">arr</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Use a LinkedHashSet to preserve insertion order.</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">Set</span>&lt;<span style="color:#268bd2">Integer</span>&gt; <span style="color:#268bd2">set</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">LinkedHashSet</span>&lt;&gt;();
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i</span> : <span style="color:#268bd2">arr</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">set</span>.<span style="color:#268bd2">add</span>(<span style="color:#268bd2">i</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">set</span>.<span style="color:#268bd2">toArray</span>(<span style="color:#859900">new</span> <span style="color:#268bd2">Integer</span>[<span style="color:#268bd2">0</span>]);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Java 8+ one-liner</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#859900">static</span> <span style="color:#859900;font-weight:bold">int</span>[] <span style="color:#268bd2">removeDuplicatesStream</span>(<span style="color:#859900;font-weight:bold">int</span>[] <span style="color:#268bd2">arr</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">Arrays</span>.<span style="color:#268bd2">stream</span>(<span style="color:#268bd2">arr</span>).<span style="color:#268bd2">distinct</span>().<span style="color:#268bd2">toArray</span>();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>The stream version is superior. It&rsquo;s declarative and concise.</p>
+<h3 id="test-case-for-atm">Test case for ATM</h3>
+<p>This is a classic system design question for testers. They want to see how you think about a system&rsquo;s requirements, edge cases, and failure modes. Don&rsquo;t just list &ldquo;test login.&rdquo; Structure your thinking.</p>
+<ul>
+<li><strong>Functional / Positive Scenarios:</strong>
+<ul>
+<li>Valid card, valid PIN -&gt; Display main menu.</li>
+<li>Check balance.</li>
+<li>Withdraw cash (within balance, within daily limit).</li>
+<li>Deposit cash/check.</li>
+<li>Transfer funds.</li>
+</ul>
+</li>
+<li><strong>Negative Scenarios:</strong>
+<ul>
+<li>Invalid card (expired, stolen, from another bank).</li>
+<li>Valid card, incorrect PIN (1st try, 2nd try, 3rd try -&gt; lock card).</li>
+<li>Withdraw amount &gt; current balance.</li>
+<li>Withdraw amount &gt; daily limit.</li>
+<li>Withdraw amount that is not a multiple of the available notes (e.g., withdraw $25 when only $20 bills are available).</li>
+</ul>
+</li>
+<li><strong>Edge Cases / Other:</strong>
+<ul>
+<li>Session timeout (user walks away after logging in).</li>
+<li>Cancel transaction at various points.</li>
+<li>ATM runs out of cash.</li>
+<li>ATM runs out of receipt paper.</li>
+<li>Network failure during a transaction (this is a big one - the system must be atomic).</li>
+<li>Concurrent access (two people try to access the same account from two ATMs).</li>
+</ul>
+</li>
+</ul>
+<h3 id="priority-and-severity">Priority and severity</h3>
+<p>Two different axes for classifying a bug.</p>
+<ul>
+<li><strong>Severity:</strong> How bad is the bug? What is the technical impact on the system?
+<ul>
+<li><strong>Critical:</strong> Crashes the system, data loss, security breach.</li>
+<li><strong>Major:</strong> A major piece of functionality is completely broken.</li>
+<li><strong>Minor:</strong> A minor feature doesn&rsquo;t work, or a major one has a small issue.</li>
+<li><strong>Trivial:</strong> Cosmetic issue, typo.</li>
+</ul>
+</li>
+<li><strong>Priority:</strong> How urgently does it need to be fixed? This is a business decision.
+<ul>
+<li><strong>High:</strong> Must fix now. It&rsquo;s blocking a release or costing the company money.</li>
+<li><strong>Medium:</strong> Should be fixed in the normal course of development.</li>
+<li><strong>Low:</strong> Fix if we have time.</li>
+</ul>
+</li>
+</ul>
+<p><strong>The classic example:</strong> A typo in the company name on the home page.</p>
+<ul>
+<li><strong>Severity:</strong> Trivial. It doesn&rsquo;t break anything.</li>
+<li><strong>Priority:</strong> High. It looks unprofessional and is embarrassing.</li>
+</ul>
+<h3 id="synyax-for-oops-and-array-and-literal-and-non-literal-string">Synyax for oops and array and literal and non literal string</h3>
+<p>This is a grab-bag question. They want to see if you know basic Java syntax and terminology.</p>
+<ul>
+<li>
+<p><strong>OOPS (Object-Oriented Programming Concepts):</strong></p>
+<ul>
+<li><strong>Class:</strong> Blueprint for objects (e.g., <code>public class LoginPage { ... }</code>).</li>
+<li><strong>Object:</strong> An instance of a class (e.g., <code>WebDriver driver = new ChromeDriver();</code>).</li>
+<li><strong>Method:</strong> A function within a class (e.g., <code>public void login(String user, String pass) { ... }</code>).</li>
+<li><strong>Inheritance:</strong> <code>extends</code> keyword (e.g., <code>public class LoginTest extends BaseTest</code>).</li>
+<li><strong>Polymorphism:</strong> Overriding (<code>@Override</code>) and Overloading (same method name, different parameters).</li>
+<li><strong>Encapsulation:</strong> <code>private</code> fields, <code>public</code> methods.</li>
+</ul>
+</li>
+<li>
+<p><strong>Array:</strong> Fixed-size, ordered collection of elements of the same type.</p>
+<ul>
+<li>Declaration: <code>int[] numbers;</code></li>
+<li>Initialization: <code>numbers = new int[5];</code></li>
+<li>Access: <code>numbers[0] = 10;</code></li>
+<li>Literal: <code>int[] nums = {1, 2, 3};</code></li>
+</ul>
+</li>
+<li>
+<p><strong>String Literal:</strong> A fixed string value written directly in the code.</p>
+<ul>
+<li><code>String message = &quot;Hello&quot;;</code></li>
+<li>String literals are immutable and often pooled by the JVM for efficiency.</li>
+</ul>
+</li>
+<li>
+<p><strong>String Non-Literal (Object):</strong> A string created using the <code>new</code> keyword.</p>
+<ul>
+<li><code>String greeting = new String(&quot;Hello&quot;);</code></li>
+<li>This creates a new object in the heap every time, even if the value is the same. Generally, you should prefer string literals.</li>
+</ul>
+</li>
+</ul>
+<h3 id="report-generation">Report generation</h3>
+<p>In a test framework, this isn&rsquo;t about printing to the console. It&rsquo;s about creating a useful artifact after a test run.</p>
+<ul>
+<li><strong>What should be in it?</strong>
+<ul>
+<li>Summary: How many tests passed, failed, skipped.</li>
+<li>Execution time.</li>
+<li>Detailed view of each test.</li>
+<li>For failed tests: Stack trace, error message, and <strong>a screenshot</strong> at the point of failure.</li>
+<li>Environment details (browser, OS, etc.).</li>
+</ul>
+</li>
+<li><strong>Tools:</strong>
+<ul>
+<li><strong>ExtentReports:</strong> Very popular, creates beautiful HTML reports.</li>
+<li><strong>Allure:</strong> Another powerful tool that can build trend charts and has great integrations.</li>
+<li><strong>TestNG/JUnit reports:</strong> Basic XML/HTML reports that are good enough for CI/CD tools like Jenkins to parse.</li>
+</ul>
+</li>
+</ul>
+<p>You integrate these using test runner listeners (<code>ITestListener</code> in TestNG). The listener&rsquo;s <code>onTestFailure()</code> method is where you trigger the screenshot capture and log the failure details.</p>
+<h3 id="cucumber-plugins">cucumber plugins</h3>
+<p>Plugins customize Cucumber&rsquo;s output. You define them in the <code>@CucumberOptions</code> annotation.</p>
+<ul>
+<li><strong><code>pretty</code>:</strong> Prints the Gherkin steps to the console in a readable format. Good for local debugging.</li>
+<li><strong><code>html:target/cucumber-reports.html</code>:</strong> Generates a basic HTML report.</li>
+<li><strong><code>json:target/cucumber-report.json</code>:</strong> Generates a JSON file with the test results. This is the important one. Other tools (like reporting libraries or Jenkins plugins) consume this JSON to create much better-looking reports.</li>
+<li><strong><code>junit:target/cucumber.xml</code>:</strong> Generates a JUnit-style XML report, which is a standard format that most CI/CD tools understand.</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#268bd2">@CucumberOptions</span>(
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">features</span> = <span style="color:#2aa198">&#34;src/test/resources/features&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">glue</span> = <span style="color:#2aa198">&#34;com.myapp.stepdefs&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">plugin</span> = { 
+</span></span><span style="display:flex;"><span>        <span style="color:#2aa198">&#34;pretty&#34;</span>, 
+</span></span><span style="display:flex;"><span>        <span style="color:#2aa198">&#34;json:target/cucumber-report.json&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#2aa198">&#34;html:target/cucumber-report.html&#34;</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900">class</span> <span style="color:#cb4b16">TestRunner</span> {
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="xpath-related-ancestor-following-siblings-parent">xpath related ancestor, following, siblings, parent</h3>
+<p>These are XPath axes. They let you navigate the DOM tree from a known element (a &ldquo;context node&rdquo;). They are powerful but can lead to brittle tests if overused.</p>
+<p>Assume your context node is an <code>input</code> field: <code>&lt;input id=&quot;username&quot;&gt;</code></p>
+<ul>
+<li>
+<p><strong><code>parent::*</code> or <code>..</code></strong></p>
+<ul>
+<li>Selects the immediate parent of the context node.</li>
+<li>Example: <code>//input[@id='username']/parent::div</code> (selects the <code>div</code> that contains the input field).</li>
+</ul>
+</li>
+<li>
+<p><strong><code>ancestor::*</code></strong></p>
+<ul>
+<li>Selects all ancestors (parent, grandparent, etc.) up to the root.</li>
+<li>Example: <code>//input[@id='username']/ancestor::form</code> (finds the form that the input field belongs to).</li>
+</ul>
+</li>
+<li>
+<p><strong><code>following-sibling::*</code></strong></p>
+<ul>
+<li>Selects all sibling nodes that come <em>after</em> the context node.</li>
+<li>Example: <code>//label[@for='username']/following-sibling::input</code> (finds the input field that comes right after its label).</li>
+</ul>
+</li>
+<li>
+<p><strong><code>preceding-sibling::*</code></strong></p>
+<ul>
+<li>Selects all sibling nodes that come <em>before</em> the context node.</li>
+</ul>
+</li>
+<li>
+<p><strong><code>following::*</code></strong></p>
+<ul>
+<li>Selects <em>all</em> nodes in the document that appear after the context node, not just siblings. Use with caution.</li>
+</ul>
+</li>
+<li>
+<p><strong><code>preceding::*</code></strong></p>
+<ul>
+<li>Selects <em>all</em> nodes that appear before the context node. Use with caution.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Why use them?</strong> They are essential for finding elements that don&rsquo;t have a good, stable ID or class of their own. You find a nearby stable element (like a label with text) and then navigate from there. This is a key skill for automating complex, legacy applications.</p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Example using XPath axes</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Find the input field that follows the label with text &#39;Username&#39;</span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">driver</span>.<span style="color:#268bd2">findElement</span>(<span style="color:#268bd2">By</span>.<span style="color:#268bd2">xpath</span>(<span style="color:#2aa198">&#34;//label[text()=&#39;Username&#39;]/following-sibling::input&#34;</span>));
+</span></span></code></pre></div><hr>
+<h2 id="original-questions-untouched-2">Original Questions (UNTOUCHED)</h2>
+<p>Capgemini L2:
+Tell me about your project
+Explain feature file using in your current project
+Reverse 2 number without temporary variable
+Int x = 10;
+Int y = 20:
+Reverse 2 string without temporary variable
+String a = &ldquo;India&rdquo;:
+String b = &ldquo;uk&rdquo;:
+String str = &ldquo;123456&rdquo; Convert into integer.
+What is wrapper class and what are they?
+String is a class Or datatype?
+What will be the output of the following?System.out.println (2+3+&ldquo;HELLO&rdquo;);
+Difference between array and arraylist?
+Difference between list and set?
+How to find duplicates in 2 arrays
+int [] a = [1, 2,3,4,5,6];
+int [] b = [8, 1,3,9,4];
+Difference between
+Webdriver driver = new ChromeDriver() ;
+ChromeDriver driver = new ChromeDriver() :
+How to interact with hidden elements in Selenium Webdriver?
+What is action class and syntax?
+How to use private variable in another class
+What is API ?
+What is Mobile Testing?
+What to do if Two Objects have same Xpath?
+What is the alternative for &ldquo;click&rdquo; in Selenium?
+How many PR approval you&rsquo;ll get in your project?
+What will be the answer if we compare
+s1==s2
+s1==s3
+String s1 = &ldquo;HELLO&rdquo;;
+String s2 = &ldquo;HELLO&rdquo;;
+String s3 =  new String(&ldquo;HELLO&rdquo;):
+System.out.println(s1==s2) //true
+System.out.println(s1 == s3); // false</p>
+<hr>
+<h2 id="answers-no-bs-java-qa--sdet-explanations-2">Answers (No-BS Java QA / SDET Explanations)</h2>
+<blockquote>
+<p>Many of these are repeats. See previous answers for details.</p>
+</blockquote>
+<h3 id="reverse-2-number-without-temporary-variable">Reverse 2 number without temporary variable</h3>
+<p><code>x = x + y; y = x - y; x = x - y;</code></p>
+<h3 id="reverse-2-string-without-temporary-variable">Reverse 2 string without temporary variable</h3>
+<p><code>a = a + b; b = a.substring(0, a.length() - b.length()); a = a.substring(b.length());</code></p>
+<h3 id="string-str--123456-convert-into-integer">String str = &ldquo;123456&rdquo; Convert into integer.</h3>
+<p><code>Integer.parseInt(str);</code></p>
+<h3 id="what-is-wrapper-class-and-what-are-they">What is wrapper class and what are they?</h3>
+<p>Classes that wrap primitives into objects (e.g., <code>Integer</code>). Necessary for collections.</p>
+<h3 id="string-is-a-class-or-datatype">String is a class Or datatype?</h3>
+<p>It&rsquo;s a <strong>class</strong> (<code>java.lang.String</code>), a reference type.</p>
+<h3 id="what-will-be-the-output-of-the-following-systemoutprintln-23hello">What will be the output of the following? System.out.println (2+3+&ldquo;HELLO&rdquo;);</h3>
+<p><strong>&ldquo;5HELLO&rdquo;</strong>. The <code>2+3</code> addition happens first, then the result <code>5</code> is concatenated with the string.</p>
+<h3 id="difference-between-array-and-arraylist">Difference between array and arraylist?</h3>
+<p>Array is fixed-size. <code>ArrayList</code> is dynamic and part of the Collections Framework.</p>
+<h3 id="difference-between-list-and-set">Difference between list and set?</h3>
+<p><code>List</code> is ordered, allows duplicates. <code>Set</code> is unordered, unique elements only.</p>
+<h3 id="how-to-find-duplicates-in-2-arrays">How to find duplicates in 2 arrays</h3>
+<p>Use a <code>Set</code>. Iterate through the first array and add all elements to the set. Then, iterate through the second array and for each element, check if it&rsquo;s already in the set. If it is, you&rsquo;ve found a duplicate between the two arrays. A more efficient way is to convert one to a Set and use <code>retainAll</code> on a Set made from the second array.</p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#268bd2">Set</span>&lt;<span style="color:#268bd2">Integer</span>&gt; <span style="color:#268bd2">setA</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">HashSet</span>&lt;&gt;(<span style="color:#268bd2">Arrays</span>.<span style="color:#268bd2">asList</span>(<span style="color:#268bd2">a</span>));
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">Set</span>&lt;<span style="color:#268bd2">Integer</span>&gt; <span style="color:#268bd2">setB</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">HashSet</span>&lt;&gt;(<span style="color:#268bd2">Arrays</span>.<span style="color:#268bd2">asList</span>(<span style="color:#268bd2">b</span>));
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">setA</span>.<span style="color:#268bd2">retainAll</span>(<span style="color:#268bd2">setB</span>); <span style="color:#93a1a1;font-style:italic">// setA now contains only the elements present in both</span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>(<span style="color:#2aa198">&#34;Duplicates: &#34;</span> + <span style="color:#268bd2">setA</span>);
+</span></span></code></pre></div><h3 id="difference-between">Difference between</h3>
+<p><code>Webdriver driver = new ChromeDriver()</code> and
+<code>ChromeDriver driver = new ChromeDriver()</code>
+Coding to an interface (<code>WebDriver</code>) vs. an implementation (<code>ChromeDriver</code>). Coding to the interface is correct. It makes your code portable to other browsers.</p>
+<h3 id="how-to-interact-with-hidden-elements-in-selenium-webdriver">How to interact with hidden elements in Selenium Webdriver?</h3>
+<p>You can&rsquo;t with standard Selenium commands. You must use <code>JavascriptExecutor</code> as a last resort: <code>((JavascriptExecutor) driver).executeScript(&quot;arguments[0].click();&quot;, hiddenElement);</code></p>
+<h3 id="what-is-action-class-and-syntax">What is action class and syntax?</h3>
+<p>The <code>Actions</code> class, for complex user gestures. <code>Actions actions = new Actions(driver); actions.moveToElement(element).perform();</code></p>
+<h3 id="how-to-use-private-variable-in-another-class">How to use private variable in another class</h3>
+<p>You don&rsquo;t. You provide <code>public</code> getter/setter methods. This is encapsulation.</p>
+<h3 id="what-is-api-">What is API ?</h3>
+<p>Application Programming Interface. A contract for software to talk to each other, typically via HTTP and JSON.</p>
+<h3 id="what-is-mobile-testing">What is Mobile Testing?</h3>
+<p>Testing applications on mobile devices (native apps or mobile web). <strong>Appium</strong> is the key tool to mention here.</p>
+<h3 id="what-to-do-if-two-objects-have-same-xpath">What to do if Two Objects have same Xpath?</h3>
+<ul>
+<li><code>findElements</code> will return a <code>List</code> of them. You can then pick one by its index: <code>driver.findElements(By.xpath(xpath)).get(1)</code> for the second one.</li>
+<li>You can also add an index directly to the XPath: <code>(//div[@class='product'])[2]</code></li>
+</ul>
+<h3 id="what-is-the-alternative-for-click-in-selenium">What is the alternative for &ldquo;click&rdquo; in Selenium?</h3>
+<ol>
+<li><strong>JavaScript Click:</strong> <code>((JavascriptExecutor) driver).executeScript(&quot;arguments[0].click();&quot;, element);</code> (The &ldquo;hammer&rdquo;).</li>
+<li><strong>Actions Class Click:</strong> <code>new Actions(driver).click(element).perform();</code></li>
+<li><strong>Send ENTER key:</strong> <code>element.sendKeys(Keys.ENTER);</code> (Works for submit buttons).</li>
+</ol>
+<h3 id="how-many-pr-approval-youll-get-in-your-project">How many PR approval you&rsquo;ll get in your project?</h3>
+<p>A process question. &ldquo;My team required at least one approval from another engineer before merging a pull request.&rdquo;</p>
+<h3 id="what-will-be-the-answer-if-we-compare">What will be the answer if we compare</h3>
+<p>s1==s2
+s1==s3
+String s1 = &ldquo;HELLO&rdquo;;
+String s2 = &ldquo;HELLO&rdquo;;
+String s3 =  new String(&ldquo;HELLO&rdquo;):
+System.out.println(s1==s2) //true
+System.out.println(s1 == s3); // false</p>
+<p>This tests knowledge of the String Constant Pool.</p>
+<ul>
+<li>
+<p><code>String s1 = &quot;HELLO&quot;;</code> and <code>String s2 = &quot;HELLO&quot;;</code> both point to the <em>same object</em> in the pool.</p>
+</li>
+<li>
+<p><code>String s3 = new String(&quot;HELLO&quot;);</code> forces the creation of a <em>new object</em> on the heap.</p>
+</li>
+<li>
+<p><code>s1 == s2</code> -&gt; <strong>true</strong> (references are identical).</p>
+</li>
+<li>
+<p><code>s1 == s3</code> -&gt; <strong>false</strong> (references are different).</p>
+</li>
+<li>
+<p>The code in the prompt is correct.</p>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"></code></pre></div>
+    </div>
+</article>
+
+<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
+    
+    <a href="//localhost:1315/12_company_based_questions/capgemini/round-10/" class="nav-btn">← Previous</a>
+    
+    
+    <a href="//localhost:1315/12_company_based_questions/capgemini/" class="nav-btn">Up</a>
+
+    
+    <span></span>
+    
+</div>
+
+    </main>
+
+    <footer class="footer">
+        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,27 @@
+{{ define "main" }}
+<div class="content" style="margin-bottom: 4rem;">
+    <div style="font-family: 'Courier New', monospace; font-size: 0.8rem; color: var(--secondary); margin-bottom: 1rem;">
+        [ STATUS: INITIALIZED ] [ YEAR: 3003 ]
+    </div>
+    {{ .Content }}
+</div>
+
+{{ range .Sections.GroupByParam "category" }}
+    <div class="category-group">
+        <div class="category-title">// SEC_{{ upper (replace .Key " " "_") }}</div>
+        <div class="tutorial-list">
+            {{ range .Pages.ByWeight }}
+            <div class="tutorial-item">
+                <div class="tutorial-title">
+                    <a href="{{ .Permalink }}">{{ .Title }}</a>
+                </div>
+                {{ if .Params.description }}
+                <div class="tutorial-desc">{{ .Params.description }}</div>
+                {{ end }}
+            </div>
+            {{ end }}
+        </div>
+    </div>
+{{ end }}
+
+{{ end }}

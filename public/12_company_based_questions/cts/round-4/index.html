@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1315&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CTS-4 | SDET Interview Preparation Kit</title>
+    <link rel="stylesheet" href="//localhost:1315/css/style.css">
+    
+    
+    <link rel="stylesheet" href="//localhost:1315/lib/katex/katex.min.css">
+    <script defer src="//localhost:1315/lib/katex/katex.min.js"></script>
+    <script defer src="//localhost:1315/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="/">Index</a></li>
+                
+            </ul>
+        </nav>
+        <div class="site-breadcrumb">
+            <a href="/">Home</a>
+            
+            
+            
+
+            
+            
+                <span>/</span> CTS-4
+            
+        </div>
+    </header>
+
+    <main>
+        
+<article>
+    <div class="category-title" style="margin-bottom: 0.5rem;">Cts Interview Questions</div>
+    <h1>CTS-4</h1>
+    <div class="content-body" style="margin-top: 2rem;">
+        <hr>
+<h2 id="original-questions-untouched">Original Questions (UNTOUCHED)</h2>
+<h2 id="cts-l1-and-l2">CTS L1 and L2:</h2>
+<p>Tell abt ur self
+Draw your Framework architecture and explain
+Select class methods
+Select particular window from multiple windows
+Two boxes present click the second box, xpath and js executor not working
+How to pass data from excel
+How to pass data from pdf
+Which version selenium using in your project
+Fullpage screenshot
+Write a code to find a  previous element  and nxt element using Xpath axes
+Explain feature file
+Cucumber options
+DryRun true false difference
+Explain Restassured  framework
+Explain Put get post patch
+How to generate token
+How to validate response
+How to link automation screenshots in to jira tool
+Git conflict
+Can you write sql query
+Explain jenkins
+What is webdriver
+Write a program go to google search testing automation and click the link and find broken link and use implicit and explicit wait
+Have you work any other languages other than English
+How many ways to remove special characters in a string</p>
+<hr>
+<h2 id="answers-no-bs-java-qa--sdet-explanations">Answers (No-BS Java QA / SDET Explanations)</h2>
+<h3 id="tell-abt-ur-self">Tell abt ur self</h3>
+<p>Standard opener. Keep it concise, professional, and focused on your automation experience.</p>
+<h3 id="draw-your-framework-architecture-and-explain">Draw your Framework architecture and explain</h3>
+<p>Be prepared to describe this on a whiteboard or conceptually.
+&ldquo;Our framework is layered:</p>
+<ol>
+<li><strong>Test Layer:</strong> TestNG test classes. They contain test logic and assertions only.</li>
+<li><strong>Page Object Layer:</strong> Java classes representing pages of the application. They contain element locators and interaction methods. This layer uses Selenium.</li>
+<li><strong>Utility Layer:</strong> Helper classes for things like reading config files, reading Excel data (Apache POI), database connections (JDBC), and reporting (ExtentReports).</li>
+<li><strong>Data Layer:</strong> External files (<code>.properties</code>, JSON, or Excel) that store our test data and configuration.</li>
+<li><strong>Build/Execution Layer:</strong> Maven (<code>pom.xml</code>) manages dependencies and the build lifecycle. TestNG (<code>testng.xml</code>) manages test execution. Jenkins orchestrates the entire process for CI/CD.&rdquo;</li>
+</ol>
+<h3 id="select-class-methods">Select class methods</h3>
+<p>The <code>Select</code> class in Selenium is used for <code>&lt;select&gt;</code> dropdowns. Key methods:</p>
+<ul>
+<li><code>selectByVisibleText(&quot;Text of the option&quot;)</code></li>
+<li><code>selectByValue(&quot;value_attribute_of_option&quot;)</code></li>
+<li><code>selectByIndex(int index)</code></li>
+<li><code>getOptions()</code>: Returns a <code>List&lt;WebElement&gt;</code> of all options.</li>
+<li><code>getFirstSelectedOption()</code>: Returns the currently selected option.</li>
+</ul>
+<h3 id="select-particular-window-from-multiple-windows">Select particular window from multiple windows</h3>
+<ol>
+<li>Get all window handles: <code>Set&lt;String&gt; allHandles = driver.getWindowHandles();</code></li>
+<li>You need a way to identify the window you want (e.g., by its title or URL).</li>
+<li>Loop through the handles, switch to each window, and check its title/URL.
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#859900">for</span> (<span style="color:#268bd2">String</span> <span style="color:#268bd2">handle</span> : <span style="color:#268bd2">allHandles</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">driver</span>.<span style="color:#268bd2">switchTo</span>().<span style="color:#268bd2">window</span>(<span style="color:#268bd2">handle</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">driver</span>.<span style="color:#268bd2">getTitle</span>().<span style="color:#268bd2">equals</span>(<span style="color:#2aa198">&#34;Target Window Title&#34;</span>)) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">break</span>; <span style="color:#93a1a1;font-style:italic">// Found the right window, stop looping</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div></li>
+</ol>
+<h3 id="two-boxes-present-click-the-second-box-xpath-and-js-executor-not-working">Two boxes present click the second box, xpath and js executor not working</h3>
+<p>This is a problem-solving question. If standard methods fail, you have to get creative.</p>
+<ol>
+<li><strong><code>Actions</code> class:</strong> Sometimes the <code>Actions</code> class can succeed where a direct click fails. <code>new Actions(driver).moveToElement(secondBox).click().perform();</code></li>
+<li><strong>Send Keys (Enter/Space):</strong> If the box can receive focus, you can try to <code>TAB</code> to it or use <code>sendKeys(Keys.ENTER)</code> or <code>sendKeys(Keys.SPACE)</code> which can trigger a click event.</li>
+<li><strong>Re-evaluate the problem:</strong> Is the element actually a checkbox? Is it inside an <code>iframe</code>? Is there an overlay covering it? The problem is likely not the click itself, but a misunderstanding of the element&rsquo;s state or context. Go back to DevTools and re-inspect everything.</li>
+</ol>
+<h3 id="how-to-pass-data-from-excel">How to pass data from excel</h3>
+<p>Using the <strong>Apache POI</strong> library. You create a utility class to read the <code>.xlsx</code> file, then use a TestNG <code>@DataProvider</code> to feed that data into your <code>@Test</code> methods.</p>
+<h3 id="how-to-pass-data-from-pdf">How to pass data from pdf</h3>
+<p>This is much harder than Excel. Selenium has no built-in way to do this. You need a third-party Java library like <strong>Apache PDFBox</strong>.</p>
+<ul>
+<li><strong>Process:</strong>
+<ol>
+<li>Add the <code>pdfbox</code> dependency to your <code>pom.xml</code>.</li>
+<li>Write a utility class that uses PDFBox to load a PDF file and parse its text content.</li>
+<li>Your test would then call this utility to get the text and perform assertions or extract data.</li>
+</ol>
+</li>
+<li>This is an uncommon requirement, but knowing that Apache PDFBox is the tool for the job is the key part of the answer.</li>
+</ul>
+<h3 id="which-version-selenium-using-in-your-project">Which version selenium using in your project</h3>
+<p>&ldquo;We are on <strong>Selenium 4</strong>. We upgraded to take advantage of the W3C protocol compliance and new features like relative locators.&rdquo;</p>
+<h3 id="fullpage-screenshot">Fullpage screenshot</h3>
+<p>Standard Selenium <code>TakesScreenshot</code> only captures the visible viewport. To take a full-page screenshot that includes the scrolled content, you need a different approach.</p>
+<ul>
+<li><strong>Third-party libraries:</strong> The most common solution is to use a library like <strong>AShot</strong>. You add its dependency and then use its API:
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#268bd2">Screenshot</span> <span style="color:#268bd2">fpScreenshot</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">AShot</span>()
+</span></span><span style="display:flex;"><span>    .<span style="color:#268bd2">shootingStrategy</span>(<span style="color:#268bd2">ShootingStrategies</span>.<span style="color:#268bd2">viewportPasting</span>(<span style="color:#268bd2">1000</span>))
+</span></span><span style="display:flex;"><span>    .<span style="color:#268bd2">takeScreenshot</span>(<span style="color:#268bd2">driver</span>);
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">ImageIO</span>.<span style="color:#268bd2">write</span>(<span style="color:#268bd2">fpScreenshot</span>.<span style="color:#268bd2">getImage</span>(), <span style="color:#2aa198">&#34;PNG&#34;</span>, <span style="color:#859900">new</span> <span style="color:#268bd2">File</span>(<span style="color:#2aa198">&#34;fullpage.png&#34;</span>));
+</span></span></code></pre></div></li>
+<li><strong>Firefox Native:</strong> Firefox&rsquo;s WebDriver has a built-in capability for this: <code>((FirefoxDriver)driver).getFullPageScreenshotAs(OutputType.FILE);</code></li>
+</ul>
+<h3 id="write-a-code-to-find-a-previous-element-and-nxt-element-using-xpath-axes">Write a code to find a previous element and nxt element using Xpath axes</h3>
+<ul>
+<li><strong><code>following-sibling</code>:</strong> Finds the next sibling.</li>
+<li><strong><code>preceding-sibling</code>:</strong> Finds the previous sibling.</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Assuming HTML: &lt;label&gt;Username&lt;/label&gt;&lt;input .../&gt;&lt;label&gt;Password&lt;/label&gt;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Find the input field (next element) after the &#39;Username&#39; label</span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">WebElement</span> <span style="color:#268bd2">usernameInput</span> = <span style="color:#268bd2">driver</span>.<span style="color:#268bd2">findElement</span>(<span style="color:#268bd2">By</span>.<span style="color:#268bd2">xpath</span>(<span style="color:#2aa198">&#34;//label[text()=&#39;Username&#39;]/following-sibling::input[1]&#34;</span>));
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Find the &#39;Username&#39; label (previous element) before the password label</span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">WebElement</span> <span style="color:#268bd2">usernameLabel</span> = <span style="color:#268bd2">driver</span>.<span style="color:#268bd2">findElement</span>(<span style="color:#268bd2">By</span>.<span style="color:#268bd2">xpath</span>(<span style="color:#2aa198">&#34;//label[text()=&#39;Password&#39;]/preceding-sibling::label[1]&#34;</span>));
+</span></span></code></pre></div><h3 id="explain-feature-file">Explain feature file</h3>
+<p>A <code>.feature</code> file is the heart of Cucumber. It&rsquo;s a plain-text file written in Gherkin syntax that describes a feature and its scenarios. It serves as both documentation and an executable test specification.</p>
+<h3 id="cucumber-options">Cucumber options</h3>
+<p><code>@CucumberOptions</code> is an annotation on the runner class that configures the test execution. Key options:</p>
+<ul>
+<li><code>features</code>: Path to your feature files.</li>
+<li><code>glue</code>: Path to your step definition packages.</li>
+<li><code>tags</code>: Filters which scenarios to run.</li>
+<li><code>plugin</code>: Configures reporters (e.g., <code>pretty</code>, <code>html:target/report.html</code>, <code>json:target/report.json</code>).</li>
+<li><code>dryRun</code>: Checks for missing step definitions without running tests.</li>
+</ul>
+<h3 id="dryrun-true-false-difference">DryRun true false difference</h3>
+<ul>
+<li><code>dryRun = true</code>: Cucumber runs through the feature files and verifies that every step has a matching step definition. It <strong>does not</strong> execute the actual test code.</li>
+<li><code>dryRun = false</code> (default): Cucumber executes the tests normally.</li>
+</ul>
+<h3 id="explain-restassured-framework">Explain Restassured framework</h3>
+<p>REST-assured is a Java library for testing REST APIs. It provides a fluent, BDD-style syntax (<code>given/when/then</code>) that makes it easy to write powerful and readable API tests. You can use it to make HTTP requests and validate status codes, headers, and response bodies.</p>
+<h3 id="explain-put-get-post-patch">Explain Put get post patch</h3>
+<ul>
+<li><code>GET</code>: Retrieve a resource.</li>
+<li><code>POST</code>: Create a new resource.</li>
+<li><code>PUT</code>: Completely replace/update an existing resource.</li>
+<li><code>PATCH</code>: Partially update an existing resource.</li>
+</ul>
+<h3 id="how-to-generate-token">How to generate token</h3>
+<p>In API testing, you automate this by making a <code>POST</code> request to the login/authentication endpoint with valid credentials. You then extract the token (e.g., a JWT) from the response body and store it in a variable to use in the <code>Authorization</code> header of subsequent requests.</p>
+<h3 id="how-to-validate-response">How to validate response</h3>
+<p>In REST-assured, you do this in the <code>.then()</code> block.</p>
+<ul>
+<li><code>.statusCode(200)</code></li>
+<li><code>.header(&quot;Content-Type&quot;, &quot;application/json&quot;)</code></li>
+<li><code>.body(&quot;path.to.field&quot;, equalTo(&quot;expectedValue&quot;))</code> (using Hamcrest matchers)</li>
+<li><code>.time(lessThan(2000L))</code></li>
+</ul>
+<h3 id="how-to-link-automation-screenshots-in-to-jira-tool">How to link automation screenshots in to jira tool</h3>
+<p>This requires a Jira plugin that supports this (like <strong>Xray</strong> or <strong>Zephyr</strong>) and some CI/CD configuration.</p>
+<ul>
+<li><strong>Process:</strong>
+<ol>
+<li>Your test listener saves the screenshot to a known location in your Jenkins workspace.</li>
+<li>You use the Jira plugin&rsquo;s REST API to attach this file to the test execution record or a newly created bug ticket in Jira.</li>
+<li>This is typically done via a <code>curl</code> command or a custom script in a post-build step in Jenkins.</li>
+</ol>
+</li>
+</ul>
+<h3 id="git-conflict">Git conflict</h3>
+<p>A Git conflict occurs when you try to merge two branches that have competing changes to the same lines in the same file. Git cannot automatically resolve it and marks the file as conflicted, requiring manual intervention. You must open the file, choose which changes to keep, save it, and then <code>git add</code> and <code>git commit</code> the resolved file.</p>
+<h3 id="can-you-write-sql-query">Can you write sql query</h3>
+<p>&ldquo;Yes, I can write basic to intermediate SQL queries to <code>SELECT</code>, <code>INSERT</code>, <code>UPDATE</code>, and <code>DELETE</code> data, and use <code>JOIN</code>s to query across multiple tables.&rdquo;</p>
+<h3 id="explain-jenkins">Explain jenkins</h3>
+<p>An open-source automation server used for building CI/CD pipelines. It automates the process of building, testing, and deploying software.</p>
+<h3 id="what-is-webdriver">What is webdriver</h3>
+<p><code>WebDriver</code> is the central <strong>interface</strong> in Selenium. It defines the set of methods for interacting with a web browser. All browser-specific driver classes (<code>ChromeDriver</code>, <code>FirefoxDriver</code>, etc.) implement this interface.</p>
+<h3 id="write-a-program-go-to-google-search-testing-automation-and-click-the-link-and-find-broken-link-and-use-implicit-and-explicit-wait">Write a program go to google search testing automation and click the link and find broken link and use implicit and explicit wait</h3>
+<p>This is a complex question combining multiple concepts.</p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// ... imports ...</span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900">class</span> <span style="color:#cb4b16">GoogleSearchAndLinkCheck</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#859900">static</span> <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">main</span>(<span style="color:#268bd2">String</span>[] <span style="color:#268bd2">args</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">WebDriver</span> <span style="color:#268bd2">driver</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">ChromeDriver</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// DO NOT USE Implicit Wait in a real project with Explicit Waits.</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5)); // Bad practice shown for question.</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">try</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">driver</span>.<span style="color:#268bd2">get</span>(<span style="color:#2aa198">&#34;https://www.google.com&#34;</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">WebElement</span> <span style="color:#268bd2">searchBox</span> = <span style="color:#268bd2">driver</span>.<span style="color:#268bd2">findElement</span>(<span style="color:#268bd2">By</span>.<span style="color:#268bd2">name</span>(<span style="color:#2aa198">&#34;q&#34;</span>));
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">searchBox</span>.<span style="color:#268bd2">sendKeys</span>(<span style="color:#2aa198">&#34;testing automation&#34;</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">searchBox</span>.<span style="color:#268bd2">submit</span>();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// USE Explicit Wait - this is the correct way.</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">WebDriverWait</span> <span style="color:#268bd2">wait</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">WebDriverWait</span>(<span style="color:#268bd2">driver</span>, <span style="color:#268bd2">Duration</span>.<span style="color:#268bd2">ofSeconds</span>(<span style="color:#268bd2">10</span>));
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Wait for search results to be visible</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">wait</span>.<span style="color:#268bd2">until</span>(<span style="color:#268bd2">ExpectedConditions</span>.<span style="color:#268bd2">visibilityOfElementLocated</span>(<span style="color:#268bd2">By</span>.<span style="color:#268bd2">id</span>(<span style="color:#2aa198">&#34;search&#34;</span>)));
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">List</span>&lt;<span style="color:#268bd2">WebElement</span>&gt; <span style="color:#268bd2">links</span> = <span style="color:#268bd2">driver</span>.<span style="color:#268bd2">findElements</span>(<span style="color:#268bd2">By</span>.<span style="color:#268bd2">tagName</span>(<span style="color:#2aa198">&#34;a&#34;</span>));
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>(<span style="color:#2aa198">&#34;Found &#34;</span> + <span style="color:#268bd2">links</span>.<span style="color:#268bd2">size</span>() + <span style="color:#2aa198">&#34; links. Checking for broken links...&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">for</span> (<span style="color:#268bd2">WebElement</span> <span style="color:#268bd2">link</span> : <span style="color:#268bd2">links</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">String</span> <span style="color:#268bd2">url</span> = <span style="color:#268bd2">link</span>.<span style="color:#268bd2">getAttribute</span>(<span style="color:#2aa198">&#34;href&#34;</span>);
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">if</span> (<span style="color:#268bd2">url</span> != <span style="color:#859900;font-weight:bold">null</span> &amp;&amp; !<span style="color:#268bd2">url</span>.<span style="color:#268bd2">isEmpty</span>() &amp;&amp; <span style="color:#268bd2">url</span>.<span style="color:#268bd2">startsWith</span>(<span style="color:#2aa198">&#34;http&#34;</span>)) {
+</span></span><span style="display:flex;"><span>                    <span style="color:#859900">try</span> {
+</span></span><span style="display:flex;"><span>                        <span style="color:#268bd2">HttpURLConnection</span> <span style="color:#268bd2">connection</span> = (<span style="color:#268bd2">HttpURLConnection</span>) <span style="color:#859900">new</span> <span style="color:#268bd2">URL</span>(<span style="color:#268bd2">url</span>).<span style="color:#268bd2">openConnection</span>();
+</span></span><span style="display:flex;"><span>                        <span style="color:#268bd2">connection</span>.<span style="color:#268bd2">setRequestMethod</span>(<span style="color:#2aa198">&#34;HEAD&#34;</span>);
+</span></span><span style="display:flex;"><span>                        <span style="color:#268bd2">connection</span>.<span style="color:#268bd2">connect</span>();
+</span></span><span style="display:flex;"><span>                        <span style="color:#859900">if</span> (<span style="color:#268bd2">connection</span>.<span style="color:#268bd2">getResponseCode</span>() &gt;= <span style="color:#268bd2">400</span>) {
+</span></span><span style="display:flex;"><span>                            <span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>(<span style="color:#2aa198">&#34;BROKEN LINK: &#34;</span> + <span style="color:#268bd2">url</span> + <span style="color:#2aa198">&#34; - &#34;</span> + <span style="color:#268bd2">connection</span>.<span style="color:#268bd2">getResponseCode</span>());
+</span></span><span style="display:flex;"><span>                        }
+</span></span><span style="display:flex;"><span>                    } <span style="color:#859900">catch</span> (<span style="color:#268bd2">Exception</span> <span style="color:#268bd2">e</span>) {
+</span></span><span style="display:flex;"><span>                        <span style="color:#93a1a1;font-style:italic">// Ignore connection errors, etc.</span>
+</span></span><span style="display:flex;"><span>                    }
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">finally</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">driver</span>.<span style="color:#268bd2">quit</span>();
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="have-you-work-any-other-languages-other-than-english">Have you work any other languages other than English</h3>
+<p>This is an HR question about spoken languages. Be honest.</p>
+<h3 id="how-many-ways-to-remove-special-characters-in-a-string">How many ways to remove special characters in a string</h3>
+<ol>
+<li><strong>Regex with <code>replaceAll()</code>:</strong> The most common and flexible way.
+<code>String clean = original.replaceAll(&quot;[^a-zA-Z0-9]&quot;, &quot;&quot;);</code></li>
+<li><strong>Looping and <code>Character.isLetterOrDigit()</code>:</strong> Manually build a new string.
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#268bd2">StringBuilder</span> <span style="color:#268bd2">sb</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">StringBuilder</span>();
+</span></span><span style="display:flex;"><span><span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">char</span> <span style="color:#268bd2">c</span> : <span style="color:#268bd2">original</span>.<span style="color:#268bd2">toCharArray</span>()) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">Character</span>.<span style="color:#268bd2">isLetterOrDigit</span>(<span style="color:#268bd2">c</span>)) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">sb</span>.<span style="color:#268bd2">append</span>(<span style="color:#268bd2">c</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">String</span> <span style="color:#268bd2">clean</span> = <span style="color:#268bd2">sb</span>.<span style="color:#268bd2">toString</span>();
+</span></span></code></pre></div></li>
+</ol>
+
+    </div>
+</article>
+
+<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
+    
+    <a href="//localhost:1315/12_company_based_questions/cts/round-5/" class="nav-btn">← Previous</a>
+    
+    
+    <a href="//localhost:1315/12_company_based_questions/cts/" class="nav-btn">Up</a>
+
+    
+    <a href="//localhost:1315/12_company_based_questions/cts/round-3/" class="nav-btn">Next →</a>
+    
+</div>
+
+    </main>
+
+    <footer class="footer">
+        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,25 @@
+{{ define "main" }}
+<article>
+    <div class="category-title" style="margin-bottom: 0.5rem;">{{ .Parent.Title }}</div>
+    <h1>{{ .Title }}</h1>
+    <div class="content-body" style="margin-top: 2rem;">
+        {{ .Content }}
+    </div>
+</article>
+
+<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
+    {{ if .PrevInSection }}
+    <a href="{{ .PrevInSection.Permalink }}" class="nav-btn">← Previous</a>
+    {{ else }}
+    <span></span>
+    {{ end }}
+    
+    <a href="{{ .Parent.Permalink }}" class="nav-btn">Up</a>
+
+    {{ if .NextInSection }}
+    <a href="{{ .NextInSection.Permalink }}" class="nav-btn">Next →</a>
+    {{ else }}
+    <span></span>
+    {{ end }}
+</div>
+{{ end }}

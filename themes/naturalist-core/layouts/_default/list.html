@@ -1,0 +1,33 @@
+{{ define "main" }}
+<header class="section-header">
+    <div class="category-title" style="margin-bottom: 0.5rem;">
+        {{ if eq .Kind "taxonomy" }}Topic{{ else }}Collection: {{ .Params.category }}{{ end }}
+    </div>
+    <h1>{{ .Title }}</h1>
+    {{ if .Params.description }}
+    <p class="tutorial-desc" style="font-size: 1.2rem; font-style: italic; color: var(--dim);">{{ .Params.description }}</p>
+    {{ end }}
+</header>
+
+<div class="content" style="margin-top: 2rem;">
+    {{ .Content }}
+</div>
+
+{{/* Only show the automatic list if this is a Taxonomy page (Tags) or the main Posts section */}}
+{{ if or (eq .Kind "taxonomy") (eq .Kind "term") }}
+<div class="mastery-list-container" style="margin-top: 4rem;">
+    <ul class="mastery-list">
+        {{ range .Pages }}
+        <li>
+            <span class="mastery-title"><a href="{{ .Permalink }}">{{ .Title }}</a></span>
+            {{ if .Params.description }}
+            <span class="mastery-separator">—</span>
+            <span class="mastery-description">{{ .Params.description }}</span>
+            {{ end }}
+        </li>
+        {{ end }}
+    </ul>
+</div>
+{{ end }}
+
+{{ end }}

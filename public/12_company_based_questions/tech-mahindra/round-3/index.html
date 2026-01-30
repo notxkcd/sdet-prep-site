@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1315&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tech_Mahindra-3 | SDET Interview Preparation Kit</title>
+    <link rel="stylesheet" href="//localhost:1315/css/style.css">
+    
+    
+    <link rel="stylesheet" href="//localhost:1315/lib/katex/katex.min.css">
+    <script defer src="//localhost:1315/lib/katex/katex.min.js"></script>
+    <script defer src="//localhost:1315/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="/">Index</a></li>
+                
+            </ul>
+        </nav>
+        <div class="site-breadcrumb">
+            <a href="/">Home</a>
+            
+            
+            
+
+            
+            
+                <span>/</span> Tech_Mahindra-3
+            
+        </div>
+    </header>
+
+    <main>
+        
+<article>
+    <div class="category-title" style="margin-bottom: 0.5rem;">Tech Mahindra Interview Questions</div>
+    <h1>Tech_Mahindra-3</h1>
+    <div class="content-body" style="margin-top: 2rem;">
+        <hr>
+<h2 id="original-questions-untouched">Original Questions (UNTOUCHED)</h2>
+<h2 id="tech-mahindra-level-1-interview">Tech Mahindra level 1 interview</h2>
+<ol>
+<li>tell about yourself</li>
+<li>framework structure
+3)final and finally
+4)interface and abstract</li>
+<li>write a query for second maximum</li>
+<li>did u use offset method
+7lwhat is rest assured</li>
+<li>what isnthe code for forbidden</li>
+<li>post status code
+10)how vl u maintain the testdata</li>
+<li>collection and types explain
+12)oops concept with framework</li>
+<li>what is defect tracking tool u r using
+14)explain cucumber reports</li>
+</ol>
+<hr>
+<h2 id="answers-no-bs-java-qa--sdet-explanations">Answers (No-BS Java QA / SDET Explanations)</h2>
+<h3 id="1-tell-about-yourself">1) tell about yourself</h3>
+<p>Standard opener. Keep it concise, professional, and highlight your automation experience, tech stack, and achievements.</p>
+<h3 id="2-framework-structure">2) framework structure</h3>
+<p>Describe the layered architecture of your test automation framework:</p>
+<ol>
+<li><strong>Test Layer:</strong> TestNG test classes (contain test logic and assertions).</li>
+<li><strong>Page Object Layer:</strong> Java classes representing web pages/components (locators, interaction methods).</li>
+<li><strong>API Layer:</strong> Classes for API endpoints, containing methods for making API calls.</li>
+<li><strong>Utility Layer:</strong> Helper classes (e.g., config reader, screenshot utility, Excel/JSON data reader).</li>
+<li><strong>Data Layer:</strong> External data files (JSON, Excel, properties) for test data and configuration.</li>
+<li><strong>Build/Execution Layer:</strong> Maven for dependencies, TestNG for test execution, Jenkins for CI/CD.</li>
+</ol>
+<h3 id="3-final-and-finally">3) final and finally</h3>
+<ul>
+<li><strong><code>final</code>:</strong> A keyword. Makes a variable constant, a method non-overridable, or a class non-extendable.</li>
+<li><strong><code>finally</code>:</strong> A block of code in a <code>try-catch</code> statement that <strong>always executes</strong>, regardless of whether an exception occurred. Used for resource cleanup (<code>driver.quit()</code>).</li>
+</ul>
+<h3 id="4-interface-and-abstract">4) interface and abstract</h3>
+<ul>
+<li><strong>Interface:</strong> A blueprint defining a contract. Contains abstract methods (and default/static methods from Java 8). A class <code>implements</code> multiple interfaces.</li>
+<li><strong>Abstract Class:</strong> A class that cannot be instantiated directly. Can have abstract and concrete methods, fields, and constructors. A class <code>extends</code> only one abstract class.</li>
+</ul>
+<h3 id="5-write-a-query-for-second-maximum">5) write a query for second maximum</h3>
+<p>Assuming a table <code>Employees</code> with a <code>Salary</code> column.</p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">-- Method 1: Using Subquery
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#859900">SELECT</span> <span style="color:#268bd2">Salary</span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">FROM</span> <span style="color:#268bd2">Employees</span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">WHERE</span> <span style="color:#268bd2">Salary</span> &lt; (<span style="color:#859900">SELECT</span> <span style="color:#859900">MAX</span>(<span style="color:#268bd2">Salary</span>) <span style="color:#859900">FROM</span> <span style="color:#268bd2">Employees</span>)
+</span></span><span style="display:flex;"><span><span style="color:#859900">ORDER</span> <span style="color:#859900">BY</span> <span style="color:#268bd2">Salary</span> <span style="color:#859900">DESC</span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">LIMIT</span> <span style="color:#2aa198;font-weight:bold">1</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">-- Method 2: Using LIMIT and OFFSET (MySQL/PostgreSQL)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#859900">SELECT</span> <span style="color:#859900">DISTINCT</span> <span style="color:#268bd2">Salary</span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">FROM</span> <span style="color:#268bd2">Employees</span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">ORDER</span> <span style="color:#859900">BY</span> <span style="color:#268bd2">Salary</span> <span style="color:#859900">DESC</span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">LIMIT</span> <span style="color:#2aa198;font-weight:bold">1</span> <span style="color:#859900">OFFSET</span> <span style="color:#2aa198;font-weight:bold">1</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">-- Method 3: Using DENSE_RANK (SQL Server, Oracle)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#859900">SELECT</span> <span style="color:#268bd2">Salary</span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">FROM</span> (
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">SELECT</span> <span style="color:#268bd2">Salary</span>, <span style="color:#268bd2">DENSE_RANK</span>() <span style="color:#268bd2">OVER</span> (<span style="color:#859900">ORDER</span> <span style="color:#859900">BY</span> <span style="color:#268bd2">Salary</span> <span style="color:#859900">DESC</span>) <span style="color:#859900">as</span> <span style="color:#268bd2">rnk</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">FROM</span> <span style="color:#268bd2">Employees</span>
+</span></span><span style="display:flex;"><span>) <span style="color:#859900">AS</span> <span style="color:#268bd2">RankedSalaries</span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">WHERE</span> <span style="color:#268bd2">rnk</span> = <span style="color:#2aa198;font-weight:bold">2</span>;
+</span></span></code></pre></div><h3 id="6-did-u-use-offset-method">6) did u use offset method</h3>
+<p>This is ambiguous.</p>
+<ul>
+<li><strong>SQL <code>OFFSET</code>:</strong> Used with <code>LIMIT</code> to skip a number of rows. (Example in previous question for second max salary).</li>
+<li><strong>Java String <code>indexOf(char ch, int fromIndex)</code>:</strong> Can search from an offset index.</li>
+<li><strong>Selenium <code>read_file</code> tool:</strong> Has an <code>offset</code> parameter for reading specific lines.
+Clarify which &ldquo;offset&rdquo; is being referred to.</li>
+</ul>
+<h3 id="7lwhat-is-rest-assured">7)lwhat is rest assured</h3>
+<p>REST-assured is a Java DSL (Domain Specific Language) for testing RESTful web services. It provides a fluent, BDD-style API (<code>given().when().then()</code>) that simplifies writing robust and readable API tests.</p>
+<h3 id="8-what-isnthe-code-for-forbidden">8) what isnthe code for forbidden</h3>
+<p>This likely refers to the HTTP status code for &ldquo;Forbidden&rdquo;.
+It is <strong><code>403 Forbidden</code></strong>.</p>
+<h3 id="9-post-status-code">9) post status code</h3>
+<p>The status code returned for a successful <code>POST</code> request is typically <strong><code>201 Created</code></strong>. This indicates that the request has been fulfilled and has resulted in one or more new resources being created.</p>
+<h3 id="10how-vl-u-maintain-the-testdata">10)how vl u maintain the testdata</h3>
+<p>&ldquo;We maintain test data externally, separate from the test code.</p>
+<ul>
+<li><strong>Configuration:</strong> For environment-specific settings (URLs, API keys), we use <code>.properties</code> files.</li>
+<li><strong>Test Case Data:</strong> For scenario-specific inputs and expected outputs, we use <strong>JSON files</strong>. Our framework has a utility that reads this JSON, and TestNG&rsquo;s <code>@DataProvider</code> supplies it to our tests.</li>
+<li><strong>Database:</strong> For complex scenarios, we sometimes use JDBC to set up specific test data directly in the database before a test and clean it up afterward.&rdquo;</li>
+</ul>
+<h3 id="11-collection-and-types-explain">11) collection and types explain</h3>
+<p>The Java Collections Framework provides interfaces and classes to represent collections of objects.</p>
+<ul>
+<li><strong><code>Collection</code> interface:</strong> Base interface.</li>
+<li><strong><code>List</code>:</strong> Ordered collection, allows duplicates (e.g., <code>ArrayList</code>, <code>LinkedList</code>).</li>
+<li><strong><code>Set</code>:</strong> Unordered collection, does not allow duplicates (e.g., <code>HashSet</code>, <code>LinkedHashSet</code>).</li>
+<li><strong><code>Map</code>:</strong> Stores key-value pairs, keys must be unique (e.g., <code>HashMap</code>, <code>TreeMap</code>).</li>
+</ul>
+<h3 id="12oops-concept-with-framework">12)oops concept with framework</h3>
+<p>(Repeated).</p>
+<ul>
+<li><strong>Encapsulation:</strong> Page Object Model (<code>private</code> locators, <code>public</code> methods).</li>
+<li><strong>Abstraction:</strong> <code>WebDriver</code> interface.</li>
+<li><strong>Inheritance:</strong> <code>BaseTest</code> and <code>BasePage</code> classes.</li>
+<li><strong>Polymorphism:</strong> Method overriding in page objects (<code>verifyPageLoaded()</code>).</li>
+</ul>
+<h3 id="13-what-is-defect-tracking-tool-u-r-using">13) what is defect tracking tool u r using</h3>
+<p>&ldquo;We use <strong>Jira</strong> for defect tracking and management. It allows us to log bugs with detailed information, track their lifecycle, and collaborate with developers on resolution.&rdquo;</p>
+<h3 id="14explain-cucumber-reports">14)explain cucumber reports</h3>
+<p>Cucumber can generate several types of reports via its <code>plugin</code> option in <code>@CucumberOptions</code>:</p>
+<ul>
+<li><strong><code>pretty</code>:</strong> Human-readable console output.</li>
+<li><strong><code>html</code>:</strong> Basic HTML report.</li>
+<li><strong><code>json</code>:</strong> A JSON file containing raw test results, which can be processed by other reporting tools.</li>
+<li><strong><code>junit</code>:</strong> An XML report in JUnit format.
+For richer, more interactive reports, tools like <strong>ExtentReports</strong> or <strong>Allure Reports</strong> are typically integrated by processing Cucumber&rsquo;s JSON output.</li>
+</ul>
+
+    </div>
+</article>
+
+<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
+    
+    <span></span>
+    
+    
+    <a href="//localhost:1315/12_company_based_questions/tech-mahindra/" class="nav-btn">Up</a>
+
+    
+    <a href="//localhost:1315/12_company_based_questions/tech-mahindra/round-2/" class="nav-btn">Next →</a>
+    
+</div>
+
+    </main>
+
+    <footer class="footer">
+        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
+    </footer>
+</body>
+</html>

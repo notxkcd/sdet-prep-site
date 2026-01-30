@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1315&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>L_T-3 | SDET Interview Preparation Kit</title>
+    <link rel="stylesheet" href="//localhost:1315/css/style.css">
+    
+    
+    <link rel="stylesheet" href="//localhost:1315/lib/katex/katex.min.css">
+    <script defer src="//localhost:1315/lib/katex/katex.min.js"></script>
+    <script defer src="//localhost:1315/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="/">Index</a></li>
+                
+            </ul>
+        </nav>
+        <div class="site-breadcrumb">
+            <a href="/">Home</a>
+            
+            
+            
+
+            
+            
+                <span>/</span> L_T-3
+            
+        </div>
+    </header>
+
+    <main>
+        
+<article>
+    <div class="category-title" style="margin-bottom: 0.5rem;">L T Interview Questions</div>
+    <h1>L_T-3</h1>
+    <div class="content-body" style="margin-top: 2rem;">
+        <hr>
+<h2 id="original-questions-untouched">Original Questions (UNTOUCHED)</h2>
+<h2 id="l--t">L &amp; T</h2>
+<p>1.If you are given an angular application create a framework?
+2.Code in selenium grid for parallel execution ?
+3.How to run chrome in headless mode in selenium-java?
+4.Boundary Value Analysis (BVA)?
+5.Difference between Oracle n Sql?
+6. SQL command to get common in two tables?
+7.What is Structure in SQL?
+8.What will you do if you detect a defect?
+9.Bug life Cycle?
+10.What is Constructor?
+11.What is interface and keyword used?
+12.What is Inheritance and keyword used?
+13.How is Inheritance used in your selenium project?
+14.What does 302 Status code stands for?
+15.What is deferred bug?</p>
+<hr>
+<h2 id="answers-no-bs-java-qa--sdet-explanations">Answers (No-BS Java QA / SDET Explanations)</h2>
+<h3 id="1-if-you-are-given-an-angular-application-create-a-framework">1. If you are given an angular application create a framework?</h3>
+<p>&ldquo;For an Angular application, I would build a Java-based test automation framework, much like for any other web application, but with some specific considerations:</p>
+<ul>
+<li><strong>Core Tools:</strong> Selenium WebDriver for UI automation (Java), TestNG as the test runner, Maven for build management.</li>
+<li><strong>Locators:</strong> Angular applications often rely on dynamic IDs. I&rsquo;d prioritize <code>cssSelector</code> over <code>xpath</code> where possible, and actively collaborate with developers to introduce stable <code>data-testid</code> attributes.</li>
+<li><strong>Synchronization:</strong> Angular apps are highly dynamic. Extensive use of <strong>Explicit Waits</strong> (<code>WebDriverWait</code> with <code>ExpectedConditions</code>) would be critical to handle AJAX calls and dynamic element loading.</li>
+<li><strong>Page Object Model:</strong> Absolutely essential to manage the complex UI components and keep locators centralized.</li>
+<li><strong>Protractor/Cypress (alternative):</strong> While Selenium can test Angular, if the team is already JavaScript-heavy, I might also consider suggesting a JavaScript-based tool like <strong>Cypress</strong> or <strong>Playwright</strong>, as they often provide better native synchronization and integration with modern JS frameworks.&rdquo;</li>
+</ul>
+<h3 id="2-code-in-selenium-grid-for-parallel-execution-">2. Code in selenium grid for parallel execution ?</h3>
+<p>To use Selenium Grid, your <code>WebDriver</code> initialization code needs to connect to the Grid Hub. Parallel execution is configured in <code>testng.xml</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">org.openqa.selenium.WebDriver</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">org.openqa.selenium.remote.DesiredCapabilities</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">org.openqa.selenium.remote.RemoteWebDriver</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">org.testng.annotations.AfterMethod</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">org.testng.annotations.BeforeMethod</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">org.testng.annotations.Parameters</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">java.net.URL</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900">class</span> <span style="color:#cb4b16">BaseTestGrid</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">protected</span> <span style="color:#268bd2">WebDriver</span> <span style="color:#268bd2">driver</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">@BeforeMethod</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">@Parameters</span>(<span style="color:#2aa198">&#34;browser&#34;</span>) <span style="color:#93a1a1;font-style:italic">// Passed from testng.xml</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">setup</span>(<span style="color:#268bd2">String</span> <span style="color:#268bd2">browser</span>) <span style="color:#859900">throws</span> <span style="color:#268bd2">Exception</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">DesiredCapabilities</span> <span style="color:#268bd2">caps</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">DesiredCapabilities</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">browser</span>.<span style="color:#268bd2">equalsIgnoreCase</span>(<span style="color:#2aa198">&#34;chrome&#34;</span>)) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">caps</span>.<span style="color:#268bd2">setBrowserName</span>(<span style="color:#2aa198">&#34;chrome&#34;</span>);
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> <span style="color:#859900">if</span> (<span style="color:#268bd2">browser</span>.<span style="color:#268bd2">equalsIgnoreCase</span>(<span style="color:#2aa198">&#34;firefox&#34;</span>)) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">caps</span>.<span style="color:#268bd2">setBrowserName</span>(<span style="color:#2aa198">&#34;firefox&#34;</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Connect to the Selenium Grid Hub</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">driver</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">RemoteWebDriver</span>(<span style="color:#859900">new</span> <span style="color:#268bd2">URL</span>(<span style="color:#2aa198">&#34;http://localhost:4444/wd/hub&#34;</span>), <span style="color:#268bd2">caps</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">driver</span>.<span style="color:#268bd2">manage</span>().<span style="color:#268bd2">window</span>().<span style="color:#268bd2">maximize</span>();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">@AfterMethod</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">teardown</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">driver</span> != <span style="color:#859900;font-weight:bold">null</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">driver</span>.<span style="color:#268bd2">quit</span>();
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><strong><code>testng.xml</code> for parallel execution:</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-xml" data-lang="xml"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">&lt;!DOCTYPE suite SYSTEM &#34;https://testng.org/testng-1.0.dtd&#34; &gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2;font-weight:bold">&lt;suite</span> <span style="color:#268bd2">name=</span><span style="color:#2aa198">&#34;GridSuite&#34;</span> <span style="color:#268bd2">parallel=</span><span style="color:#2aa198">&#34;tests&#34;</span> <span style="color:#268bd2">thread-count=</span><span style="color:#2aa198">&#34;2&#34;</span><span style="color:#268bd2;font-weight:bold">&gt;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#268bd2;font-weight:bold">&lt;test</span> <span style="color:#268bd2">name=</span><span style="color:#2aa198">&#34;ChromeTest&#34;</span><span style="color:#268bd2;font-weight:bold">&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2;font-weight:bold">&lt;parameter</span> <span style="color:#268bd2">name=</span><span style="color:#2aa198">&#34;browser&#34;</span> <span style="color:#268bd2">value=</span><span style="color:#2aa198">&#34;chrome&#34;</span><span style="color:#268bd2;font-weight:bold">/&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2;font-weight:bold">&lt;classes&gt;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#268bd2;font-weight:bold">&lt;class</span> <span style="color:#268bd2">name=</span><span style="color:#2aa198">&#34;com.myproject.tests.LoginTest&#34;</span><span style="color:#268bd2;font-weight:bold">/&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2;font-weight:bold">&lt;/classes&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#268bd2;font-weight:bold">&lt;/test&gt;</span>
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span>  <span style="color:#268bd2;font-weight:bold">&lt;test</span> <span style="color:#268bd2">name=</span><span style="color:#2aa198">&#34;FirefoxTest&#34;</span><span style="color:#268bd2;font-weight:bold">&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2;font-weight:bold">&lt;parameter</span> <span style="color:#268bd2">name=</span><span style="color:#2aa198">&#34;browser&#34;</span> <span style="color:#268bd2">value=</span><span style="color:#2aa198">&#34;firefox&#34;</span><span style="color:#268bd2;font-weight:bold">/&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2;font-weight:bold">&lt;classes&gt;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#268bd2;font-weight:bold">&lt;class</span> <span style="color:#268bd2">name=</span><span style="color:#2aa198">&#34;com.myproject.tests.LoginTest&#34;</span><span style="color:#268bd2;font-weight:bold">/&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2;font-weight:bold">&lt;/classes&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#268bd2;font-weight:bold">&lt;/test&gt;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2;font-weight:bold">&lt;/suite&gt;</span>
+</span></span></code></pre></div><h3 id="3-how-to-run-chrome-in-headless-mode-in-selenium-java">3. How to run chrome in headless mode in selenium-java?</h3>
+<p>Headless mode means running the browser without a visible UI. It&rsquo;s often used in CI/CD environments for faster execution.</p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">org.openqa.selenium.WebDriver</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">org.openqa.selenium.chrome.ChromeDriver</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">org.openqa.selenium.chrome.ChromeOptions</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900">class</span> <span style="color:#cb4b16">HeadlessChrome</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#859900">static</span> <span style="color:#268bd2">WebDriver</span> <span style="color:#268bd2">getHeadlessChromeDriver</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">ChromeOptions</span> <span style="color:#268bd2">options</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">ChromeOptions</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">options</span>.<span style="color:#268bd2">addArguments</span>(<span style="color:#2aa198">&#34;--headless&#34;</span>); <span style="color:#93a1a1;font-style:italic">// The key argument</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">options</span>.<span style="color:#268bd2">addArguments</span>(<span style="color:#2aa198">&#34;--disable-gpu&#34;</span>); <span style="color:#93a1a1;font-style:italic">// Recommended for Windows</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">options</span>.<span style="color:#268bd2">addArguments</span>(<span style="color:#2aa198">&#34;--window-size=1920,1080&#34;</span>); <span style="color:#93a1a1;font-style:italic">// Set a large window size</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">WebDriver</span> <span style="color:#268bd2">driver</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">ChromeDriver</span>(<span style="color:#268bd2">options</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">driver</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="4-boundary-value-analysis-bva">4. Boundary Value Analysis (BVA)?</h3>
+<p>BVA is a black-box test design technique that focuses on testing the &ldquo;edges&rdquo; or boundaries of input data ranges. Experience shows that defects are most likely to occur at these boundaries.</p>
+<ul>
+<li><strong>Rule:</strong> Test values <em>at</em> the boundary, <em>just below</em> the boundary, and <em>just above</em> the boundary.</li>
+<li><strong>Example:</strong> For an age input field accepting 18-60 years:
+<ul>
+<li>Valid boundary: 18, 60</li>
+<li>Just below: 17</li>
+<li>Just above: 61</li>
+<li>Test values: 17, 18, 19, 59, 60, 61.</li>
+</ul>
+</li>
+</ul>
+<h3 id="5-difference-between-oracle-n-sql">5. Difference between Oracle n Sql?</h3>
+<ul>
+<li><strong>SQL (Structured Query Language):</strong> This is a <strong>language</strong>. It&rsquo;s the standard programming language for managing and querying relational databases.</li>
+<li><strong>Oracle:</strong> This is a <strong>Relational Database Management System (RDBMS)</strong>. It&rsquo;s a specific software product (a database system) that implements the SQL language. You use SQL to interact with an Oracle database.</li>
+</ul>
+<h3 id="6-sql-command-to-get-common-in-two-tables">6. SQL command to get common in two tables?</h3>
+<p>This refers to an <code>INNER JOIN</code>. An <code>INNER JOIN</code> returns only the rows that have matching values in both tables.</p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#859900">SELECT</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">A</span>.<span style="color:#268bd2">column1</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">B</span>.<span style="color:#268bd2">column2</span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">FROM</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">TableA</span> <span style="color:#268bd2">A</span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">INNER</span> <span style="color:#859900">JOIN</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">TableB</span> <span style="color:#268bd2">B</span> <span style="color:#859900">ON</span> <span style="color:#268bd2">A</span>.<span style="color:#268bd2">common_column</span> = <span style="color:#268bd2">B</span>.<span style="color:#268bd2">common_column</span>;
+</span></span></code></pre></div><h3 id="7-what-is-structure-in-sql">7. What is Structure in SQL?</h3>
+<p>This could refer to several things:</p>
+<ul>
+<li><strong>Database Schema:</strong> The overall design of the database, including tables, columns, data types, relationships, indexes, etc.</li>
+<li><strong>Table Structure:</strong> The definition of a table, including its name, columns, their data types, constraints (e.g., PRIMARY KEY, FOREIGN KEY, NOT NULL), and default values. You use <code>CREATE TABLE</code> to define structure.</li>
+<li><strong>Query Structure:</strong> The syntax of SQL queries (<code>SELECT ... FROM ... WHERE ...</code>).</li>
+</ul>
+<h3 id="8-what-will-you-do-if-you-detect-a-defect">8. What will you do if you detect a defect?</h3>
+<ol>
+<li><strong>Reproduce:</strong> Verify the defect is consistently reproducible.</li>
+<li><strong>Isolate:</strong> Determine the scope of the defect (what&rsquo;s affected, what&rsquo;s not).</li>
+<li><strong>Document:</strong> Create a detailed bug report in Jira (or similar tool), including:
+<ul>
+<li>Clear title.</li>
+<li>Steps to reproduce.</li>
+<li>Expected vs. Actual results.</li>
+<li>Environment details.</li>
+<li>Screenshots/logs.</li>
+<li>Severity.</li>
+</ul>
+</li>
+<li><strong>Communicate:</strong> Notify the relevant developer/team.</li>
+<li><strong>Track:</strong> Monitor the bug&rsquo;s lifecycle.</li>
+</ol>
+<h3 id="9-bug-life-cycle">9. Bug life Cycle?</h3>
+<p>The journey of a bug from detection to closure: New -&gt; Open/Assigned -&gt; Fixed -&gt; Ready for QA -&gt; Closed (or Reopened if not fixed).</p>
+<h3 id="10-what-is-constructor">10. What is Constructor?</h3>
+<p>A special method in a class that is automatically called when an object of that class is created using the <code>new</code> keyword. Its main purpose is to initialize the object&rsquo;s state (its instance variables). It has the same name as the class and no return type.</p>
+<h3 id="11-what-is-interface-and-keyword-used">11. What is interface and keyword used?</h3>
+<ul>
+<li><strong>Interface:</strong> A blueprint of a class; a contract specifying methods that implementing classes must define.</li>
+<li><strong>Keyword:</strong> <code>interface</code> (to declare an interface) and <code>implements</code> (for a class to use an interface).</li>
+</ul>
+<h3 id="12-what-is-inheritance-and-keyword-used">12. What is Inheritance and keyword used?</h3>
+<ul>
+<li><strong>Inheritance:</strong> An OOP mechanism where one class (subclass) acquires properties and behaviors from another class (superclass).</li>
+<li><strong>Keyword:</strong> <code>extends</code>.</li>
+</ul>
+<h3 id="13-how-is-inheritance-used-in-your-selenium-project">13. How is Inheritance used in your selenium project?</h3>
+<p>&ldquo;Inheritance is crucial in our Selenium framework for code reuse and structure.</p>
+<ul>
+<li><strong><code>BaseTest</code> Class:</strong> We have an <code>abstract BaseTest</code> class that all our test classes <code>extend</code>. It contains common setup (<code>@BeforeMethod</code> for WebDriver initialization) and teardown (<code>@AfterMethod</code> for WebDriver quit) logic.</li>
+<li><strong><code>BasePage</code> Class:</strong> All our Page Object classes <code>extend</code> a <code>BasePage</code> class, which holds common methods applicable to all pages (e.g., <code>waitForPageLoad()</code>, <code>clickGlobalHeader()</code>).&rdquo;</li>
+</ul>
+<h3 id="14-what-does-302-status-code-stands-for">14. What does 302 Status code stands for?</h3>
+<p><code>302 Found</code> (or <code>Moved Temporarily</code>). This HTTP status code indicates that the resource requested has been temporarily moved to a different URI. The client should continue to use the original URI for future requests, but should redirect to the new URI for the current request.</p>
+<h3 id="15-what-is-deferred-bug">15. What is deferred bug?</h3>
+<p>A deferred bug is a legitimate defect that has been identified and acknowledged, but the decision has been made <strong>not to fix it in the current release or sprint</strong>. It&rsquo;s postponed to a later release, typically because it&rsquo;s low priority or has an acceptable workaround, and fixing it now would delay more critical features.</p>
+
+    </div>
+</article>
+
+<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
+    
+    <span></span>
+    
+    
+    <a href="//localhost:1315/12_company_based_questions/l-t/" class="nav-btn">Up</a>
+
+    
+    <a href="//localhost:1315/12_company_based_questions/l-t/round-2/" class="nav-btn">Next →</a>
+    
+</div>
+
+    </main>
+
+    <footer class="footer">
+        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
+    </footer>
+</body>
+</html>

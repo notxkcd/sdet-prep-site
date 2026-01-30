@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="{{ .Site.LanguageCode }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }} | {{ .Site.Title }}{{ end }}</title>
+    <link rel="stylesheet" href="{{ "css/style.css" | absURL }}">
+    
+    <!-- Local KaTeX Support -->
+    <link rel="stylesheet" href="{{ "lib/katex/katex.min.css" | absURL }}">
+    <script defer src="{{ "lib/katex/katex.min.js" | absURL }}"></script>
+    <script defer src="{{ "lib/katex/contrib/auto-render.min.js" | absURL }}" onload="renderMathInElement(document.body);"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="/">Index</a></li>
+                {{ range .Site.Menus.main }}
+                <li><a href="{{ .URL }}">{{ .Name }}</a></li>
+                {{ end }}
+            </ul>
+        </nav>
+        <div class="site-breadcrumb">
+            <a href="/">Home</a>
+            
+            {{/* Check if we are in the 'posts' section */}}
+            {{ if eq .Section "posts" }}
+                <span>/</span> <a href="/posts/">Posts</a>
+                
+                {{/* Attempt to find the 'primary' tag (Engineering, etc.) */}}
+                {{ if .Params.tags }}
+                    {{ $tag := index .Params.tags 0 }}
+                    {{ $tagUrl := printf "/tags/%s/" ($tag | urlize) }}
+                    <span>/</span> <a href="{{ $tagUrl }}">{{ $tag }}</a>
+                {{ else if .Parent.Params.tags }}
+                    {{/* If current page has no tags (sub-page), check parent (tutorial index) */}}
+                    {{ $tag := index .Parent.Params.tags 0 }}
+                    {{ $tagUrl := printf "/tags/%s/" ($tag | urlize) }}
+                    <span>/</span> <a href="{{ $tagUrl }}">{{ $tag }}</a>
+                {{ end }}
+
+                {{/* Show Parent (Tutorial Name) if it's not the 'Posts' root */}}
+                {{ if and .Parent (ne .Parent.Title "Posts") }}
+                    <span>/</span> <a href="{{ .Parent.Permalink }}">{{ .Parent.Title }}</a>
+                {{ end }}
+            {{ end }}
+
+            {{/* Current Page Title (if not same as Parent) */}}
+            {{ if not .IsHome }}
+                <span>/</span> {{ .Title }}
+            {{ end }}
+        </div>
+    </header>
+
+    <main>
+        {{ block "main" . }}{{ end }}
+    </main>
+
+    <footer class="footer">
+        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
+    </footer>
+</body>
+</html>

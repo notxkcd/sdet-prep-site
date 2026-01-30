@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1315&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QualityKiosk_2025-09 | SDET Interview Preparation Kit</title>
+    <link rel="stylesheet" href="//localhost:1315/css/style.css">
+    
+    
+    <link rel="stylesheet" href="//localhost:1315/lib/katex/katex.min.css">
+    <script defer src="//localhost:1315/lib/katex/katex.min.js"></script>
+    <script defer src="//localhost:1315/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="/">Index</a></li>
+                
+            </ul>
+        </nav>
+        <div class="site-breadcrumb">
+            <a href="/">Home</a>
+            
+            
+            
+
+            
+            
+                <span>/</span> QualityKiosk_2025-09
+            
+        </div>
+    </header>
+
+    <main>
+        
+<article>
+    <div class="category-title" style="margin-bottom: 0.5rem;">Qualitykiosk 2025 Interview Questions</div>
+    <h1>QualityKiosk_2025-09</h1>
+    <div class="content-body" style="margin-top: 2rem;">
+        <hr>
+<h2 id="original-questions-untouched">Original Questions (UNTOUCHED)</h2>
+<h2 id="qualitykiosk--kochin-28092025">QualityKiosk -Kochin (28/09/2025)</h2>
+<ol>
+<li>Introduce your self</li>
+<li>Do you work in cucumber framework? Please explain your framework?</li>
+<li>Where you execute your test in Cucumber?</li>
+<li>What are the things you have in your runner Class ?</li>
+<li>How to do fetch data from excel, explain with code?</li>
+<li>What is Scenario outline in Cucumber?</li>
+<li>Reverse the string using for loop?</li>
+<li>Have you work in Agile and explain the process?</li>
+<li>What is bug life cycle?</li>
+<li>Did you use git in your project and what is  git conflict?</li>
+<li>How to you resolve git conflict?</li>
+<li>What is Assert? Can we able to write automation without Assert?</li>
+<li>Explain difference between Implicity and Explicity waits?</li>
+</ol>
+<hr>
+<h2 id="answers-no-bs-java-qa--sdet-explanations">Answers (No-BS Java QA / SDET Explanations)</h2>
+<h3 id="1-introduce-your-self">1. Introduce your self</h3>
+<p>Standard opener. Keep it concise, professional, and focus on your relevant experience (automation skills, tech stack, achievements).</p>
+<h3 id="2-do-you-work-in-cucumber-framework-please-explain-your-framework">2. Do you work in cucumber framework? Please explain your framework?</h3>
+<p>&ldquo;Yes, I have extensive experience working with the Cucumber framework. Our framework is a Java-based BDD (Behavior-Driven Development) framework.</p>
+<ul>
+<li><strong>Architecture:</strong> It follows the Page Object Model (POM) for UI interaction.</li>
+<li><strong>Components:</strong> We write high-level business scenarios in Gherkin in <code>.feature</code> files. These scenarios are linked to our Java Step Definitions, which contain the actual Selenium WebDriver automation code.</li>
+<li><strong>Test Data:</strong> We use Cucumber&rsquo;s <code>Scenario Outline</code> and <code>Data Tables</code> for data-driven testing.</li>
+<li><strong>CI/CD:</strong> The framework is built with Maven and integrated into our Jenkins CI/CD pipelines, allowing us to run automated tests continuously.&rdquo;</li>
+</ul>
+<h3 id="3-where-you-execute-your-test-in-cucumber">3. Where you execute your test in Cucumber?</h3>
+<ul>
+<li><strong>Locally:</strong> During development and debugging from my IDE (e.g., IntelliJ, Eclipse) by running the Cucumber Runner class.</li>
+<li><strong>CI/CD Pipeline:</strong> The primary execution environment is our <strong>Jenkins pipeline</strong>. Tests are triggered automatically on every code push or on a schedule (e.g., nightly builds) against dedicated QA or Staging environments.</li>
+</ul>
+<h3 id="4-what-are-the-things-you-have-in-your-runner-class-">4. What are the things you have in your runner Class ?</h3>
+<p>A Cucumber Runner class is a Java class that serves as the entry point for executing Cucumber tests.</p>
+<ul>
+<li><strong><code>@RunWith(Cucumber.class)</code>:</strong> Annotation to tell JUnit to run this class with Cucumber.</li>
+<li><strong><code>@CucumberOptions</code>:</strong> Annotation to configure Cucumber&rsquo;s behavior:
+<ul>
+<li><code>features</code>: Path to the <code>.feature</code> files.</li>
+<li><code>glue</code>: Path to the step definition packages (the &ldquo;glue code&rdquo;).</li>
+<li><code>plugin</code>: Specifies reporting formats (e.g., HTML, JSON, Pretty).</li>
+<li><code>tags</code>: Filters which scenarios to run (e.g., <code>@smoke</code>, <code>not @wip</code>).</li>
+<li><code>dryRun</code>: Checks for missing step definitions without actual execution.</li>
+<li><code>monochrome</code>: Makes console output more readable.</li>
+</ul>
+</li>
+</ul>
+<h3 id="5-how-to-do-fetch-data-from-excel-explain-with-code">5. How to do fetch data from excel, explain with code?</h3>
+<p>You need the <strong>Apache POI</strong> library.</p>
+<ol>
+<li><strong>Dependency:</strong> Add Apache POI (<code>poi-ooxml</code>) to <code>pom.xml</code>.</li>
+<li><strong>Utility Method:</strong> Create a method that:
+<ul>
+<li>Takes file path and sheet name.</li>
+<li>Uses <code>FileInputStream</code> to open the Excel file.</li>
+<li>Creates an <code>XSSFWorkbook</code> (for .xlsx) or <code>HSSFWorkbook</code> (for .xls).</li>
+<li>Gets the desired sheet.</li>
+<li>Iterates through rows and cells to read data.</li>
+</ul>
+</li>
+<li><strong>Integration with Cucumber:</strong>
+<ul>
+<li>Create a custom step definition that calls this utility.</li>
+<li>Or, wrap it in a <code>@DataProvider</code> if you&rsquo;re using TestNG as the Cucumber runner.</li>
+</ul>
+</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">org.apache.poi.ss.usermodel.*</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">org.apache.poi.xssf.usermodel.XSSFWorkbook</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">java.io.FileInputStream</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">java.io.IOException</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">java.util.ArrayList</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">java.util.List</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900">class</span> <span style="color:#cb4b16">ExcelReader</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">List</span>&lt;<span style="color:#268bd2">List</span>&lt;<span style="color:#268bd2">String</span>&gt;&gt; <span style="color:#268bd2">readData</span>(<span style="color:#268bd2">String</span> <span style="color:#268bd2">filePath</span>, <span style="color:#268bd2">String</span> <span style="color:#268bd2">sheetName</span>) <span style="color:#859900">throws</span> <span style="color:#268bd2">IOException</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">List</span>&lt;<span style="color:#268bd2">List</span>&lt;<span style="color:#268bd2">String</span>&gt;&gt; <span style="color:#268bd2">data</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">ArrayList</span>&lt;&gt;();
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">FileInputStream</span> <span style="color:#268bd2">fis</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">FileInputStream</span>(<span style="color:#268bd2">filePath</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">Workbook</span> <span style="color:#268bd2">workbook</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">XSSFWorkbook</span>(<span style="color:#268bd2">fis</span>); <span style="color:#93a1a1;font-style:italic">// For .xlsx files</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">Sheet</span> <span style="color:#268bd2">sheet</span> = <span style="color:#268bd2">workbook</span>.<span style="color:#268bd2">getSheet</span>(<span style="color:#268bd2">sheetName</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> (<span style="color:#268bd2">Row</span> <span style="color:#268bd2">row</span> : <span style="color:#268bd2">sheet</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">List</span>&lt;<span style="color:#268bd2">String</span>&gt; <span style="color:#268bd2">rowData</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">ArrayList</span>&lt;&gt;();
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">for</span> (<span style="color:#268bd2">Cell</span> <span style="color:#268bd2">cell</span> : <span style="color:#268bd2">row</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">rowData</span>.<span style="color:#268bd2">add</span>(<span style="color:#268bd2">cell</span>.<span style="color:#268bd2">toString</span>()); <span style="color:#93a1a1;font-style:italic">// Get cell value as string</span>
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">data</span>.<span style="color:#268bd2">add</span>(<span style="color:#268bd2">rowData</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">workbook</span>.<span style="color:#268bd2">close</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">fis</span>.<span style="color:#268bd2">close</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">data</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="6-what-is-scenario-outline-in-cucumber">6. What is Scenario outline in Cucumber?</h3>
+<p>A <code>Scenario Outline</code> is Cucumber&rsquo;s way to achieve <strong>data-driven testing</strong>. It defines a template for a scenario that is run multiple times with different input values. It uses <code>&lt;placeholders&gt;</code> in its steps, and an <code>Examples</code> table provides the data for these placeholders. Each row in the <code>Examples</code> table executes the scenario once.</p>
+<h3 id="7-reverse-the-string-using-for-loop">7. Reverse the string using for loop?</h3>
+<p>While <code>StringBuilder.reverse()</code> is preferred, this demonstrates basic loop manipulation.</p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900">class</span> <span style="color:#cb4b16">StringReverser</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#859900">static</span> <span style="color:#268bd2">String</span> <span style="color:#268bd2">reverseStringWithLoop</span>(<span style="color:#268bd2">String</span> <span style="color:#268bd2">str</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">str</span> == <span style="color:#859900;font-weight:bold">null</span> || <span style="color:#268bd2">str</span>.<span style="color:#268bd2">isEmpty</span>()) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#268bd2">str</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900;font-weight:bold">char</span>[] <span style="color:#268bd2">charArray</span> = <span style="color:#268bd2">str</span>.<span style="color:#268bd2">toCharArray</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">StringBuilder</span> <span style="color:#268bd2">reversed</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">StringBuilder</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i</span> = <span style="color:#268bd2">charArray</span>.<span style="color:#268bd2">length</span> - <span style="color:#268bd2">1</span>; <span style="color:#268bd2">i</span> &gt;= <span style="color:#268bd2">0</span>; <span style="color:#268bd2">i</span>--) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">reversed</span>.<span style="color:#268bd2">append</span>(<span style="color:#268bd2">charArray</span>[<span style="color:#268bd2">i</span>]);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">reversed</span>.<span style="color:#268bd2">toString</span>();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="8-have-you-work-in-agile-and-explain-the-process">8. Have you work in Agile and explain the process?</h3>
+<p>&ldquo;Yes, I have several years of experience working in an <strong>Agile (Scrum)</strong> environment. We work in two-week sprints. The process involves daily stand-ups, sprint planning, backlog refinement, sprint reviews, and retrospectives. As QA, I&rsquo;m involved from the beginning, helping refine stories, writing tests, automating, and providing continuous feedback.&rdquo;</p>
+<h3 id="9-what-is-bug-life-cycle">9. What is bug life cycle?</h3>
+<p>The journey of a defect from discovery to resolution: New -&gt; Open/Assigned -&gt; Fixed -&gt; Ready for QA -&gt; Closed (or Reopened).</p>
+<h3 id="10-did-you-use-git-in-your-project-and-what-is-git-conflict">10. Did you use git in your project and what is git conflict?</h3>
+<p>&ldquo;Yes, we use <strong>Git</strong> for version control. A <strong>Git conflict</strong> occurs when two or more developers make conflicting changes to the same lines in the same file, and Git cannot automatically merge those changes. It flags the conflict, requiring manual intervention.&rdquo;</p>
+<h3 id="11-how-to-you-resolve-git-conflict">11. How to you resolve git conflict?</h3>
+<ol>
+<li><strong>Pull latest changes:</strong> First, ensure my local branch is up-to-date with the remote: <code>git pull</code>.</li>
+<li><strong>Attempt merge:</strong> <code>git merge &lt;other_branch&gt;</code>. Git will identify the conflicts.</li>
+<li><strong>Edit conflicted files:</strong> Open the files marked as conflicted. Git inserts special markers (<code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code>, <code>=======</code>, <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code>) showing the conflicting sections. I manually edit the file to combine the correct changes, removing the markers.</li>
+<li><strong>Stage resolved files:</strong> <code>git add &lt;resolved_file&gt;</code>.</li>
+<li><strong>Commit:</strong> <code>git commit -m &quot;Resolved merge conflict&quot;</code>.</li>
+</ol>
+<h3 id="12-what-is-assert-can-we-able-to-write-automation-without-assert">12. What is Assert? Can we able to write automation without Assert?</h3>
+<ul>
+<li><strong>Assert:</strong> A statement that checks if a condition is true. If the condition is false, the assertion fails, and the test is typically terminated and marked as failed. Used to verify expected outcomes.</li>
+<li><strong>Without Assert:</strong> You <em>could</em> write automation without explicit asserts, but it would be pointless. The tests would run, but you would have no way of knowing if the application is behaving correctly or if any bugs were found. Automation without assertions is just exercising the application, not testing it.</li>
+</ul>
+<h3 id="13-explain-difference-between-implicity-and-explicity-waits">13. Explain difference between Implicity and Explicity waits?</h3>
+<ul>
+<li><strong>Implicit Wait (Bad):</strong> A global setting for the WebDriver that makes it poll the DOM for a specified time when <code>findElement</code> cannot immediately find an element. It&rsquo;s imprecise and can hide real timing issues.</li>
+<li><strong>Explicit Wait (Good):</strong> (<code>WebDriverWait</code> with <code>ExpectedConditions</code>) Waits for a <em>specific condition</em> to be true for a maximum amount of time. It&rsquo;s targeted, reliable, and makes tests more stable.</li>
+</ul>
+
+    </div>
+</article>
+
+<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
+    
+    <span></span>
+    
+    
+    <a href="//localhost:1315/12_company_based_questions/qualitykiosk-2025/" class="nav-btn">Up</a>
+
+    
+    <span></span>
+    
+</div>
+
+    </main>
+
+    <footer class="footer">
+        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
+    </footer>
+</body>
+</html>

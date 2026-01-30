@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1315&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Qapitol_QA-2 | SDET Interview Preparation Kit</title>
+    <link rel="stylesheet" href="//localhost:1315/css/style.css">
+    
+    
+    <link rel="stylesheet" href="//localhost:1315/lib/katex/katex.min.css">
+    <script defer src="//localhost:1315/lib/katex/katex.min.js"></script>
+    <script defer src="//localhost:1315/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="/">Index</a></li>
+                
+            </ul>
+        </nav>
+        <div class="site-breadcrumb">
+            <a href="/">Home</a>
+            
+            
+            
+
+            
+            
+                <span>/</span> Qapitol_QA-2
+            
+        </div>
+    </header>
+
+    <main>
+        
+<article>
+    <div class="category-title" style="margin-bottom: 0.5rem;">Qapitol Qa Interview Questions</div>
+    <h1>Qapitol_QA-2</h1>
+    <div class="content-body" style="margin-top: 2rem;">
+        <hr>
+<h2 id="original-questions-untouched">Original Questions (UNTOUCHED)</h2>
+<h2 id="qapitol-qa-interview-questions">Qapitol QA Interview Questions:</h2>
+<p>What is chaining in API Testing ?
+Can we create an Object for an abstract class?
+What is the interface?
+What is the path and query param?
+Write a program the find count of palindrome strings in the given string and print the highest length palindrome.And also occurrence of each character count in that palindrome strings.</p>
+<hr>
+<h2 id="answers-no-bs-java-qa--sdet-explanations">Answers (No-BS Java QA / SDET Explanations)</h2>
+<h3 id="what-is-chaining-in-api-testing-">What is chaining in API Testing ?</h3>
+<p>API chaining refers to the process where the output (response) of one API request is used as the input (request) for a subsequent API request. This allows you to test complex workflows or business processes that involve multiple API calls.</p>
+<ul>
+<li><strong>Example:</strong>
+<ol>
+<li>Make a <code>POST</code> request to <code>/login</code> to get an authentication token.</li>
+<li>Use that token in the <code>Authorization</code> header of a <code>GET</code> request to <code>/profile</code> to retrieve user details.</li>
+<li>Use a <code>userId</code> from the <code>/profile</code> response to make a <code>GET</code> request to <code>/orders/{userId}</code>.
+REST-assured supports this naturally with its fluent API, allowing you to extract values and reuse them.</li>
+</ol>
+</li>
+</ul>
+<h3 id="can-we-create-an-object-for-an-abstract-class">Can we create an Object for an abstract class?</h3>
+<p>No. An abstract class cannot be instantiated directly using the <code>new</code> keyword. Its purpose is to be extended by concrete subclasses. You must create an object of a concrete subclass that implements all the abstract methods of the abstract class.</p>
+<h3 id="what-is-the-interface">What is the interface?</h3>
+<p>An interface in Java is a blueprint of a class. It defines a contract of methods that a class <code>implements</code>. Interfaces are used to achieve abstraction, enforce a standard behavior, and support multiple inheritance of type in Java.</p>
+<h3 id="what-is-the-path-and-query-param">What is the path and query param?</h3>
+<p>These are two ways to pass data in a URL for HTTP requests.</p>
+<ul>
+<li><strong>Path Parameters (Path Params):</strong>
+<ul>
+<li>Part of the URL path itself.</li>
+<li>Used to identify a specific resource or resource hierarchy.</li>
+<li>Example: <code>GET /users/{userId}/orders/{orderId}</code> where <code>userId</code> and <code>orderId</code> are path parameters.</li>
+</ul>
+</li>
+<li><strong>Query Parameters (Query Params):</strong>
+<ul>
+<li>Appended to the URL after a <code>?</code> symbol, as key-value pairs separated by <code>&amp;</code>.</li>
+<li>Used for filtering, sorting, pagination, or providing optional parameters.</li>
+<li>Example: <code>GET /products?category=electronics&amp;sort=price&amp;page=2</code> where <code>category</code>, <code>sort</code>, and <code>page</code> are query parameters.</li>
+</ul>
+</li>
+</ul>
+<h3 id="write-a-program-the-find-count-of-palindrome-strings-in-the-given-string-and-print-the-highest-length-palindromeand-also-occurrence-of-each-character-count-in-that-palindrome-strings">Write a program the find count of palindrome strings in the given string and print the highest length palindrome.And also occurrence of each character count in that palindrome strings.</h3>
+<p>This is a complex coding problem combining multiple string manipulation and map concepts.</p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">java.util.HashMap</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">java.util.Map</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">java.util.regex.Matcher</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">java.util.regex.Pattern</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900">class</span> <span style="color:#cb4b16">PalindromeAnalyzer</span> {
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Helper to check if a string is a palindrome (ignoring case and non-alphanumeric)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">private</span> <span style="color:#859900">static</span> <span style="color:#859900;font-weight:bold">boolean</span> <span style="color:#268bd2">isPalindrome</span>(<span style="color:#268bd2">String</span> <span style="color:#268bd2">s</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">String</span> <span style="color:#268bd2">cleaned</span> = <span style="color:#268bd2">s</span>.<span style="color:#268bd2">replaceAll</span>(<span style="color:#2aa198">&#34;[^a-zA-Z0-9]&#34;</span>, <span style="color:#2aa198">&#34;&#34;</span>).<span style="color:#268bd2">toLowerCase</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">cleaned</span>.<span style="color:#268bd2">isEmpty</span>()) <span style="color:#859900">return</span> <span style="color:#859900;font-weight:bold">false</span>; <span style="color:#93a1a1;font-style:italic">// An empty string is not a palindrome for this context</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">cleaned</span>.<span style="color:#268bd2">equals</span>(<span style="color:#859900">new</span> <span style="color:#268bd2">StringBuilder</span>(<span style="color:#268bd2">cleaned</span>).<span style="color:#268bd2">reverse</span>().<span style="color:#268bd2">toString</span>());
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Main method to find palindromes and analyze</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#859900">static</span> <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">analyzePalindromes</span>(<span style="color:#268bd2">String</span> <span style="color:#268bd2">text</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">text</span> == <span style="color:#859900;font-weight:bold">null</span> || <span style="color:#268bd2">text</span>.<span style="color:#268bd2">isEmpty</span>()) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>(<span style="color:#2aa198">&#34;Input string is empty.&#34;</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Pattern to find words. \b matches word boundaries, \w+ matches one or more word characters. </span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">Pattern</span> <span style="color:#268bd2">pattern</span> = <span style="color:#268bd2">Pattern</span>.<span style="color:#268bd2">compile</span>(<span style="color:#2aa198">&#34;\\b\\w+\\b&#34;</span>); 
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">Matcher</span> <span style="color:#268bd2">matcher</span> = <span style="color:#268bd2">pattern</span>.<span style="color:#268bd2">matcher</span>(<span style="color:#268bd2">text</span>); <span style="color:#93a1a1;font-style:italic">// Use original text for word finding</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">palindromeCount</span> = <span style="color:#268bd2">0</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">String</span> <span style="color:#268bd2">longestPalindromeWord</span> = <span style="color:#2aa198">&#34;&#34;</span>;
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">while</span> (<span style="color:#268bd2">matcher</span>.<span style="color:#268bd2">find</span>()) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">String</span> <span style="color:#268bd2">word</span> = <span style="color:#268bd2">matcher</span>.<span style="color:#268bd2">group</span>();
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">isPalindrome</span>(<span style="color:#268bd2">word</span>)) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">palindromeCount</span>++;
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">if</span> (<span style="color:#268bd2">word</span>.<span style="color:#268bd2">length</span>() &gt; <span style="color:#268bd2">longestPalindromeWord</span>.<span style="color:#268bd2">length</span>()) {
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">longestPalindromeWord</span> = <span style="color:#268bd2">word</span>;
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>(<span style="color:#2aa198">&#34;Total palindrome words found: &#34;</span> + <span style="color:#268bd2">palindromeCount</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>(<span style="color:#2aa198">&#34;Highest length palindrome word: &#34;</span> + <span style="color:#268bd2">longestPalindromeWord</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (!<span style="color:#268bd2">longestPalindromeWord</span>.<span style="color:#268bd2">isEmpty</span>()) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>(<span style="color:#2aa198">&#34;Occurrence of each character in longest palindrome (&#39;&#34;</span> + <span style="color:#268bd2">longestPalindromeWord</span> + <span style="color:#2aa198">&#34;&#39;):&#34;</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">Map</span>&lt;<span style="color:#268bd2">Character</span>, <span style="color:#268bd2">Integer</span>&gt; <span style="color:#268bd2">charCounts</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">HashMap</span>&lt;&gt;();
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">String</span> <span style="color:#268bd2">cleanedLongest</span> = <span style="color:#268bd2">longestPalindromeWord</span>.<span style="color:#268bd2">replaceAll</span>(<span style="color:#2aa198">&#34;[^a-zA-Z0-9]&#34;</span>, <span style="color:#2aa198">&#34;&#34;</span>).<span style="color:#268bd2">toLowerCase</span>();
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">char</span> <span style="color:#268bd2">c</span> : <span style="color:#268bd2">cleanedLongest</span>.<span style="color:#268bd2">toCharArray</span>()) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">charCounts</span>.<span style="color:#268bd2">put</span>(<span style="color:#268bd2">c</span>, <span style="color:#268bd2">charCounts</span>.<span style="color:#268bd2">getOrDefault</span>(<span style="color:#268bd2">c</span>, <span style="color:#268bd2">0</span>) + <span style="color:#268bd2">1</span>);
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">charCounts</span>.<span style="color:#268bd2">forEach</span>((<span style="color:#268bd2">c</span>, <span style="color:#268bd2">count</span>) -&gt; <span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>(<span style="color:#2aa198">&#34;&#39;&#34;</span> + <span style="color:#268bd2">c</span> + <span style="color:#2aa198">&#34;&#39;: &#34;</span> + <span style="color:#268bd2">count</span>));
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#859900">static</span> <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">main</span>(<span style="color:#268bd2">String</span>[] <span style="color:#268bd2">args</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">String</span> <span style="color:#268bd2">input</span> = <span style="color:#2aa198">&#34;Madam is a civic engineer. Racecar is another example. A man, a plan, a canal: Panama.&#34;</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">analyzePalindromes</span>(<span style="color:#268bd2">input</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">/* Expected output for input &#34;Madam is a civic engineer. Racecar is another example. A man, a plan, a canal: Panama.&#34;:
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">        Total palindrome words found: 4 (Madam, a, civic, Racecar)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">        Highest length palindrome word: Racecar
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">        Occurrence of each character in longest palindrome (&#39;racecar&#39;):
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">        &#39;r&#39;: 2
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">        &#39;a&#39;: 2
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">        &#39;c&#39;: 2
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">        &#39;e&#39;: 1
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">        */</span>
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Example for a phrase as a palindrome:</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">String</span> <span style="color:#268bd2">input2</span> = <span style="color:#2aa198">&#34;A man, a plan, a canal: Panama&#34;</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// To count this as one palindrome, you would process the entire cleaned string:</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">isPalindrome</span>(<span style="color:#268bd2">input2</span>)) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>(<span style="color:#2aa198">&#34;\nFull phrase is a palindrome: &#34;</span> + <span style="color:#268bd2">input2</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">Map</span>&lt;<span style="color:#268bd2">Character</span>, <span style="color:#268bd2">Integer</span>&gt; <span style="color:#268bd2">charCounts</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">HashMap</span>&lt;&gt;();
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">String</span> <span style="color:#268bd2">cleanedPhrase</span> = <span style="color:#268bd2">input2</span>.<span style="color:#268bd2">replaceAll</span>(<span style="color:#2aa198">&#34;[^a-zA-Z0-9]&#34;</span>, <span style="color:#2aa198">&#34;&#34;</span>).<span style="color:#268bd2">toLowerCase</span>();
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">char</span> <span style="color:#268bd2">c</span> : <span style="color:#268bd2">cleanedPhrase</span>.<span style="color:#268bd2">toCharArray</span>()) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">charCounts</span>.<span style="color:#268bd2">put</span>(<span style="color:#268bd2">c</span>, <span style="color:#268bd2">charCounts</span>.<span style="color:#268bd2">getOrDefault</span>(<span style="color:#268bd2">c</span>, <span style="color:#268bd2">0</span>) + <span style="color:#268bd2">1</span>);
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>(<span style="color:#2aa198">&#34;Char counts in phrase: &#34;</span> + <span style="color:#268bd2">charCounts</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div>
+    </div>
+</article>
+
+<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
+    
+    <span></span>
+    
+    
+    <a href="//localhost:1315/12_company_based_questions/qapitol-qa/" class="nav-btn">Up</a>
+
+    
+    <a href="//localhost:1315/12_company_based_questions/qapitol-qa/main/" class="nav-btn">Next →</a>
+    
+</div>
+
+    </main>
+
+    <footer class="footer">
+        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
+    </footer>
+</body>
+</html>

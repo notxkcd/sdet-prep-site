@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1315&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CTS-5 | SDET Interview Preparation Kit</title>
+    <link rel="stylesheet" href="//localhost:1315/css/style.css">
+    
+    
+    <link rel="stylesheet" href="//localhost:1315/lib/katex/katex.min.css">
+    <script defer src="//localhost:1315/lib/katex/katex.min.js"></script>
+    <script defer src="//localhost:1315/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="/">Index</a></li>
+                
+            </ul>
+        </nav>
+        <div class="site-breadcrumb">
+            <a href="/">Home</a>
+            
+            
+            
+
+            
+            
+                <span>/</span> CTS-5
+            
+        </div>
+    </header>
+
+    <main>
+        
+<article>
+    <div class="category-title" style="margin-bottom: 0.5rem;">Cts Interview Questions</div>
+    <h1>CTS-5</h1>
+    <div class="content-body" style="margin-top: 2rem;">
+        <hr>
+<h2 id="original-questions-untouched">Original Questions (UNTOUCHED)</h2>
+<h1 id="cts-l1-virtual">CTS L1 virtual:</h1>
+<ol>
+<li>Tell me about yourself, previous projects and roles and responsibilities.</li>
+<li>Tell me 5 Interface in Selenium</li>
+<li>common exceptions you have faced in selenium</li>
+<li>write an xpath syntax</li>
+<li>how will you handle alert?</li>
+<li>difference between / and //</li>
+<li>write a java program to find the maximum salary of an individual</li>
+</ol>
+<hr>
+<h2 id="answers-no-bs-java-qa--sdet-explanations">Answers (No-BS Java QA / SDET Explanations)</h2>
+<h3 id="1-tell-me-about-yourself-previous-projects-and-roles-and-responsibilities">1. Tell me about yourself, previous projects and roles and responsibilities.</h3>
+<p>Standard opener. Structure your answer:</p>
+<ol>
+<li><strong>Yourself:</strong> &ldquo;I&rsquo;m a QA Automation Engineer with X years of experience, specializing in Java-based test automation for web applications.&rdquo;</li>
+<li><strong>Previous Projects:</strong> &ldquo;I&rsquo;ve worked on projects in the e-commerce and FinTech domains. My last project involved automating the end-to-end testing of a customer-facing financial dashboard.&rdquo;</li>
+<li><strong>Roles &amp; Responsibilities:</strong> &ldquo;My core responsibilities included designing and maintaining the automation framework using Selenium and TestNG, writing UI and API tests, integrating our test suites into a Jenkins CI/CD pipeline, and collaborating with the development team to triage and resolve defects.&rdquo;</li>
+</ol>
+<h3 id="2-tell-me-5-interface-in-selenium">2. Tell me 5 Interface in Selenium</h3>
+<ol>
+<li><strong><code>WebDriver</code>:</strong> The main interface for browser automation. (<code>driver = new ChromeDriver();</code>)</li>
+<li><strong><code>WebElement</code>:</strong> Represents an HTML element on the page.</li>
+<li><strong><code>SearchContext</code>:</strong> The super-interface for <code>WebDriver</code> and <code>WebElement</code> that defines the <code>findElement()</code> and <code>findElements()</code> methods.</li>
+<li><strong><code>TakesScreenshot</code>:</strong> An interface that allows the driver to capture screenshots.</li>
+<li><strong><code>JavascriptExecutor</code>:</strong> An interface for executing JavaScript code within the browser context.</li>
+</ol>
+<h3 id="3-common-exceptions-you-have-faced-in-selenium">3. common exceptions you have faced in selenium</h3>
+<ul>
+<li><strong><code>NoSuchElementException</code>:</strong> <code>findElement()</code> could not find the element. Caused by an incorrect locator or a timing issue.</li>
+<li><strong><code>StaleElementReferenceException</code>:</strong> The element you are trying to interact with is no longer attached to the DOM. The page has been refreshed. You need to re-find the element.</li>
+<li><strong><code>TimeoutException</code>:</strong> An explicit wait (<code>WebDriverWait</code>) failed because the condition was not met within the specified time.</li>
+<li><strong><code>ElementNotInteractableException</code>:</strong> The element was found, but it cannot be interacted with (e.g., it&rsquo;s hidden, disabled, or covered by another element).</li>
+<li><strong><code>InvalidSelectorException</code>:</strong> The syntax of your XPath or CSS selector is incorrect.</li>
+</ul>
+<h3 id="4-write-an-xpath-syntax">4. write an xpath syntax</h3>
+<p>The basic syntax is <code>//tagName[@attribute='value']</code>.</p>
+<ul>
+<li><code>//</code>: Selects nodes from anywhere in the document.</li>
+<li><code>tagName</code>: The HTML tag (e.g., <code>input</code>, <code>div</code>, <code>a</code>).</li>
+<li><code>[]</code>: A predicate to filter the nodes.</li>
+<li><code>@attribute</code>: The name of an attribute (e.g., <code>@id</code>, <code>@name</code>, <code>@class</code>).</li>
+<li><code>'value'</code>: The value of the attribute.</li>
+</ul>
+<p><strong>Example:</strong> <code>//button[@id='login-button']</code></p>
+<h3 id="5-how-will-you-handle-alert">5. how will you handle alert?</h3>
+<p>You use Selenium&rsquo;s <code>Alert</code> interface.</p>
+<ol>
+<li>Switch the driver&rsquo;s focus to the alert: <code>Alert alert = driver.switchTo().alert();</code></li>
+<li>Interact with it:
+<ul>
+<li><code>alert.accept();</code> (Click OK)</li>
+<li><code>alert.dismiss();</code> (Click Cancel)</li>
+<li><code>alert.getText();</code> (Get the text from the alert)</li>
+</ul>
+</li>
+</ol>
+<p>This only works for native browser JavaScript alerts, not for HTML modal dialogs.</p>
+<h3 id="6-difference-between--and-">6. difference between / and //</h3>
+<p>In XPath, both are used to traverse the DOM tree, but they have a key difference:</p>
+<ul>
+<li><strong><code>/</code> (Single Slash):</strong> Selects from the root node and creates an <strong>absolute path</strong>. It selects only the immediate children of the current node. It&rsquo;s very rigid.</li>
+<li><strong><code>//</code> (Double Slash):</strong> Selects nodes from <strong>anywhere in the document</strong>, regardless of their position. It creates a <strong>relative path</strong> and selects any matching descendant of the current node. This is the one you should almost always use to start your XPath because it&rsquo;s far more robust against UI changes.</li>
+</ul>
+<h3 id="7-write-a-java-program-to-find-the-maximum-salary-of-an-individual">7. write a java program to find the maximum salary of an individual</h3>
+<p>This is a &ldquo;find max value in an array&rdquo; problem. The &ldquo;individual&rdquo; part is just context.</p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">java.util.Arrays</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900">class</span> <span style="color:#cb4b16">MaxSalaryFinder</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#859900">static</span> <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">main</span>(<span style="color:#268bd2">String</span>[] <span style="color:#268bd2">args</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900;font-weight:bold">int</span>[] <span style="color:#268bd2">salaries</span> = {<span style="color:#268bd2">50000</span>, <span style="color:#268bd2">95000</span>, <span style="color:#268bd2">60000</span>, <span style="color:#268bd2">110000</span>, <span style="color:#268bd2">80000</span>};
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// The Java 8 Streams way (clean and declarative)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">maxSalary</span> = <span style="color:#268bd2">Arrays</span>.<span style="color:#268bd2">stream</span>(<span style="color:#268bd2">salaries</span>)
+</span></span><span style="display:flex;"><span>                                .<span style="color:#268bd2">max</span>()
+</span></span><span style="display:flex;"><span>                                .<span style="color:#268bd2">orElseThrow</span>(() -&gt; <span style="color:#859900">new</span> <span style="color:#268bd2">IllegalStateException</span>(<span style="color:#2aa198">&#34;Array is empty.&#34;</span>));
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>(<span style="color:#2aa198">&#34;The maximum salary is: &#34;</span> + <span style="color:#268bd2">maxSalary</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// The traditional loop way</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">max</span> = <span style="color:#268bd2">salaries</span>[<span style="color:#268bd2">0</span>];
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i</span> = <span style="color:#268bd2">1</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">salaries</span>.<span style="color:#268bd2">length</span>; <span style="color:#268bd2">i</span>++) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">salaries</span>[<span style="color:#268bd2">i</span>] &gt; <span style="color:#268bd2">max</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">max</span> = <span style="color:#268bd2">salaries</span>[<span style="color:#268bd2">i</span>];
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>(<span style="color:#2aa198">&#34;The maximum salary (using loop) is: &#34;</span> + <span style="color:#268bd2">max</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Showing the streams approach is generally more impressive as it&rsquo;s more modern and concise.</p>
+
+    </div>
+</article>
+
+<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
+    
+    <a href="//localhost:1315/12_company_based_questions/cts/round-6/" class="nav-btn">← Previous</a>
+    
+    
+    <a href="//localhost:1315/12_company_based_questions/cts/" class="nav-btn">Up</a>
+
+    
+    <a href="//localhost:1315/12_company_based_questions/cts/round-4/" class="nav-btn">Next →</a>
+    
+</div>
+
+    </main>
+
+    <footer class="footer">
+        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
+    </footer>
+</body>
+</html>

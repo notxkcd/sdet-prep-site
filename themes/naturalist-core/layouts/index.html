@@ -1,0 +1,35 @@
+{{ define "main" }}
+<div class="content">
+    {{ .Content }}
+</div>
+
+{{ $sections := .Sections }}
+{{/* Define the intentional order of categories */}}
+{{ $categories := slice "Mathematics" "Engineering" "Unix & Automation" "The Mind" "Body & Survival" "Faith" "Projects" }}
+
+{{ range $categories }}
+    {{ $cat := . }}
+    {{/* Find the sections belonging to this category */}}
+    {{ $catSections := where $sections "Params.category" "==" $cat }}
+    
+    {{ if gt (len $catSections) 0 }}
+    <div class="category-group">
+        <h2 class="category-title">{{ $cat }}</h2>
+        <ul class="tutorial-list">
+            {{/* Sort sections within category by weight */}}
+            {{ range $catSections.ByWeight }}
+            <li class="tutorial-item">
+                <div class="tutorial-title">
+                    <a href="{{ .Permalink }}">{{ .Title }}</a>
+                </div>
+                {{ if .Params.description }}
+                <div class="tutorial-desc">{{ .Params.description }}</div>
+                {{ end }}
+            </li>
+            {{ end }}
+        </ul>
+    </div>
+    {{ end }}
+{{ end }}
+
+{{ end }}

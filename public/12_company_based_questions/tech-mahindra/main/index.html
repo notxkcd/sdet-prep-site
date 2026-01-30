@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1315&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tech Mahindra | SDET Interview Preparation Kit</title>
+    <link rel="stylesheet" href="//localhost:1315/css/style.css">
+    
+    
+    <link rel="stylesheet" href="//localhost:1315/lib/katex/katex.min.css">
+    <script defer src="//localhost:1315/lib/katex/katex.min.js"></script>
+    <script defer src="//localhost:1315/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="/">Index</a></li>
+                
+            </ul>
+        </nav>
+        <div class="site-breadcrumb">
+            <a href="/">Home</a>
+            
+            
+            
+
+            
+            
+                <span>/</span> Tech Mahindra
+            
+        </div>
+    </header>
+
+    <main>
+        
+<article>
+    <div class="category-title" style="margin-bottom: 0.5rem;">Tech Mahindra Interview Questions</div>
+    <h1>Tech Mahindra</h1>
+    <div class="content-body" style="margin-top: 2rem;">
+        <hr>
+<h2 id="original-questions-untouched">Original Questions (UNTOUCHED)</h2>
+<h2 id="tech-mahindra-questions">Tech Mahindra Questions</h2>
+<p>Tell about yourself
+Explain about the cucumber framework
+Write feature file for login page
+what is TestNG and its advantages?
+Annotations used in testng?
+How will you pass test data in testng?
+what is maven and its purpose?
+what is POM?
+Have you used Gitlab ?
+write the dependency which you add in pom.xml for Selenium in notepad
+Coding - sum of two integer arrays.
+Eg:
+int arr1 [] = {2,3,4,5,6}
+int arr2 [] = {7,8,9,10,11}
+Exception - how will you handle exceptions.
+what is SDLC and which sdlc methodology you are following?
+Experience in API &amp; RestAssured
+Tool used for API Testing
+Explain about http methods.
+Explain Response codes.</p>
+<hr>
+<h2 id="answers-no-bs-java-qa--sdet-explanations">Answers (No-BS Java QA / SDET Explanations)</h2>
+<blockquote>
+<p>Many of these questions are standard framework and process questions. See previous files for more detailed answers on some topics.</p>
+</blockquote>
+<h3 id="tell-about-yourself">Tell about yourself</h3>
+<p>Standard opener. Role, responsibilities, tech stack, achievements. Keep it concise.</p>
+<h3 id="explain-about-the-cucumber-framework">Explain about the cucumber framework</h3>
+<p>Cucumber is a tool that supports Behavior-Driven Development (BDD). It lets you write test cases in a human-readable language called Gherkin.</p>
+<ul>
+<li><strong><code>.feature</code> files:</strong> Contain the Gherkin scenarios (<code>Given/When/Then</code>). They describe the behavior of the application from a user&rsquo;s perspective.</li>
+<li><strong>Step Definitions:</strong> Java methods that are &ldquo;glued&rdquo; to each Gherkin step. This is where the actual automation code (like Selenium calls) lives.</li>
+<li><strong>Runner Class:</strong> A JUnit or TestNG class that configures and runs the tests, specifying where to find feature files and step definitions.
+Its main purpose is to improve communication between technical and non-technical team members.</li>
+</ul>
+<h3 id="write-feature-file-for-login-page">Write feature file for login page</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-gherkin" data-lang="gherkin"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># features/login.feature</span><span style="color:#268bd2">
+</span></span></span><span style="display:flex;"><span><span style="color:#268bd2"></span><span style="color:#859900">Feature:</span><span style="color:#268bd2"> User Authentication
+</span></span></span><span style="display:flex;"><span><span style="color:#268bd2">
+</span></span></span><span style="display:flex;"><span><span style="color:#268bd2">  </span><span style="color:#859900">Background:</span><span style="color:#268bd2">
+</span></span></span><span style="display:flex;"><span><span style="color:#268bd2"></span><span style="color:#859900">    Given </span><span style="color:#268bd2">the user is on the login page
+</span></span></span><span style="display:flex;"><span><span style="color:#268bd2">
+</span></span></span><span style="display:flex;"><span><span style="color:#268bd2">  </span><span style="color:#859900">Scenario:</span><span style="color:#268bd2"> Successful login with valid credentials
+</span></span></span><span style="display:flex;"><span><span style="color:#268bd2"></span><span style="color:#859900">    When </span><span style="color:#268bd2">the user enters valid username and password
+</span></span></span><span style="display:flex;"><span><span style="color:#268bd2">    </span><span style="color:#859900">Then </span><span style="color:#268bd2">the user should be redirected to the dashboard
+</span></span></span><span style="display:flex;"><span><span style="color:#268bd2">
+</span></span></span><span style="display:flex;"><span><span style="color:#268bd2">  </span><span style="color:#859900">Scenario Outline:</span><span style="color:#268bd2"> Unsuccessful login with invalid credentials
+</span></span></span><span style="display:flex;"><span><span style="color:#268bd2"></span><span style="color:#859900">    When </span><span style="color:#268bd2">the user enters &#34;</span><span style="color:#268bd2">&lt;username&gt;</span><span style="color:#268bd2">&#34; and &#34;</span><span style="color:#268bd2">&lt;password&gt;</span><span style="color:#268bd2">&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#268bd2">    </span><span style="color:#859900">Then </span><span style="color:#268bd2">an error message &#34;</span><span style="color:#268bd2">&lt;message&gt;</span><span style="color:#268bd2">&#34; should be displayed
+</span></span></span><span style="display:flex;"><span><span style="color:#268bd2">
+</span></span></span><span style="display:flex;"><span><span style="color:#268bd2">    </span><span style="color:#859900">Examples:
+</span></span></span><span style="display:flex;"><span><span style="color:#859900">      |</span><span style="color:#268bd2"> username</span><span style="color:#859900">      |</span><span style="color:#268bd2"> password</span><span style="color:#859900">      |</span><span style="color:#268bd2"> message</span><span style="color:#859900">                |</span><span style="color:#268bd2">
+</span></span></span><span style="display:flex;"><span><span style="color:#268bd2"></span><span style="color:#859900">      |</span><span style="color:#2aa198"> &#34;invalid_user&#34;</span><span style="color:#859900">|</span><span style="color:#2aa198"> &#34;wrong_pass&#34;</span><span style="color:#859900">  |</span><span style="color:#2aa198"> &#34;Invalid credentials.&#34;</span><span style="color:#859900"> |</span><span style="color:#268bd2">
+</span></span></span><span style="display:flex;"><span><span style="color:#268bd2"></span><span style="color:#859900">      |</span><span style="color:#2aa198"> &#34;valid_user&#34;</span><span style="color:#859900">  |</span><span style="color:#2aa198"> &#34;&#34;</span><span style="color:#859900">            |</span><span style="color:#2aa198"> &#34;Password is required.&#34;</span><span style="color:#859900">|
+</span></span></span><span style="display:flex;"><span><span style="color:#859900">      |</span><span style="color:#2aa198"> &#34;&#34;</span><span style="color:#859900">            |</span><span style="color:#2aa198"> &#34;valid_pass&#34;</span><span style="color:#859900">  |</span><span style="color:#2aa198"> &#34;Username is required.&#34;</span><span style="color:#859900">|</span><span style="color:#2aa198">
+</span></span></span></code></pre></div><h3 id="what-is-testng-and-its-advantages">what is TestNG and its advantages?</h3>
+<p>TestNG is a testing framework for Java, inspired by JUnit but with more powerful features. It&rsquo;s the de-facto standard for Selenium test automation in Java.</p>
+<p><strong>Advantages:</strong></p>
+<ol>
+<li><strong>Powerful Annotations:</strong> Provides a rich set of annotations (<code>@BeforeSuite</code>, <code>@BeforeClass</code>, <code>@BeforeMethod</code>, etc.) for fine-grained control over test setup and teardown.</li>
+<li><strong>Data-Driven Testing:</strong> Excellent built-in support for data-driven tests via the <code>@DataProvider</code> annotation.</li>
+<li><strong>Grouping:</strong> Allows you to group tests (e.g., <code>@Test(groups=&quot;smoke&quot;)</code>) and then run specific groups.</li>
+<li><strong>Parallel Execution:</strong> Simple to configure parallel test execution in <code>testng.xml</code> to significantly speed up your test suite.</li>
+<li><strong>Parameterization:</strong> Easy to pass parameters to tests from the <code>testng.xml</code> file.</li>
+<li><strong>Dependent Tests:</strong> You can make tests dependent on one another (e.g., a test runs only if another one passes).</li>
+</ol>
+<h3 id="annotations-used-in-testng">Annotations used in testng?</h3>
+<ul>
+<li><strong>Setup/Teardown:</strong> <code>@BeforeSuite</code>, <code>@AfterSuite</code>, <code>@BeforeTest</code>, <code>@AfterTest</code>, <code>@BeforeClass</code>, <code>@AfterClass</code>, <code>@BeforeMethod</code>, <code>@AfterMethod</code>.</li>
+<li><strong>Test:</strong> <code>@Test</code>.</li>
+<li><strong>Data:</strong> <code>@DataProvider</code>, <code>@Parameters</code>.</li>
+<li><strong>Listeners:</strong> <code>@Listeners</code>.</li>
+</ul>
+<h3 id="how-will-you-pass-test-data-in-testng">How will you pass test data in testng?</h3>
+<ol>
+<li>
+<p><strong><code>@DataProvider</code> (Best way):</strong> A method annotated with <code>@DataProvider</code> returns a 2D array of objects (<code>Object[][]</code>). A test method can then consume this data, running once for each row in the array. This is the most flexible approach for data-driven testing.</p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#268bd2">@DataProvider</span>(<span style="color:#268bd2">name</span> = <span style="color:#2aa198">&#34;loginData&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#268bd2">Object</span>[][] <span style="color:#268bd2">provideLoginData</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#859900">new</span> <span style="color:#268bd2">Object</span>[][] {
+</span></span><span style="display:flex;"><span>        { <span style="color:#2aa198">&#34;user1&#34;</span>, <span style="color:#2aa198">&#34;pass1&#34;</span> },
+</span></span><span style="display:flex;"><span>        { <span style="color:#2aa198">&#34;user2&#34;</span>, <span style="color:#2aa198">&#34;pass2&#34;</span> }
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">@Test</span>(<span style="color:#268bd2">dataProvider</span> = <span style="color:#2aa198">&#34;loginData&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">testLogin</span>(<span style="color:#268bd2">String</span> <span style="color:#268bd2">username</span>, <span style="color:#268bd2">String</span> <span style="color:#268bd2">password</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// ... test logic</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div></li>
+<li>
+<p><strong><code>@Parameters</code> / <code>testng.xml</code> (For simple parameters):</strong> You can define simple string parameters in your <code>testng.xml</code> file and have TestNG pass them to your <code>@Test</code> or <code>@Before</code> methods. This is good for environment-level configuration like browser name or base URL.</p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-xml" data-lang="xml"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">&lt;!-- in testng.xml --&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2;font-weight:bold">&lt;test</span> <span style="color:#268bd2">name=</span><span style="color:#2aa198">&#34;MyTest&#34;</span><span style="color:#268bd2;font-weight:bold">&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#268bd2;font-weight:bold">&lt;parameter</span> <span style="color:#268bd2">name=</span><span style="color:#2aa198">&#34;browser&#34;</span> <span style="color:#268bd2">value=</span><span style="color:#2aa198">&#34;chrome&#34;</span><span style="color:#268bd2;font-weight:bold">/&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#268bd2;font-weight:bold">&lt;classes&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2;font-weight:bold">&lt;class</span> <span style="color:#268bd2">name=</span><span style="color:#2aa198">&#34;com.mytests.LoginTest&#34;</span><span style="color:#268bd2;font-weight:bold">/&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#268bd2;font-weight:bold">&lt;/classes&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2;font-weight:bold">&lt;/test&gt;</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// in LoginTest.java</span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">@BeforeMethod</span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">setup</span>(<span style="color:#268bd2">@Parameters</span>(<span style="color:#2aa198">&#34;browser&#34;</span>) <span style="color:#268bd2">String</span> <span style="color:#268bd2">browserName</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// ... setup logic using browserName</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div></li>
+</ol>
+<h3 id="what-is-maven-and-its-purpose">what is maven and its purpose?</h3>
+<p>Maven is a build automation and project management tool. Its purpose is to standardize and simplify the process of building Java projects.</p>
+<ol>
+<li><strong>Dependency Management:</strong> Its most important feature. It automatically downloads and manages all third-party libraries (dependencies) from a central repository. You just declare them in <code>pom.xml</code>.</li>
+<li><strong>Standard Build Lifecycle:</strong> Provides a standard set of phases (<code>compile</code>, <code>test</code>, <code>package</code>, etc.) to build the project. <code>mvn test</code> runs your entire test suite.</li>
+</ol>
+<h3 id="what-is-pom">what is POM?</h3>
+<p>This can mean two things.</p>
+<ol>
+<li><strong>Project Object Model (Maven):</strong> The <code>pom.xml</code> file. It&rsquo;s the core configuration file for a Maven project, defining its dependencies, build process, and metadata.</li>
+<li><strong>Page Object Model (Selenium):</strong> A design pattern for test automation where you create a Java class for each page of your web application. This class encapsulates the locators and interaction logic for that page, separating it from the test scripts.</li>
+</ol>
+<p>Given the context, they likely mean the Maven POM, but it&rsquo;s good to clarify or mention both.</p>
+<h3 id="have-you-used-gitlab-">Have you used Gitlab ?</h3>
+<p>&ldquo;Yes. GitLab is a complete DevOps platform built around Git. While I&rsquo;ve used GitHub more frequently, I&rsquo;ve used GitLab for version control, CI/CD pipelines (using <code>.gitlab-ci.yml</code>), and its integrated container registry.&rdquo;</p>
+<h3 id="write-the-dependency-which-you-add-in-pomxml-for-selenium-in-notepad">write the dependency which you add in pom.xml for Selenium in notepad</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-xml" data-lang="xml"><span style="display:flex;"><span><span style="color:#268bd2;font-weight:bold">&lt;dependency&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2;font-weight:bold">&lt;groupId&gt;</span>org.seleniumhq.selenium<span style="color:#268bd2;font-weight:bold">&lt;/groupId&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2;font-weight:bold">&lt;artifactId&gt;</span>selenium-java<span style="color:#268bd2;font-weight:bold">&lt;/artifactId&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2;font-weight:bold">&lt;version&gt;</span>4.1.2<span style="color:#268bd2;font-weight:bold">&lt;/version&gt;</span> <span style="color:#93a1a1;font-style:italic">&lt;!-- Or whatever the latest stable version is --&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2;font-weight:bold">&lt;/dependency&gt;</span>
+</span></span></code></pre></div><h3 id="coding---sum-of-two-integer-arrays">Coding - sum of two integer arrays.</h3>
+<p>This is ambiguous. It could mean concatenating them, or summing them element-wise. Assuming element-wise sum into a new array.</p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900">class</span> <span style="color:#cb4b16">ArraySummer</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#859900">static</span> <span style="color:#859900;font-weight:bold">int</span>[] <span style="color:#268bd2">sumArrays</span>(<span style="color:#859900;font-weight:bold">int</span>[] <span style="color:#268bd2">arr1</span>, <span style="color:#859900;font-weight:bold">int</span>[] <span style="color:#268bd2">arr2</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Assuming arrays are of the same length, as in the example.</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// A robust solution would handle different lengths.</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">arr1</span>.<span style="color:#268bd2">length</span> != <span style="color:#268bd2">arr2</span>.<span style="color:#268bd2">length</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">throw</span> <span style="color:#859900">new</span> <span style="color:#268bd2">IllegalArgumentException</span>(<span style="color:#2aa198">&#34;Arrays must have the same length.&#34;</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900;font-weight:bold">int</span>[] <span style="color:#268bd2">result</span> = <span style="color:#859900">new</span> <span style="color:#859900;font-weight:bold">int</span>[<span style="color:#268bd2">arr1</span>.<span style="color:#268bd2">length</span>];
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i</span> = <span style="color:#268bd2">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">arr1</span>.<span style="color:#268bd2">length</span>; <span style="color:#268bd2">i</span>++) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">result</span>[<span style="color:#268bd2">i</span>] = <span style="color:#268bd2">arr1</span>[<span style="color:#268bd2">i</span>] + <span style="color:#268bd2">arr2</span>[<span style="color:#268bd2">i</span>];
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">result</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="exception---how-will-you-handle-exceptions">Exception - how will you handle exceptions.</h3>
+<ul>
+<li>For <strong>checked exceptions</strong> (like <code>IOException</code>), which are predictable, you use a <code>try-catch</code> block to handle the error gracefully.</li>
+<li>For <strong>runtime exceptions</strong> (like <code>NullPointerException</code>), they usually indicate a bug in the code. The best &ldquo;handling&rdquo; is to let the exception be thrown and fail the test, so the bug is visible and can be fixed.</li>
+<li>In test automation, a <strong><code>finally</code></strong> block is critical for resource cleanup, especially <code>driver.quit()</code>, to ensure it runs even if the test fails with an exception.</li>
+<li>In Selenium, the best way to &ldquo;handle&rdquo; exceptions like <code>NoSuchElementException</code> is to <strong>prevent</strong> them by using robust explicit waits.</li>
+</ul>
+<h3 id="what-is-sdlc-and-which-sdlc-methodology-you-are-following">what is SDLC and which sdlc methodology you are following?</h3>
+<p>SDLC is the Software Development Life Cycle, a process for planning, creating, testing, and deploying an information system.</p>
+<p>&ldquo;I am following the <strong>Agile</strong> methodology, specifically <strong>Scrum</strong>. We work in two-week sprints, with a focus on delivering small, incremental pieces of working software and adapting to changing requirements.&rdquo;</p>
+<h3 id="experience-in-api--restassured">Experience in API &amp; RestAssured</h3>
+<p>&ldquo;Yes, I have extensive experience in API testing. I use <strong>REST-assured</strong> with Java and TestNG to automate our API tests. My tests cover status code validation, response body assertions using JSONPath, contract testing against a Swagger/OpenAPI spec, and end-to-end scenarios where I chain multiple API calls together.&rdquo;</p>
+<h3 id="tool-used-for-api-testing">Tool used for API Testing</h3>
+<ul>
+<li><strong>Automation:</strong> REST-assured (for Java).</li>
+<li><strong>Manual/Exploratory Testing:</strong> Postman. It&rsquo;s excellent for quickly sending requests, inspecting responses, and trying out new endpoints.</li>
+</ul>
+<h3 id="explain-about-http-methods">Explain about http methods.</h3>
+<ul>
+<li><code>GET</code>: Retrieve data.</li>
+<li><code>POST</code>: Create new data.</li>
+<li><code>PUT</code>: Completely replace existing data.</li>
+<li><code>PATCH</code>: Partially update existing data.</li>
+<li><code>DELETE</code>: Remove data.</li>
+</ul>
+<h3 id="explainresponsecodes">Explain Response codes.</h3>
+<ul>
+<li><code>2xx</code> (Success): <code>200 OK</code>, <code>201 Created</code>, <code>204 No Content</code>.</li>
+<li><code>3xx</code> (Redirection): <code>301 Moved Permanently</code>, <code>302 Found</code>.</li>
+<li><code>4xx</code> (Client Error): <code>400 Bad Request</code>, <code>401 Unauthorized</code>, <code>403 Forbidden</code>, <code>404 Not Found</code>. Your request is wrong.</li>
+<li><code>5xx</code> (Server Error): <code>500 Internal Server Error</code>, <code>503 Service Unavailable</code>. The server is broken. This is a bug.</li>
+</ul>
+
+    </div>
+</article>
+
+<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
+    
+    <a href="//localhost:1315/12_company_based_questions/tech-mahindra/round-2/" class="nav-btn">← Previous</a>
+    
+    
+    <a href="//localhost:1315/12_company_based_questions/tech-mahindra/" class="nav-btn">Up</a>
+
+    
+    <span></span>
+    
+</div>
+
+    </main>
+
+    <footer class="footer">
+        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
+    </footer>
+</body>
+</html>

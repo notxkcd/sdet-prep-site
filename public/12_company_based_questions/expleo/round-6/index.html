@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1315&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expleo-6 | SDET Interview Preparation Kit</title>
+    <link rel="stylesheet" href="//localhost:1315/css/style.css">
+    
+    
+    <link rel="stylesheet" href="//localhost:1315/lib/katex/katex.min.css">
+    <script defer src="//localhost:1315/lib/katex/katex.min.js"></script>
+    <script defer src="//localhost:1315/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="/">Index</a></li>
+                
+            </ul>
+        </nav>
+        <div class="site-breadcrumb">
+            <a href="/">Home</a>
+            
+            
+            
+
+            
+            
+                <span>/</span> Expleo-6
+            
+        </div>
+    </header>
+
+    <main>
+        
+<article>
+    <div class="category-title" style="margin-bottom: 0.5rem;">Expleo Interview Questions</div>
+    <h1>Expleo-6</h1>
+    <div class="content-body" style="margin-top: 2rem;">
+        <hr>
+<h2 id="original-questions-untouched">Original Questions (UNTOUCHED)</h2>
+<h2 id="expleo-level2">Expleo level 2:</h2>
+<p>Explain your resume or cv
+Take a Google page and take the xpath for search box
+Go to the amazon.in and search mobiles take the first mobile option take the xpath of it
+And take that page how many mobiles count on that page
+That page highlight the mobile colour how to take that colour what method you use
+Explain the wait concept in the selenium
+Types of explicit wait write the syntax for that
+Write the duplicate removal program
+Types of xpath
+Which locator is effective
+Which xpath will be more efficient</p>
+<hr>
+<h2 id="answers-no-bs-java-qa--sdet-explanations">Answers (No-BS Java QA / SDET Explanations)</h2>
+<h3 id="explain-your-resume-or-cv">Explain your resume or cv</h3>
+<p>Standard &ldquo;walk me through your resume&rdquo; question. Be prepared to highlight your most relevant experience, skills, and accomplishments that align with the job description. Focus on impact and results.</p>
+<h3 id="take-a-google-page-and-take-the-xpath-for-search-box">Take a Google page and take the xpath for search box</h3>
+<p>(Requires inspecting Google.com).
+The search box on Google&rsquo;s homepage usually has a <code>name=&quot;q&quot;</code>.
+XPath: <code>//textarea[@name='q']</code> or <code>//input[@name='q']</code> (depending on the element type).
+CSS Selector: <code>textarea[name='q']</code> or <code>input[name='q']</code>.</p>
+<h3 id="go-to-the-amazonin-and-search-mobiles-take-the-first-mobile-option-take-the-xpath-of-it">Go to the amazon.in and search mobiles take the first mobile option take the xpath of it</h3>
+<p>(Requires inspecting Amazon.in after searching for &ldquo;mobiles&rdquo;).
+Assuming the first mobile option is within a search result container and has a link to its product page.</p>
+<p>Conceptual XPath: <code>(//div[@data-component-type='s-search-result'])[1]//a</code>
+This means:</p>
+<ol>
+<li><code>//div[@data-component-type='s-search-result']</code>: Find all <code>div</code> elements that are search result containers.</li>
+<li><code>[1]</code>: Select the first one.</li>
+<li><code>//a</code>: Find any <code>&lt;a&gt;</code> (link) descendant within that first result.</li>
+</ol>
+<h3 id="and-take-that-page-how-many-mobiles-count-on-that-page">And take that page how many mobiles count on that page</h3>
+<p>This means counting the number of mobile product listings on a search results page.
+You identify a common locator for each product listing container and use <code>findElements()</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#268bd2">List</span>&lt;<span style="color:#268bd2">WebElement</span>&gt; <span style="color:#268bd2">mobileListings</span> = <span style="color:#268bd2">driver</span>.<span style="color:#268bd2">findElements</span>(<span style="color:#268bd2">By</span>.<span style="color:#268bd2">xpath</span>(<span style="color:#2aa198">&#34;//div[@data-component-type=&#39;s-search-result&#39;]&#34;</span>));
+</span></span><span style="display:flex;"><span><span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">count</span> = <span style="color:#268bd2">mobileListings</span>.<span style="color:#268bd2">size</span>();
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>(<span style="color:#2aa198">&#34;Number of mobile listings: &#34;</span> + <span style="color:#268bd2">count</span>);
+</span></span></code></pre></div><h3 id="that-page-highlight-the-mobile-colour-how-to-take-that-colour-what-method-you-use">That page highlight the mobile colour how to take that colour what method you use</h3>
+<p>You use the <code>getCssValue()</code> method of a <code>WebElement</code>.</p>
+<ol>
+<li>Locate the element that has the highlight color (e.g., a border, background, or text color).</li>
+<li>Call <code>element.getCssValue(&quot;property-name&quot;)</code>.
+<ul>
+<li>To get background color: <code>element.getCssValue(&quot;background-color&quot;)</code></li>
+<li>To get border color: <code>element.getCssValue(&quot;border-color&quot;)</code></li>
+<li>To get text color: <code>element.getCssValue(&quot;color&quot;)</code>
+The returned value will usually be in RGBA format (e.g., &ldquo;rgba(255, 0, 0, 1)&rdquo;).</li>
+</ul>
+</li>
+</ol>
+<h3 id="explain-the-wait-concept-in-the-selenium">Explain the wait concept in the selenium</h3>
+<p>Waits are essential for synchronizing the test script with the web application&rsquo;s state. They prevent <code>NoSuchElementException</code> or <code>StaleElementReferenceException</code> due to asynchronous loading.</p>
+<ul>
+<li><strong>Implicit Wait:</strong> Global setting, bad practice.</li>
+<li><strong>Explicit Wait (<code>WebDriverWait</code>):</strong> Recommended. Waits for a <em>specific condition</em> to be met.</li>
+<li><strong>Fluent Wait:</strong> More configurable explicit wait.</li>
+</ul>
+<h3 id="types-of-explicit-wait-write-the-syntax-for-that">Types of explicit wait write the syntax for that</h3>
+<p>Explicit waits use <code>WebDriverWait</code> combined with <code>ExpectedConditions</code>.</p>
+<ul>
+<li><strong><code>ExpectedConditions.visibilityOfElementLocated(By locator)</code>:</strong> Waits for an element to be visible in the DOM.</li>
+<li><strong><code>ExpectedConditions.elementToBeClickable(By locator)</code>:</strong> Waits for an element to be visible and enabled so it can be clicked.</li>
+<li><strong><code>ExpectedConditions.alertIsPresent()</code>:</strong> Waits for a JavaScript alert to appear.</li>
+<li><strong><code>ExpectedConditions.titleContains(String title)</code>:</strong> Waits for the page title to contain specific text.</li>
+</ul>
+<p><strong>Syntax:</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#268bd2">WebDriverWait</span> <span style="color:#268bd2">wait</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">WebDriverWait</span>(<span style="color:#268bd2">driver</span>, <span style="color:#268bd2">Duration</span>.<span style="color:#268bd2">ofSeconds</span>(<span style="color:#268bd2">10</span>));
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">WebElement</span> <span style="color:#268bd2">element</span> = <span style="color:#268bd2">wait</span>.<span style="color:#268bd2">until</span>(<span style="color:#268bd2">ExpectedConditions</span>.<span style="color:#268bd2">elementToBeClickable</span>(<span style="color:#268bd2">By</span>.<span style="color:#268bd2">id</span>(<span style="color:#2aa198">&#34;myButton&#34;</span>)));
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">element</span>.<span style="color:#268bd2">click</span>();
+</span></span></code></pre></div><h3 id="write-the-duplicate-removal-program">Write the duplicate removal program</h3>
+<p>To remove duplicates from an array of integers.</p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">java.util.Arrays</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">java.util.LinkedHashSet</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">java.util.Set</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900">class</span> <span style="color:#cb4b16">DuplicateRemover</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#859900">static</span> <span style="color:#859900;font-weight:bold">int</span>[] <span style="color:#268bd2">removeDuplicates</span>(<span style="color:#859900;font-weight:bold">int</span>[] <span style="color:#268bd2">arr</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Using Java 8 Streams is the most concise</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">Arrays</span>.<span style="color:#268bd2">stream</span>(<span style="color:#268bd2">arr</span>).<span style="color:#268bd2">distinct</span>().<span style="color:#268bd2">toArray</span>();
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">/* // Using a Set manually (preserves order with LinkedHashSet)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">        Set&lt;Integer&gt; uniqueElements = new LinkedHashSet&lt;&gt;();
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">        for (int i : arr) {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">            uniqueElements.add(i);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">        }
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">        return uniqueElements.stream().mapToInt(Integer::intValue).toArray();
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">        */</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="types-of-xpath">Types of xpath</h3>
+<ul>
+<li><strong>Absolute XPath:</strong> Starts from the root <code>/html</code>. Very brittle.</li>
+<li><strong>Relative XPath:</strong> Starts with <code>//</code>. Robust and flexible.</li>
+</ul>
+<h3 id="which-locator-is-effective">Which locator is effective</h3>
+<p>The effectiveness depends on the context and stability of the application.</p>
+<ol>
+<li><strong><code>id</code>:</strong> Most effective if unique and stable. Fastest.</li>
+<li><strong><code>cssSelector</code>:</strong> Highly effective, especially for complex selections, and generally faster than XPath.</li>
+<li><strong><code>xpath</code>:</strong> Most powerful for complex traversals (e.g., by text, axes), but can be slower and sometimes less readable.</li>
+</ol>
+<h3 id="which-xpath-will-be-more-efficient">Which xpath will be more efficient</h3>
+<p>Generally, simple, direct XPaths are efficient.</p>
+<ul>
+<li><strong>More efficient:</strong> <code>//input[@id='username']</code> or <code>//button[@name='login']</code>.</li>
+<li><strong>Less efficient:</strong> XPaths that scan the entire DOM extensively, like <code>//*[contains(text(), 'some text')]</code> (unless narrowed down), or very long absolute XPaths.</li>
+<li><strong>Prioritize:</strong> Start your XPath from a unique parent if possible.
+In practice, <code>cssSelector</code> is often more performant than XPath when both can achieve the same result.</li>
+</ul>
+
+    </div>
+</article>
+
+<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
+    
+    <a href="//localhost:1315/12_company_based_questions/expleo/round-7/" class="nav-btn">← Previous</a>
+    
+    
+    <a href="//localhost:1315/12_company_based_questions/expleo/" class="nav-btn">Up</a>
+
+    
+    <a href="//localhost:1315/12_company_based_questions/expleo/round-5/" class="nav-btn">Next →</a>
+    
+</div>
+
+    </main>
+
+    <footer class="footer">
+        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
+    </footer>
+</body>
+</html>

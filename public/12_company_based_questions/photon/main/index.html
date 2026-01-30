@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1315&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photon | SDET Interview Preparation Kit</title>
+    <link rel="stylesheet" href="//localhost:1315/css/style.css">
+    
+    
+    <link rel="stylesheet" href="//localhost:1315/lib/katex/katex.min.css">
+    <script defer src="//localhost:1315/lib/katex/katex.min.js"></script>
+    <script defer src="//localhost:1315/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="/">Index</a></li>
+                
+            </ul>
+        </nav>
+        <div class="site-breadcrumb">
+            <a href="/">Home</a>
+            
+            
+            
+
+            
+            
+                <span>/</span> Photon
+            
+        </div>
+    </header>
+
+    <main>
+        
+<article>
+    <div class="category-title" style="margin-bottom: 0.5rem;">Photon Interview Questions</div>
+    <h1>Photon</h1>
+    <div class="content-body" style="margin-top: 2rem;">
+        <hr>
+<h2 id="original-questions-untouched">Original Questions (UNTOUCHED)</h2>
+<p>Photon Interview Questions</p>
+<p>Tell about yourself
+Diff between Junit and TestNG
+what are TestNG annotations?
+Find Duplicate Characters in string.
+Find reversal of string word by word.
+Selenium - Given this url &ldquo;<a href="https://www.geico.com/%22">https://www.geico.com/&quot;</a> and asked to pass numbers to zipcode textbox and click go and validate the result &ldquo;thanks message&rdquo;
+diff between assert and verify
+Explain about locators in selenium.
+diff between explicit and implicit wait.
+what are types of testing?
+what is method overloading and overriding?
+How do you upload a file in selenium?
+How do you create a defect in jira tool?
+Experience on Rest API
+Explain about API response codes</p>
+<hr>
+<h2 id="answers-no-bs-java-qa--sdet-explanations">Answers (No-BS Java QA / SDET Explanations)</h2>
+<h3 id="tell-about-yourself">Tell about yourself</h3>
+<p>Standard opener. Keep it concise, technical, and focused on your skills, and accomplishments.</p>
+<h3 id="diff-between-junit-and-testng">Diff between Junit and TestNG</h3>
+<p>Both are Java testing frameworks, but TestNG is generally considered more powerful and suitable for large-scale test automation, which is why it&rsquo;s more common in Selenium projects.</p>
+<table>
+  <thead>
+      <tr>
+          <th style="text-align: left">Feature</th>
+          <th style="text-align: left">JUnit (4/5)</th>
+          <th style="text-align: left">TestNG</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td style="text-align: left"><strong>Annotations</strong></td>
+          <td style="text-align: left">Has a good set (<code>@Test</code>, <code>@BeforeEach</code>, <code>@AfterEach</code>).</td>
+          <td style="text-align: left">Has a more extensive and powerful set (<code>@BeforeSuite</code>, <code>@BeforeTest</code>, etc.).</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong>Grouping</strong></td>
+          <td style="text-align: left">Supported via <code>@Tag</code> annotation (JUnit 5).</td>
+          <td style="text-align: left">First-class citizen with <code>@Test(groups = &quot;...&quot;)</code> and XML configuration. Very flexible.</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong>Parallel Execution</strong></td>
+          <td style="text-align: left">Possible in JUnit 5, but more complex to configure.</td>
+          <td style="text-align: left">Simple and powerful to configure via the <code>testng.xml</code> file.</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong>Data-Driven Tests</strong></td>
+          <td style="text-align: left">Supported via <code>@ParameterizedTest</code> (JUnit 5).</td>
+          <td style="text-align: left">Supported via the very intuitive <code>@DataProvider</code> annotation.</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong>Dependencies</strong></td>
+          <td style="text-align: left">Does not support test dependencies. Tests should be independent.</td>
+          <td style="text-align: left">Allows you to make tests dependent on each other with <code>dependsOnMethods</code>.</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong>Configuration</strong></td>
+          <td style="text-align: left">Primarily through annotations.</td>
+          <td style="text-align: left">Highly configurable through the <code>testng.xml</code> suite file.</td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Conclusion:</strong> For a complex test automation suite, TestNG&rsquo;s advanced features for grouping, parallelization, and configuration give it a significant edge.</p>
+<h3 id="what-are-testng-annotations">what are TestNG annotations?</h3>
+<p>They are markers that control how TestNG executes your test methods.</p>
+<ul>
+<li><strong>Suite/Test/Class Level:</strong> <code>@BeforeSuite</code>, <code>@AfterSuite</code>, <code>@BeforeTest</code>, <code>@AfterTest</code>, <code>@BeforeClass</code>, <code>@AfterClass</code>. Used for setup/teardown that happens once per suite, test block, or class.</li>
+<li><strong>Method Level:</strong> <code>@BeforeMethod</code>, <code>@AfterMethod</code>. Run before and after <em>each</em> <code>@Test</code> method. Ideal for <code>WebDriver</code> initialization and cleanup.</li>
+<li><strong>Test Method:</strong> <code>@Test</code>. Marks the method as a test case.</li>
+<li><strong>Data Provider:</strong> <code>@DataProvider</code>. Marks a method that supplies data to a test.</li>
+</ul>
+<h3 id="find-duplicate-characters-in-string">Find Duplicate Characters in string.</h3>
+<p>Use a <code>Map</code> to store character frequencies.</p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">java.util.Map</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">java.util.function.Function</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">java.util.stream.Collectors</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900">class</span> <span style="color:#cb4b16">DuplicateFinder</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#859900">static</span> <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">findDuplicates</span>(<span style="color:#268bd2">String</span> <span style="color:#268bd2">str</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">str</span> == <span style="color:#859900;font-weight:bold">null</span> || <span style="color:#268bd2">str</span>.<span style="color:#268bd2">isEmpty</span>()) <span style="color:#859900">return</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">Map</span>&lt;<span style="color:#268bd2">Character</span>, <span style="color:#268bd2">Long</span>&gt; <span style="color:#268bd2">freq</span> = <span style="color:#268bd2">str</span>.<span style="color:#268bd2">chars</span>()
+</span></span><span style="display:flex;"><span>            .<span style="color:#268bd2">mapToObj</span>(<span style="color:#268bd2">c</span> -&gt; (<span style="color:#859900;font-weight:bold">char</span>) <span style="color:#268bd2">c</span>)
+</span></span><span style="display:flex;"><span>            .<span style="color:#268bd2">collect</span>(<span style="color:#268bd2">Collectors</span>.<span style="color:#268bd2">groupingBy</span>(<span style="color:#268bd2">Function</span>.<span style="color:#268bd2">identity</span>(), <span style="color:#268bd2">Collectors</span>.<span style="color:#268bd2">counting</span>()));
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>(<span style="color:#2aa198">&#34;Duplicate characters in &#39;&#34;</span> + <span style="color:#268bd2">str</span> + <span style="color:#2aa198">&#34;&#39;:&#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">freq</span>.<span style="color:#268bd2">entrySet</span>().<span style="color:#268bd2">stream</span>()
+</span></span><span style="display:flex;"><span>            .<span style="color:#268bd2">filter</span>(<span style="color:#268bd2">entry</span> -&gt; <span style="color:#268bd2">entry</span>.<span style="color:#268bd2">getValue</span>() &gt; <span style="color:#268bd2">1</span>)
+</span></span><span style="display:flex;"><span>            .<span style="color:#268bd2">forEach</span>(<span style="color:#268bd2">entry</span> -&gt; <span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>(<span style="color:#2aa198">&#34;&#39;&#34;</span> + <span style="color:#268bd2">entry</span>.<span style="color:#268bd2">getKey</span>() + <span style="color:#2aa198">&#34;&#39; appears &#34;</span> + <span style="color:#268bd2">entry</span>.<span style="color:#268bd2">getValue</span>() + <span style="color:#2aa198">&#34; times.&#34;</span>));
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="find-reversal-of-string-word-by-word">Find reversal of string word by word.</h3>
+<p>Split the string by spaces, then build a new string by iterating through the words in reverse order.</p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900">class</span> <span style="color:#cb4b16">WordReverser</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#859900">static</span> <span style="color:#268bd2">String</span> <span style="color:#268bd2">reverseWords</span>(<span style="color:#268bd2">String</span> <span style="color:#268bd2">sentence</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">sentence</span> == <span style="color:#859900;font-weight:bold">null</span> || <span style="color:#268bd2">sentence</span>.<span style="color:#268bd2">trim</span>().<span style="color:#268bd2">isEmpty</span>()) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#268bd2">sentence</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">String</span>[] <span style="color:#268bd2">words</span> = <span style="color:#268bd2">sentence</span>.<span style="color:#268bd2">trim</span>().<span style="color:#268bd2">split</span>(<span style="color:#2aa198">&#34;\\s+&#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">StringBuilder</span> <span style="color:#268bd2">reversed</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">StringBuilder</span>();
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i</span> = <span style="color:#268bd2">words</span>.<span style="color:#268bd2">length</span> - <span style="color:#268bd2">1</span>; <span style="color:#268bd2">i</span> &gt;= <span style="color:#268bd2">0</span>; <span style="color:#268bd2">i</span>--) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">reversed</span>.<span style="color:#268bd2">append</span>(<span style="color:#268bd2">words</span>[<span style="color:#268bd2">i</span>]).<span style="color:#268bd2">append</span>(<span style="color:#2aa198">&#34; &#34;</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">reversed</span>.<span style="color:#268bd2">toString</span>().<span style="color:#268bd2">trim</span>();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#859900">static</span> <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">main</span>(<span style="color:#268bd2">String</span>[] <span style="color:#268bd2">args</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>(<span style="color:#268bd2">reverseWords</span>(<span style="color:#2aa198">&#34;Hello World from Java&#34;</span>)); 
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Output: Java from World Hello</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="selenium---given-this-url--and-asked-to-pass-numbers-to-zipcode-textbox-and-click-go-and-validate-the-result-thanks-message">Selenium - Given this url &ldquo;<a href="https://www.geico.com/%22">https://www.geico.com/&quot;</a> and asked to pass numbers to zipcode textbox and click go and validate the result &ldquo;thanks message&rdquo;</h3>
+<p>This is a practical scripting task.</p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">org.openqa.selenium.By</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">org.openqa.selenium.WebDriver</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">org.openqa.selenium.WebElement</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">org.openqa.selenium.chrome.ChromeDriver</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">org.openqa.selenium.support.ui.ExpectedConditions</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">org.openqa.selenium.support.ui.WebDriverWait</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">java.time.Duration</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900">class</span> <span style="color:#cb4b16">GeicoTest</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#859900">static</span> <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">main</span>(<span style="color:#268bd2">String</span>[] <span style="color:#268bd2">args</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Assume WebDriver is set up</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">WebDriver</span> <span style="color:#268bd2">driver</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">ChromeDriver</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">WebDriverWait</span> <span style="color:#268bd2">wait</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">WebDriverWait</span>(<span style="color:#268bd2">driver</span>, <span style="color:#268bd2">Duration</span>.<span style="color:#268bd2">ofSeconds</span>(<span style="color:#268bd2">10</span>));
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">try</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// 1. Navigate to the URL</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">driver</span>.<span style="color:#268bd2">get</span>(<span style="color:#2aa198">&#34;https://www.geico.com/&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// 2. Find the zipcode textbox and enter a value</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Inspecting the site shows the input has an id &#39;zip&#39;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">WebElement</span> <span style="color:#268bd2">zipCodeInput</span> = <span style="color:#268bd2">driver</span>.<span style="color:#268bd2">findElement</span>(<span style="color:#268bd2">By</span>.<span style="color:#268bd2">id</span>(<span style="color:#2aa198">&#34;zip&#34;</span>));
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">zipCodeInput</span>.<span style="color:#268bd2">sendKeys</span>(<span style="color:#2aa198">&#34;20878&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// 3. Find and click the &#39;Go&#39; button</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// The button is an &lt;input type=&#34;submit&#34;&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">WebElement</span> <span style="color:#268bd2">goButton</span> = <span style="color:#268bd2">driver</span>.<span style="color:#268bd2">findElement</span>(<span style="color:#268bd2">By</span>.<span style="color:#268bd2">cssSelector</span>(<span style="color:#2aa198">&#34;input[type=&#39;submit&#39;][value=&#39;Go&#39;]&#34;</span>));
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">goButton</span>.<span style="color:#268bd2">click</span>();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// 4. Validate the result</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Wait for the message to be visible and get its text</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Inspecting shows the message might be in an element with id &#39;DummiesLanding_lblMessage&#39; or similar.</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// THIS LOCATOR IS LIKELY TO CHANGE. It&#39;s for demonstration.</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">WebElement</span> <span style="color:#268bd2">thanksMessage</span> = <span style="color:#268bd2">wait</span>.<span style="color:#268bd2">until</span>(<span style="color:#268bd2">ExpectedConditions</span>.<span style="color:#268bd2">visibilityOfElementLocated</span>(<span style="color:#268bd2">By</span>.<span style="color:#268bd2">id</span>(<span style="color:#2aa198">&#34;DummiesLanding_lblMessage&#34;</span>)));
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">String</span> <span style="color:#268bd2">messageText</span> = <span style="color:#268bd2">thanksMessage</span>.<span style="color:#268bd2">getText</span>();
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">assert</span> <span style="color:#268bd2">messageText</span>.<span style="color:#268bd2">contains</span>(<span style="color:#2aa198">&#34;Thanks for choosing GEICO&#34;</span>); <span style="color:#93a1a1;font-style:italic">// Or whatever the real message is</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>(<span style="color:#2aa198">&#34;Test Passed! Validation message found: &#34;</span> + <span style="color:#268bd2">messageText</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">finally</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">driver</span>.<span style="color:#268bd2">quit</span>();
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><blockquote>
+<p><strong>What they&rsquo;re testing:</strong> Can you find locators? Can you use <code>sendKeys</code> and <code>click</code>? Most importantly, do you use an <strong>explicit wait</strong> before validating the result? The assertion will fail without a wait because the message doesn&rsquo;t appear instantly.</p>
+</blockquote>
+<h3 id="diff-between-assert-and-verify">diff between assert and verify</h3>
+<p>This is a classic distinction, especially in older testing tools.</p>
+<ul>
+<li>
+<p><strong>Assert (Hard Assert):</strong> When an assertion fails, it throws an <code>AssertionError</code>, the test is immediately <strong>stopped</strong>, and marked as failed. You use this for critical checkpoints. If the login fails, there&rsquo;s no point in continuing the test. <code>Assert.assertEquals(...)</code> in TestNG/JUnit is a hard assert.</p>
+</li>
+<li>
+<p><strong>Verify (Soft Assert):</strong> When a verification fails, it does <strong>not</strong> stop the test. The failure is logged, and the test continues to execute. At the end of the test, all collected failures are reported. You use this when you want to check several non-critical things on a page and want to see all the failures at once, not just the first one.</p>
+</li>
+</ul>
+<p><strong>In modern TestNG, you implement this with the <code>SoftAssert</code> class:</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">org.testng.asserts.SoftAssert</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">@Test</span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">testWithSoftAssert</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">SoftAssert</span> <span style="color:#268bd2">softAssert</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">SoftAssert</span>();
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">softAssert</span>.<span style="color:#268bd2">assertEquals</span>(<span style="color:#268bd2">driver</span>.<span style="color:#268bd2">getTitle</span>(), <span style="color:#2aa198">&#34;Expected Title&#34;</span>); <span style="color:#93a1a1;font-style:italic">// Fails, but continues</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">softAssert</span>.<span style="color:#268bd2">assertTrue</span>(<span style="color:#268bd2">driver</span>.<span style="color:#268bd2">findElement</span>(<span style="color:#268bd2">By</span>.<span style="color:#268bd2">id</span>(<span style="color:#2aa198">&#34;logo&#34;</span>)).<span style="color:#268bd2">isDisplayed</span>()); <span style="color:#93a1a1;font-style:italic">// Continues</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">softAssert</span>.<span style="color:#268bd2">assertEquals</span>(<span style="color:#268bd2">driver</span>.<span style="color:#268bd2">findElement</span>(<span style="color:#268bd2">By</span>.<span style="color:#268bd2">id</span>(<span style="color:#2aa198">&#34;header&#34;</span>)).<span style="color:#268bd2">getText</span>(), <span style="color:#2aa198">&#34;Wrong Text&#34;</span>); <span style="color:#93a1a1;font-style:italic">// Fails, but continues</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// CRITICAL: This line gathers all failures and fails the test if any were found.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">softAssert</span>.<span style="color:#268bd2">assertAll</span>(); 
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="explain-about-locators-in-selenium">Explain about locators in selenium.</h3>
+<p>Locators are the strategies Selenium uses to find elements on a web page. There are 8 types:</p>
+<ol>
+<li><code>id</code>: Best choice. Should be unique and stable.</li>
+<li><code>name</code>: Good choice. Often used for form elements.</li>
+<li><code>className</code>: Can be useful, but often not unique. Be careful with compound classes (<code>class=&quot;btn btn-primary&quot;</code>).</li>
+<li><code>tagName</code>: For finding elements by their HTML tag (e.g., <code>&lt;a&gt;</code>, <code>&lt;h1&gt;</code>). Usually returns many elements.</li>
+<li><code>linkText</code>: Finds a link (<code>&lt;a&gt;</code>) by its exact visible text.</li>
+<li><code>partialLinkText</code>: Finds a link by a partial match of its visible text.</li>
+<li><code>cssSelector</code>: Powerful and fast. Can select elements based on <code>id</code>, <code>class</code>, attributes, and relationships. Often preferred over XPath for performance.</li>
+<li><code>xpath</code>: Most powerful and flexible, but can be slower. Can traverse the DOM in any direction (up, down, sideways), which CSS cannot. Essential for finding elements without stable attributes.</li>
+</ol>
+<h3 id="diff-between-explicit-and-implicit-wait">diff between explicit and implicit wait.</h3>
+<ul>
+<li><strong>Implicit Wait:</strong> A global setting on the <code>WebDriver</code> instance. Tells the driver to poll the DOM for a set amount of time if an element is not immediately available. <strong>It&rsquo;s a bad practice</strong> because it&rsquo;s imprecise and hides timing issues.</li>
+<li><strong>Explicit Wait:</strong> The correct approach. You use the <code>WebDriverWait</code> class to wait for a <em>specific, expected condition</em> to be true before proceeding. It&rsquo;s targeted, reliable, and makes test failures easier to diagnose.</li>
+</ul>
+<h3 id="what-are-types-of-testing">what are types of testing?</h3>
+<p>This is a broad question. Structure the answer from high-level to low-level.</p>
+<ul>
+<li><strong>Functional Testing:</strong> Verifying what the system does.
+<ul>
+<li><code>Unit Testing</code>: Testing individual methods or classes in isolation.</li>
+<li><code>Integration Testing</code>: Testing how multiple components or services work together.</li>
+<li><code>System Testing</code>: Testing the complete, integrated system against its requirements.</li>
+<li><code>Acceptance Testing (UAT)</code>: Formal testing to determine if the system satisfies its business requirements.</li>
+</ul>
+</li>
+<li><strong>Non-Functional Testing:</strong> Verifying <em>how well</em> the system works.
+<ul>
+<li><code>Performance Testing</code>: Testing for speed, scalability, and stability under load (Load, Stress, Soak testing).</li>
+<li><code>Security Testing</code>: Testing for vulnerabilities.</li>
+<li><code>Usability Testing</code>: Testing how user-friendly the application is.</li>
+<li><code>Compatibility Testing</code>: Testing across different browsers, OSes, and devices.</li>
+</ul>
+</li>
+</ul>
+<h3 id="what-is-method-overloading-and-overriding">what is method overloading and overriding?</h3>
+<ul>
+<li><strong>Overloading:</strong> Same method name, different parameter list (type or number of arguments). Resolved at compile time.</li>
+<li><strong>Overriding:</strong> A subclass provides a specific implementation for a method that is already defined in its parent class. Same method signature. Resolved at runtime using dynamic polymorphism.</li>
+</ul>
+<h3 id="how-do-you-upload-a-file-in-selenium">How do you upload a file in selenium?</h3>
+<p>You do <strong>not</strong> click the &ldquo;Upload&rdquo; or &ldquo;Browse&rdquo; button. That opens an OS-native file dialog, which Selenium cannot control.</p>
+<p>Instead, you use <code>sendKeys()</code> on the file input element itself. The element is usually an <code>&lt;input type=&quot;file&quot;&gt;</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">java.io.File</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">uploadFile</span>(<span style="color:#268bd2">WebDriver</span> <span style="color:#268bd2">driver</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// 1. Find the &lt;input type=&#34;file&#34;&gt; element. It might be hidden.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">WebElement</span> <span style="color:#268bd2">fileInput</span> = <span style="color:#268bd2">driver</span>.<span style="color:#268bd2">findElement</span>(<span style="color:#268bd2">By</span>.<span style="color:#268bd2">cssSelector</span>(<span style="color:#2aa198">&#34;input[type=&#39;file&#39;]&#34;</span>));
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// 2. Get the absolute path to your file.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">String</span> <span style="color:#268bd2">filePath</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">File</span>(<span style="color:#2aa198">&#34;src/test/resources/my-file-to-upload.txt&#34;</span>).<span style="color:#268bd2">getAbsolutePath</span>();
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// 3. Use sendKeys() to &#34;type&#34; the file path into the input element.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">fileInput</span>.<span style="color:#268bd2">sendKeys</span>(<span style="color:#268bd2">filePath</span>);
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// 4. Click the submit button for the form.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">driver</span>.<span style="color:#268bd2">findElement</span>(<span style="color:#268bd2">By</span>.<span style="color:#268bd2">id</span>(<span style="color:#2aa198">&#34;submit-upload&#34;</span>)).<span style="color:#268bd2">click</span>();
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="how-do-you-create-a-defect-in-jira-tool">How do you create a defect in jira tool?</h3>
+<p>This is a process question.</p>
+<ol>
+<li>Log in to Jira.</li>
+<li>Navigate to the correct project.</li>
+<li>Click the &ldquo;Create&rdquo; button.</li>
+<li>In the &ldquo;Create Issue&rdquo; dialog, select the Issue Type as &ldquo;Bug&rdquo;.</li>
+<li>Fill out the fields with high-quality information:
+<ul>
+<li><strong>Summary/Title:</strong> A clear, concise title (e.g., &ldquo;Login fails with 500 error for users with special characters in password&rdquo;).</li>
+<li><strong>Component/s:</strong> The part of the application that is affected.</li>
+<li><strong>Description:</strong> Provide detailed, unambiguous steps to reproduce the bug. Include the <strong>Expected Result</strong> vs. the <strong>Actual Result</strong>.</li>
+<li><strong>Environment:</strong> Specify the browser, OS, and application version.</li>
+<li><strong>Attachments:</strong> Add screenshots, video recordings, and relevant log files.</li>
+<li><strong>Priority/Severity:</strong> Assign a severity and suggest a priority.</li>
+</ul>
+</li>
+<li>Click &ldquo;Create&rdquo;.</li>
+</ol>
+<h3 id="experience-on-rest-api">Experience on Rest API</h3>
+<p>&ldquo;Yes, I have strong experience testing REST APIs. I use REST-assured in Java to build automated test suites that cover our API&rsquo;s functionality. My tests validate status codes, response times, headers, and JSON response bodies using JSONPath assertions. I also work with Postman for manual and exploratory API testing.&rdquo;</p>
+<h3 id="explain-about-apiresponsecodes">Explain about API response codes</h3>
+<ul>
+<li><strong><code>1xx</code> Informational:</strong> Request received, continuing process. (Rarely seen).</li>
+<li><strong><code>2xx</code> Success:</strong> The action was successfully received, understood, and accepted. (<code>200 OK</code>, <code>201 Created</code>).</li>
+<li><strong><code>3xx</code> Redirection:</strong> Further action needs to be taken to complete the request. (<code>301 Moved Permanently</code>).</li>
+<li><strong><code>4xx</code> Client Error:</strong> The request contains bad syntax or cannot be fulfilled. The client messed up. (<code>400 Bad Request</code>, <code>401 Unauthorized</code>, <code>404 Not Found</code>).</li>
+<li><strong><code>5xx</code> Server Error:</strong> The server failed to fulfill an apparently valid request. The server messed up. (<code>500 Internal Server Error</code>, <code>503 Service Unavailable</code>).</li>
+</ul>
+
+    </div>
+</article>
+
+<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
+    
+    <span></span>
+    
+    
+    <a href="//localhost:1315/12_company_based_questions/photon/" class="nav-btn">Up</a>
+
+    
+    <span></span>
+    
+</div>
+
+    </main>
+
+    <footer class="footer">
+        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
+    </footer>
+</body>
+</html>
