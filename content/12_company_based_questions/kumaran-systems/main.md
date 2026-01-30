@@ -23,7 +23,7 @@ draft: false
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### 1. Roles and Responsibilities
 Standard. Describe your day-to-day as an SDET/QA Automation Engineer, including framework development, test scripting (UI/API), CI/CD integration, bug reporting, and team collaboration.

@@ -17,7 +17,7 @@ Count the word greater than 5 and reverse only that output: make the erutuf you 
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### 1. Input= giggling remove duplicate and print unique value alone
 This means finding the unique characters in a string and printing them. A `LinkedHashSet` is ideal as it preserves insertion order while ensuring uniqueness.

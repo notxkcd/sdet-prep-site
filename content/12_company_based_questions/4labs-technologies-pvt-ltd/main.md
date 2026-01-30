@@ -23,7 +23,7 @@ Screenshot
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### Self intro
 Standard. Keep it brief and focused on your professional experience and relevant skills.

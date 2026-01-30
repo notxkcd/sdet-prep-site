@@ -23,7 +23,7 @@ Expleo L1
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### 1. Introduce yourself
 Standard opener. Keep it concise, professional, and focus on your automation experience, tech stack, and achievements.

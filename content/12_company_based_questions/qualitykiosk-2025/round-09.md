@@ -26,7 +26,7 @@ draft: false
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### 1. Introduce your self
 Standard opener. Keep it concise, professional, and focus on your relevant experience (automation skills, tech stack, achievements).

@@ -19,7 +19,7 @@ Hexaware L1 Question:
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### 1. Cucumber Farmwork Explanation
 This is likely a typo for "Cucumber Framework Explanation".

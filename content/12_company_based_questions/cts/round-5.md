@@ -20,7 +20,7 @@ CTS L1 virtual:
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### 1. Tell me about yourself, previous projects and roles and responsibilities.
 Standard opener. Structure your answer:

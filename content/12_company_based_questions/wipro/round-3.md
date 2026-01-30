@@ -20,7 +20,7 @@ Wipro level 1
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### 1. Write a program/explain me the concept on how to remove duplicate in a long list of integers
 The most efficient and idiomatic way in Java is to use a `Set`.

@@ -21,7 +21,7 @@ draft: false
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### 1. Difference between product backlog and sprint backlog.
 -   **Product Backlog:** This is the master list of everything that might be needed in the product. It contains all features, requirements, enhancements, and fixes. It's owned and prioritized by the **Product Owner**. It's a living document for the entire lifecycle of the project.

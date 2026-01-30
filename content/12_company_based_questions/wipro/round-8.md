@@ -35,7 +35,7 @@ Level 2
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### Coding Test
 

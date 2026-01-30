@@ -19,7 +19,7 @@ draft: false
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### 1) take xpath
 This is a practical question. The interviewer wants you to demonstrate how to write a good XPath for a given element. It's often followed by them pointing to an element on a shared screen.

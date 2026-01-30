@@ -40,7 +40,7 @@ Hexaware:
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### 1) Explain your project
 
@@ -479,7 +479,7 @@ ROUND 2:
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### Round 1
 
@@ -638,7 +638,7 @@ Hexaware technologies interview questions:
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### 1) Given date format: 03-06-1995 and output should be in this format: 03/06/1995. Write a java program for it.
 

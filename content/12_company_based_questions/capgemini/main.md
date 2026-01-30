@@ -33,7 +33,7 @@ inheritance
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### Self intro
 
@@ -469,7 +469,7 @@ Swap the nos
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### Framework
 
@@ -1000,7 +1000,7 @@ String s3 =  new String("HELLO"):
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 > Many of these are repeats. See previous answers for details.
 

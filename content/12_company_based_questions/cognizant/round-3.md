@@ -32,7 +32,7 @@ Which which obj creation is correct for over riding above class
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### 1) program for descending order
 This usually refers to sorting an array or list in descending order.

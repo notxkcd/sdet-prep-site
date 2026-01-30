@@ -22,7 +22,7 @@ draft: false
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### 1. Tell me about your?
 Standard opener. Focus on professional experience, automation skills, tech stack, and a key achievement.

@@ -39,7 +39,7 @@ Round : 3 HR rounds ( General Discussion about the project, place, CTC discussio
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### Round 1: Test case writing for a Payment done via scanner option
 

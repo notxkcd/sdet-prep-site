@@ -18,7 +18,7 @@ draft: false
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### 1. How to handle dynamic element which is changing for each page?
 "Dynamic elements are a common challenge in UI automation. You handle them by using locators that rely on attributes or relationships that are **stable**, rather than those that change.

@@ -21,7 +21,7 @@ Parallel and cross browser testing
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### Tell about your self
 Standard opener. Focus on your professional experience, automation skills, tech stack, and a key achievement.

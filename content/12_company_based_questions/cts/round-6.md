@@ -37,7 +37,7 @@ Syntex for select class
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### 1) Explain waits concepts
 Waits are crucial for handling synchronization issues in Selenium due to the asynchronous nature of web applications.

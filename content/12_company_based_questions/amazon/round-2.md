@@ -34,7 +34,7 @@ Amazon Level 2:
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### Amazon Level 1
 

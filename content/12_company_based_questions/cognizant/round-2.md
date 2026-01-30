@@ -23,7 +23,7 @@ Cognizant:
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### 1. Self introduction
 Standard opener. Keep it concise, professional, and highlight your most relevant skills and experiences for the role.

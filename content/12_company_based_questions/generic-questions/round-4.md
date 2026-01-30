@@ -24,7 +24,7 @@ Xpath
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### Explain about your project and experience
 Standard opener. Be concise and structured.

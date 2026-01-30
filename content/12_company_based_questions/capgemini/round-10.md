@@ -39,7 +39,7 @@ obj.show();
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### 1. Explain yourself
 Standard opener. Keep it concise, professional, and focus on your relevant experience (automation skills, tech stack, achievements).

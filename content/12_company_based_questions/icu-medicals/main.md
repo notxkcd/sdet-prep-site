@@ -28,7 +28,7 @@ One line answers are not accepted .The panel is expecting to explain with exampl
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### Programs
 

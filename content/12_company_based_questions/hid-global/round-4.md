@@ -44,7 +44,7 @@ HID Global Interview Questions:
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### >> Java Questions
 

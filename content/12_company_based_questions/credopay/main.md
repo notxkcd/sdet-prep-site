@@ -26,7 +26,7 @@ draft: false
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### 1) Self Intro
 Standard opener. Keep it professional, concise, and focused on your relevant experience and aspirations.

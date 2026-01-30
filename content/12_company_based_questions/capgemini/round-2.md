@@ -32,7 +32,7 @@ Explain jenkin pipeline
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### Tell about yourself
 Standard. Role, responsibilities, tech stack, key achievement.

@@ -21,7 +21,7 @@ draft: false
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### 1. Tell About Your Self
 Standard opener. Keep it concise, professional, and highlight your relevant experience and skills.

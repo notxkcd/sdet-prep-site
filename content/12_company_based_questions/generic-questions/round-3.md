@@ -28,7 +28,7 @@ draft: false
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### How you will be using the constructor in selenium
 Constructors are fundamental to the Page Object Model (POM).

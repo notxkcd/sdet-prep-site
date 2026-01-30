@@ -33,7 +33,7 @@ Explain Response codes.
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 > Many of these questions are standard framework and process questions. See previous files for more detailed answers on some topics.
 

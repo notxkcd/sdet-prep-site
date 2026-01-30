@@ -20,7 +20,7 @@ Wipro
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### 1) Explain STLC and SDLC
 -   **SDLC (Software Development Life Cycle):** The entire process of developing software, from initial requirements gathering to deployment and maintenance. It's the broader development framework.

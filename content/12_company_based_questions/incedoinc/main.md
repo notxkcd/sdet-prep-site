@@ -29,7 +29,7 @@ INCEDOINC:
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### 1. Oops concepts fully.
 The four pillars, explained with a test automation focus.

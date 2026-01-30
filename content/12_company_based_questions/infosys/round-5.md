@@ -23,7 +23,7 @@ Work flow of jira and what it is used for
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### Tell about Yourself
 Standard opener. Focus on professional experience, automation skills, tech stack, and a key achievement.

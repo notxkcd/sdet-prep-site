@@ -47,7 +47,7 @@ draft: false
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### 1. Please introduce yourself.
 Standard opener. Focus on professional experience, automation skills, tech stack, and achievements relevant to an SDET role.

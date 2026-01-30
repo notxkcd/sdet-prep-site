@@ -99,7 +99,7 @@ class Output {
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### Selenium:
 

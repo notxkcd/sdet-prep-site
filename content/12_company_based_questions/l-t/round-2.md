@@ -28,7 +28,7 @@ L & T
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### 1. If you are given an angular application create a framework?
 "For an Angular application, I would build a Java-based test automation framework, much like for any other web application, but with some specific considerations:

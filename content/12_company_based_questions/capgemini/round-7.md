@@ -25,7 +25,7 @@ Programs - character occurrence
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### Programs - character occurrence
 This means counting the frequency of each character in a string.

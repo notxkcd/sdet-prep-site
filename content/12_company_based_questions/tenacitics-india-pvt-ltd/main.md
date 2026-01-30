@@ -37,7 +37,7 @@ draft: false
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### -Self Intoduction
 Standard. Keep it professional, concise, and focused on relevant experience and aspirations.

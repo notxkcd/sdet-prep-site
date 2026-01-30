@@ -38,7 +38,7 @@ How many ways to remove special characters in a string
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### Tell abt ur self
 Standard opener. Keep it concise, professional, and focused on your automation experience.

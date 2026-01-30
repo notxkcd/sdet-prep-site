@@ -35,7 +35,7 @@ Synechron Interview Questions:- shared by azhar trainer:
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### 1: Explain about your framework?
 

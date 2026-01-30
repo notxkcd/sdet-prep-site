@@ -37,7 +37,7 @@ tim	tom
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### 1. Tell about yourself more about professional experience and more about exposure towards automation.
 This is a standard "self-intro" with an emphasis. Focus on your automation journey.

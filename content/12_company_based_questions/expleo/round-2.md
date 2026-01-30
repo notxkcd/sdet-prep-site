@@ -34,7 +34,7 @@ draft: false
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### 1. Cucumber framework explanation
 Cucumber is a BDD (Behavior-Driven Development) framework that enables collaboration between technical and non-technical stakeholders. It uses Gherkin (`Given/When/Then`) to describe application behavior in `.feature` files, which are then linked to executable code (step definitions) written in Java. This makes tests readable, serves as living documentation, and drives development based on shared understanding.

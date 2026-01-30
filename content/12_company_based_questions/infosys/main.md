@@ -44,7 +44,7 @@ Give example.
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### 1. Self Introduction
 
@@ -379,7 +379,7 @@ Print How many character, Numbers and Special Character.
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### 1. Self Intro
 

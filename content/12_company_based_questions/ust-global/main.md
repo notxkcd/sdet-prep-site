@@ -51,7 +51,7 @@ draft: false
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### 1) Self Intro
 Standard. Role, tech stack, achievements, what you're looking for.

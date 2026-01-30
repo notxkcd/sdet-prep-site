@@ -28,7 +28,7 @@ draft: false
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### Tell about yourself
 Standard opener. Keep it concise, technical, and focused on your skills, and accomplishments.

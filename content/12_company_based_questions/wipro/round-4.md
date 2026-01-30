@@ -28,7 +28,7 @@ Resultset  gives that 3rd table values. Write program for this.
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### 1. How to integration testing perform in your project.what approach you used
 "We perform integration testing primarily at the **API layer**.

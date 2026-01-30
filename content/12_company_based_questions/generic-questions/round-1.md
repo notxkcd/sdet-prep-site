@@ -34,7 +34,7 @@ Response code
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### Tell me about yourself
 Standard opening. Provide a concise, professional summary:

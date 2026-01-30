@@ -22,7 +22,7 @@ Round 1:
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### 1. What is databinding?
 Databinding is a technique that establishes a connection between the application UI (user interface) and the data it displays. When the data changes, the UI automatically updates, and vice-versa.

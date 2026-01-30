@@ -33,7 +33,7 @@ Frames
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### Reverse the string
 The most efficient and readable way is using `StringBuilder`.

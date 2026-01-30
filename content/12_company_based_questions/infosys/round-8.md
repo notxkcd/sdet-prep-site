@@ -29,7 +29,7 @@ draft: false
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### 1. Self Introduction
 Standard. Keep it concise, professional, and focus on your relevant experience (automation skills, tech stack, achievements).

@@ -41,7 +41,7 @@ Round 2:
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### Round 1
 
@@ -401,7 +401,7 @@ It's the `Actions` class. It's used for emulating complex user gestures that are
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### 1. Tell about yourself and your roles and responsibities.
 Standard.
@@ -622,7 +622,7 @@ Shows you have a career plan.
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### Tell About yourself ?
 Standard.
@@ -918,7 +918,7 @@ Cognizant
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 > Many of these are repeats. See previous answers for details.
 
@@ -994,7 +994,7 @@ String s3 =  new String("HELLO"):
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 > This section has some great, tricky questions mixed with repeats.
 

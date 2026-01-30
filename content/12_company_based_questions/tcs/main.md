@@ -31,7 +31,7 @@ draft: false
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### 1. What is oops?
 Object-Oriented Programming. It's a programming paradigm based on the concept of "objects", which can contain data (fields or attributes) and code (procedures or methods). The main principles are Encapsulation, Abstraction, Inheritance, and Polymorphism.

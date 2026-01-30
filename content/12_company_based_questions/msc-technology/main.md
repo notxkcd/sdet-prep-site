@@ -21,7 +21,7 @@ As a QA how will you test the file upload options
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### Explain implicit wait and explicit wait
 -   **Implicit Wait (Bad Practice):** A global setting on the `WebDriver` that tells it to poll the DOM for a certain amount of time when trying to find an element. It masks timing issues, slows tests, and can only wait for element presence.

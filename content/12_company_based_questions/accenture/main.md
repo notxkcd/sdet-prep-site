@@ -38,7 +38,7 @@ check the above syntax and tell whether correct or incorrect?
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### 1. tell about urself
 Standard opener. Focus on professional experience, skills, and accomplishments.

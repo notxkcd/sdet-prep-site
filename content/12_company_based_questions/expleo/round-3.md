@@ -38,7 +38,7 @@ What is the purpose of reusable class
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### Tell me about yourself
 Standard opener. Keep it concise, professional, and highlight your relevant experience and skills.

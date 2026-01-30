@@ -10,7 +10,10 @@
 </header>
 
 <div class="content" style="margin-top: 2rem;">
-    {{ .Content }}
+    {{ $content := .Content }}
+    {{ $content = replace $content "[ ]" "<input type=\"checkbox\" disabled>" }}
+    {{ $content = replace $content "[x]" "<input type=\"checkbox\" checked disabled>" }}
+    {{ $content | safeHTML }}
 </div>
 
 {{/* Only show the automatic list if this is a Taxonomy page (Tags) or the main Posts section */}}

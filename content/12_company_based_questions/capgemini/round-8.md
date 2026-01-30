@@ -40,7 +40,7 @@ Input int[] salary={20,40,50,10,31}
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### 1. Tell me about yourself, years of experience,your framework
 Standard opener. Focus on professional experience, specific years in automation, and briefly outline your framework (e.g., "Java, TestNG, Selenium, POM, Data-driven, Jenkins for CI/CD").

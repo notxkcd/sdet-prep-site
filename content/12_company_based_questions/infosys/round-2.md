@@ -24,7 +24,7 @@ Achievement of the last two project
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### Tell abt ur self
 Standard. Keep it professional, concise, and focused on your automation experience.

@@ -27,7 +27,7 @@ defect leakage
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### write a program to reverse a string?
 The clean, modern way uses `StringBuilder`. Don't write a manual `for` loop unless they force you to.

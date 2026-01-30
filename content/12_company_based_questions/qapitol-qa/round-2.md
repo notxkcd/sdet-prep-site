@@ -18,7 +18,7 @@ Write a program the find count of palindrome strings in the given string and pri
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### What is chaining in API Testing ?
 API chaining refers to the process where the output (response) of one API request is used as the input (request) for a subsequent API request. This allows you to test complex workflows or business processes that involve multiple API calls.

@@ -24,7 +24,7 @@ L1 Virtual Discussion, 30 mins
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### 1. Introduce about yourself and your project
 Standard opener. Give a concise summary of your professional experience, the project you worked on (domain, what it does), and your specific role and contributions as an automation engineer.

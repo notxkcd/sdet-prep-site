@@ -22,7 +22,7 @@ CTS round 1
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### 1. Tell about your self
 Standard opener. Focus on your professional experience, automation skills, tech stack (Java, Selenium, etc.), and a key achievement.

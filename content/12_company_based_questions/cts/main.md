@@ -44,7 +44,7 @@ draft: false
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### 1. You have test scenarios in the feature file already now you are going to write new additional scenarios, how do you generate snippets alone for new?
 When you add new Gherkin steps to a `.feature` file that don't have corresponding step definitions (Java methods), Cucumber will tell you.

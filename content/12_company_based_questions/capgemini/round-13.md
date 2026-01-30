@@ -31,7 +31,7 @@ int b=4;  occurrence of b in a , count and index number.
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### 1. self introduction
 Standard opener. Keep it concise, professional, and focus on your relevant experience (automation skills, tech stack, achievements).

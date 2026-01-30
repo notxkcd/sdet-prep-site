@@ -219,3 +219,87 @@ th {
 tr:nth-child(even) {
     background-color: rgba(0,0,0,0.02);
 }
+
+
+
+/* Pronounced Hand-Drawn Checkbox Styling */
+ul li input[type="checkbox"], 
+table td input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 1.2rem;
+    height: 1.2rem;
+    border: 2.5px solid var(--accent);
+    /* Organic, wobbly border radius */
+    border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+    background-color: var(--bg);
+    cursor: pointer;
+    vertical-align: middle;
+    position: relative;
+    display: inline-block;
+    transition: all 0.05s ease;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.05);
+}
+
+ul li input[type="checkbox"]:checked,
+table td input[type="checkbox"]:checked {
+    background-color: var(--accent);
+    transform: rotate(1deg) scale(1.05);
+}
+
+ul li input[type="checkbox"]:checked::after,
+table td input[type="checkbox"]:checked::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -55%);
+    color: var(--bg); /* Solarized cream check on dark green bg */
+    font-size: 0.9rem;
+    font-weight: 900;
+}
+
+ul li input[type="checkbox"]:hover,
+table td input[type="checkbox"]:hover {
+    border-color: var(--accent);
+    background-color: rgba(45, 90, 39, 0.05);
+    transform: translateY(-1px);
+}
+
+/* Fix for centered columns in the table */
+table th:nth-child(1), table td:nth-child(1),
+table th:nth-child(3), table td:nth-child(3) {
+    text-align: center;
+    width: 60px;
+}
+
+/* Styling for Raw HTML Checkboxes */
+input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 1.2rem;
+    height: 1.2rem;
+    border: 2.5px solid var(--accent);
+    border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+    background-color: var(--bg);
+    cursor: pointer;
+    vertical-align: middle;
+    position: relative;
+    display: inline-block;
+    transition: all 0.05s ease;
+}
+
+input[type="checkbox"]:checked {
+    background-color: var(--accent);
+}
+
+input[type="checkbox"]:checked::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -55%);
+    color: var(--bg);
+    font-size: 0.9rem;
+    font-weight: 900;
+}

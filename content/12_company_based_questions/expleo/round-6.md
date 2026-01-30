@@ -24,7 +24,7 @@ Which xpath will be more efficient
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### Explain your resume or cv
 Standard "walk me through your resume" question. Be prepared to highlight your most relevant experience, skills, and accomplishments that align with the job description. Focus on impact and results.

@@ -27,7 +27,7 @@ Lt Mindtree level 1 interview questions :
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### 1)Write a code for post requesting for sending body and header
 Using REST-assured.

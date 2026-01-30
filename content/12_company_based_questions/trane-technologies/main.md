@@ -20,7 +20,7 @@ output: program test
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### 1. What are all the capabilities you will set for mobile automation write the codes
 This refers to **Desired Capabilities** in Appium. These are a set of key-value pairs sent to the Appium server to tell it what kind of automation session you want to start (e.g., what device, platform, and application to run).

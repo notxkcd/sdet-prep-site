@@ -24,7 +24,7 @@ Any bug in your project what you do
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### Tell about your self
 Standard opener. Keep it concise, professional, and focus on your relevant experience (automation skills, tech stack, achievements).

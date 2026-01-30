@@ -20,7 +20,7 @@ draft: false
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### 1. Tell me Yourself and projects
 Standard opener. Give a concise summary of your professional background, focusing on your automation experience, the types of projects you've worked on (e.g., e-commerce, fintech), and the technologies you're proficient in (Java, Selenium, REST-assured, etc.).

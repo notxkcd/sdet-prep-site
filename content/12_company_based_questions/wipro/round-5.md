@@ -27,7 +27,7 @@ Wipro Interview - First Round -F2F - 40 to 45 mins:
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### 1. Introduce yourself
 Standard opener. Focus on professional experience, automation skills, tech stack, and a key achievement.

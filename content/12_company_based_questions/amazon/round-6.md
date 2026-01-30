@@ -19,7 +19,7 @@ draft: false
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### 1. Write Feature File
 This means writing a Gherkin feature file. Let's use a simple login example.

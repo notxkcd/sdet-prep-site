@@ -41,7 +41,7 @@ draft: false
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### 1. Introduce yourself with your current projects
 Standard.

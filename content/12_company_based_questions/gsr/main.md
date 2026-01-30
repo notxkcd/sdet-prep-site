@@ -36,7 +36,7 @@ draft: false
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### 1. how to round decimal without using any methods
 This is a trick question. You can't meaningfully round a decimal *value* without using a method or a cast. The interviewer might be looking for a simple type-casting solution to truncate the decimal.

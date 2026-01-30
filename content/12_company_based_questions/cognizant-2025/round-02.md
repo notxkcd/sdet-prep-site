@@ -26,7 +26,7 @@ Cognizant (Java Selenium) Interview Questions conducted on 15/02/25 (1Hour):
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### 1. Introduce yourself and current project handling
 Standard intro. Briefly describe your role (SDET), your experience with Java/Selenium/etc., and then give a concise overview of your current project: what the application does (domain), your specific responsibilities (e.g., "I handle the end-to-end automation for the payment and checkout modules"), and the tech stack you use.

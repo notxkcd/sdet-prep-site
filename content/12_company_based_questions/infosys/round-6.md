@@ -31,7 +31,7 @@ draft: false
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### 1. Tell me about yourself , Roles and Responsibilities and overall experience
 Standard opener. Focus on professional experience, specific years in automation, and outline your roles and responsibilities.

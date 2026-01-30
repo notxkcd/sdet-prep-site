@@ -28,7 +28,7 @@ Questions:
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### 1. Difference between smoke and Integration Test
 -   **Smoke Test:** A quick, high-level test of the most critical functionalities to ensure the build is stable enough for further testing. It's a "go/no-go" decision.

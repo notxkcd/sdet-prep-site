@@ -23,7 +23,7 @@ draft: false
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### 1. Explain your frame work
 "I developed and maintained a hybrid, data-driven automation framework using Java.

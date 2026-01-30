@@ -26,7 +26,7 @@ Expalin BDD framework
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### Framework used in API
 "For API automation, we use **REST-assured** as our primary framework with Java. It provides a fluent, BDD-style API (`given().when().then()`) for making HTTP requests and validating responses. We integrate it with TestNG for test execution and reporting."

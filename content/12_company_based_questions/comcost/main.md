@@ -26,7 +26,7 @@ ComCost L1 and L2 rounds interview questions:
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### 1) How you will select the stories
 This refers to the **Sprint Planning** meeting in Scrum.

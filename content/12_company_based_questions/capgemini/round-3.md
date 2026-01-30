@@ -27,7 +27,7 @@ draft: false
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### 1. Tell about yourselves
 Standard opening. Be concise, professional, and focus on your relevant experience and skills.

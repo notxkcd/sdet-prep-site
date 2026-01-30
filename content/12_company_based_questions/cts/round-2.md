@@ -39,7 +39,7 @@ CTS L1 and L2 interview Questions:
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### 1) different ways to open url
 In Selenium, there are two primary ways:

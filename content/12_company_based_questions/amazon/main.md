@@ -37,7 +37,7 @@ All scenario based questions bro
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### 1. Tell about yourself
 Standard.

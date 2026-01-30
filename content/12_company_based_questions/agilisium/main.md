@@ -26,7 +26,7 @@ Agilisium Interview questions:
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### What are all the manual testing you done?
 This question checks the breadth of your testing knowledge. A good SDET is still a good tester first.

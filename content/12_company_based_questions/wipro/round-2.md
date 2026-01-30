@@ -24,7 +24,7 @@ Wipro interview questions :
 
 ---
 
-## Answers (No-BS Java QA / SDET Explanations)
+## Answers
 
 ### 1. Tell me about your self
 Standard opener. Keep it concise, professional, and focus on your relevant experience (automation skills, tech stack, achievements).
