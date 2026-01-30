@@ -8,7 +8,7 @@ draft: false
 
 ## Original Questions (UNTOUCHED)
 
-Trane technologies 
+- Trane technologies
 ------------------
 1. What are all the capabilities you will set for mobile automation write the codes
 2. Did you use soap or rest assured 

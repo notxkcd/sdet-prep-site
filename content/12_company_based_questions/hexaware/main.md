@@ -459,7 +459,7 @@ These are markers that tell TestNG how to treat a Java method.
 
 ## Original Questions (UNTOUCHED)
 
-Hexaware technology
+- Hexaware technology
 Round 1:
 1) tell me about yourself
 2) explain about project
@@ -628,12 +628,12 @@ Again, "best" is a trap. BDD is a tool, and it's not always the right one.
 
 ## Original Questions (UNTOUCHED)
 
-Hexaware technologies interview questions: 
-1) Given date format: 03-06-1995 and output should be in this format: 03/06/1995. Write a java program for it. 
-2) X = "A", Y=" B". Retrieve these two values using hashmap. 
-3) what is epic? 
-4) what are all the challenges you faced in last automation project? 
-5) How to derive at story points? 
+Hexaware technologies interview questions:
+1) Given date format: 03-06-1995 and output should be in this format: 03/06/1995. Write a java program for it.
+2) X = "A", Y=" B". Retrieve these two values using hashmap.
+3) what is epic?
+4) what are all the challenges you faced in last automation project?
+5) How to derive at story points?
 6) what is glue in cucumber?
 
 ---

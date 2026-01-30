@@ -8,7 +8,7 @@ draft: false
 
 ## Original Questions (UNTOUCHED)
 
-CGI Interview Questions:- 45 Minutes
+- CGI Interview Questions:- 45 Minutes
 -----------------------
 1. Tell me Yourself and projects 
 2. Reverse string program

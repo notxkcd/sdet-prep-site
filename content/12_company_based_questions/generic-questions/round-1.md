@@ -8,29 +8,29 @@ draft: false
 
 ## Original Questions (UNTOUCHED)
 
-Tell me about yourself
-Explain the projects you have done 
-What are the types of locators?
-Which locator you have used most?
-What is super head of class?
+- Tell me about yourself
+- Explain the projects you have done
+- What are the types of locators?
+- Which locator you have used most?
+- What is super head of class?
 Explain OOPS
-Explain Inheritance
-Explain Method Overloading
-Explain static and dynamic polymorphism
-How to handle notification popup
-Difference between quite and close
-Selenium components
-Black box testing
-Agile methodology -  daily activities
-What is the defect rejection ratio and defect leakage ratio?
+- Explain Inheritance
+- Explain Method Overloading
+- Explain static and dynamic polymorphism
+- How to handle notification popup
+- Difference between quite and close
+- Selenium components
+- Black box testing
+- Agile methodology -  daily activities
+- What is the defect rejection ratio and defect leakage ratio?
 Response code
-Variables in postman
-Do we use authentication token for all variables in postman
-Difference between SQL and MySQL
-Explain Epic, task and story point
-Difference between TestNG and Junit
-What are the types to navigate
-Scenario question: you have started working in Agile method, in between you need some requirements what will you do ?
+- Variables in postman
+- Do we use authentication token for all variables in postman
+- Difference between SQL and MySQL
+- Explain Epic, task and story point
+- Difference between TestNG and Junit
+- What are the types to navigate
+- Scenario question: you have started working in Agile method, in between you need some requirements what will you do ?
 
 ---
 

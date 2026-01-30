@@ -8,7 +8,7 @@ draft: false
 
 ## Original Questions (UNTOUCHED)
 
-QualityKiosk -Kochin (28/09/2025)
+- QualityKiosk -Kochin (28/09/2025)
 ---------------------------------
 1.	Introduce your self
 2.	Do you work in cucumber framework? Please explain your framework?

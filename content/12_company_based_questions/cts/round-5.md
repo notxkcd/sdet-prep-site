@@ -9,7 +9,7 @@ draft: false
 ## Original Questions (UNTOUCHED)
 
 CTS L1 virtual:
-===============
+- ===============
 1. Tell me about yourself, previous projects and roles and responsibilities.
 2. Tell me 5 Interface in Selenium
 3. common exceptions you have faced in selenium

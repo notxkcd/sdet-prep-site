@@ -8,7 +8,7 @@ draft: false
 
 ## Original Questions (UNTOUCHED)
 
-Cognizant 
+Cognizant
 Round 1:
 1) tell me about yourself
 2) find max and min numbers in array
@@ -21,7 +21,7 @@ Round 1:
 9) difference between scenario and scenario outline
 10) annotations order in testNG
 11) how will u rerun a failed test case again and again in testNg
-12) how will execution be performed in cucumber framework 
+12) how will execution be performed in cucumber framework
 13) write syntax for runner class
 14) what is monochrome
 15) How will u handle stale element exception
@@ -351,7 +351,7 @@ It's the `Actions` class. It's used for emulating complex user gestures that are
 
 ## Original Questions (UNTOUCHED)
 
-Cognizant round1
+- Cognizant round1
 
 1. Tell about yourself and your roles and responsibities.
 2. how will you validate the dropdown options in selenium. write code
@@ -361,29 +361,29 @@ Cognizant round1
 6. how will set up a pipeline in Jenkins
 7. If a developer say the bug you raised is not actually a bug. what will you do?
 8. write the order of output for below.
-@Test (priority= 0)
-public void test(){
-System.out.println("a")
+- @Test (priority= 0)
+- public void test(){
+- System.out.println("a")
 }
 
-@Test (priority= 1)
-public void test1(){
-System.out.println("b")
+- @Test (priority= 1)
+- public void test1(){
+- System.out.println("b")
 }
 
-@Test 
-public void test2(){
-System.out.println("c")
+@Test
+- public void test2(){
+- System.out.println("c")
 }
 
 @BeforeClass
-public void test2(){
-System.out.println("BeforeClass")
+- public void test2(){
+- System.out.println("BeforeClass")
 }
 
 @BeforeTest
-public void test2(){
-System.out.println("BeforeTest")
+- public void test2(){
+- System.out.println("BeforeTest")
 }
 
 9. Have you worked in API?
@@ -594,31 +594,31 @@ Shows you have a career plan.
 
 ## Original Questions (UNTOUCHED)
 
-Cognizant Interview Questions
-Tell About yourself ?
-What is Abstraction ?
-Can abstract method be final?
-Can abstract class contains final method ?
-What is immutable in java?
-Write program to find repeated characters present in a word "ASSASINATION";
-Write program to print if these two strings patterns are same - program should return "CAT" and "ACT" as same pattern as both contains same letters. 
-Write program to find 3rd maximum element in given array.
-What is serialization in java?
-Explain about collection framework?
-Does map allows null values?
-how do you initialize HashMap ? 
-Difference between explicit & fluent wait?
-when do you use explicit wait?
-what kind of exceptions you have faced in your project?
-what is stale element exception and how do you handle stale element exception?
-what is absolute and relative xpath?
-disadvantages of selenium?
-Write code to read data from table of specific row in a given webpage  
-Explain about the cucumber framework?
-how do you pass data in cucumber?
-what are tags used in runner class?
-Write a feature file and step definition to login ecommerce website and add 5 products to cart & validate checkout page - 
-pass values of five products using datatable and add to cart ?
+- Cognizant Interview Questions
+- Tell About yourself ?
+- What is Abstraction ?
+- Can abstract method be final?
+- Can abstract class contains final method ?
+- What is immutable in java?
+- Write program to find repeated characters present in a word "ASSASINATION";
+- Write program to print if these two strings patterns are same - program should return "CAT" and "ACT" as same pattern as both contains same letters.
+- Write program to find 3rd maximum element in given array.
+- What is serialization in java?
+- Explain about collection framework?
+- Does map allows null values?
+- how do you initialize HashMap ?
+- Difference between explicit & fluent wait?
+- when do you use explicit wait?
+- what kind of exceptions you have faced in your project?
+- what is stale element exception and how do you handle stale element exception?
+- what is absolute and relative xpath?
+- disadvantages of selenium?
+- Write code to read data from table of specific row in a given webpage
+- Explain about the cucumber framework?
+- how do you pass data in cucumber?
+- what are tags used in runner class?
+- Write a feature file and step definition to login ecommerce website and add 5 products to cart & validate checkout page -
+- pass values of five products using datatable and add to cart ?
 
 ---
 
@@ -889,7 +889,7 @@ public class CartSteps {
 
 Cognizant
 1 Tell me about your self
-2 What is oops and explain using your project 
+2 What is oops and explain using your project
 3 Diff between list and set
 4 What is Jenkins
 5 What is git.
@@ -913,7 +913,7 @@ Cognizant
 23what are the interface used in selenium
 24 how you handle frames
 25 what is API
-26 Http methods 
+26 Http methods
 27 diff between put and post
 
 ---
@@ -955,42 +955,42 @@ Cognizant
 ## Original Questions (UNTOUCHED)
 
 Capgemini
-Tell me about your project
-Explain feature file using in your current project
-Reverse 2 number without temporary variable
+- Tell me about your project
+- Explain feature file using in your current project
+- Reverse 2 number without temporary variable
 Int x = 10;
 Int y = 20:
-Reverse 2 string without temporary variable
+- Reverse 2 string without temporary variable
 String a = "India":
-String b = "uk": 
-String str = "123456" Convert into integer. 
-What is wrapper class and what are they? 
-String is a class Or datatype? 
-What will be the output of the following?System.out.println (2+3+"HELLO");
-Difference between array and arraylist? 
-Difference between list and set? 
-How to find duplicates in 2 arrays
-int [] a = [1, 2,3,4,5,6];
-int [] b = [8, 1,3,9,4];
-Difference between
-Webdriver driver = new ChromeDriver() ;
+String b = "uk":
+- String str = "123456" Convert into integer.
+- What is wrapper class and what are they?
+- String is a class Or datatype?
+- What will be the output of the following?System.out.println (2+3+"HELLO");
+- Difference between array and arraylist?
+- Difference between list and set?
+- How to find duplicates in 2 arrays
+- int [] a = [1, 2,3,4,5,6];
+- int [] b = [8, 1,3,9,4];
+- Difference between
+- Webdriver driver = new ChromeDriver() ;
 ChromeDriver driver = new ChromeDriver() :
-How to interact with hidden elements in Selenium Webdriver?
-What is action class and syntax? 
-How to use private variable in another class
-What is API ? 
-What is Mobile Testing? 
-What to do if Two Objects have same Xpath?
-What is the alternative for "click" in Selenium? 
-How many PR approval you'll get in your project?
-What will be the answer if we compare 
+- How to interact with hidden elements in Selenium Webdriver?
+- What is action class and syntax?
+- How to use private variable in another class
+- What is API ?
+- What is Mobile Testing?
+- What to do if Two Objects have same Xpath?
+- What is the alternative for "click" in Selenium?
+- How many PR approval you'll get in your project?
+- What will be the answer if we compare
 s1==s2
 s1==s3
-  String s1 = "HELLO";
-        String s2 = "HELLO";
-        String s3 =  new String("HELLO"):
-System.out.println(s1==s2) //true
-        System.out.println(s1 == s3); // false
+- String s1 = "HELLO";
+- String s2 = "HELLO";
+String s3 =  new String("HELLO"):
+- System.out.println(s1==s2) //true
+- System.out.println(s1 == s3); // false
 
 ---
 

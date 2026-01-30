@@ -8,7 +8,7 @@ draft: false
 
 ## Original Questions (UNTOUCHED)
 
-Amazon 2nd Round
+- Amazon 2nd Round
 ------------------
 
 1.Write Feature File

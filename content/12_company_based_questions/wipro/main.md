@@ -8,7 +8,7 @@ draft: false
 
 ## Original Questions (UNTOUCHED)
 
-WIPRO Interview Questions (Bangalore)
+- WIPRO Interview Questions (Bangalore)
 -------------------------------------
 1. Self Inro
 2. Framework Explanation?

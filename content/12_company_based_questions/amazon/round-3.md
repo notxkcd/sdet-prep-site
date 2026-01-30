@@ -8,7 +8,7 @@ draft: false
 
 ## Original Questions (UNTOUCHED)
 
-Amazon 1st Round 
+- Amazon 1st Round
 ----------------
 1.Tell About your Self?
 2.Explain Ploymorphism Concept?

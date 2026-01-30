@@ -10,20 +10,20 @@ draft: false
 
 L & T Infotech Interview Question :
 
-write a program to reverse a string?
-bug and defect difference
+- write a program to reverse a string?
+- bug and defect difference
 oops concept
 bdd framework
-explain cucumber framework
-scenario outline
+- explain cucumber framework
+- scenario outline
 defect leakage
-write all git commands for uploading a file
-regression testing and retesting
-boundary value analysis and equivalence partitioning
-what is rtm?
-what to do in test plan?
-what is in feature file?
-framework explanation
+- write all git commands for uploading a file
+- regression testing and retesting
+- boundary value analysis and equivalence partitioning
+- what is rtm?
+- what to do in test plan?
+- what is in feature file?
+- framework explanation
 
 ---
 

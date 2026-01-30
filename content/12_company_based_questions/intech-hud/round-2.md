@@ -8,7 +8,7 @@ draft: false
 
 ## Original Questions (UNTOUCHED)
 
-Intech hud Virtual Interview:-
+- Intech hud Virtual Interview:-
 -----------------------------
 1.Tell About Your Self 
 2.Difference Manual testcase and Test Scenario 

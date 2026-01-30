@@ -8,7 +8,7 @@ draft: false
 
 ## Original Questions (UNTOUCHED)
 
-MSC technology interview questions
+- MSC technology interview questions
 -----------------------------------
 Explain implicit wait and explicit  wait
 Exceptions that you have on explicit wait

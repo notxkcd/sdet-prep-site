@@ -9,27 +9,27 @@ draft: false
 ## Original Questions (UNTOUCHED)
 
 Colan Infotech Interview Questions:
-Round 1: 
-Reverse the string
-Browser launch code
-About Get and navigate 
+Round 1:
+- Reverse the string
+- Browser launch code
+- About Get and navigate
 Git steps
-Bdd explaination
-Introduce urself
-Find element and find elements difference
-Explain Oops concept 
+- Bdd explaination
+- Introduce urself
+- Find element and find elements difference
+- Explain Oops concept
 Alert handle
-Frame handle 
-Get window handle 
+Frame handle
+- Get window handle
 Select class
-Broken links handle
-Select class alternate 
-Hard and soft assert
-Return type of find element and find elements.
+- Broken links handle
+- Select class alternate
+- Hard and soft assert
+- Return type of find element and find elements.
 Frames
-Difference between manual and automation responsibilities
-Critical bug identify in your project
-Reason for change
+- Difference between manual and automation responsibilities
+- Critical bug identify in your project
+- Reason for change
 
 ---
 

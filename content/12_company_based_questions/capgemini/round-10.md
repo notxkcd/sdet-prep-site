@@ -8,33 +8,33 @@ draft: false
 
 ## Original Questions (UNTOUCHED)
 
-Capgemini Interview Questions- First Round - F2F - Virtual- 35 mins
-1. Explain yourself 
-2. What are the OOPS concept you are using in your project 
+- Capgemini Interview Questions- First Round - F2F - Virtual- 35 mins
+1. Explain yourself
+2. What are the OOPS concept you are using in your project
 3. Polymorphism (Overload and Override)
-4. Collection and it types explanation 
-5. What is the output for given program 
+4. Collection and it types explanation
+5. What is the output for given program
 class Parent{
 void show(){
-system.out.println("parent method");
+- system.out.println("parent method");
 }
 }
-class Child extends Parent{
-private void show(){
-system.out.println("child method");
+- class Child extends Parent{
+- private void show(){
+- system.out.println("child method");
 }
 }
-public class Main{
-public static void main(String[]args){
-Parent obj= new Child();
+- public class Main{
+- public static void main(String[]args){
+- Parent obj= new Child();
 obj.show();
 }
-6. Explain the cucumber framework 
-7. Whats is scenario, scenario outline and Background Keywords 
-8. What are the types of waits and explain where it is used 
-9. Difference between the severity and priority 
+6. Explain the cucumber framework
+7. Whats is scenario, scenario outline and Background Keywords
+8. What are the types of waits and explain where it is used
+9. Difference between the severity and priority
 10. Difference between string buffer and string builder
-11. Explain your latest project ownership 
+11. Explain your latest project ownership
 12. Java program - Reverse string
 
 ---

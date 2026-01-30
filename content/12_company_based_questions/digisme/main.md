@@ -8,7 +8,7 @@ draft: false
 
 ## Original Questions (UNTOUCHED)
 
-Company Name : DigiSME
+- Company Name : DigiSME
 -----------------------
 Round : 1  Test case writing for a Payment done via scanner option(Given Time duration 5 Mins)
 

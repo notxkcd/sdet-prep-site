@@ -8,7 +8,7 @@ draft: false
 
 ## Original Questions (UNTOUCHED)
 
-Capgemini 
+Capgemini
 ---------
 Programs - character occurrence
 1. Windows handling 

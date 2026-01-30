@@ -10,24 +10,24 @@ draft: false
 
 First round:
 Self intro
-wap String reverse and swap
-wap even and odd nos in given array
-stateelement exception'
-Four exception and explanation
-Garbage collector
-Cucumber explain
-Hooks 
-diff bw hooks and background
+- wap String reverse and swap
+- wap even and odd nos in given array
+- stateelement exception'
+- Four exception and explanation
+- Garbage collector
+- Cucumber explain
+Hooks
+- diff bw hooks and background
 Jira tool
 RTM
-diff bw smoke sanity and regression
-diff bw adhoc and explaoratory test
-collection list and set
-why xml interact with html
+- diff bw smoke sanity and regression
+- diff bw adhoc and explaoratory test
+- collection list and set
+- why xml interact with html
 iframe
 dropdown
 action Class
-example for abstract and interface encapsulation
+- example for abstract and interface encapsulation
 inheritance
 
 
@@ -444,27 +444,27 @@ This is four concepts in one. Let's break them down from a QA framework design p
 Second round:
 Self intro
 Framework
-Abstract use on my project
-Interface use in my project
-Method overload and override in my project
+- Abstract use on my project
+- Interface use in my project
+- Method overload and override in my project
 Waits
-Which wait used in my project and syntex
-Iframe and method syntax
+- Which wait used in my project and syntex
+- Iframe and method syntax
 Window handle
-Diff between list and set
-Final, finally, finalize
-Access modifiers 
-Wap for a count in given string
-Wap for word count in gvn sentence
+- Diff between list and set
+- Final, finally, finalize
+- Access modifiers
+- Wap for a count in given string
+- Wap for word count in gvn sentence
 Swap the nos
-Remove duplicate in array
-Updates for current and previous project
-Test case for ATM
-Priority and severity
-Synyax for oops and array and literal and non literal string
-Report generation
-cucumber plugins
-xpath related ancestor, following, siblings, parent
+- Remove duplicate in array
+- Updates for current and previous project
+- Test case for ATM
+- Priority and severity
+- Synyax for oops and array and literal and non literal string
+- Report generation
+- cucumber plugins
+- xpath related ancestor, following, siblings, parent
 
 
 ---
@@ -961,42 +961,42 @@ driver.findElement(By.xpath("//label[text()='Username']/following-sibling::input
 ## Original Questions (UNTOUCHED)
 
 Capgemini L2:
-Tell me about your project
-Explain feature file using in your current project
-Reverse 2 number without temporary variable
+- Tell me about your project
+- Explain feature file using in your current project
+- Reverse 2 number without temporary variable
 Int x = 10;
 Int y = 20:
-Reverse 2 string without temporary variable
+- Reverse 2 string without temporary variable
 String a = "India":
-String b = "uk": 
-String str = "123456" Convert into integer. 
-What is wrapper class and what are they? 
-String is a class Or datatype? 
-What will be the output of the following?System.out.println (2+3+"HELLO");
-Difference between array and arraylist?
-Difference between list and set?
-How to find duplicates in 2 arrays
-int [] a = [1, 2,3,4,5,6];
-int [] b = [8, 1,3,9,4];
-Difference between
-Webdriver driver = new ChromeDriver() ;
+String b = "uk":
+- String str = "123456" Convert into integer.
+- What is wrapper class and what are they?
+- String is a class Or datatype?
+- What will be the output of the following?System.out.println (2+3+"HELLO");
+- Difference between array and arraylist?
+- Difference between list and set?
+- How to find duplicates in 2 arrays
+- int [] a = [1, 2,3,4,5,6];
+- int [] b = [8, 1,3,9,4];
+- Difference between
+- Webdriver driver = new ChromeDriver() ;
 ChromeDriver driver = new ChromeDriver() :
-How to interact with hidden elements in Selenium Webdriver?
-What is action class and syntax?
-How to use private variable in another class
-What is API ? 
-What is Mobile Testing? 
-What to do if Two Objects have same Xpath?
-What is the alternative for "click" in Selenium?
-How many PR approval you'll get in your project?
-What will be the answer if we compare 
+- How to interact with hidden elements in Selenium Webdriver?
+- What is action class and syntax?
+- How to use private variable in another class
+- What is API ?
+- What is Mobile Testing?
+- What to do if Two Objects have same Xpath?
+- What is the alternative for "click" in Selenium?
+- How many PR approval you'll get in your project?
+- What will be the answer if we compare
 s1==s2
 s1==s3
-  String s1 = "HELLO";
-        String s2 = "HELLO";
-        String s3 =  new String("HELLO"):
-System.out.println(s1==s2) //true
-        System.out.println(s1 == s3); // false
+- String s1 = "HELLO";
+- String s2 = "HELLO";
+String s3 =  new String("HELLO"):
+- System.out.println(s1==s2) //true
+- System.out.println(s1 == s3); // false
 
 ---
 

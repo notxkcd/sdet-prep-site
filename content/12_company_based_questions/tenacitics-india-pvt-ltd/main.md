@@ -8,21 +8,26 @@ draft: false
 
 ## Original Questions (UNTOUCHED)
 
-Tenacitics India Pvt Ltd Technical Round -
+- Tenacitics India Pvt Ltd Technical Round -
 
 -Self Intoduction
 -About your Project
 -currently you have use github?
 -why github is version control?
 -What is HashMap?
--What is Unit testing? Explain your example?
--What is smoke Testing? Explain your example?
--What is Regression Testing? Explain your example?
+-What is Unit testing?
+- Explain your example?
+-What is smoke Testing?
+- Explain your example?
+-What is Regression Testing?
+- Explain your example?
 -What is adhoc testing?
 -Difference between Scenario and Test Case?
 -Write Cucumber Project Folder Structure in Notepad?
--Difference between method overloading and method overriding? Write Syntax in the Notepad.
--Postman API methods? Why PUT method is used?
+-Difference between method overloading and method overriding?
+- Write Syntax in the Notepad.
+-Postman API methods?
+- Why PUT method is used?
 -What is TestNG and What are the annotations in TestNG?
 -Use of @BeforeSuite annotation?
 

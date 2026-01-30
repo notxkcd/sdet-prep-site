@@ -8,7 +8,7 @@ draft: false
 
 ## Original Questions (UNTOUCHED)
 
-L1 in Infosys(virtual) one of the interviewer Asha
+- L1 in Infosys(virtual) one of the interviewer Asha
 -------------------------------------------------
 1. Tell me about yourself , Roles and Responsibilities and overall experience
 2. go to google.com and in search box type "infosys technologies" out of  the options everytime we need to choose Nth option, write a code for this 

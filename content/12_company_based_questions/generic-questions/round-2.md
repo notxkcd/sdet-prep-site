@@ -8,19 +8,19 @@ draft: false
 
 ## Original Questions (UNTOUCHED)
 
-Explain about your project and experience
-Explain about your project stracture
-Roles and Responsibilities
-what framework using in your project explain it detail
-Test data's where you maintain
-oops concepts  where you  applied
-what challenge you faced
-are you in part of regression or script writing
-Explain-Jenkins-Continuous integration
-method overloading
+- Explain about your project and experience
+- Explain about your project stracture
+- Roles and Responsibilities
+- what framework using in your project explain it detail
+- Test data's where you maintain
+- oops concepts  where you  applied
+- what challenge you faced
+- are you in part of regression or script writing
+- Explain-Jenkins-Continuous integration
+- method overloading
 reverse string
-Xpath 
-Testng order of execution
+Xpath
+- Testng order of execution
 
 ---
 

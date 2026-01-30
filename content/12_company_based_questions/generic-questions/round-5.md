@@ -10,7 +10,7 @@ draft: false
 
 1.Explain your frame work
 2.Write a test case for one component that you had used in your project
-3.How will you pass data to webelements 
+3.How will you pass data to webelements
 4.Explain webelement methods
 5.write the syntax for the extent report
 6. How many locators that you had used in your project

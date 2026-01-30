@@ -15,10 +15,10 @@ BNP Paribas interview Questions:
 4. Were you using background feature and for what purpose in your framework?
 5. How do you pass test data?
 6. Scenario: assume we have given below data in feature file and write code in step definition to pass all the 4 test data in UI using data table.
-	jack	sparrow
-	tim	tom
+jack	sparrow
+tim	tom
 7. Scenario: Given a table structure and asked to retrieve all the table data. write code to return only unique value ignoring the duplicates in the table data.
-<table id="table">
+- <table id="table">
 <tr>
 <td>jack</td>
 <td>jack</td>
@@ -29,7 +29,7 @@ BNP Paribas interview Questions:
 </tr>
 </table>
 
-8. Given amazon link and asked to write xpath for a particular element which in under ul\li tag. 
+8. Given amazon link and asked to write xpath for a particular element which in under ul\li tag.
 9. which version of selenium you use in your project?
 10. what are the major changes from version 3 to version 4
 11. How do you perform regression in your project?

@@ -8,7 +8,7 @@ draft: false
 
 ## Original Questions (UNTOUCHED)
 
-Wipro 
+Wipro
 ------
 1)Explain STLC and SDLC
 2)Explain about regression and how you pick the testcases and tell the example for this

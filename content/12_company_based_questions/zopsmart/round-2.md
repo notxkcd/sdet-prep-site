@@ -8,8 +8,8 @@ draft: false
 
 ## Original Questions (UNTOUCHED)
 
-Company Name : Zopsmart
-Mode of Interview : Virtual
+- Company Name : Zopsmart
+- Mode of Interview : Virtual
 Questions:
 -----------
 1.Difference between smoke and Integration Test

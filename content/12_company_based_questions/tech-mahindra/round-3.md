@@ -8,7 +8,7 @@ draft: false
 
 ## Original Questions (UNTOUCHED)
 
-Tech Mahindra level 1 interview 
+- Tech Mahindra level 1 interview
 -------------------------------
 1) tell about yourself 
 2) framework structure 

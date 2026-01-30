@@ -8,23 +8,23 @@ draft: false
 
 ## Original Questions (UNTOUCHED)
 
-Photon Interview Questions 
+- Photon Interview Questions
 
-Tell about yourself
-Diff between Junit and TestNG
-what are TestNG annotations?
-Find Duplicate Characters in string.
-Find reversal of string word by word.
-Selenium - Given this url "https://www.geico.com/" and asked to pass numbers to zipcode textbox and click go and validate the result "thanks message" 
-diff between assert and verify
-Explain about locators in selenium.
-diff between explicit and implicit wait.
-what are types of testing?
-what is method overloading and overriding?
-How do you upload a file in selenium?
-How do you create a defect in jira tool?
-Experience on Rest API
-Explain about API response codes
+- Tell about yourself
+- Diff between Junit and TestNG
+- what are TestNG annotations?
+- Find Duplicate Characters in string.
+- Find reversal of string word by word.
+- Selenium - Given this url "https://www.geico.com/" and asked to pass numbers to zipcode textbox and click go and validate the result "thanks message"
+- diff between assert and verify
+- Explain about locators in selenium.
+- diff between explicit and implicit wait.
+- what are types of testing?
+- what is method overloading and overriding?
+- How do you upload a file in selenium?
+- How do you create a defect in jira tool?
+- Experience on Rest API
+- Explain about API response codes
 
 ---
 

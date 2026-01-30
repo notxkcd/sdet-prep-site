@@ -8,7 +8,7 @@ draft: false
 
 ## Original Questions (UNTOUCHED)
 
-Capgemini L1 face to face interview(programing)
+- Capgemini L1 face to face interview(programing)
 ---------------------------------------------
 1. Input= giggling remove duplicate and print unique value alone 
 2. Input = make the future you want 

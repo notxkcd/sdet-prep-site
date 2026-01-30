@@ -8,35 +8,39 @@ draft: false
 
 ## Original Questions (UNTOUCHED)
 
-Infosys Interview Questions
+- Infosys Interview Questions
 
 1. Self Introduction
 2. Explain oops concepts?
 3. What is Interface?
 4. What is the key word to implement child classes in Inheritance?
 5. Screen share:
-     *Reverse the String?
-    * Print the Vowels?
-    * Screenshot?
-    *Find the duplicate elements of                       
-      array?
+*Reverse the String?
+* Print the Vowels?
+* Screenshot?
+*Find the duplicate elements of
+- array?
 6. How to handle window handles?
 7. How to handle the popup or alerts?
 8. Exception handling?
 9. How to troubleshoot the exception?
 10. What is BDD?
 11. How do you handle version issues, what approach you will handle to resolve?
-12. What is Constructor? Why do we need a constructor for our project? Give example.
+12. What is Constructor?
+- Why do we need a constructor for our project?
+Give example.
 13. What is Ortho Response?
 14. 505, 200, 404, ?
 15. Diff bet final, finally and finalize in Java?
 16. Can we change the variable once it declare final?
 17. Is Final can be overridden?
 18. Multiple Inheritance?
-19. Collections ? Diff between list, set and map?
+19. Collections ?
+- Diff between list, set and map?
 20. What is 429 response code?
 21. How you validate the request methods in API?
-22. POM ? Page Factory?
+22. POM ?
+- Page Factory?
 
 ---
 
@@ -344,7 +348,7 @@ This question is a bit ambiguous. It could mean:
 
 ## Original Questions (UNTOUCHED)
 
-Infosys Interview Questions - (Round 1)
+- Infosys Interview Questions - (Round 1)
 -------------------------------------------
 
 1. Self Intro

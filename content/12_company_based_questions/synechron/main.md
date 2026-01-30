@@ -24,8 +24,10 @@ Synechron Interview Questions:- shared by azhar trainer:
 12: How to connect to the database?
 13: Exceptions in selenium?
 14: Suppose u have class and abstract class in class there is a user defined constructor and main method which one will get executed first?
-15: Primitives and Non Primitives data types in java? String is primitive or non primitive
-16: What is Hashmap ? Can we store objects in a hash map and how to retrieve them?
+15: Primitives and Non Primitives data types in java?
+- String is primitive or non primitive
+16: What is Hashmap ?
+- Can we store objects in a hash map and how to retrieve them?
 17: What is Jenkins?
 18: What is the use of Pom.xml?
 19:what is the use of testng.xml?

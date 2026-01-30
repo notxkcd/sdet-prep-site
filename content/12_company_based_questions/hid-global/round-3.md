@@ -8,7 +8,7 @@ draft: false
 
 ## Original Questions (UNTOUCHED)
 
-HID Level 2 - 1 hour 20 mins - Virtual
+- HID Level 2 - 1 hour 20 mins - Virtual
 ---------------------------------------
 1. Introduce yourself with your current projects 
 2. Java code strings and char Duplicates

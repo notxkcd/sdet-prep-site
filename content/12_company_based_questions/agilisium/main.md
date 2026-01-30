@@ -8,21 +8,21 @@ draft: false
 
 ## Original Questions (UNTOUCHED)
 
-Agilisium Interview questions: 
+Agilisium Interview questions:
 
-What are all the manual testing you done?
-Explain unit testing?
-Where will you main your test cases?
-What parameter you use for testing in postman?
-Given a URL and write the logic to link all the link given in the website?
-What is the repo you used in your project?
-How will you test using postman tool?
-When will you do retrospective?
-Day to day activities?
-About Agile?
-Do you have experience in SQL?
-Given a scenario based on the current project and asked if you missed some major criteria what will happen in this case?
-How will you handle git conflict?
+- What are all the manual testing you done?
+- Explain unit testing?
+- Where will you main your test cases?
+- What parameter you use for testing in postman?
+- Given a URL and write the logic to link all the link given in the website?
+- What is the repo you used in your project?
+- How will you test using postman tool?
+- When will you do retrospective?
+- Day to day activities?
+- About Agile?
+- Do you have experience in SQL?
+- Given a scenario based on the current project and asked if you missed some major criteria what will happen in this case?
+- How will you handle git conflict?
 
 ---
 

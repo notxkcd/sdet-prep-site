@@ -8,18 +8,18 @@ draft: false
 
 ## Original Questions (UNTOUCHED)
 
-Questions asked in 4Labs Technologies Pvt Ltd
+- Questions asked in 4Labs Technologies Pvt Ltd
 Self intro
 Xpath uses
-Assertion in selenium
+- Assertion in selenium
 Headerfile
 Screenshot
-How to hanlde window in selenium
-Mobile application
-moveToElement,doubleClick uses
-POM in selenium usage
-Selenium Grid usage
-Types of exception in selenium
+- How to hanlde window in selenium
+- Mobile application
+- moveToElement,doubleClick uses
+- POM in selenium usage
+- Selenium Grid usage
+- Types of exception in selenium
 
 ---
 

@@ -8,7 +8,7 @@ draft: false
 
 ## Original Questions (UNTOUCHED)
 
-Infosys - Virtual mode - interviewer Rajiv
+- Infosys - Virtual mode - interviewer Rajiv
 ----------------------
 1. Self Introduction
 2. Project - role

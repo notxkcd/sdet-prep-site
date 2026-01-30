@@ -8,23 +8,23 @@ draft: false
 
 ## Original Questions (UNTOUCHED)
 
-How you will be using the constructor in selenium
-What are the locators that is available in selenium
-Reverse the string
-Api status code
-What is the use of patch code in api
- What is the purpose of get in api
-What  post method will do  in api
-How you will handle the windows in selenium
-Explain the step defination in cucumber
-Write a code on selenium to launch the browser
-Explain this keyword
- Have you done estimatation on your project
- On cucumber where you will store the xpath
-On where you will be adding the dependencies in cucumber
-Navigations in TestNG
-How you will handle the dropdown in selenium
- Have you developed any frameworks
+- How you will be using the constructor in selenium
+- What are the locators that is available in selenium
+- Reverse the string
+- Api status code
+- What is the use of patch code in api
+- What is the purpose of get in api
+- What  post method will do  in api
+- How you will handle the windows in selenium
+- Explain the step defination in cucumber
+- Write a code on selenium to launch the browser
+- Explain this keyword
+- Have you done estimatation on your project
+- On cucumber where you will store the xpath
+- On where you will be adding the dependencies in cucumber
+- Navigations in TestNG
+- How you will handle the dropdown in selenium
+- Have you developed any frameworks
 
 ---
 

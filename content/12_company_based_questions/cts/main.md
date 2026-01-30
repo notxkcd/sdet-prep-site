@@ -8,12 +8,12 @@ draft: false
 
 ## Original Questions (UNTOUCHED)
 
-CTS interview questions:-
+- CTS interview questions:-
 1. You have test scenarios in the feature file already now you are going to write new additional scenarios,how do you generate snippets alone for new?
 2. Exception handling in Java
 3. Actions class
 4. Java executor for disabled elements
-5. SQL query - existing table retrieves the one column and  creates a temporary column but the folder has only one column 
+5. SQL query - existing table retrieves the one column and  creates a temporary column but the folder has only one column
 6.testng - annotation
 
 1. What is your roles and responsibilties
@@ -27,7 +27,7 @@ CTS interview questions:-
 9. What are important files in the cucumber
 10. Overall experience in IT
 11. Previous experience apart from IT
-12. In automation will you do manual testing anywhere 
+12. In automation will you do manual testing anywhere
 13. which tool used for CI/CD
 14. Explain about the jenkins and how do  you integrate your project in jenkins
 15. Which report you will get from jenkins
