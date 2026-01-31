@@ -32,14 +32,14 @@
     <header>
         <nav>
             <ul>
-                <li><a href="/">Index</a></li>
+                <li><a href="{{ .Site.BaseURL }}">Index</a></li>
                 {{ range .Site.Menus.main }}
                 <li><a href="{{ .URL }}">{{ .Name }}</a></li>
                 {{ end }}
             </ul>
         </nav>
         <div class="site-breadcrumb">
-            <a href="/">Home</a>
+            <a href="{{ .Site.BaseURL }}">Home</a>
             {{ range .Ancestors.Reverse }}
                 {{ if and .Title (ne .Title "Home") }}
                     <span>/</span> <a href="{{ .Permalink }}">{{ .Title }}</a>
