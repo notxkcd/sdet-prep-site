@@ -10,19 +10,19 @@ draft: false
 
 - Credopay Interview Questions
 
-1)Self Intro
-2)What is sprint retrospective meeting
-3) There are many frameworks but why your company prefer to use testng , cucumber in your projects
-4) Open an Amazon e-commerce site & search the results for mobiles in search textbox using selenium java
-5) Difference between SDLC & STLC
-6) What is bug life cycle
-7) What is smoke testing
-8) What is API testing
-9) Challenges faced in Automation project
-10) What are the git commands you use in your project
-11) What is dataprovider in testng
-12) Tell about integration testing
-13) Difference between navigate and get
+1. Self Intro?
+2. What is sprint retrospective meeting?
+3. There are many frameworks but why your company prefer to use testng, cucumber in your projects?
+4. Open an Amazon e-commerce site & search the results for mobiles in search textbox using selenium java?
+5. Difference between SDLC & STLC?
+6. What is bug life cycle?
+7. What is smoke testing?
+8. What is API testing?
+9. Challenges faced in Automation project?
+10. What are the git commands you use in your project?
+11. What is dataprovider in testng?
+12. Tell about integration testing?
+13. Difference between navigate and get?
 
 ---
 
