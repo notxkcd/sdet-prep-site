@@ -4,8 +4,11 @@ date: 2026-01-30
 draft: false
 ---
 
-# SDET Interview Mastery Dashboard - Based on my  \( \text{résumé} \) 
+# SDET Interview Mastery Dashboard 
 *Quick-reference guide for ADHD recall. Click the Module for the guide, or "Read My Script" for the answer.*
+
+
+## Questions based on my Résumé
 
 | Module | My Interview Script (Shahid's Voice) |
 | :--- | :--- |
@@ -20,17 +23,16 @@ draft: false
 | **[09. Project Deep Dive](09_project_deep_dive/)** | [**Read My Script**](09_project_deep_dive/my-script/) |
 | **[10. Study Materials](10_study_materials/)** | *External Resources* |
 | **[11. Interview Questions](11_interview_questions/)** | **Table-Indexed Q&A Library** |
-| **[12. Company Based Questions](12_company_based_questions/)** | **QA Dump** |
-| **[String Theory (Minimalist)](string-theory/)** | **Physics without the Bloat** |
-| **[KaTeX Font Gallery](katex-font-gallery/)** | **Math Typography Specimen** |
+
 
 ---
 
 
 A comprehensive repository of Java interview questions and coding tasks, meticulously organized by difficulty and paired with concise, memorable answers to streamline your technical preparation.
 
+|**[Java Question Bank](java-questions-bank/)**| **[Company Based Questions](12_company_based_questions/)**|
+|:---| :---|
 
-**[Java Question Bank](java-questions-bank/)**
 
 {{% center %}}
 {{% /center %}}
@@ -48,4 +50,9 @@ A comprehensive repository of Java interview questions and coding tasks, meticul
 
 ---
 
+
+| Blog | Showcase of this Blog  |
+| :--- | :--- |
+| **[String Theory (Minimalist)](string-theory/)** | **Physics without the Bloat** |
+| **[KaTeX Font Gallery](katex-font-gallery/)** | **Math Typography Specimen** |
 
