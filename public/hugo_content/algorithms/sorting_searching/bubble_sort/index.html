@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bubble Sort | SDET Interview Preparation Kit</title>
+    <link rel="stylesheet" href="//localhost:1313/css/style.css">
+    <link rel="stylesheet" href="//localhost:1313/css/terminal.css">
+    
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    
+    <link rel="stylesheet" href="//localhost:1313/lib/katex/katex.min.css">
+    <script defer src="//localhost:1313/lib/katex/katex.min.js"></script>
+    <script defer src="//localhost:1313/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</head>
+<body id="theme-body">
+    <button id="theme-toggle">Switch Theme</button>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="//localhost:1313/">Index</a></li>
+                
+            </ul>
+        </nav>
+        <div class="site-breadcrumb">
+            <a href="//localhost:1313/">Home</a>
+            
+                
+                    <span>/</span> <a href="//localhost:1313/">SDET Interview Dashboard</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/hugo_content/">42 Algorithms &amp; 42 Data Structures</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/hugo_content/algorithms/">Algorithms</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/hugo_content/algorithms/sorting_searching/">Sorting Searching</a>
+                
+            
+            
+                <span>/</span> Bubble Sort
+            
+        </div>
+    </header>
+
+    <main>
+        
+<article>
+    <div class="category-title" style="margin-bottom: 0.5rem;">Sorting Searching</div>
+    <h1>Bubble Sort</h1>
+    <div class="content-body" style="margin-top: 2rem;">
+        <p><code>Bubble Sort</code> is a simple sorting algorithm that repeatedly steps through the list, compares adjacent elements, and swaps them if they are in the wrong order. The pass through the list is repeated until the list is sorted. The algorithm gets its name because smaller elements &ldquo;bubble&rdquo; to the top of the list.</p>
+<p>While simple to understand and implement, <code>Bubble Sort</code> is too slow for most practical applications, with a time complexity of <code>O(N^2)</code>.</p>
+<h2 id="how-it-works">How it Works</h2>
+<h3 id="how-it-works-expanded">How it Works (Expanded)</h3>
+<p><code>Bubble Sort</code> works by repeatedly comparing adjacent elements and swapping them if they are out of order. After the first pass, the largest element will have &ldquo;bubbled up&rdquo; to the very end of the array. After the second pass, the second-largest element will be in its correct position, and so on.</p>
+<hr>
+<p>Example: Sort [5, 1, 4, 2, 8]</p>
+<p>Pass 1:
+( 5 1 4 2 8 ) -&gt; ( 1 5 4 2 8 ) Swap 5 and 1
+( 1 5 4 2 8 ) -&gt; ( 1 4 5 2 8 ) Swap 5 and 4
+( 1 4 5 2 8 ) -&gt; ( 1 4 2 5 8 ) Swap 5 and 2
+( 1 4 2 5 8 ) -&gt; ( 1 4 2 5 8 ) No swap (8 &gt; 5)
+Result after Pass 1: [1, 4, 2, 5, 8] (Largest element, 8, is at the end)</p>
+<p>Pass 2:
+( 1 4 2 5 8 ) -&gt; ( 1 4 2 5 8 ) No swap
+( 1 4 2 5 8 ) -&gt; ( 1 2 4 5 8 ) Swap 4 and 2
+( 1 2 4 5 8 ) -&gt; ( 1 2 4 5 8 ) No swap
+Result after Pass 2: [1, 2, 4, 5, 8] (Second largest, 5, is in place)</p>
+<p>&hellip; and so on, until no swaps are needed in a full pass.</p>
+<h2 id="implementation">Implementation</h2>
+<h3 id="python">Python</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#859900">def</span> <span style="color:#268bd2">bubble_sort</span>(<span style="color:#268bd2">arr</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">n</span> = <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">arr</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> <span style="color:#859900">in</span> <span style="color:#cb4b16">range</span>(<span style="color:#268bd2">n</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># Last i elements are already in place</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">swapped</span> = <span style="color:#859900;font-weight:bold">False</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> <span style="color:#268bd2">j</span> <span style="color:#859900">in</span> <span style="color:#cb4b16">range</span>(<span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#268bd2">n</span> - <span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>):
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic"># Traverse the array from 0 to n-i-1</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic"># Swap if the element found is greater than the next element</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">j</span>] &gt; <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">j</span> + <span style="color:#2aa198;font-weight:bold">1</span>]:
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">j</span>], <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">j</span> + <span style="color:#2aa198;font-weight:bold">1</span>] = <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">j</span> + <span style="color:#2aa198;font-weight:bold">1</span>], <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">j</span>]
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">swapped</span> = <span style="color:#859900;font-weight:bold">True</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># If no two elements were swapped by inner loop, then break</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#859900">not</span> <span style="color:#268bd2">swapped</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">break</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">arr</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># Example</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># my_arr = [5, 1, 4, 2, 8]</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(bubble_sort(my_arr)) # [1, 2, 4, 5, 8]</span>
+</span></span></code></pre></div><h3 id="javascript">Javascript</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#859900">function</span> <span style="color:#268bd2">bubbleSort</span>(<span style="color:#268bd2">arr</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">const</span> <span style="color:#268bd2">n</span> = <span style="color:#268bd2">arr</span>.<span style="color:#268bd2">length</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">n</span>; <span style="color:#268bd2">i</span>++) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Last i elements are already in place
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">let</span> <span style="color:#268bd2">swapped</span> = <span style="color:#859900;font-weight:bold">false</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">j</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">j</span> &lt; <span style="color:#268bd2">n</span> - <span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#268bd2">j</span>++) {
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Traverse the array from 0 to n-i-1
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#93a1a1;font-style:italic">// Swap if the element found is greater than the next element
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">arr</span>[<span style="color:#268bd2">j</span>] &gt; <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">j</span> + <span style="color:#2aa198;font-weight:bold">1</span>]) {
+</span></span><span style="display:flex;"><span>                [<span style="color:#268bd2">arr</span>[<span style="color:#268bd2">j</span>], <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">j</span> + <span style="color:#2aa198;font-weight:bold">1</span>]] = [<span style="color:#268bd2">arr</span>[<span style="color:#268bd2">j</span> + <span style="color:#2aa198;font-weight:bold">1</span>], <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">j</span>]]; <span style="color:#93a1a1;font-style:italic">// ES6 destructuring swap
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#268bd2">swapped</span> = <span style="color:#859900;font-weight:bold">true</span>;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// If no two elements were swapped by inner loop, then break
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">if</span> (!<span style="color:#268bd2">swapped</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">break</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">arr</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const myArr = [5, 1, 4, 2, 8];
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(bubbleSort(myArr)); // [1, 2, 4, 5, 8]
+</span></span></span></code></pre></div><h3 id="typescript">Typescript</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-typescript" data-lang="typescript"><span style="display:flex;"><span><span style="color:#859900">function</span> <span style="color:#268bd2">bubbleSortTS</span>(<span style="color:#268bd2">arr</span>: <span style="color:#859900;font-weight:bold">number</span>[]): <span style="color:#859900;font-weight:bold">number</span>[] {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">const</span> <span style="color:#268bd2">n</span> = <span style="color:#268bd2">arr</span>.<span style="color:#268bd2">length</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">n</span>; <span style="color:#268bd2">i</span>++) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Last i elements are already in place
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">let</span> <span style="color:#268bd2">swapped</span> = <span style="color:#859900;font-weight:bold">false</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">j</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">j</span> &lt; <span style="color:#268bd2">n</span> - <span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#268bd2">j</span>++) {
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Traverse the array from 0 to n-i-1
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#93a1a1;font-style:italic">// Swap if the element found is greater than the next element
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">arr</span>[<span style="color:#268bd2">j</span>] &gt; <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">j</span> + <span style="color:#2aa198;font-weight:bold">1</span>]) {
+</span></span><span style="display:flex;"><span>                [<span style="color:#268bd2">arr</span>[<span style="color:#268bd2">j</span>], <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">j</span> + <span style="color:#2aa198;font-weight:bold">1</span>]] = [<span style="color:#268bd2">arr</span>[<span style="color:#268bd2">j</span> + <span style="color:#2aa198;font-weight:bold">1</span>], <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">j</span>]];
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">swapped</span> = <span style="color:#859900;font-weight:bold">true</span>;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// If no two elements were swapped by inner loop, then break
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">if</span> (!<span style="color:#268bd2">swapped</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">break</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">arr</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const myArrTS: number[] = [5, 1, 4, 2, 8];
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(bubbleSortTS(myArrTS)); // [1, 2, 4, 5, 8]
+</span></span></span></code></pre></div><h3 id="cpp">Cpp</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;vector&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;utility&gt;</span><span style="color:#93a1a1;font-style:italic"> </span><span style="color:#93a1a1;font-style:italic">// For std::swap
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">bubbleSort</span>(<span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt;&amp; <span style="color:#268bd2">arr</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">n</span> = <span style="color:#268bd2">arr</span>.<span style="color:#268bd2">size</span>();
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">n</span>; ++<span style="color:#268bd2">i</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Last i elements are already in place
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900;font-weight:bold">bool</span> <span style="color:#268bd2">swapped</span> = <span style="color:#cb4b16">false</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">j</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">j</span> &lt; <span style="color:#268bd2">n</span> - <span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>; ++<span style="color:#268bd2">j</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Traverse the array from 0 to n-i-1
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#93a1a1;font-style:italic">// Swap if the element found is greater than the next element
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">arr</span>[<span style="color:#268bd2">j</span>] &gt; <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">j</span> + <span style="color:#2aa198;font-weight:bold">1</span>]) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">std</span>::<span style="color:#268bd2">swap</span>(<span style="color:#268bd2">arr</span>[<span style="color:#268bd2">j</span>], <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">j</span> + <span style="color:#2aa198;font-weight:bold">1</span>]);
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">swapped</span> = <span style="color:#cb4b16">true</span>;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// If no two elements were swapped by inner loop, then break
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">if</span> (!<span style="color:#268bd2">swapped</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">break</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// #include &lt;iostream&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// int main() {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::vector&lt;int&gt; myArr = {5, 1, 4, 2, 8};
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     bubbleSort(myArr);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     for(int val : myArr) {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         std::cout &lt;&lt; val &lt;&lt; &#34; &#34;; // 1 2 4 5 8
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     }
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; std::endl;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span></code></pre></div><h3 id="go">Go</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">package</span> <span style="color:#268bd2">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> <span style="color:#268bd2">bubbleSort</span>(<span style="color:#268bd2">arr</span> []<span style="color:#859900;font-weight:bold">int</span>) []<span style="color:#859900;font-weight:bold">int</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">n</span> := <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">arr</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> := <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">n</span>; <span style="color:#268bd2">i</span>++ {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Last i elements are already in place</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">swapped</span> := <span style="color:#859900;font-weight:bold">false</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> <span style="color:#268bd2">j</span> := <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">j</span> &lt; <span style="color:#268bd2">n</span>-<span style="color:#268bd2">i</span>-<span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#268bd2">j</span>++ {
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Traverse the array from 0 to n-i-1</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Swap if the element found is greater than the next element</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">j</span>] &gt; <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">j</span>+<span style="color:#2aa198;font-weight:bold">1</span>] {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">j</span>], <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">j</span>+<span style="color:#2aa198;font-weight:bold">1</span>] = <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">j</span>+<span style="color:#2aa198;font-weight:bold">1</span>], <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">j</span>]
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">swapped</span> = <span style="color:#859900;font-weight:bold">true</span>
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// If no two elements were swapped by inner loop, then break</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> !<span style="color:#268bd2">swapped</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">break</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">arr</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// import &#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// func main() {</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     myArr := []int{5, 1, 4, 2, 8}</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     fmt.Println(bubbleSort(myArr)) // [1 2 4 5 8]</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }</span>
+</span></span></code></pre></div><h3 id="d">D</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-d" data-lang="d"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.algorithm</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">bubbleSort</span>(<span style="color:#859900;font-weight:bold">int</span>[] <span style="color:#268bd2">arr</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">auto</span> <span style="color:#268bd2">n</span> = <span style="color:#268bd2">arr</span>.<span style="color:#268bd2">length</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">n</span>; <span style="color:#268bd2">i</span>++) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Last i elements are already in place
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900;font-weight:bold">bool</span> <span style="color:#268bd2">swapped</span> = <span style="color:#859900;font-weight:bold">false</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">j</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">j</span> &lt; <span style="color:#268bd2">n</span> - <span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#268bd2">j</span>++) {
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Traverse the array from 0 to n-i-1
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#93a1a1;font-style:italic">// Swap if the element found is greater than the next element
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">arr</span>[<span style="color:#268bd2">j</span>] &gt; <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">j</span> + <span style="color:#2aa198;font-weight:bold">1</span>]) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">swap</span>(<span style="color:#268bd2">arr</span>[<span style="color:#268bd2">j</span>], <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">j</span> + <span style="color:#2aa198;font-weight:bold">1</span>]);
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">swapped</span> = <span style="color:#859900;font-weight:bold">true</span>;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// If no two elements were swapped by inner loop, then break
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">if</span> (!<span style="color:#268bd2">swapped</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">break</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// import std.stdio;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// void main() {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     auto myArr = [5, 1, 4, 2, 8];
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     bubbleSort(myArr);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     writeln(myArr); // [1, 2, 4, 5, 8]
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span></code></pre></div><h2 id="code-walkthrough">Code Walkthrough</h2>
+<h3 id="code-walkthrough-1">Code Walkthrough</h3>
+<p>The implementation of <code>Bubble Sort</code> uses two nested loops. The outer loop runs <code>N</code> times, and with each pass, it reduces the size of the inner loop&rsquo;s comparison range, since the largest elements are progressively moved to the end of the array.</p>
+<hr>
+<p><strong>Outer Loop (<code>i</code>):</strong> This loop controls the number of passes. After <code>i</code> passes, the last <code>i</code> elements of the array are guaranteed to be in their final sorted positions.</p>
+<p><strong>Inner Loop (<code>j</code>):</strong> This loop iterates from the beginning of the array up to <code>n-i-1</code>. It performs the core comparison and swap.</p>
+<p><strong>Swap Condition:</strong> If <code>arr[j]</code> is greater than its adjacent element <code>arr[j+1]</code>, their positions are swapped.</p>
+<p><strong>Optimization:</strong> A <code>swapped</code> flag is used. If the inner loop completes a full pass without making any swaps, it means the array is already sorted, and the outer loop can be terminated early using <code>break</code>. This gives <code>Bubble Sort</code> a best-case time complexity of <code>O(N)</code>.</p>
+<h2 id="applications">Applications</h2>
+<h3 id="application">Application</h3>
+<p>Due to its poor performance, <code>Bubble Sort</code> is almost never used in production code. Its primary use is educational: it is often one of the first sorting algorithms taught because of its simplicity and the straightforward nature of its logic. It serves as a good introduction to the concept of sorting and the analysis of algorithm complexity before moving on to more efficient algorithms like <code>Merge Sort</code> or <code>Quick Sort</code>.</p>
+
+    </div>
+</article>
+
+<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
+    
+    <a href="//localhost:1313/hugo_content/algorithms/sorting_searching/heap_sort/" class="nav-btn">← Previous</a>
+    
+    
+    <a href="//localhost:1313/hugo_content/algorithms/sorting_searching/" class="nav-btn">Up</a>
+
+    
+    <a href="//localhost:1313/hugo_content/algorithms/sorting_searching/binary_search/" class="nav-btn">Next →</a>
+    
+</div>
+
+    </main>
+
+    <footer class="footer">
+        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
+    </footer>
+
+    <script>
+        const body = document.getElementById('theme-body');
+        const btn = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme');
+
+        
+        function updateButtonText() {
+            if (body.classList.contains('theme-terminal')) {
+                btn.textContent = "Light Mode";
+            } else {
+                btn.textContent = "Dark Mode";
+            }
+        }
+
+        if (currentTheme === 'terminal') {
+            body.classList.add('theme-terminal');
+        }
+        
+        
+        updateButtonText();
+
+        btn.addEventListener('click', () => {
+            body.classList.toggle('theme-terminal');
+            updateButtonText();
+            
+            let theme = 'natural';
+            if (body.classList.contains('theme-terminal')) {
+                theme = 'terminal';
+            }
+            localStorage.setItem('theme', theme);
+        });
+    </script>
+</body>
+</html>

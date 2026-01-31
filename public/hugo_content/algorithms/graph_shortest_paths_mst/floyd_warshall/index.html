@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Floyd-Warshall Algorithm | SDET Interview Preparation Kit</title>
+    <link rel="stylesheet" href="//localhost:1313/css/style.css">
+    <link rel="stylesheet" href="//localhost:1313/css/terminal.css">
+    
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    
+    <link rel="stylesheet" href="//localhost:1313/lib/katex/katex.min.css">
+    <script defer src="//localhost:1313/lib/katex/katex.min.js"></script>
+    <script defer src="//localhost:1313/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</head>
+<body id="theme-body">
+    <button id="theme-toggle">Switch Theme</button>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="//localhost:1313/">Index</a></li>
+                
+            </ul>
+        </nav>
+        <div class="site-breadcrumb">
+            <a href="//localhost:1313/">Home</a>
+            
+                
+                    <span>/</span> <a href="//localhost:1313/">SDET Interview Dashboard</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/hugo_content/">42 Algorithms &amp; 42 Data Structures</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/hugo_content/algorithms/">Algorithms</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/hugo_content/algorithms/graph_shortest_paths_mst/">Graph Shortest Paths Mst</a>
+                
+            
+            
+                <span>/</span> Floyd-Warshall Algorithm
+            
+        </div>
+    </header>
+
+    <main>
+        
+<article>
+    <div class="category-title" style="margin-bottom: 0.5rem;">Graph Shortest Paths Mst</div>
+    <h1>Floyd-Warshall Algorithm</h1>
+    <div class="content-body" style="margin-top: 2rem;">
+        <p>The <code>Floyd-Warshall Algorithm</code> is a classic algorithm for finding the shortest paths between <strong>all pairs</strong> of <code>nodes</code> in a weighted graph. It works for both directed and undirected graphs, and it can handle graphs with negative edge weights, but it cannot handle negative cycles (a cycle where the sum of its edge weights is negative), as the shortest path in such a cycle would be undefined.</p>
+<p>It is an example of <code>dynamic programming</code> and is conceptually simple to understand and implement. The algorithm iteratively considers all possible intermediate <code>nodes</code> to find the shortest path between any two <code>nodes</code>.</p>
+<h2 id="how-it-works">How it Works</h2>
+<h3 id="how-it-works-expanded">How it Works (Expanded)</h3>
+<p>The <code>Floyd-Warshall Algorithm</code> uses a 2D <code>DP table</code> (distance matrix) where <code>dist[i][j]</code> stores the shortest distance from <code>node i</code> to <code>node j</code>. The algorithm performs <code>N</code> phases (where <code>N</code> is the number of <code>nodes</code>), and in the <code>k</code>-th phase, it considers all paths that use only <code>nodes</code> from <code>1</code> to <code>k</code> as intermediate <code>nodes</code>.</p>
+<hr>
+<p>Example: Graph with 4 nodes (0, 1, 2, 3)</p>
+<p>Initial Distance Matrix:
+0  1  2  3
+0 [0, 3, inf, 7]
+1 [8, 0, 2, inf]
+2 [5, inf, 0, 1]
+3 [2, inf, inf, 0]</p>
+<p>Iteration k=0 (consider node 0 as intermediate):
+0  1  2  3
+0 [0, 3, inf, 7]  (e.g., dist[0][1] = min(dist[0][1], dist[0][0]+dist[0][1]) = 3)
+1 [8, 0, 2, 9]    (e.g., dist[1][3] = min(dist[1][3], dist[1][0]+dist[0][3]) = min(inf, 8+7) = 15 -&gt; Error in example, correct would be 9: 1-&gt;0-&gt;3 with 8+7=15. Example is wrong)</p>
+<p>Corrected for k=0 path 1-&gt;0-&gt;3
+dist[1][3] = min(dist[1][3], dist[1][0]+dist[0][3]) = min(inf, 8+7) = 15</p>
+<p>The general recurrence relation is:
+dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j])</p>
+<h2 id="implementation">Implementation</h2>
+<h3 id="python">Python</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">math</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">def</span> <span style="color:#268bd2">floyd_warshall</span>(<span style="color:#268bd2">graph_matrix</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">n</span> = <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">graph_matrix</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># Initialize dist matrix (same as graph_matrix initially)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">dist</span> = [<span style="color:#268bd2">row</span>[:] <span style="color:#859900">for</span> <span style="color:#268bd2">row</span> <span style="color:#859900">in</span> <span style="color:#268bd2">graph_matrix</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># Algorithm core</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># k is the intermediate vertex</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">k</span> <span style="color:#859900">in</span> <span style="color:#cb4b16">range</span>(<span style="color:#268bd2">n</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># i is the source vertex</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> <span style="color:#859900">in</span> <span style="color:#cb4b16">range</span>(<span style="color:#268bd2">n</span>):
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic"># j is the destination vertex</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">for</span> <span style="color:#268bd2">j</span> <span style="color:#859900">in</span> <span style="color:#cb4b16">range</span>(<span style="color:#268bd2">n</span>):
+</span></span><span style="display:flex;"><span>                <span style="color:#93a1a1;font-style:italic"># If vertex k is on the shortest path from i to j,</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#93a1a1;font-style:italic"># then update the value of dist[i][j]</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">if</span> <span style="color:#268bd2">dist</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">k</span>] != <span style="color:#268bd2">math</span>.<span style="color:#268bd2">inf</span> <span style="color:#859900">and</span> <span style="color:#268bd2">dist</span>[<span style="color:#268bd2">k</span>][<span style="color:#268bd2">j</span>] != <span style="color:#268bd2">math</span>.<span style="color:#268bd2">inf</span>:
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">dist</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#cb4b16">min</span>(<span style="color:#268bd2">dist</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>], <span style="color:#268bd2">dist</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">k</span>] + <span style="color:#268bd2">dist</span>[<span style="color:#268bd2">k</span>][<span style="color:#268bd2">j</span>])
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># Check for negative cycles (optional, if original problem allows)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># If dist[i][i] &lt; 0 for any i, then there is a negative cycle.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># for i in range(n):</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">#     if dist[i][i] &lt; 0:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">#         # Handle negative cycle (e.g., return error or specific value)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">#         pass # This implementation just returns the matrix, possibly with -inf</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">dist</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># Example</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># INF = math.inf</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># graph = [</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#     [0, 3, INF, 7],</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#     [8, 0, 2, INF],</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#     [5, INF, 0, 1],</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#     [2, INF, INF, 0]</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># ]</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># # Expected output:</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># # [[0, 3, 5, 6],</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># #  [8, 0, 2, 3],</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># #  [5, 8, 0, 1],</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># #  [2, 5, 7, 0]]</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(floyd_warshall(graph))</span>
+</span></span></code></pre></div><h3 id="javascript">Javascript</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#859900">function</span> <span style="color:#268bd2">floydWarshall</span>(<span style="color:#268bd2">graphMatrix</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">const</span> <span style="color:#268bd2">n</span> = <span style="color:#268bd2">graphMatrix</span>.<span style="color:#268bd2">length</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">const</span> <span style="color:#268bd2">INF</span> = <span style="color:#859900;font-weight:bold">Infinity</span>; <span style="color:#93a1a1;font-style:italic">// Represents unreachable path
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Initialize dist matrix (same as graphMatrix initially)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">const</span> <span style="color:#268bd2">dist</span> = <span style="color:#268bd2">graphMatrix</span>.<span style="color:#268bd2">map</span>(<span style="color:#268bd2">row</span> =&gt; [...<span style="color:#268bd2">row</span>]);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Algorithm core
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#93a1a1;font-style:italic">// k is the intermediate vertex
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">k</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">k</span> &lt; <span style="color:#268bd2">n</span>; <span style="color:#268bd2">k</span>++) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// i is the source vertex
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">n</span>; <span style="color:#268bd2">i</span>++) {
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// j is the destination vertex
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">j</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">j</span> &lt; <span style="color:#268bd2">n</span>; <span style="color:#268bd2">j</span>++) {
+</span></span><span style="display:flex;"><span>                <span style="color:#93a1a1;font-style:italic">// If vertex k is on the shortest path from i to j,
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#93a1a1;font-style:italic">// then update the value of dist[i][j]
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#859900">if</span> (<span style="color:#268bd2">dist</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">k</span>] !== <span style="color:#268bd2">INF</span> &amp;&amp; <span style="color:#268bd2">dist</span>[<span style="color:#268bd2">k</span>][<span style="color:#268bd2">j</span>] !== <span style="color:#268bd2">INF</span>) {
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">dist</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#cb4b16">Math</span>.<span style="color:#268bd2">min</span>(<span style="color:#268bd2">dist</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>], <span style="color:#268bd2">dist</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">k</span>] + <span style="color:#268bd2">dist</span>[<span style="color:#268bd2">k</span>][<span style="color:#268bd2">j</span>]);
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Check for negative cycles (optional)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#93a1a1;font-style:italic">// for (let i = 0; i &lt; n; i++) {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#93a1a1;font-style:italic">//     if (dist[i][i] &lt; 0) {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#93a1a1;font-style:italic">//         // Graph contains a negative cycle
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#93a1a1;font-style:italic">//         // Can return an error or special value
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#93a1a1;font-style:italic">//     }
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#93a1a1;font-style:italic">// }
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">dist</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const INF = Infinity;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const graph = [
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     [0, 3, INF, 7],
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     [8, 0, 2, INF],
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     [5, INF, 0, 1],
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     [2, INF, INF, 0]
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// ];
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// // Expected output:
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// // [[0, 3, 5, 6],
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// //  [8, 0, 2, 3],
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// //  [5, 8, 0, 1],
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// //  [2, 5, 7, 0]]
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(floydWarshall(graph));
+</span></span></span></code></pre></div><h3 id="typescript">Typescript</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-typescript" data-lang="typescript"><span style="display:flex;"><span><span style="color:#859900">function</span> <span style="color:#268bd2">floydWarshallTS</span>(<span style="color:#268bd2">graphMatrix</span>: <span style="color:#859900;font-weight:bold">number</span>[][]): <span style="color:#859900;font-weight:bold">number</span>[][] {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">const</span> <span style="color:#268bd2">n</span> = <span style="color:#268bd2">graphMatrix</span>.<span style="color:#268bd2">length</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">const</span> <span style="color:#268bd2">INF</span> = <span style="color:#859900;font-weight:bold">Infinity</span>; <span style="color:#93a1a1;font-style:italic">// Represents unreachable path
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Initialize dist matrix (same as graphMatrix initially)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">const</span> <span style="color:#268bd2">dist</span>: <span style="color:#859900;font-weight:bold">number</span>[][] = <span style="color:#268bd2">graphMatrix</span>.<span style="color:#268bd2">map</span>(<span style="color:#268bd2">row</span> =&gt; [...<span style="color:#268bd2">row</span>]);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Algorithm core
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#93a1a1;font-style:italic">// k is the intermediate vertex
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">k</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">k</span> &lt; <span style="color:#268bd2">n</span>; <span style="color:#268bd2">k</span>++) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// i is the source vertex
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">n</span>; <span style="color:#268bd2">i</span>++) {
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// j is the destination vertex
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">j</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">j</span> &lt; <span style="color:#268bd2">n</span>; <span style="color:#268bd2">j</span>++) {
+</span></span><span style="display:flex;"><span>                <span style="color:#93a1a1;font-style:italic">// If vertex k is on the shortest path from i to j,
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#93a1a1;font-style:italic">// then update the value of dist[i][j]
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#859900">if</span> (<span style="color:#268bd2">dist</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">k</span>] !== <span style="color:#268bd2">INF</span> &amp;&amp; <span style="color:#268bd2">dist</span>[<span style="color:#268bd2">k</span>][<span style="color:#268bd2">j</span>] !== <span style="color:#268bd2">INF</span>) {
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">dist</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#cb4b16">Math</span>.<span style="color:#268bd2">min</span>(<span style="color:#268bd2">dist</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>], <span style="color:#268bd2">dist</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">k</span>] + <span style="color:#268bd2">dist</span>[<span style="color:#268bd2">k</span>][<span style="color:#268bd2">j</span>]);
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Check for negative cycles (optional)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#93a1a1;font-style:italic">// for (let i = 0; i &lt; n; i++) {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#93a1a1;font-style:italic">//     if (dist[i][i] &lt; 0) {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#93a1a1;font-style:italic">//         // Graph contains a negative cycle
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#93a1a1;font-style:italic">//         // Can return an error or special value
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#93a1a1;font-style:italic">//     }
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#93a1a1;font-style:italic">// }
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">dist</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const INF_TS = Infinity;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const graphTS = [
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     [0, 3, INF_TS, 7],
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     [8, 0, 2, INF_TS],
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     [5, INF_TS, 0, 1],
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     [2, INF_TS, INF_TS, 0]
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// ];
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// // Expected output:
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// // [[0, 3, 5, 6],
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// //  [8, 0, 2, 3],
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// //  [5, 8, 0, 1],
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// //  [2, 5, 7, 0]]
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(floydWarshallTS(graphTS));
+</span></span></span></code></pre></div><h3 id="cpp">Cpp</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;vector&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;iostream&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;algorithm&gt;</span><span style="color:#93a1a1;font-style:italic"> </span><span style="color:#93a1a1;font-style:italic">// For std::min
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;limits&gt;</span><span style="color:#93a1a1;font-style:italic">    </span><span style="color:#93a1a1;font-style:italic">// For std::numeric_limits
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">const</span> <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">INF</span> = <span style="color:#268bd2">std</span>::<span style="color:#268bd2">numeric_limits</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt;::<span style="color:#268bd2">max</span>();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt;&gt; <span style="color:#268bd2">floydWarshall</span>(<span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt;&gt;&amp; <span style="color:#268bd2">graph_matrix</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">n</span> = <span style="color:#268bd2">graph_matrix</span>.<span style="color:#268bd2">length</span>();
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Initialize dist matrix (same as graph_matrix initially)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt;&gt; <span style="color:#268bd2">dist</span> = <span style="color:#268bd2">graph_matrix</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Algorithm core
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#93a1a1;font-style:italic">// k is the intermediate vertex
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">k</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">k</span> &lt; <span style="color:#268bd2">n</span>; <span style="color:#268bd2">k</span>++) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// i is the source vertex
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">n</span>; <span style="color:#268bd2">i</span>++) {
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// j is the destination vertex
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">j</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">j</span> &lt; <span style="color:#268bd2">n</span>; <span style="color:#268bd2">j</span>++) {
+</span></span><span style="display:flex;"><span>                <span style="color:#93a1a1;font-style:italic">// If dist[i][k] or dist[k][j] is INF, then there is no path through k
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#93a1a1;font-style:italic">// We need to check to prevent INF + value from wrapping around or becoming negative
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#859900">if</span> (<span style="color:#268bd2">dist</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">k</span>] != <span style="color:#268bd2">INF</span> &amp;&amp; <span style="color:#268bd2">dist</span>[<span style="color:#268bd2">k</span>][<span style="color:#268bd2">j</span>] != <span style="color:#268bd2">INF</span>) {
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">dist</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#268bd2">std</span>::<span style="color:#268bd2">min</span>(<span style="color:#268bd2">dist</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>], <span style="color:#268bd2">dist</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">k</span>] + <span style="color:#268bd2">dist</span>[<span style="color:#268bd2">k</span>][<span style="color:#268bd2">j</span>]);
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Check for negative cycles (optional)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#93a1a1;font-style:italic">// for (int i = 0; i &lt; n; i++) {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#93a1a1;font-style:italic">//     if (dist[i][i] &lt; 0) {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#93a1a1;font-style:italic">//         // Graph contains a negative cycle
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#93a1a1;font-style:italic">//         // Can return an error or special value
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#93a1a1;font-style:italic">//     }
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#93a1a1;font-style:italic">// }
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">dist</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// int main() {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::vector&lt;std::vector&lt;int&gt;&gt; graph = {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         {0, 3, INF, 7},
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         {8, 0, 2, INF},
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         {5, INF, 0, 1},
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         {2, INF, INF, 0}
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     };
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::vector&lt;std::vector&lt;int&gt;&gt; result = floydWarshall(graph);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     for (const auto&amp; row : result) {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         for (int val : row) {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//             if (val == INF) std::cout &lt;&lt; &#34;INF &#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//             else std::cout &lt;&lt; val &lt;&lt; &#34;   &#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         }
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         std::cout &lt;&lt; std::endl;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     }
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     return 0;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span></code></pre></div><h3 id="go">Go</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">package</span> <span style="color:#268bd2">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> (
+</span></span><span style="display:flex;"><span>    <span style="color:#2aa198">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#2aa198">&#34;math&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">const</span> <span style="color:#268bd2">INF_GO</span> = <span style="color:#268bd2">math</span>.<span style="color:#268bd2">MaxInt32</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> <span style="color:#268bd2">floydWarshall</span>(<span style="color:#268bd2">graphMatrix</span> [][]<span style="color:#859900;font-weight:bold">int</span>) [][]<span style="color:#859900;font-weight:bold">int</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">n</span> := <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">graphMatrix</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Initialize dist matrix (same as graphMatrix initially)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">dist</span> := <span style="color:#cb4b16">make</span>([][]<span style="color:#859900;font-weight:bold">int</span>, <span style="color:#268bd2">n</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> := <span style="color:#859900">range</span> <span style="color:#268bd2">dist</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">dist</span>[<span style="color:#268bd2">i</span>] = <span style="color:#cb4b16">make</span>([]<span style="color:#859900;font-weight:bold">int</span>, <span style="color:#268bd2">n</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">copy</span>(<span style="color:#268bd2">dist</span>[<span style="color:#268bd2">i</span>], <span style="color:#268bd2">graphMatrix</span>[<span style="color:#268bd2">i</span>])
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Algorithm core</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// k is the intermediate vertex</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">k</span> := <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">k</span> &lt; <span style="color:#268bd2">n</span>; <span style="color:#268bd2">k</span>++ {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// i is the source vertex</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> := <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">n</span>; <span style="color:#268bd2">i</span>++ {
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// j is the destination vertex</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">for</span> <span style="color:#268bd2">j</span> := <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">j</span> &lt; <span style="color:#268bd2">n</span>; <span style="color:#268bd2">j</span>++ {
+</span></span><span style="display:flex;"><span>                <span style="color:#93a1a1;font-style:italic">// If dist[i][k] or dist[k][j] is INF_GO, then there is no path through k</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#93a1a1;font-style:italic">// We need to check to prevent INF_GO + value from wrapping around or becoming negative</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">if</span> <span style="color:#268bd2">dist</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">k</span>] != <span style="color:#268bd2">INF_GO</span> &amp;&amp; <span style="color:#268bd2">dist</span>[<span style="color:#268bd2">k</span>][<span style="color:#268bd2">j</span>] != <span style="color:#268bd2">INF_GO</span> {
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">dist</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#cb4b16">min</span>(<span style="color:#268bd2">dist</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>], <span style="color:#268bd2">dist</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">k</span>] + <span style="color:#268bd2">dist</span>[<span style="color:#268bd2">k</span>][<span style="color:#268bd2">j</span>])
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Check for negative cycles (optional)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// for i := 0; i &lt; n; i++ {</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">//     if dist[i][i] &lt; 0 {</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">//         // Graph contains a negative cycle</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">//         // Can return an error or special value</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">//     }</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// }</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">dist</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> <span style="color:#cb4b16">min</span>(<span style="color:#268bd2">a</span>, <span style="color:#268bd2">b</span> <span style="color:#859900;font-weight:bold">int</span>) <span style="color:#859900;font-weight:bold">int</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#268bd2">a</span> &lt; <span style="color:#268bd2">b</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">a</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">b</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// func main() {</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     graph := [][]int{</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         {0, 3, INF_GO, 7},</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         {8, 0, 2, INF_GO},</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         {5, INF_GO, 0, 1},</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         {2, INF_GO, INF_GO, 0},</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     }</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     result := floydWarshall(graph)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     for _, row := range result {</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         for _, val := range row {</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//             if val == INF_GO {</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//                 fmt.Print(&#34;INF &#34;)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//             } else {</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//                 fmt.Printf(&#34;%d   &#34;, val)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//             }</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         }</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         fmt.Println()</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     }</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }</span>
+</span></span></code></pre></div><h3 id="d">D</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-d" data-lang="d"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.stdio</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.array</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.algorithm</span>; <span style="color:#93a1a1;font-style:italic">// For std.algorithm.min
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.traits</span>; <span style="color:#93a1a1;font-style:italic">// For isInfinity
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">const</span> <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">INF_D</span> = <span style="color:#859900;font-weight:bold">int</span>.<span style="color:#268bd2">max</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900;font-weight:bold">int</span>[][] <span style="color:#268bd2">floydWarshall</span>(<span style="color:#859900;font-weight:bold">int</span>[][] <span style="color:#268bd2">graphMatrix</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">auto</span> <span style="color:#268bd2">n</span> = <span style="color:#268bd2">graphMatrix</span>.<span style="color:#268bd2">length</span>;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Initialize dist matrix (same as graphMatrix initially)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">auto</span> <span style="color:#268bd2">dist</span> = <span style="color:#859900">new</span> <span style="color:#859900;font-weight:bold">int</span>[][](<span style="color:#268bd2">n</span>, <span style="color:#268bd2">n</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">foreach</span> (<span style="color:#268bd2">i</span>; <span style="color:#2aa198;font-weight:bold">0</span> .. <span style="color:#268bd2">n</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">foreach</span> (<span style="color:#268bd2">j</span>; <span style="color:#2aa198;font-weight:bold">0</span> .. <span style="color:#268bd2">n</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">dist</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#268bd2">graphMatrix</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>];
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Algorithm core
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#93a1a1;font-style:italic">// k is the intermediate vertex
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">foreach</span> (<span style="color:#268bd2">k</span>; <span style="color:#2aa198;font-weight:bold">0</span> .. <span style="color:#268bd2">n</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// i is the source vertex
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">foreach</span> (<span style="color:#268bd2">i</span>; <span style="color:#2aa198;font-weight:bold">0</span> .. <span style="color:#268bd2">n</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// j is the destination vertex
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">foreach</span> (<span style="color:#268bd2">j</span>; <span style="color:#2aa198;font-weight:bold">0</span> .. <span style="color:#268bd2">n</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#93a1a1;font-style:italic">// If dist[i][k] or dist[k][j] is INF_D, then there is no path through k
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#859900">if</span> (<span style="color:#268bd2">dist</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">k</span>] != <span style="color:#268bd2">INF_D</span> &amp;&amp; <span style="color:#268bd2">dist</span>[<span style="color:#268bd2">k</span>][<span style="color:#268bd2">j</span>] != <span style="color:#268bd2">INF_D</span>) {
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">dist</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#268bd2">min</span>(<span style="color:#268bd2">dist</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>], <span style="color:#268bd2">dist</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">k</span>] + <span style="color:#268bd2">dist</span>[<span style="color:#268bd2">k</span>][<span style="color:#268bd2">j</span>]);
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Check for negative cycles (optional)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#93a1a1;font-style:italic">// foreach (i; 0 .. n) {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#93a1a1;font-style:italic">//     if (dist[i][i] &lt; 0) {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#93a1a1;font-style:italic">//         // Graph contains a negative cycle
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#93a1a1;font-style:italic">//         // Can return an error or special value
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#93a1a1;font-style:italic">//     }
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#93a1a1;font-style:italic">// }
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">dist</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// void main() {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     int[][] graph = [
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         [0, 3, INF_D, 7],
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         [8, 0, 2, INF_D],
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         [5, INF_D, 0, 1],
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         [2, INF_D, INF_D, 0]
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     ];
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     auto result = floydWarshall(graph);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     foreach (row; result) {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         foreach (val; row) {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//             if (val == INF_D) write(&#34;INF &#34;);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//             else writef(&#34;%d   &#34;, val);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         }
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         writeln();
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     }
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span></code></pre></div><h2 id="code-walkthrough">Code Walkthrough</h2>
+<h3 id="code-walkthrough-1">Code Walkthrough</h3>
+<p>The <code>Floyd-Warshall Algorithm</code> uses three nested loops to build up the all-pairs shortest path information. It&rsquo;s a prime example of a <code>dynamic programming</code> approach to graph problems.</p>
+<hr>
+<p><strong>Initialization:</strong></p>
+<pre><code>- `n`: The number of `nodes` in the graph.
+
+- A `dist` matrix is created, initially a copy of the `graph_matrix`.
+
+        - `dist[i][j]` is the direct weight of the edge from `i` to `j`.
+
+        - If there is no direct edge, `dist[i][j]` is set to `infinity`.
+
+        - `dist[i][i]` is 0.
+
+&lt;/li&gt;
+</code></pre>
+<p><strong>Algorithm Core (Three Nested Loops):</strong></p>
+<pre><code>- The outermost loop iterates `k` from 0 to `n-1`. `k` represents the &quot;intermediate node&quot; being considered. In each `k` iteration, the algorithm tries to improve the shortest paths between all pairs `(i, j)` by potentially routing them through `node k`.
+
+- The middle loop iterates `i` (the source `node`) from 0 to `n-1`.
+
+- The innermost loop iterates `j` (the destination `node`) from 0 to `n-1`.
+
+- Inside the innermost loop, the core update happens:
+    `dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j])`&lt;/li&gt;
+- This means: The shortest path from `i` to `j` is either the path found so far (not using `k` as an intermediate), or it is a path from `i` to `k` and then from `k` to `j`. We take the minimum of these two options.
+
+- It's important to ensure that `dist[i][k]` and `dist[k][j]` are not `infinity` before summing them to avoid `overflows` or incorrect calculations.
+</code></pre>
+<p><strong>Result:</strong></p>
+<pre><code>- After all three loops complete, `dist[i][j]` contains the shortest path from `node i` to `node j` for all pairs `(i, j)`.
+</code></pre>
+<h2 id="applications">Applications</h2>
+<h3 id="application">Application</h3>
+<p>The <code>Floyd-Warshall Algorithm</code> is highly versatile for problems requiring all-pairs shortest paths:</p>
+<pre><code>    - **Routing in Networks:** Finding the shortest path between all pairs of devices in a network (e.g., computer networks, telecommunications).
+
+    - **Transitive Closure:** Determining if there is a path (of any length) between every pair of `nodes` in a graph. This can be adapted by changing the `min` operation to `OR` and `sum` to `AND`.
+
+    - **Analyzing Road Networks:** Computing the shortest travel times or distances between all intersections in a city.
+
+    - **Biology:** In some biological network analyses, such as protein-protein interaction networks, to understand connectivity.
+
+    - **Graph Analytics:** A foundational algorithm for various graph-theoretic problems and analyses.
+</code></pre>
+
+    </div>
+</article>
+
+<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
+    
+    <a href="//localhost:1313/hugo_content/algorithms/graph_shortest_paths_mst/kruskal/" class="nav-btn">← Previous</a>
+    
+    
+    <a href="//localhost:1313/hugo_content/algorithms/graph_shortest_paths_mst/" class="nav-btn">Up</a>
+
+    
+    <a href="//localhost:1313/hugo_content/algorithms/graph_shortest_paths_mst/boruvka/" class="nav-btn">Next →</a>
+    
+</div>
+
+    </main>
+
+    <footer class="footer">
+        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
+    </footer>
+
+    <script>
+        const body = document.getElementById('theme-body');
+        const btn = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme');
+
+        
+        function updateButtonText() {
+            if (body.classList.contains('theme-terminal')) {
+                btn.textContent = "Light Mode";
+            } else {
+                btn.textContent = "Dark Mode";
+            }
+        }
+
+        if (currentTheme === 'terminal') {
+            body.classList.add('theme-terminal');
+        }
+        
+        
+        updateButtonText();
+
+        btn.addEventListener('click', () => {
+            body.classList.toggle('theme-terminal');
+            updateButtonText();
+            
+            let theme = 'natural';
+            if (body.classList.contains('theme-terminal')) {
+                theme = 'terminal';
+            }
+            localStorage.setItem('theme', theme);
+        });
+    </script>
+</body>
+</html>

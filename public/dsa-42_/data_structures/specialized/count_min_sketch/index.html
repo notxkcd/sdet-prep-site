@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Count-Min Sketch | SDET Interview Preparation Kit</title>
+    <link rel="stylesheet" href="//localhost:1313/css/style.css">
+    <link rel="stylesheet" href="//localhost:1313/css/terminal.css">
+    
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    
+    <link rel="stylesheet" href="//localhost:1313/lib/katex/katex.min.css">
+    <script defer src="//localhost:1313/lib/katex/katex.min.js"></script>
+    <script defer src="//localhost:1313/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</head>
+<body id="theme-body">
+    <button id="theme-toggle">Switch Theme</button>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="//localhost:1313/">Index</a></li>
+                
+            </ul>
+        </nav>
+        <div class="site-breadcrumb">
+            <a href="//localhost:1313/">Home</a>
+            
+                
+                    <span>/</span> <a href="//localhost:1313/">SDET Interview Dashboard</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/dsa-42_/">42 Algorithms &amp; 42 Data Structures</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/dsa-42_/data_structures/">Data Structures</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/dsa-42_/data_structures/specialized/">Specialized</a>
+                
+            
+            
+                <span>/</span> Count-Min Sketch
+            
+        </div>
+    </header>
+
+    <main>
+        
+<article>
+    <div class="category-title" style="margin-bottom: 0.5rem;">Specialized</div>
+    <h1>Count-Min Sketch</h1>
+    <div class="content-body" style="margin-top: 2rem;">
+        <p>A <code>Count-Min Sketch</code> is a probabilistic data structure used to estimate the frequencies of <code>elements</code> in a data stream. It&rsquo;s particularly useful for handling massive datasets where storing exact counts for every unique <code>element</code> is infeasible due to memory constraints.</p>
+<p>Like a <code>Bloom Filter</code>, it provides a space-efficient approximation, with a tunable trade-off between accuracy and memory usage. It never overestimates an <code>element</code>&rsquo;s frequency by more than a small, known error margin, but it can overestimate. It never underestimates.</p>
+<h2 id="how-it-works">How it Works</h2>
+<h3 id="how-it-works-expanded">How it Works (Expanded)</h3>
+<p>A <code>Count-Min Sketch</code> consists of a <code>2D array</code> (or matrix) of counters, typically initialized to zeros. The dimensions of this matrix are <code>width (w)</code> and <code>depth (d)</code>:</p>
+<pre><code>    - `depth (d)`: The number of independent `hash functions` used. Determines the probability of overestimation.
+
+    - `width (w)`: The size of each `hash table`. Determines the maximum possible overestimation error.
+</code></pre>
+<hr>
+<p>Conceptual Count-Min Sketch:</p>
+<pre><code>  Hash Function 1 (h1) -&gt; min(counter[0][h1(item)],
+  Hash Function 2 (h2) -&gt;             counter[1][h2(item)],
+  Hash Function 3 (h3) -&gt;             counter[2][h3(item)])
+</code></pre>
+<p>Matrix of Counters (w x d):
+w -&gt; width
++&mdash;+&mdash;+&mdash;+&mdash;+
+d=0 | 0 | 0 | 0 | 0 |
++&mdash;+&mdash;+&mdash;+&mdash;+
+d=1 | 0 | 0 | 0 | 0 |
++&mdash;+&mdash;+&mdash;+&mdash;+
+d=2 | 0 | 0 | 0 | 0 |
++&mdash;+&mdash;+&mdash;+&mdash;+</p>
+<p>Adding an item &ldquo;x&rdquo;:</p>
+<ul>
+<li>h1(x) = 1, h2(x) = 3, h3(x) = 0</li>
+<li>Increment counter[0][1], counter[1][3], counter[2][0]</li>
+</ul>
+<p>Querying for &ldquo;x&rdquo;:</p>
+<ul>
+<li>Look up counter[0][1], counter[1][3], counter[2][0]</li>
+<li>The estimate is the minimum of these values.</li>
+</ul>
+<h2 id="implementation">Implementation</h2>
+<h3 id="python">Python</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">hashlib</span>
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">sys</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#cb4b16">CountMinSketch</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">__init__</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">width</span>, <span style="color:#268bd2">depth</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">width</span> = <span style="color:#268bd2">width</span> <span style="color:#93a1a1;font-style:italic"># w: number of columns</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">depth</span> = <span style="color:#268bd2">depth</span> <span style="color:#93a1a1;font-style:italic"># d: number of rows (hash functions)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">table</span> = [[<span style="color:#2aa198;font-weight:bold">0</span>] &lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">width</span> <span style="color:#859900">for</span> <span style="color:#268bd2">_</span> <span style="color:#859900">in</span> <span style="color:#cb4b16">range</span>(<span style="color:#268bd2">depth</span>)]
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># Seeds for hash functions. A better approach would be to use universal hashing.</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">seeds</span> = [<span style="color:#268bd2">i</span> &lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#2aa198;font-weight:bold">997</span> + <span style="color:#2aa198;font-weight:bold">1</span> <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> <span style="color:#859900">in</span> <span style="color:#cb4b16">range</span>(<span style="color:#268bd2">depth</span>)] <span style="color:#93a1a1;font-style:italic"># Random seeds</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">_hash</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">item</span>, <span style="color:#268bd2">seed_idx</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># Using a simple hash function with different seeds</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># For production, use better hash functions like MurmurHash</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">h</span> = <span style="color:#268bd2">hashlib</span>.<span style="color:#268bd2">sha256</span>(<span style="color:#2aa198">f</span><span style="color:#2aa198">&#34;</span><span style="color:#2aa198">{</span><span style="color:#268bd2">item</span><span style="color:#2aa198">}</span><span style="color:#2aa198">-</span><span style="color:#2aa198">{</span><span style="color:#cb4b16">self</span>.<span style="color:#268bd2">seeds</span>[<span style="color:#268bd2">seed_idx</span>]<span style="color:#2aa198">}</span><span style="color:#2aa198">&#34;</span>.<span style="color:#268bd2">encode</span>(<span style="color:#2aa198">&#39;utf-8&#39;</span>)).<span style="color:#268bd2">hexdigest</span>()
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#cb4b16">int</span>(<span style="color:#268bd2">h</span>, <span style="color:#2aa198;font-weight:bold">16</span>) % <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">width</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">add</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">item</span>, <span style="color:#268bd2">count</span>=<span style="color:#2aa198;font-weight:bold">1</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> <span style="color:#859900">in</span> <span style="color:#cb4b16">range</span>(<span style="color:#cb4b16">self</span>.<span style="color:#268bd2">depth</span>):
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">col</span> = <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">_hash</span>(<span style="color:#268bd2">item</span>, <span style="color:#268bd2">i</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">table</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">col</span>] += <span style="color:#268bd2">count</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">estimate</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">item</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">min_count</span> = <span style="color:#268bd2">sys</span>.<span style="color:#268bd2">maxsize</span> <span style="color:#93a1a1;font-style:italic"># Initialize with a very large number</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> <span style="color:#859900">in</span> <span style="color:#cb4b16">range</span>(<span style="color:#cb4b16">self</span>.<span style="color:#268bd2">depth</span>):
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">col</span> = <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">_hash</span>(<span style="color:#268bd2">item</span>, <span style="color:#268bd2">i</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">min_count</span> = <span style="color:#cb4b16">min</span>(<span style="color:#268bd2">min_count</span>, <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">table</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">col</span>])
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">min_count</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># Example Usage:</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># sketch = CountMinSketch(width=100, depth=5) # w=100, d=5</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># stream_data = [&#34;apple&#34;, &#34;banana&#34;, &#34;apple&#34;, &#34;cherry&#34;, &#34;banana&#34;, &#34;apple&#34;, &#34;date&#34;]</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># for item in stream_data:</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#     sketch.add(item)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(&#34;Estimated frequency of &#39;apple&#39;:&#34;, sketch.estimate(&#34;apple&#34;))   # Expected: ~3</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(&#34;Estimated frequency of &#39;banana&#39;:&#34;, sketch.estimate(&#34;banana&#34;)) # Expected: ~2</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(&#34;Estimated frequency of &#39;date&#39;:&#34;, sketch.estimate(&#34;date&#34;))     # Expected: ~1</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(&#34;Estimated frequency of &#39;grape&#39;:&#34;, sketch.estimate(&#34;grape&#34;))   # Expected: ~0 (or small non-zero due to collisions)</span>
+</span></span></code></pre></div><h3 id="javascript">Javascript</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#268bd2">CountMinSketch</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">constructor</span>(<span style="color:#268bd2">width</span>, <span style="color:#268bd2">depth</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">width</span> = <span style="color:#268bd2">width</span>; <span style="color:#93a1a1;font-style:italic">// w: number of columns
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">depth</span> = <span style="color:#268bd2">depth</span>; <span style="color:#93a1a1;font-style:italic">// d: number of rows (hash functions)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">table</span> = <span style="color:#cb4b16">Array</span>(<span style="color:#268bd2">depth</span>).<span style="color:#268bd2">fill</span>(<span style="color:#2aa198;font-weight:bold">0</span>).<span style="color:#268bd2">map</span>(() =&gt; <span style="color:#859900">new</span> <span style="color:#cb4b16">Array</span>(<span style="color:#268bd2">width</span>).<span style="color:#268bd2">fill</span>(<span style="color:#2aa198;font-weight:bold">0</span>));
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Seeds for hash functions. A better approach would be to use universal hashing.
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">seeds</span> = <span style="color:#cb4b16">Array</span>(<span style="color:#268bd2">depth</span>).<span style="color:#268bd2">fill</span>(<span style="color:#2aa198;font-weight:bold">0</span>).<span style="color:#268bd2">map</span>((<span style="color:#268bd2">_</span>, <span style="color:#268bd2">i</span>) =&gt; <span style="color:#268bd2">i</span> &lt;/em&gt; 997 + 1);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">_hash</span>(<span style="color:#268bd2">item</span>, <span style="color:#268bd2">seedIdx</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Simple string hash function (FNV-1a variant) combined with a seed
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#93a1a1;font-style:italic">// Not cryptographically secure, but often good enough for sketches.
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">const</span> <span style="color:#268bd2">str</span> = &lt;<span style="color:#268bd2">code</span>&gt;<span style="color:#268bd2">$</span>{<span style="color:#268bd2">item</span>}-<span style="color:#268bd2">$</span>{<span style="color:#859900">this</span>.<span style="color:#268bd2">seeds</span>[<span style="color:#268bd2">seedIdx</span>]}&lt;/code&gt;;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">let</span> <span style="color:#268bd2">hash</span> = <span style="color:#2aa198;font-weight:bold">0x811c9dc5</span>; <span style="color:#93a1a1;font-style:italic">// FNV-1a offset basis
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">str</span>.<span style="color:#268bd2">length</span>; <span style="color:#268bd2">i</span>++) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">hash</span> ^= <span style="color:#268bd2">str</span>.<span style="color:#268bd2">charCodeAt</span>(<span style="color:#268bd2">i</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">hash</span> += (<span style="color:#268bd2">hash</span> &lt;&lt; <span style="color:#2aa198;font-weight:bold">1</span>) + (<span style="color:#268bd2">hash</span> &lt;&lt; <span style="color:#2aa198;font-weight:bold">4</span>) + (<span style="color:#268bd2">hash</span> &lt;&lt; <span style="color:#2aa198;font-weight:bold">7</span>) + (<span style="color:#268bd2">hash</span> &lt;&lt; <span style="color:#2aa198;font-weight:bold">8</span>) + (<span style="color:#268bd2">hash</span> &lt;&lt; <span style="color:#2aa198;font-weight:bold">24</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> (<span style="color:#268bd2">hash</span> &gt;&gt;&gt; <span style="color:#2aa198;font-weight:bold">0</span>) % <span style="color:#859900">this</span>.<span style="color:#268bd2">width</span>; <span style="color:#93a1a1;font-style:italic">// Ensure positive and within width
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">add</span>(<span style="color:#268bd2">item</span>, <span style="color:#268bd2">count</span> = <span style="color:#2aa198;font-weight:bold">1</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#859900">this</span>.<span style="color:#268bd2">depth</span>; <span style="color:#268bd2">i</span>++) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">const</span> <span style="color:#268bd2">col</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">_hash</span>(<span style="color:#268bd2">item</span>, <span style="color:#268bd2">i</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">this</span>.<span style="color:#268bd2">table</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">col</span>] += <span style="color:#268bd2">count</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">estimate</span>(<span style="color:#268bd2">item</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">let</span> <span style="color:#268bd2">minCount</span> = <span style="color:#859900;font-weight:bold">Infinity</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#859900">this</span>.<span style="color:#268bd2">depth</span>; <span style="color:#268bd2">i</span>++) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">const</span> <span style="color:#268bd2">col</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">_hash</span>(<span style="color:#268bd2">item</span>, <span style="color:#268bd2">i</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">minCount</span> = <span style="color:#cb4b16">Math</span>.<span style="color:#268bd2">min</span>(<span style="color:#268bd2">minCount</span>, <span style="color:#859900">this</span>.<span style="color:#268bd2">table</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">col</span>]);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">minCount</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const sketch = new CountMinSketch(100, 5); // w=100, d=5
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const streamData = [&#34;apple&#34;, &#34;banana&#34;, &#34;apple&#34;, &#34;cherry&#34;, &#34;banana&#34;, &#34;apple&#34;, &#34;date&#34;];
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// for (const item of streamData) {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     sketch.add(item);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Estimated frequency of &#39;apple&#39;:&#34;, sketch.estimate(&#34;apple&#34;));   // Expected: ~3
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Estimated frequency of &#39;banana&#39;:&#34;, sketch.estimate(&#34;banana&#34;)); // Expected: ~2
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Estimated frequency of &#39;date&#39;:&#34;, sketch.estimate(&#34;date&#34;));     // Expected: ~1
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Estimated frequency of &#39;grape&#39;:&#34;, sketch.estimate(&#34;grape&#34;));   // Expected: ~0 (or small non-zero due to collisions)
+</span></span></span></code></pre></div><h3 id="typescript">Typescript</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-typescript" data-lang="typescript"><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#268bd2">CountMinSketchTS</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">private</span> <span style="color:#268bd2">width</span>: <span style="color:#859900;font-weight:bold">number</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">private</span> <span style="color:#268bd2">depth</span>: <span style="color:#859900;font-weight:bold">number</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">private</span> <span style="color:#268bd2">table</span>: <span style="color:#859900;font-weight:bold">number</span>[][];
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">private</span> <span style="color:#268bd2">seeds</span>: <span style="color:#859900;font-weight:bold">number</span>[];
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">constructor</span>(<span style="color:#268bd2">width</span>: <span style="color:#859900;font-weight:bold">number</span>, <span style="color:#268bd2">depth</span>: <span style="color:#859900;font-weight:bold">number</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">width</span> = <span style="color:#268bd2">width</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">depth</span> = <span style="color:#268bd2">depth</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">table</span> = <span style="color:#cb4b16">Array</span>(<span style="color:#268bd2">depth</span>).<span style="color:#268bd2">fill</span>(<span style="color:#2aa198;font-weight:bold">0</span>).<span style="color:#268bd2">map</span>(() =&gt; <span style="color:#859900">new</span> <span style="color:#cb4b16">Array</span>(<span style="color:#268bd2">width</span>).<span style="color:#268bd2">fill</span>(<span style="color:#2aa198;font-weight:bold">0</span>));
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">seeds</span> = <span style="color:#cb4b16">Array</span>(<span style="color:#268bd2">depth</span>).<span style="color:#268bd2">fill</span>(<span style="color:#2aa198;font-weight:bold">0</span>).<span style="color:#268bd2">map</span>((<span style="color:#268bd2">_</span>, <span style="color:#268bd2">i</span>) =&gt; <span style="color:#268bd2">i</span> &lt;<span style="color:#268bd2;font-weight:bold">em</span>&gt; <span style="color:#2aa198;font-weight:bold">997</span> + <span style="color:#2aa198;font-weight:bold">1</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">private</span> <span style="color:#268bd2">_hash</span>(<span style="color:#268bd2">item</span>: <span style="color:#859900;font-weight:bold">string</span> | <span style="color:#859900;font-weight:bold">number</span>, <span style="color:#268bd2">seedIdx</span>: <span style="color:#859900;font-weight:bold">number</span>): <span style="color:#859900;font-weight:bold">number</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">const</span> <span style="color:#268bd2">str</span> = &lt;<span style="color:#268bd2;font-weight:bold">code</span>&gt;<span style="color:#268bd2">$</span>{<span style="color:#268bd2">item</span>}-<span style="color:#268bd2">$</span>{<span style="color:#859900">this</span>.<span style="color:#268bd2">seeds</span>[<span style="color:#268bd2">seedIdx</span>]}&lt;/<span style="color:#268bd2;font-weight:bold">code</span>&gt;;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">let</span> <span style="color:#268bd2">hash</span> = <span style="color:#2aa198;font-weight:bold">0x811c9dc5</span>; <span style="color:#93a1a1;font-style:italic">// FNV-1a offset basis
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">str</span>.<span style="color:#268bd2">length</span>; <span style="color:#268bd2">i</span>++) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">hash</span> ^= <span style="color:#268bd2">str</span>.<span style="color:#268bd2">charCodeAt</span>(<span style="color:#268bd2">i</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">hash</span> += (<span style="color:#268bd2">hash</span> &lt;&lt; <span style="color:#2aa198;font-weight:bold">1</span>) + (<span style="color:#268bd2">hash</span> &lt;&lt; <span style="color:#2aa198;font-weight:bold">4</span>) + (<span style="color:#268bd2">hash</span> &lt;&lt; <span style="color:#2aa198;font-weight:bold">7</span>) + (<span style="color:#268bd2">hash</span> &lt;&lt; <span style="color:#2aa198;font-weight:bold">8</span>) + (<span style="color:#268bd2">hash</span> &lt;&lt; <span style="color:#2aa198;font-weight:bold">24</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> (<span style="color:#268bd2">hash</span> &gt;&gt;&gt; <span style="color:#2aa198;font-weight:bold">0</span>) % <span style="color:#859900">this</span>.<span style="color:#268bd2">width</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">add</span>(<span style="color:#268bd2">item</span>: <span style="color:#859900;font-weight:bold">string</span> | <span style="color:#859900;font-weight:bold">number</span>, <span style="color:#268bd2">count</span>: <span style="color:#859900;font-weight:bold">number</span> = <span style="color:#2aa198;font-weight:bold">1</span>): <span style="color:#859900">void</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#859900">this</span>.<span style="color:#268bd2">depth</span>; <span style="color:#268bd2">i</span>++) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">const</span> <span style="color:#268bd2">col</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">_hash</span>(<span style="color:#268bd2">item</span>, <span style="color:#268bd2">i</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">this</span>.<span style="color:#268bd2">table</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">col</span>] += <span style="color:#268bd2">count</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">estimate</span>(<span style="color:#268bd2">item</span>: <span style="color:#859900;font-weight:bold">string</span> | <span style="color:#859900;font-weight:bold">number</span>): <span style="color:#859900;font-weight:bold">number</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">let</span> <span style="color:#268bd2">minCount</span> = <span style="color:#859900;font-weight:bold">Infinity</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#859900">this</span>.<span style="color:#268bd2">depth</span>; <span style="color:#268bd2">i</span>++) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">const</span> <span style="color:#268bd2">col</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">_hash</span>(<span style="color:#268bd2">item</span>, <span style="color:#268bd2">i</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">minCount</span> = <span style="color:#cb4b16">Math</span>.<span style="color:#268bd2">min</span>(<span style="color:#268bd2">minCount</span>, <span style="color:#859900">this</span>.<span style="color:#268bd2">table</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">col</span>]);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">minCount</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const sketchTS = new CountMinSketchTS(100, 5);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const streamDataTS: (string | number)[] = [&#34;apple&#34;, &#34;banana&#34;, &#34;apple&#34;, &#34;cherry&#34;, &#34;banana&#34;, &#34;apple&#34;, &#34;date&#34;];
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// for (const item of streamDataTS) {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     sketchTS.add(item);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Estimated frequency of &#39;apple&#39;:&#34;, sketchTS.estimate(&#34;apple&#34;));
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Estimated frequency of &#39;banana&#39;:&#34;, sketchTS.estimate(&#34;banana&#34;));
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Estimated frequency of &#39;date&#39;:&#34;, sketchTS.estimate(&#34;date&#34;));
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Estimated frequency of &#39;grape&#39;:&#34;, sketchTS.estimate(&#34;grape&#34;));
+</span></span></span></code></pre></div><h3 id="cpp">Cpp</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;vector&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;string&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;algorithm&gt;</span><span style="color:#93a1a1;font-style:italic"> </span><span style="color:#93a1a1;font-style:italic">// For std::min
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;limits&gt;</span><span style="color:#93a1a1;font-style:italic">    </span><span style="color:#93a1a1;font-style:italic">// For std::numeric_limits
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;functional&gt;</span><span style="color:#93a1a1;font-style:italic"> </span><span style="color:#93a1a1;font-style:italic">// For std::hash
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;iostream&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// A simple hash function (for demonstration)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// In a real Count-Min Sketch, you&#39;d use k independent universal hash functions.
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#859900;font-weight:bold">unsigned</span> <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">custom_hash</span>(<span style="color:#859900">const</span> <span style="color:#268bd2">std</span>::<span style="color:#268bd2">string</span>&amp; <span style="color:#268bd2">s</span>, <span style="color:#859900;font-weight:bold">unsigned</span> <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">seed</span>, <span style="color:#859900;font-weight:bold">unsigned</span> <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">width</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">unsigned</span> <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">hash_val</span> = <span style="color:#268bd2">seed</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">char</span> <span style="color:#268bd2">c</span> : <span style="color:#268bd2">s</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">hash_val</span> = (<span style="color:#268bd2">hash_val</span> &lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#2aa198;font-weight:bold">31</span>) + <span style="color:#268bd2">c</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">hash_val</span> % <span style="color:#268bd2">width</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#cb4b16">CountMinSketch</span> {
+</span></span><span style="display:flex;"><span><span style="color:#859900">private</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt;&gt; <span style="color:#268bd2">table</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">width</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">depth</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#859900;font-weight:bold">unsigned</span> <span style="color:#859900;font-weight:bold">int</span>&gt; <span style="color:#268bd2">seeds</span>; <span style="color:#93a1a1;font-style:italic">// Seeds for hash functions
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">CountMinSketch</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">w</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">d</span>) : <span style="color:#268bd2">width</span>(<span style="color:#268bd2">w</span>), <span style="color:#268bd2">depth</span>(<span style="color:#268bd2">d</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">table</span>.<span style="color:#268bd2">resize</span>(<span style="color:#268bd2">depth</span>, <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt;(<span style="color:#268bd2">width</span>, <span style="color:#2aa198;font-weight:bold">0</span>));
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">seeds</span>.<span style="color:#268bd2">resize</span>(<span style="color:#268bd2">depth</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Initialize seeds (simple, for demo)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">depth</span>; ++<span style="color:#268bd2">i</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">seeds</span>[<span style="color:#268bd2">i</span>] = <span style="color:#268bd2">i</span> &lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#2aa198;font-weight:bold">997</span> + <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#93a1a1;font-style:italic">// Arbitrary seeds
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">add</span>(<span style="color:#859900">const</span> <span style="color:#268bd2">std</span>::<span style="color:#268bd2">string</span>&amp; <span style="color:#268bd2">item</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">count</span> = <span style="color:#2aa198;font-weight:bold">1</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">depth</span>; ++<span style="color:#268bd2">i</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900;font-weight:bold">unsigned</span> <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">col</span> = <span style="color:#268bd2">custom_hash</span>(<span style="color:#268bd2">item</span>, <span style="color:#268bd2">seeds</span>[<span style="color:#268bd2">i</span>], <span style="color:#268bd2">width</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">table</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">col</span>] += <span style="color:#268bd2">count</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">estimate</span>(<span style="color:#859900">const</span> <span style="color:#268bd2">std</span>::<span style="color:#268bd2">string</span>&amp; <span style="color:#268bd2">item</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">min_count</span> = <span style="color:#268bd2">std</span>::<span style="color:#268bd2">numeric_limits</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt;::<span style="color:#268bd2">max</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">depth</span>; ++<span style="color:#268bd2">i</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900;font-weight:bold">unsigned</span> <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">col</span> = <span style="color:#268bd2">custom_hash</span>(<span style="color:#268bd2">item</span>, <span style="color:#268bd2">seeds</span>[<span style="color:#268bd2">i</span>], <span style="color:#268bd2">width</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">min_count</span> = <span style="color:#268bd2">std</span>::<span style="color:#268bd2">min</span>(<span style="color:#268bd2">min_count</span>, <span style="color:#268bd2">table</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">col</span>]);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">min_count</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// int main() {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     CountMinSketch sketch(100, 5); // w=100, d=5
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::vector&lt;std::string&gt; stream_data = {&#34;apple&#34;, &#34;banana&#34;, &#34;apple&#34;, &#34;cherry&#34;, &#34;banana&#34;, &#34;apple&#34;, &#34;date&#34;};
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     for (const auto&amp; item : stream_data) {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         sketch.add(item);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     }
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; &#34;Estimated frequency of &#39;apple&#39;: &#34; &lt;&lt; sketch.estimate(&#34;apple&#34;) &lt;&lt; std::endl;   // Expected: ~3
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; &#34;Estimated frequency of &#39;banana&#39;: &#34; &lt;&lt; sketch.estimate(&#34;banana&#34;) &lt;&lt; std::endl; // Expected: ~2
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; &#34;Estimated frequency of &#39;date&#39;: &#34; &lt;&lt; sketch.estimate(&#34;date&#34;) &lt;&lt; std::endl;     // Expected: ~1
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; &#34;Estimated frequency of &#39;grape&#39;: &#34; &lt;&lt; sketch.estimate(&#34;grape&#34;) &lt;&lt; std::endl;   // Expected: ~0 (or small non-zero)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     return 0;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span></code></pre></div><h3 id="go">Go</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">package</span> <span style="color:#268bd2">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> (
+</span></span><span style="display:flex;"><span>    <span style="color:#2aa198">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#2aa198">&#34;hash/fnv&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#2aa198">&#34;math&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">type</span> <span style="color:#268bd2">CountMinSketch</span> <span style="color:#859900">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">width</span>  <span style="color:#859900;font-weight:bold">int</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">depth</span>  <span style="color:#859900;font-weight:bold">int</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">table</span>  [][]<span style="color:#859900;font-weight:bold">int</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">seeds</span>  []<span style="color:#859900;font-weight:bold">uint32</span> <span style="color:#93a1a1;font-style:italic">// Seeds for hash functions</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> (<span style="color:#268bd2">cms</span> &lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">CountMinSketch</span>) <span style="color:#268bd2">hash</span>(<span style="color:#268bd2">item</span> <span style="color:#859900;font-weight:bold">string</span>, <span style="color:#268bd2">seed</span> <span style="color:#859900;font-weight:bold">uint32</span>) <span style="color:#859900;font-weight:bold">uint32</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">h</span> := <span style="color:#268bd2">fnv</span>.<span style="color:#268bd2">New32a</span>()
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">h</span>.<span style="color:#268bd2">Write</span>([]<span style="color:#cb4b16">byte</span>(<span style="color:#268bd2">item</span>))
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">h</span>.<span style="color:#268bd2">Write</span>([]<span style="color:#cb4b16">byte</span>(<span style="color:#268bd2">fmt</span>.<span style="color:#268bd2">Sprintf</span>(<span style="color:#2aa198">&#34;%d&#34;</span>, <span style="color:#268bd2">seed</span>))) <span style="color:#93a1a1;font-style:italic">// Mix in the seed</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">h</span>.<span style="color:#268bd2">Sum32</span>() % <span style="color:#cb4b16">uint32</span>(<span style="color:#268bd2">cms</span>.<span style="color:#268bd2">width</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> <span style="color:#268bd2">NewCountMinSketch</span>(<span style="color:#268bd2">width</span>, <span style="color:#268bd2">depth</span> <span style="color:#859900;font-weight:bold">int</span>) &lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">CountMinSketch</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">table</span> := <span style="color:#cb4b16">make</span>([][]<span style="color:#859900;font-weight:bold">int</span>, <span style="color:#268bd2">depth</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> := <span style="color:#859900">range</span> <span style="color:#268bd2">table</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">table</span>[<span style="color:#268bd2">i</span>] = <span style="color:#cb4b16">make</span>([]<span style="color:#859900;font-weight:bold">int</span>, <span style="color:#268bd2">width</span>)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">seeds</span> := <span style="color:#cb4b16">make</span>([]<span style="color:#859900;font-weight:bold">uint32</span>, <span style="color:#268bd2">depth</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> := <span style="color:#859900">range</span> <span style="color:#268bd2">seeds</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">seeds</span>[<span style="color:#268bd2">i</span>] = <span style="color:#cb4b16">uint32</span>(<span style="color:#268bd2">i</span>&lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#2aa198;font-weight:bold">997</span> + <span style="color:#2aa198;font-weight:bold">1</span>) <span style="color:#93a1a1;font-style:italic">// Simple seed generation</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> &amp;<span style="color:#268bd2">CountMinSketch</span>{
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">width</span>:  <span style="color:#268bd2">width</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">depth</span>:  <span style="color:#268bd2">depth</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">table</span>:  <span style="color:#268bd2">table</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">seeds</span>:  <span style="color:#268bd2">seeds</span>,
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> (<span style="color:#268bd2">cms</span> &lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">CountMinSketch</span>) <span style="color:#268bd2">Add</span>(<span style="color:#268bd2">item</span> <span style="color:#859900;font-weight:bold">string</span>, <span style="color:#268bd2">count</span> <span style="color:#859900;font-weight:bold">int</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> := <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">cms</span>.<span style="color:#268bd2">depth</span>; <span style="color:#268bd2">i</span>++ {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">col</span> := <span style="color:#268bd2">cms</span>.<span style="color:#268bd2">hash</span>(<span style="color:#268bd2">item</span>, <span style="color:#268bd2">cms</span>.<span style="color:#268bd2">seeds</span>[<span style="color:#268bd2">i</span>])
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">cms</span>.<span style="color:#268bd2">table</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">col</span>] += <span style="color:#268bd2">count</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> (<span style="color:#268bd2">cms</span> &lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">CountMinSketch</span>) <span style="color:#268bd2">Estimate</span>(<span style="color:#268bd2">item</span> <span style="color:#859900;font-weight:bold">string</span>) <span style="color:#859900;font-weight:bold">int</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">minCount</span> := <span style="color:#268bd2">math</span>.<span style="color:#268bd2">MaxInt32</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> := <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">cms</span>.<span style="color:#268bd2">depth</span>; <span style="color:#268bd2">i</span>++ {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">col</span> := <span style="color:#268bd2">cms</span>.<span style="color:#268bd2">hash</span>(<span style="color:#268bd2">item</span>, <span style="color:#268bd2">cms</span>.<span style="color:#268bd2">seeds</span>[<span style="color:#268bd2">i</span>])
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">cms</span>.<span style="color:#268bd2">table</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">col</span>] &lt; <span style="color:#268bd2">minCount</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">minCount</span> = <span style="color:#268bd2">cms</span>.<span style="color:#268bd2">table</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">col</span>]
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">minCount</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// func main() {</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     sketch := NewCountMinSketch(100, 5) // w=100, d=5</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     streamData := []string{&#34;apple&#34;, &#34;banana&#34;, &#34;apple&#34;, &#34;cherry&#34;, &#34;banana&#34;, &#34;apple&#34;, &#34;date&#34;}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     for _, item := range streamData {</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         sketch.Add(item, 1)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     }</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     fmt.Println(&#34;Estimated frequency of &#39;apple&#39;:&#34;, sketch.Estimate(&#34;apple&#34;))   // Expected: ~3</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     fmt.Println(&#34;Estimated frequency of &#39;banana&#39;:&#34;, sketch.Estimate(&#34;banana&#34;)) // Expected: ~2</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     fmt.Println(&#34;Estimated frequency of &#39;date&#39;:&#34;, sketch.Estimate(&#34;date&#34;))     // Expected: ~1</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     fmt.Println(&#34;Estimated frequency of &#39;grape&#39;:&#34;, sketch.Estimate(&#34;grape&#34;))   // Expected: ~0 (or small non-zero)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }</span>
+</span></span></code></pre></div><h3 id="d">D</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-d" data-lang="d"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.stdio</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.array</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.algorithm</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.string</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.conv</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.numeric</span>; <span style="color:#93a1a1;font-style:italic">// For std.numeric.min
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// A simple hash function (for demonstration)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// In a real Count-Min Sketch, you&#39;d use k independent universal hash functions.
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#859900;font-weight:bold">uint</span> <span style="color:#268bd2">custom_hash</span>(<span style="color:#cb4b16">string</span> <span style="color:#268bd2">s</span>, <span style="color:#859900;font-weight:bold">uint</span> <span style="color:#268bd2">seed</span>, <span style="color:#859900;font-weight:bold">uint</span> <span style="color:#268bd2">width</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">uint</span> <span style="color:#268bd2">hash_val</span> = <span style="color:#268bd2">seed</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">foreach</span> (<span style="color:#859900;font-weight:bold">char</span> <span style="color:#268bd2">c</span>; <span style="color:#268bd2">s</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">hash_val</span> = (<span style="color:#268bd2">hash_val</span> &lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#2aa198;font-weight:bold">31</span>) + <span style="color:#268bd2">c</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">hash_val</span> % <span style="color:#268bd2">width</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#cb4b16">CountMinSketch</span> {
+</span></span><span style="display:flex;"><span><span style="color:#859900">private</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span>[][] <span style="color:#268bd2">table</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">width</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">depth</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">uint</span>[] <span style="color:#268bd2">seeds</span>; <span style="color:#93a1a1;font-style:italic">// Seeds for hash functions
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#268bd2">
+</span></span></span><span style="display:flex;"><span><span style="color:#268bd2">public:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">this</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">w</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">d</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">width</span> = <span style="color:#268bd2">w</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">depth</span> = <span style="color:#268bd2">d</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">table</span> = <span style="color:#859900">new</span> <span style="color:#859900;font-weight:bold">int</span>[<span style="color:#268bd2">depth</span>][<span style="color:#268bd2">width</span>]; <span style="color:#93a1a1;font-style:italic">// Initialize with zeros
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">seeds</span> = <span style="color:#859900">new</span> <span style="color:#859900;font-weight:bold">uint</span>[<span style="color:#268bd2">depth</span>];
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Initialize seeds (simple, for demo)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">foreach</span> (<span style="color:#268bd2">i</span>; <span style="color:#2aa198;font-weight:bold">0.</span>.<span style="color:#268bd2">depth</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">seeds</span>[<span style="color:#268bd2">i</span>] = <span style="color:#859900">cast</span>(<span style="color:#859900;font-weight:bold">uint</span>)(<span style="color:#268bd2">i</span> &lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#2aa198;font-weight:bold">997</span> + <span style="color:#2aa198;font-weight:bold">1</span>); <span style="color:#93a1a1;font-style:italic">// Arbitrary seeds
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">add</span>(<span style="color:#cb4b16">string</span> <span style="color:#268bd2">item</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">count</span> = <span style="color:#2aa198;font-weight:bold">1</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">foreach</span> (<span style="color:#268bd2">i</span>; <span style="color:#2aa198;font-weight:bold">0.</span>.<span style="color:#268bd2">depth</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900;font-weight:bold">uint</span> <span style="color:#268bd2">col</span> = <span style="color:#268bd2">custom_hash</span>(<span style="color:#268bd2">item</span>, <span style="color:#268bd2">seeds</span>[<span style="color:#268bd2">i</span>], <span style="color:#859900">cast</span>(<span style="color:#859900;font-weight:bold">uint</span>)<span style="color:#268bd2">width</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">table</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">col</span>] += <span style="color:#268bd2">count</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">estimate</span>(<span style="color:#cb4b16">string</span> <span style="color:#268bd2">item</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">min_count</span> = <span style="color:#859900;font-weight:bold">int</span>.<span style="color:#268bd2">max</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">foreach</span> (<span style="color:#268bd2">i</span>; <span style="color:#2aa198;font-weight:bold">0.</span>.<span style="color:#268bd2">depth</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900;font-weight:bold">uint</span> <span style="color:#268bd2">col</span> = <span style="color:#268bd2">custom_hash</span>(<span style="color:#268bd2">item</span>, <span style="color:#268bd2">seeds</span>[<span style="color:#268bd2">i</span>], <span style="color:#859900">cast</span>(<span style="color:#859900;font-weight:bold">uint</span>)<span style="color:#268bd2">width</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">min_count</span> = <span style="color:#268bd2">min</span>(<span style="color:#268bd2">min_count</span>, <span style="color:#268bd2">table</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">col</span>]);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">min_count</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// void main() {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     auto sketch = new CountMinSketch(100, 5); // w=100, d=5
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     string[] stream_data = [&#34;apple&#34;, &#34;banana&#34;, &#34;apple&#34;, &#34;cherry&#34;, &#34;banana&#34;, &#34;apple&#34;, &#34;date&#34;];
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     foreach (item; stream_data) {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         sketch.add(item);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     }
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     writefln(&#34;Estimated frequency of &#39;apple&#39;: %s&#34;, sketch.estimate(&#34;apple&#34;));   // Expected: ~3
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     writefln(&#34;Estimated frequency of &#39;banana&#39;: %s&#34;, sketch.estimate(&#34;banana&#34;)); // Expected: ~2
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     writefln(&#34;Estimated frequency of &#39;date&#39;: %s&#34;, sketch.estimate(&#34;date&#34;));     // Expected: ~1
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     writefln(&#34;Estimated frequency of &#39;grape&#39;: %s&#34;, sketch.estimate(&#34;grape&#34;));   // Expected: ~0 (or small non-zero)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span></code></pre></div><h2 id="code-walkthrough">Code Walkthrough</h2>
+<h3 id="code-walkthrough-1">Code Walkthrough</h3>
+<p>A <code>Count-Min Sketch</code> is implemented using a <code>2D array</code> of counters and a set of independent <code>hash functions</code>. The core logic involves applying these <code>hash functions</code> to map incoming <code>items</code> to specific <code>columns</code> in each <code>row</code> of the <code>table</code>.</p>
+<hr>
+<p><strong>Class Structure:</strong></p>
+<pre><code>- `table`: A `d x w` `matrix` (`2D array`) of integers, initialized to zeros. Each `row` corresponds to a different `hash function`.
+
+- `width (w)`: The number of `columns` in the `table`. Affects the overestimation error.
+
+- `depth (d)`: The number of `rows` in the `table`, which is also the number of independent `hash functions`. Affects the probability of the overestimation error occurring.
+
+- `seeds`: A `list`/`vector`/`array` of random `seeds`, one for each `hash function`. Using different `seeds` makes the `hash functions` approximately independent.
+</code></pre>
+<p><strong><code>_hash(item, seed_idx)</code>:</strong> A helper function to generate a <code>hash value</code> for an <code>item</code> using a specific <code>seed</code> and mapping it to a <code>column index</code> within the <code>width</code>.</p>
+<p><strong><code>add(item, count=1)</code>:</strong></p>
+<pre><code>- For each of the `d hash functions` (i.e., for each `row` in the `table`):
+
+        - Calculate the `column index` by hashing the `item` with the respective `seed`.
+
+        - Increment the counter at `table[row][col]` by the `count_increment`.
+
+&lt;/li&gt;
+</code></pre>
+<p><strong><code>estimate(item)</code>:</strong></p>
+<pre><code>- Initializes `min_count` to a very large value.
+
+- For each of the `d hash functions`:
+
+        - Calculate the `column index` by hashing the `item`.
+
+        - Retrieve the counter value `table[row][col]`.
+
+        - Update `min_count` to be the minimum of `min_count` and the retrieved counter value.
+
+&lt;/li&gt;
+- Returns `min_count` as the estimated `frequency`.
+</code></pre>
+<h2 id="applications">Applications</h2>
+<h3 id="application">Application</h3>
+<p>Count-Min Sketch is invaluable in big data analytics and network monitoring where exact counts are too expensive to maintain, but approximate frequencies are sufficient. Its applications include:</p>
+<pre><code>    - **Network Traffic Analysis:** Estimating the number of packets from a specific IP address or destination, identifying &quot;heavy hitters&quot; (e.g., Denial of Service attacks, popular content).
+
+    - **Database Query Optimization:** Providing approximate answers to `GROUP BY` queries or estimating join sizes in very large databases.
+
+    - **Stream Analytics:** Tracking popular items or trends in real-time data streams (e.g., trending topics on social media).
+
+    - **Web Analytics:** Estimating frequencies of URL access, user actions, or search queries.
+
+    - **Anomaly Detection:** Identifying unusual patterns in data by flagging items with unexpectedly high or low frequencies.
+</code></pre>
+
+    </div>
+</article>
+
+<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
+    
+    <a href="//localhost:1313/dsa-42_/data_structures/specialized/crdt/" class="nav-btn">← Previous</a>
+    
+    
+    <a href="//localhost:1313/dsa-42_/data_structures/specialized/" class="nav-btn">Up</a>
+
+    
+    <a href="//localhost:1313/dsa-42_/data_structures/specialized/bloom_filter/" class="nav-btn">Next →</a>
+    
+</div>
+
+    </main>
+
+    <footer class="footer">
+        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
+    </footer>
+
+    <script>
+        const body = document.getElementById('theme-body');
+        const btn = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme');
+
+        
+        function updateButtonText() {
+            if (body.classList.contains('theme-terminal')) {
+                btn.textContent = "Light Mode";
+            } else {
+                btn.textContent = "Dark Mode";
+            }
+        }
+
+        if (currentTheme === 'terminal') {
+            body.classList.add('theme-terminal');
+        }
+        
+        
+        updateButtonText();
+
+        btn.addEventListener('click', () => {
+            body.classList.toggle('theme-terminal');
+            updateButtonText();
+            
+            let theme = 'natural';
+            if (body.classList.contains('theme-terminal')) {
+                theme = 'terminal';
+            }
+            localStorage.setItem('theme', theme);
+        });
+    </script>
+</body>
+</html>

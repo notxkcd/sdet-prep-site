@@ -1,0 +1,773 @@
+---
+title: "Treap"
+---
+
+A `Treap` is a randomized `binary search tree` (`BST`) data structure that combines the properties of a `binary search tree` and a `binary heap`. Each `node` in a `Treap` stores both a `key` (like a `BST`) and a randomly assigned `priority` (like a `heap`).
+
+The `tree` is ordered by `key` according to `BST properties` (left child < parent < right child) AND ordered by `priority` according to `heap properties` (parent's `priority` is higher/lower than children's, depending on min/max heap). This dual ordering ensures that the `Treap` remains balanced with high probability, achieving `O(log N)` average-case time complexity for `search`, `insertion`, and `deletion`.
+
+## How it Works
+
+### How it Works (Expanded)
+
+The balancing act in a `Treap` comes from its random `priority` assignments. Since `priorities` are random, the structure of the `Treap` is equivalent to a randomly built `BST`. It turns out that a randomly built `BST` is balanced with high probability, thus providing `O(log N)` average-case performance.
+
+---
+
+Example Treap (Key, Priority): (min-heap property for priority)
+
+        (10, 5)
+       /       \
+    (5, 8)     (15, 7)
+   /      \    /      \
+(2, 12) (7, 9) (12, 11) (18, 10)
+
+Key ordering: 2<5<7<10<12<15<18 (BST)
+Priority ordering: 5<8,9; 7<11,10 (Min-Heap)
+
+## Implementation {#implementation}
+
+### Python
+
+```python
+import random
+
+class TreapNode:
+    def __init__(self, key, priority=None):
+        self.key = key
+        self.priority = priority if priority is not None else random.randint(0, 10000) # Random priority
+        self.left = None
+        self.right = None
+
+class Treap:
+    def __init__(self):
+        self.root = None
+
+    def _rotate_left(self, x):
+        y = x.right
+        x.right = y.left
+        y.left = x
+        return y
+
+    def _rotate_right(self, y):
+        x = y.left
+        y.left = x.right
+        x.right = y
+        return x
+
+    def insert(self, root, key):
+        if not root:
+            return TreapNode(key)
+        
+        if key < root.key:
+            root.left = self.insert(root.left, key)
+            # Fix heap property if child's priority is higher (assuming max-heap for priority)
+            if root.left and root.left.priority > root.priority:
+                root = self._rotate_right(root)
+        else:
+            root.right = self.insert(root.right, key)
+            # Fix heap property
+            if root.right and root.right.priority > root.priority:
+                root = self._rotate_left(root)
+        return root
+
+    def search(self, root, key):
+        if not root or root.key == key:
+            return root
+        if key < root.key:
+            return self.search(root.left, key)
+        return self.search(root.right, key)
+
+    def delete(self, root, key):
+        if not root:
+            return None
+        
+        if key < root.key:
+            root.left = self.delete(root.left, key)
+        elif key > root.key:
+            root.right = self.delete(root.right, key)
+        else: # Found node to delete
+            if not root.left and not root.right: # Leaf node
+                return None
+            elif not root.left: # Only right child
+                return root.right
+            elif not root.right: # Only left child
+                return root.left
+            else: # Two children, rotate to make it a leaf
+                if root.left.priority > root.right.priority: # Rotate right
+                    root = self._rotate_right(root)
+                    root.right = self.delete(root.right, key)
+                else: # Rotate left
+                    root = self._rotate_left(root)
+                    root.left = self.delete(root.left, key)
+        return root
+
+# Example Usage:
+# treap_tree = Treap()
+# root = None
+# keys_to_insert = [50, 30, 70, 20, 40, 60, 80]
+# for k in keys_to_insert:
+#     root = treap_tree.insert(root, k)
+
+# print("Search for 40:", treap_tree.search(root, 40).key if treap_tree.search(root, 40) else "Not Found")
+# root = treap_tree.delete(root, 30)
+# print("Search for 30 after deletion:", treap_tree.search(root, 30))
+```
+
+### Javascript
+
+```javascript
+class TreapNode {
+    constructor(key, priority = Math.floor(Math.random() <em> 10000)) {
+        this.key = key;
+        this.priority = priority;
+        this.left = null;
+        this.right = null;
+    }
+}
+
+class Treap {
+    constructor() {
+        this.root = null;
+    }
+
+    _rotateLeft(x) {
+        let y = x.right;
+        x.right = y.left;
+        y.left = x;
+        return y;
+    }
+
+    _rotateRight(y) {
+        let x = y.left;
+        y.left = x.right;
+        x.right = y;
+        return x;
+    }
+
+    insert(root, key) {
+        if (!root) {
+            return new TreapNode(key);
+        }
+        
+        if (key < root.key) {
+            root.left = this.insert(root.left, key);
+            // Fix heap property (assuming max-heap for priority)
+            if (root.left && root.left.priority > root.priority) {
+                root = this._rotateRight(root);
+            }
+        } else {
+            root.right = this.insert(root.right, key);
+            // Fix heap property
+            if (root.right && root.right.priority > root.priority) {
+                root = this._rotateLeft(root);
+            }
+        }
+        return root;
+    }
+
+    search(root, key) {
+        if (!root || root.key === key) {
+            return root;
+        }
+        if (key < root.key) {
+            return this.search(root.left, key);
+        }
+        return this.search(root.right, key);
+    }
+
+    delete(root, key) {
+        if (!root) {
+            return null;
+        }
+        
+        if (key < root.key) {
+            root.left = this.delete(root.left, key);
+        } else if (key > root.key) {
+            root.right = this.delete(root.right, key);
+        } else { // Found node to delete
+            if (!root.left && !root.right) { // Leaf node
+                return null;
+            } else if (!root.left) { // Only right child
+                return root.right;
+            } else if (!root.right) { // Only left child
+                return root.left;
+            } else { // Two children, rotate to make it a leaf
+                if (root.left.priority > root.right.priority) { // Rotate right
+                    root = this._rotateRight(root);
+                    root.right = this.delete(root.right, key);
+                } else { // Rotate left
+                    root = this._rotateLeft(root);
+                    root.left = this.delete(root.left, key);
+                }
+            }
+        }
+        return root;
+    }
+}
+
+// const treapTree = new Treap();
+// let root = null;
+// const keysToInsert = [50, 30, 70, 20, 40, 60, 80];
+// for (const k of keysToInsert) {
+//     root = treapTree.insert(root, k);
+// }
+
+// console.log("Search for 40:", treapTree.search(root, 40)?.key || "Not Found");
+// root = treapTree.delete(root, 30);
+// console.log("Search for 30 after deletion:", treapTree.search(root, 30));
+```
+
+### Typescript
+
+```typescript
+class TreapNodeTS {
+    public key: number;
+    public priority: number;
+    public left: TreapNodeTS | null;
+    public right: TreapNodeTS | null;
+
+    constructor(key: number, priority: number = Math.floor(Math.random() </em> 10000)) {
+        this.key = key;
+        this.priority = priority;
+        this.left = null;
+        this.right = null;
+    }
+}
+
+class TreapTS {
+    public root: TreapNodeTS | null = null;
+
+    private _rotateLeft(x: TreapNodeTS): TreapNodeTS {
+        let y = x.right!;
+        x.right = y.left;
+        y.left = x;
+        return y;
+    }
+
+    private _rotateRight(y: TreapNodeTS): TreapNodeTS {
+        let x = y.left!;
+        y.left = x.right;
+        x.right = y;
+        return x;
+    }
+
+    public insert(rootNode: TreapNodeTS | null, key: number): TreapNodeTS {
+        if (!rootNode) {
+            return new TreapNodeTS(key);
+        }
+        
+        if (key < rootNode.key) {
+            rootNode.left = this.insert(rootNode.left, key);
+            // Fix heap property (assuming max-heap for priority)
+            if (rootNode.left && rootNode.left.priority > rootNode.priority) {
+                rootNode = this._rotateRight(rootNode);
+            }
+        } else {
+            rootNode.right = this.insert(rootNode.right, key);
+            // Fix heap property
+            if (rootNode.right && rootNode.right.priority > rootNode.priority) {
+                rootNode = this._rotateLeft(rootNode);
+            }
+        }
+        return rootNode;
+    }
+
+    public search(rootNode: TreapNodeTS | null, key: number): TreapNodeTS | null {
+        if (!rootNode || rootNode.key === key) {
+            return rootNode;
+        }
+        if (key < rootNode.key) {
+            return this.search(rootNode.left, key);
+        }
+        return this.search(rootNode.right, key);
+    }
+
+    public delete(rootNode: TreapNodeTS | null, key: number): TreapNodeTS | null {
+        if (!rootNode) {
+            return null;
+        }
+        
+        if (key < rootNode.key) {
+            rootNode.left = this.delete(rootNode.left, key);
+        } else if (key > rootNode.key) {
+            rootNode.right = this.delete(rootNode.right, key);
+        } else { // Found node to delete
+            if (!rootNode.left && !rootNode.right) { // Leaf node
+                return null;
+            } else if (!rootNode.left) { // Only right child
+                return rootNode.right;
+            } else if (!rootNode.right) { // Only left child
+                return rootNode.left;
+            } else { // Two children, rotate to make it a leaf
+                if (rootNode.left.priority > rootNode.right.priority) { // Rotate right
+                    rootNode = this._rotateRight(rootNode);
+                    rootNode.right = this.delete(rootNode.right, key);
+                } else { // Rotate left
+                    rootNode = this._rotateLeft(rootNode);
+                    rootNode.left = this.delete(rootNode.left, key);
+                }
+            }
+        }
+        return rootNode;
+    }
+}
+
+// const treapTreeTS = new TreapTS();
+// let rootTS: TreapNodeTS | null = null;
+// const keysToInsertTS: number[] = [50, 30, 70, 20, 40, 60, 80];
+// for (const k of keysToInsertTS) {
+//     rootTS = treapTreeTS.insert(rootTS, k);
+// }
+
+// console.log("Search for 40:", treapTreeTS.search(rootTS, 40)?.key || "Not Found");
+// rootTS = treapTreeTS.delete(rootTS, 30);
+// console.log("Search for 30 after deletion:", treapTreeTS.search(rootTS, 30));
+```
+
+### Cpp
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <algorithm> // For std::max
+#include <random>    // For std::mt19937, std::uniform_int_distribution
+#include <chrono>    // For std::chrono::high_resolution_clock
+
+class TreapNode {
+public:
+    int key;
+    int priority;
+    TreapNode <em>left;
+    TreapNode </em>right;
+
+    TreapNode(int k) : key(k), left(nullptr), right(nullptr) {
+        // Generate a random priority
+        static std::mt19937 gen(std::chrono::high_resolution_clock::now().time_since_epoch().count());
+        static std::uniform_int_distribution<> dist(0, 10000);
+        priority = dist(gen);
+    }
+};
+
+class Treap {
+public:
+    TreapNode<em> root;
+
+    Treap() : root(nullptr) {}
+
+private:
+    // Left rotation
+    TreapNode</em> rotateLeft(TreapNode<em> x) {
+        TreapNode</em> y = x->right;
+        x->right = y->left;
+        y->left = x;
+        return y;
+    }
+
+    // Right rotation
+    TreapNode<em> rotateRight(TreapNode</em> y) {
+        TreapNode<em> x = y->left;
+        y->left = x->right;
+        x->right = y;
+        return x;
+    }
+
+    // Insert operation
+    TreapNode</em> insert(TreapNode<em> node, int key) {
+        if (node == nullptr) {
+            return new TreapNode(key);
+        }
+
+        if (key < node->key) {
+            node->left = insert(node->left, key);
+            // Fix heap property (assuming max-heap for priority)
+            if (node->left->priority > node->priority) {
+                node = rotateRight(node);
+            }
+        } else if (key > node->key) {
+            node->right = insert(node->right, key);
+            // Fix heap property
+            if (node->right->priority > node->priority) {
+                node = rotateLeft(node);
+            }
+        }
+        // If key == node->key, do nothing (no duplicates)
+        return node;
+    }
+
+    // Search operation
+    TreapNode</em> search(TreapNode<em> node, int key) {
+        if (node == nullptr || node->key == key) {
+            return node;
+        }
+        if (key < node->key) {
+            return search(node->left, key);
+        }
+        return search(node->right, key);
+    }
+
+    // Delete operation
+    TreapNode</em> deleteNode(TreapNode<em> node, int key) {
+        if (node == nullptr) {
+            return nullptr;
+        }
+
+        if (key < node->key) {
+            node->left = deleteNode(node->left, key);
+        } else if (key > node->key) {
+            node->right = deleteNode(node->right, key);
+        } else { // Found node to delete
+            if (node->left == nullptr && node->right == nullptr) { // Leaf node
+                delete node;
+                return nullptr;
+            } else if (node->left == nullptr) { // Only right child
+                TreapNode</em> temp = node->right;
+                delete node;
+                return temp;
+            } else if (node->right == nullptr) { // Only left child
+                TreapNode<em> temp = node->left;
+                delete node;
+                return temp;
+            } else { // Two children, rotate to make it a leaf
+                if (node->left->priority > node->right->priority) { // Rotate right
+                    node = rotateRight(node);
+                    node->right = deleteNode(node->right, key); // Recursive call on rotated child
+                } else { // Rotate left
+                    node = rotateLeft(node);
+                    node->left = deleteNode(node->left, key); // Recursive call on rotated child
+                }
+            }
+        }
+        return node;
+    }
+
+public:
+    void insert(int key) {
+        root = insert(root, key);
+    }
+
+    TreapNode</em> search(int key) {
+        return search(root, key);
+    }
+
+    void deleteKey(int key) {
+        root = deleteNode(root, key);
+    }
+};
+
+// int main() {
+//     Treap treap_tree;
+//     std::vector<int> keys_to_insert = {50, 30, 70, 20, 40, 60, 80};
+//     for (int k : keys_to_insert) {
+//         treap_tree.insert(k);
+//     }
+//     
+//     TreapNode<em> found = treap_tree.search(40);
+//     if (found) {
+//         std::cout << "Search for 40: Found (Key: " << found->key << ")" << std::endl;
+//     } else {
+//         std::cout << "Search for 40: Not Found" << std::endl;
+//     }
+
+//     treap_tree.deleteKey(30);
+//     found = treap_tree.search(30);
+//     if (found) {
+//         std::cout << "Search for 30 after deletion: Found (Key: " << found->key << ")" << std::endl;
+//     } else {
+//         std::cout << "Search for 30 after deletion: Not Found" << std::endl;
+//     }
+//     return 0;
+// }
+```
+
+### Go
+
+```go
+package main
+
+import (
+    "fmt"
+    "math/rand"
+    "time"
+)
+
+type TreapNode struct {
+    Key      int
+    Priority int
+    Left     </em>TreapNode
+    Right    <em>TreapNode
+}
+
+func NewTreapNode(key int) </em>TreapNode {
+    // Seed the random number generator once
+    rand.Seed(time.Now().UnixNano())
+    return &TreapNode{Key: key, Priority: rand.Intn(10000)}
+}
+
+type Treap struct {
+    Root <em>TreapNode
+}
+
+func (t </em>Treap) rotateLeft(x <em>TreapNode) </em>TreapNode {
+    y := x.Right
+    x.Right = y.Left
+    y.Left = x
+    return y
+}
+
+func (t <em>Treap) rotateRight(y </em>TreapNode) <em>TreapNode {
+    x := y.Left
+    y.Left = x.Right
+    x.Right = y
+    return x
+}
+
+func (t </em>Treap) insert(node <em>TreapNode, key int) </em>TreapNode {
+    if node == nil {
+        return NewTreapNode(key)
+    }
+
+    if key < node.Key {
+        node.Left = t.insert(node.Left, key)
+        // Fix heap property (assuming max-heap for priority)
+        if node.Left.Priority > node.Priority {
+            node = t.rotateRight(node)
+        }
+    } else if key > node.Key {
+        node.Right = t.insert(node.Right, key)
+        // Fix heap property
+        if node.Right.Priority > node.Priority {
+            node = t.rotateLeft(node)
+        }
+    }
+    // If key == node.Key, do nothing (no duplicates)
+    return node
+}
+
+func (t <em>Treap) search(node </em>TreapNode, key int) <em>TreapNode {
+    if node == nil || node.Key == key {
+        return node
+    }
+    if key < node.Key {
+        return t.search(node.Left, key)
+    }
+    return t.search(node.Right, key)
+}
+
+func (t </em>Treap) deleteNode(node <em>TreapNode, key int) </em>TreapNode {
+    if node == nil {
+        return nil
+    }
+
+    if key < node.Key {
+        node.Left = t.deleteNode(node.Left, key)
+    } else if key > node.Key {
+        node.Right = t.deleteNode(node.Right, key)
+    } else { // Found node to delete
+        if node.Left == nil && node.Right == nil { // Leaf node
+            return nil
+        } else if node.Left == nil { // Only right child
+            return node.Right
+        } else if node.Right == nil { // Only left child
+            return node.Left
+        } else { // Two children, rotate to make it a leaf
+            if node.Left.Priority > node.Right.Priority { // Rotate right
+                node = t.rotateRight(node)
+                node.Right = t.deleteNode(node.Right, key)
+            } else { // Rotate left
+                node = t.rotateLeft(node)
+                node.Left = t.deleteNode(node.Left, key)
+            }
+        }
+    }
+    return node
+}
+
+func (t <em>Treap) Insert(key int) {
+    t.Root = t.insert(t.Root, key)
+}
+
+func (t </em>Treap) Search(key int) <em>TreapNode {
+    return t.search(t.Root, key)
+}
+
+func (t </em>Treap) Delete(key int) {
+    t.Root = t.deleteNode(t.Root, key)
+}
+
+// func main() {
+//     treapTree := &Treap{}
+//     keysToInsert := []int{50, 30, 70, 20, 40, 60, 80}
+//     for _, k := range keysToInsert {
+//         treapTree.Insert(k)
+//     }
+//     
+//     found := treapTree.Search(40)
+//     if found != nil {
+//         fmt.Printf("Search for 40: Found (Key: %d)\n", found.Key)
+//     } else {
+//         fmt.Println("Search for 40: Not Found")
+//     }
+
+//     treapTree.Delete(30)
+//     found = treapTree.Search(30)
+//     if found != nil {
+//         fmt.Printf("Search for 30 after deletion: Found (Key: %d)\n", found.Key)
+//     } else {
+//         fmt.Println("Search for 30 after deletion: Not Found")
+//     }
+// }
+```
+
+### D
+
+```d
+import std.stdio;
+import std.random;
+import std.algorithm;
+
+class TreapNode {
+    int key;
+    int priority;
+    TreapNode left;
+    TreapNode right;
+
+    this(int k) {
+        key = k;
+        priority = uniform(0, 10000); // Random priority
+        left = null;
+        right = null;
+    }
+}
+
+class Treap {
+    TreapNode root;
+
+    this() {
+        root = null;
+    }
+
+private:
+    TreapNode rotateLeft(TreapNode x) {
+        TreapNode y = x.right;
+        x.right = y.left;
+        y.left = x;
+        return y;
+    }
+
+    TreapNode rotateRight(TreapNode y) {
+        TreapNode x = y.left;
+        y.left = x.right;
+        x.right = y;
+        return x;
+    }
+
+    TreapNode insert(TreapNode node, int key) {
+        if (node is null) {
+            return new TreapNode(key);
+        }
+
+        if (key < node.key) {
+            node.left = insert(node.left, key);
+            // Fix heap property (assuming max-heap for priority)
+            if (node.left !is null && node.left.priority > node.priority) {
+                node = rotateRight(node);
+            }
+        } else if (key > node.key) {
+            node.right = insert(node.right, key);
+            // Fix heap property
+            if (node.right !is null && node.right.priority > node.priority) {
+                node = rotateLeft(node);
+            }
+        }
+        // If key == node.key, do nothing (no duplicates)
+        return node;
+    }
+
+    TreapNode search(TreapNode node, int key) {
+        if (node is null || node.key == key) {
+            return node;
+        }
+        if (key < node.key) {
+            return search(node.left, key);
+        }
+        return search(node.right, key);
+    }
+
+    TreapNode deleteNode(TreapNode node, int key) {
+        if (node is null) {
+            return null;
+        }
+
+        if (key < node.key) {
+            node.left = deleteNode(node.left, key);
+        } else if (key > node.key) {
+            node.right = deleteNode(node.right, key);
+        } else { // Found node to delete
+            if (node.left is null && node.right is null) { // Leaf node
+                return null;
+            } else if (node.left is null) { // Only right child
+                return node.right;
+            } else if (node.right is null) { // Only left child
+                return node.left;
+            } else { // Two children, rotate to make it a leaf
+                if (node.left.priority > node.right.priority) { // Rotate right
+                    node = rotateRight(node);
+                    node.right = deleteNode(node.right, key);
+                } else { // Rotate left
+                    node = rotateLeft(node);
+                    node.left = deleteNode(node.left, key);
+                }
+            }
+        }
+        return node;
+    }
+
+public:
+    void insert(int key) {
+        root = insert(root, key);
+    }
+
+    TreapNode search(int key) {
+        return search(root, key);
+    }
+
+    void deleteKey(int key) {
+        root = deleteNode(root, key);
+    }
+}
+
+// void main() {
+//     auto treapTree = new Treap();
+//     int[] keysToInsert = [50, 30, 70, 20, 40, 60, 80];
+//     foreach (k; keysToInsert) {
+//         treapTree.insert(k);
+//     }
+
+//     auto found = treapTree.search(40);
+//     if (found !is null) {
+//         writefln("Search for 40: Found (Key: %d)", found.key);
+//     } else {
+//         writefln("Search for 40: Not Found");
+//     }
+
+//     treapTree.deleteKey(30);
+//     found = treapTree.search(30);
+//     if (found !is null) {
+//         writefln("Search for 30 after deletion: Found (Key: %d)", found.key);
+//     } else {
+//         writefln("Search for 30 after deletion: Not Found");
+//     }
+// }
+```
+
+## Applications
+
+### Application
+
+Treaps are a fascinating data structure that provide the advantages of self-balancing binary search trees (`O(log N)` average time complexity for all major operations) with a simpler implementation, primarily due to their probabilistic balancing.
+- **Randomized Data Structures:** Good for scenarios where performance needs to be robust against adversarial inputs, as its balance depends on random priorities rather than input order.
+- **Implicit Data Structures:** Can be used to build other implicit data structures or as a component in more complex algorithms.
+- **Range Queries:** Can be extended to support various range query operations efficiently.
+- **Competitive Programming:** Favored in some competitive programming contexts for their balance of performance and ease of implementation.
+

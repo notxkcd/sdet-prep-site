@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coin Change Problem (Minimum Coins) | SDET Interview Preparation Kit</title>
+    <link rel="stylesheet" href="//localhost:1313/css/style.css">
+    <link rel="stylesheet" href="//localhost:1313/css/terminal.css">
+    
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    
+    <link rel="stylesheet" href="//localhost:1313/lib/katex/katex.min.css">
+    <script defer src="//localhost:1313/lib/katex/katex.min.js"></script>
+    <script defer src="//localhost:1313/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</head>
+<body id="theme-body">
+    <button id="theme-toggle">Switch Theme</button>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="//localhost:1313/">Index</a></li>
+                
+            </ul>
+        </nav>
+        <div class="site-breadcrumb">
+            <a href="//localhost:1313/">Home</a>
+            
+                
+                    <span>/</span> <a href="//localhost:1313/">SDET Interview Dashboard</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/hugo_content/">42 Algorithms &amp; 42 Data Structures</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/hugo_content/algorithms/">Algorithms</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/hugo_content/algorithms/dynamic_programming/">Dynamic Programming</a>
+                
+            
+            
+                <span>/</span> Coin Change Problem (Minimum Coins)
+            
+        </div>
+    </header>
+
+    <main>
+        
+<article>
+    <div class="category-title" style="margin-bottom: 0.5rem;">Dynamic Programming</div>
+    <h1>Coin Change Problem (Minimum Coins)</h1>
+    <div class="content-body" style="margin-top: 2rem;">
+        <p>The <code>Coin Change Problem</code> is a classic problem in <code>dynamic programming</code> that asks for the minimum number of coins needed to make a given amount of change. Given a set of coin denominations and a target amount, the goal is to find the fewest coins that sum up to that amount.</p>
+<p>This problem assumes an infinite supply of each coin denomination. If a specific amount cannot be made, the algorithm should indicate that (e.g., return -1 or infinity).</p>
+<h2 id="how-it-works">How it Works</h2>
+<h3 id="how-it-works-expanded">How it Works (Expanded)</h3>
+<p>The <code>Coin Change Problem</code> exhibits optimal substructure and overlapping subproblems, making it well-suited for <code>dynamic programming</code>. We build a 1D <code>DP array</code> where <code>dp[i]</code> stores the minimum number of coins required to make the amount <code>i</code>.</p>
+<hr>
+<p>Example: Coins = [1, 2, 5], Amount = 11</p>
+<p>dp array of size (Amount + 1), initialized with infinity, dp[0] = 0.
+dp = [0, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf]</p>
+<p>Iterate for each amount &lsquo;i&rsquo; from 1 to 11:
+Iterate for each coin &lsquo;c&rsquo; in coins:
+If c &lt;= i:
+dp[i] = min(dp[i], 1 + dp[i - c])</p>
+<p>Trace:</p>
+<ul>
+<li>dp[1]: coins[1] = 1 -&gt; min(inf, 1 + dp[0]) = 1</li>
+<li>dp[2]: coins[1] = 1 -&gt; min(inf, 1 + dp[1]) = 2
+coins[2] = 2 -&gt; min(2, 1 + dp[0]) = 1</li>
+<li>dp[3]: coins[1] = 1 -&gt; min(inf, 1 + dp[2]) = 2
+coins[2] = 2 -&gt; min(2, 1 + dp[1]) = 2</li>
+<li>&hellip;</li>
+<li>dp[11]: coins[1]=1 -&gt; 1+dp[10]=1+2=3
+coins[2]=2 -&gt; 1+dp[9]=1+2=3
+coins[5]=5 -&gt; 1+dp[6]=1+2=3</li>
+</ul>
+<p>Final dp[11] = 3 (e.g., 5+5+1 or 5+2+2+2 or &hellip;)</p>
+<h2 id="implementation">Implementation</h2>
+<h3 id="python">Python</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#859900">def</span> <span style="color:#268bd2">coin_change_min_coins</span>(<span style="color:#268bd2">coins</span>, <span style="color:#268bd2">amount</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># dp[i] will be storing the minimum number of coins</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># required for amount i.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">dp</span> = [<span style="color:#cb4b16">float</span>(<span style="color:#2aa198">&#39;inf&#39;</span>)] &lt;/<span style="color:#268bd2">em</span>&gt; (<span style="color:#268bd2">amount</span> + <span style="color:#2aa198;font-weight:bold">1</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># Base case: 0 coins needed for amount 0</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">dp</span>[<span style="color:#2aa198;font-weight:bold">0</span>] = <span style="color:#2aa198;font-weight:bold">0</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># Fill dp table for all amounts from 1 to amount</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> <span style="color:#859900">in</span> <span style="color:#cb4b16">range</span>(<span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">amount</span> + <span style="color:#2aa198;font-weight:bold">1</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># For each amount, iterate through all coins</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> <span style="color:#268bd2">coin</span> <span style="color:#859900">in</span> <span style="color:#268bd2">coins</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic"># If current coin can be used</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> <span style="color:#268bd2">coin</span> &lt;= <span style="color:#268bd2">i</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#93a1a1;font-style:italic"># Update dp[i] with the minimum of its current value</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#93a1a1;font-style:italic"># and 1 (for the current coin) + dp[i - coin]</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>] = <span style="color:#cb4b16">min</span>(<span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>], <span style="color:#2aa198;font-weight:bold">1</span> + <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span> - <span style="color:#268bd2">coin</span>])
+</span></span><span style="display:flex;"><span>                
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># If dp[amount] is still infinity, it means amount cannot be made</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">amount</span>] <span style="color:#859900">if</span> <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">amount</span>] != <span style="color:#cb4b16">float</span>(<span style="color:#2aa198">&#39;inf&#39;</span>) <span style="color:#859900">else</span> -<span style="color:#2aa198;font-weight:bold">1</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># Example</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># coins = [1, 2, 5]</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># amount = 11</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(coin_change_min_coins(coins, amount)) # Expected: 3 (5+5+1)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># coins2 = [2]</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># amount2 = 3</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(coin_change_min_coins(coins2, amount2)) # Expected: -1</span>
+</span></span></code></pre></div><h3 id="javascript">Javascript</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#859900">function</span> <span style="color:#268bd2">coinChangeMinCoins</span>(<span style="color:#268bd2">coins</span>, <span style="color:#268bd2">amount</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// dp[i] will be storing the minimum number of coins
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#93a1a1;font-style:italic">// required for amount i.
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">const</span> <span style="color:#268bd2">dp</span> = <span style="color:#cb4b16">Array</span>(<span style="color:#268bd2">amount</span> + <span style="color:#2aa198;font-weight:bold">1</span>).<span style="color:#268bd2">fill</span>(<span style="color:#859900;font-weight:bold">Infinity</span>);
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Base case: 0 coins needed for amount 0
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">dp</span>[<span style="color:#2aa198;font-weight:bold">0</span>] = <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Fill dp table for all amounts from 1 to amount
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#268bd2">i</span> &lt;= <span style="color:#268bd2">amount</span>; <span style="color:#268bd2">i</span>++) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// For each amount, iterate through all coins
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">for</span> (<span style="color:#859900">const</span> <span style="color:#268bd2">coin</span> <span style="color:#859900">of</span> <span style="color:#268bd2">coins</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// If current coin can be used
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">coin</span> &lt;= <span style="color:#268bd2">i</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#93a1a1;font-style:italic">// Update dp[i] with the minimum of its current value
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#93a1a1;font-style:italic">// and 1 (for the current coin) + dp[i - coin]
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>] = <span style="color:#cb4b16">Math</span>.<span style="color:#268bd2">min</span>(<span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>], <span style="color:#2aa198;font-weight:bold">1</span> + <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span> - <span style="color:#268bd2">coin</span>]);
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// If dp[amount] is still infinity, it means amount cannot be made
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">return</span> <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">amount</span>] === <span style="color:#859900;font-weight:bold">Infinity</span> ? -<span style="color:#2aa198;font-weight:bold">1</span> : <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">amount</span>];
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const coins = [1, 2, 5];
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const amount = 11;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(coinChangeMinCoins(coins, amount)); // Expected: 3
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const coins2 = [2];
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const amount2 = 3;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(coinChangeMinCoins(coins2, amount2)); // Expected: -1
+</span></span></span></code></pre></div><h3 id="typescript">Typescript</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-typescript" data-lang="typescript"><span style="display:flex;"><span><span style="color:#859900">function</span> <span style="color:#268bd2">coinChangeMinCoinsTS</span>(<span style="color:#268bd2">coins</span>: <span style="color:#859900;font-weight:bold">number</span>[], <span style="color:#268bd2">amount</span>: <span style="color:#859900;font-weight:bold">number</span>): <span style="color:#859900;font-weight:bold">number</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// dp[i] will be storing the minimum number of coins
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#93a1a1;font-style:italic">// required for amount i.
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">const</span> <span style="color:#268bd2">dp</span>: <span style="color:#859900;font-weight:bold">number</span>[] = <span style="color:#cb4b16">Array</span>(<span style="color:#268bd2">amount</span> + <span style="color:#2aa198;font-weight:bold">1</span>).<span style="color:#268bd2">fill</span>(<span style="color:#859900;font-weight:bold">Infinity</span>);
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Base case: 0 coins needed for amount 0
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">dp</span>[<span style="color:#2aa198;font-weight:bold">0</span>] = <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Fill dp table for all amounts from 1 to amount
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#268bd2">i</span> &lt;= <span style="color:#268bd2">amount</span>; <span style="color:#268bd2">i</span>++) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// For each amount, iterate through all coins
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">for</span> (<span style="color:#859900">const</span> <span style="color:#268bd2">coin</span> <span style="color:#859900">of</span> <span style="color:#268bd2">coins</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// If current coin can be used
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">coin</span> &lt;= <span style="color:#268bd2">i</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#93a1a1;font-style:italic">// Update dp[i] with the minimum of its current value
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#93a1a1;font-style:italic">// and 1 (for the current coin) + dp[i - coin]
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>] = <span style="color:#cb4b16">Math</span>.<span style="color:#268bd2">min</span>(<span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>], <span style="color:#2aa198;font-weight:bold">1</span> + <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span> - <span style="color:#268bd2">coin</span>]);
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// If dp[amount] is still infinity, it means amount cannot be made
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">return</span> <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">amount</span>] === <span style="color:#859900;font-weight:bold">Infinity</span> ? -<span style="color:#268bd2">1</span> : <span style="color:#859900;font-weight:bold">dp</span>[<span style="color:#268bd2">amount</span>];
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const coinsTS = [1, 2, 5];
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const amountTS = 11;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(coinChangeMinCoinsTS(coinsTS, amountTS)); // Expected: 3
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const coins2TS = [2];
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const amount2TS = 3;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(coinChangeMinCoinsTS(coins2TS, amount2TS)); // Expected: -1
+</span></span></span></code></pre></div><h3 id="cpp">Cpp</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;vector&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;iostream&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;algorithm&gt;</span><span style="color:#93a1a1;font-style:italic"> </span><span style="color:#93a1a1;font-style:italic">// For std::min
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;limits&gt;</span><span style="color:#93a1a1;font-style:italic">    </span><span style="color:#93a1a1;font-style:italic">// For std::numeric_limits
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">coinChangeMinCoins</span>(<span style="color:#859900">const</span> <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt;&amp; <span style="color:#268bd2">coins</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">amount</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// dp[i] will be storing the minimum number of coins
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#93a1a1;font-style:italic">// required for amount i.
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt; <span style="color:#268bd2">dp</span>(<span style="color:#268bd2">amount</span> + <span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">std</span>::<span style="color:#268bd2">numeric_limits</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt;::<span style="color:#268bd2">max</span>());
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Base case: 0 coins needed for amount 0
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">dp</span>[<span style="color:#2aa198;font-weight:bold">0</span>] = <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Fill dp table for all amounts from 1 to amount
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#268bd2">i</span> &lt;= <span style="color:#268bd2">amount</span>; <span style="color:#268bd2">i</span>++) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// For each amount, iterate through all coins
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">coin</span> : <span style="color:#268bd2">coins</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// If current coin can be used
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">coin</span> &lt;= <span style="color:#268bd2">i</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#93a1a1;font-style:italic">// Ensure dp[i - coin] is not infinity before adding 1
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#859900">if</span> (<span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span> - <span style="color:#268bd2">coin</span>] != <span style="color:#268bd2">std</span>::<span style="color:#268bd2">numeric_limits</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt;::<span style="color:#268bd2">max</span>()) {
+</span></span><span style="display:flex;"><span>                    <span style="color:#93a1a1;font-style:italic">// Update dp[i] with the minimum of its current value
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                    <span style="color:#93a1a1;font-style:italic">// and 1 (for the current coin) + dp[i - coin]
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                    <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>] = <span style="color:#268bd2">std</span>::<span style="color:#268bd2">min</span>(<span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>], <span style="color:#2aa198;font-weight:bold">1</span> + <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span> - <span style="color:#268bd2">coin</span>]);
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// If dp[amount] is still infinity, it means amount cannot be made
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">return</span> <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">amount</span>] == <span style="color:#268bd2">std</span>::<span style="color:#268bd2">numeric_limits</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt;::<span style="color:#268bd2">max</span>() ? -<span style="color:#2aa198;font-weight:bold">1</span> : <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">amount</span>];
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// int main() {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::vector&lt;int&gt; coins = {1, 2, 5};
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     int amount = 11;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; &#34;Min coins for 11: &#34; &lt;&lt; coinChangeMinCoins(coins, amount) &lt;&lt; std::endl; // 3
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::vector&lt;int&gt; coins2 = {2};
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     int amount2 = 3;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; &#34;Min coins for 3: &#34; &lt;&lt; coinChangeMinCoins(coins2, amount2) &lt;&lt; std::endl; // -1
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     return 0;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span></code></pre></div><h3 id="go">Go</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">package</span> <span style="color:#268bd2">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> (
+</span></span><span style="display:flex;"><span>    <span style="color:#2aa198">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#2aa198">&#34;math&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> <span style="color:#268bd2">coinChangeMinCoins</span>(<span style="color:#268bd2">coins</span> []<span style="color:#859900;font-weight:bold">int</span>, <span style="color:#268bd2">amount</span> <span style="color:#859900;font-weight:bold">int</span>) <span style="color:#859900;font-weight:bold">int</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// dp[i] will be storing the minimum number of coins</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// required for amount i.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">dp</span> := <span style="color:#cb4b16">make</span>([]<span style="color:#859900;font-weight:bold">int</span>, <span style="color:#268bd2">amount</span>+<span style="color:#2aa198;font-weight:bold">1</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> := <span style="color:#859900">range</span> <span style="color:#268bd2">dp</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>] = <span style="color:#268bd2">math</span>.<span style="color:#268bd2">MaxInt32</span> <span style="color:#93a1a1;font-style:italic">// Represents infinity</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Base case: 0 coins needed for amount 0</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">dp</span>[<span style="color:#2aa198;font-weight:bold">0</span>] = <span style="color:#2aa198;font-weight:bold">0</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Fill dp table for all amounts from 1 to amount</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> := <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#268bd2">i</span> &lt;= <span style="color:#268bd2">amount</span>; <span style="color:#268bd2">i</span>++ {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// For each amount, iterate through all coins</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> <span style="color:#268bd2">_</span>, <span style="color:#268bd2">coin</span> := <span style="color:#859900">range</span> <span style="color:#268bd2">coins</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// If current coin can be used</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> <span style="color:#268bd2">coin</span> &lt;= <span style="color:#268bd2">i</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#93a1a1;font-style:italic">// Ensure dp[i - coin] is not MaxInt32 before adding 1</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">if</span> <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>-<span style="color:#268bd2">coin</span>] != <span style="color:#268bd2">math</span>.<span style="color:#268bd2">MaxInt32</span> {
+</span></span><span style="display:flex;"><span>                    <span style="color:#93a1a1;font-style:italic">// Update dp[i] with the minimum of its current value</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#93a1a1;font-style:italic">// and 1 (for the current coin) + dp[i - coin]</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>] = <span style="color:#cb4b16">min</span>(<span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>], <span style="color:#2aa198;font-weight:bold">1</span> + <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>-<span style="color:#268bd2">coin</span>])
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// If dp[amount] is still MaxInt32, it means amount cannot be made</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">amount</span>] == <span style="color:#268bd2">math</span>.<span style="color:#268bd2">MaxInt32</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> -<span style="color:#2aa198;font-weight:bold">1</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">amount</span>]
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> <span style="color:#cb4b16">min</span>(<span style="color:#268bd2">a</span>, <span style="color:#268bd2">b</span> <span style="color:#859900;font-weight:bold">int</span>) <span style="color:#859900;font-weight:bold">int</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#268bd2">a</span> &lt; <span style="color:#268bd2">b</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">a</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">b</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// func main() {</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     coins := []int{1, 2, 5}</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     amount := 11</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     fmt.Println(&#34;Min coins for 11:&#34;, coinChangeMinCoins(coins, amount)) // 3</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     coins2 := []int{2}</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     amount2 := 3</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     fmt.Println(&#34;Min coins for 3:&#34;, coinChangeMinCoins(coins2, amount2)) // -1</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }</span>
+</span></span></code></pre></div><h3 id="d">D</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-d" data-lang="d"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.stdio</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.array</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.algorithm</span>; <span style="color:#93a1a1;font-style:italic">// For std.algorithm.min
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.traits</span>; <span style="color:#93a1a1;font-style:italic">// For isInfinity
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">coinChangeMinCoins</span>(<span style="color:#859900;font-weight:bold">int</span>[] <span style="color:#268bd2">coins</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">amount</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// dp[i] will be storing the minimum number of coins
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#93a1a1;font-style:italic">// required for amount i.
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">auto</span> <span style="color:#268bd2">dp</span> = <span style="color:#859900">new</span> <span style="color:#859900;font-weight:bold">int</span>[<span style="color:#268bd2">amount</span> + <span style="color:#2aa198;font-weight:bold">1</span>];
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">dp</span>[] = <span style="color:#859900;font-weight:bold">int</span>.<span style="color:#268bd2">max</span>; <span style="color:#93a1a1;font-style:italic">// Represents infinity
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Base case: 0 coins needed for amount 0
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">dp</span>[<span style="color:#2aa198;font-weight:bold">0</span>] = <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Fill dp table for all amounts from 1 to amount
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">foreach</span> (<span style="color:#268bd2">i</span>; <span style="color:#2aa198;font-weight:bold">1</span> .. <span style="color:#268bd2">amount</span> + <span style="color:#2aa198;font-weight:bold">1</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// For each amount, iterate through all coins
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">foreach</span> (<span style="color:#268bd2">coin</span>; <span style="color:#268bd2">coins</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// If current coin can be used
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">coin</span> &lt;= <span style="color:#268bd2">i</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#93a1a1;font-style:italic">// Ensure dp[i - coin] is not int.max before adding 1
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#859900">if</span> (<span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span> - <span style="color:#268bd2">coin</span>] != <span style="color:#859900;font-weight:bold">int</span>.<span style="color:#268bd2">max</span>) {
+</span></span><span style="display:flex;"><span>                    <span style="color:#93a1a1;font-style:italic">// Update dp[i] with the minimum of its current value
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                    <span style="color:#93a1a1;font-style:italic">// and 1 (for the current coin) + dp[i - coin]
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                    <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>] = <span style="color:#268bd2">min</span>(<span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>], <span style="color:#2aa198;font-weight:bold">1</span> + <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span> - <span style="color:#268bd2">coin</span>]);
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// If dp[amount] is still int.max, it means amount cannot be made
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">return</span> <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">amount</span>] == <span style="color:#859900;font-weight:bold">int</span>.<span style="color:#268bd2">max</span> ? -<span style="color:#2aa198;font-weight:bold">1</span> : <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">amount</span>];
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// void main() {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     auto coins = [1, 2, 5];
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     int amount = 11;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     writeln(&#34;Min coins for 11: &#34;, coinChangeMinCoins(coins, amount)); // 3
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     auto coins2 = [2];
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     int amount2 = 3;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     writeln(&#34;Min coins for 3: &#34;, coinChangeMinCoins(coins2, amount2)); // -1
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span></code></pre></div><h2 id="code-walkthrough">Code Walkthrough</h2>
+<h3 id="code-walkthrough-1">Code Walkthrough</h3>
+<p>The <code>Coin Change Problem</code> (minimum coins variant) is solved using a 1D <code>dynamic programming</code> array, where each element represents the minimum coins needed for a specific amount.</p>
+<hr>
+<p><strong>Initialization:</strong></p>
+<pre><code>- `amount`: The target amount for which to make change.
+
+- `coins`: An array of available coin denominations.
+
+- A 1D `dp` array of size `amount + 1` is created. `dp[i]` will store the minimum number of coins to make amount `i`.
+
+- `dp[0]` is initialized to 0 (no coins needed for amount 0).
+
+- All other `dp[i]` values are initialized to infinity (or a very large number) to signify that they are currently unreachable.
+</code></pre>
+<p><strong>Filling the DP Table:</strong></p>
+<pre><code>- The `dp` table is filled iteratively for `i` from 1 to `amount`. Each `i` represents a sub-amount for which we are trying to find the minimum coins.
+
+- For each `amount i`, the algorithm iterates through all available `coin denominations`.
+
+- **Condition:** If `coin &lt;= i` (meaning the current `coin` can be used to make up `amount i`):
+
+        - We consider using the current `coin`. If we use this `coin`, the remaining amount is `i - coin`.
+
+        - The minimum coins needed for `amount i` would then be `1` (for the current `coin`) plus `dp[i - coin]` (the minimum coins needed for the remaining amount).
+
+        - We update `dp[i]` with the minimum of its current value and `(1 + dp[i - coin])`. This ensures `dp[i]` always holds the minimum.
+
+        - A check `if dp[i - coin] != infinity` is important to avoid `infinity + 1` issues, ensuring we only consider valid previous states.
+
+&lt;/li&gt;
+</code></pre>
+<p><strong>Result:</strong></p>
+<pre><code>- After filling the entire `dp` table, `dp[amount]` will contain the minimum number of coins required to make the target `amount`.
+
+- If `dp[amount]` is still `infinity`, it means the target `amount` cannot be made with the given `coin` denominations, and -1 is returned.
+</code></pre>
+<h2 id="applications">Applications</h2>
+<h3 id="application">Application</h3>
+<p>The <code>Coin Change Problem</code>, especially the minimum coins variant, has practical applications beyond just currency:</p>
+<pre><code>    - **Financial Systems:** Optimizing change-making processes in vending machines, cash registers, or for currency exchange.
+
+    - **Resource Optimization:** In scenarios where you need to combine discrete units (like containers of different sizes, standard parts) to reach a target quantity while minimizing the number of units used.
+
+    - **Inventory Management:** Determining the minimum number of different product packages to fulfill an order of a specific quantity.
+
+    - **Network Packet Optimization:** In some networking contexts, assembling data packets of various fixed sizes to efficiently transmit a total amount of data.
+
+    - **Combinatorial Problems:** Serves as a fundamental building block or a subproblem in more complex combinatorial optimization challenges.
+</code></pre>
+
+    </div>
+</article>
+
+<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
+    
+    <a href="//localhost:1313/hugo_content/algorithms/dynamic_programming/edit_distance/" class="nav-btn">← Previous</a>
+    
+    
+    <a href="//localhost:1313/hugo_content/algorithms/dynamic_programming/" class="nav-btn">Up</a>
+
+    
+    <span></span>
+    
+</div>
+
+    </main>
+
+    <footer class="footer">
+        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
+    </footer>
+
+    <script>
+        const body = document.getElementById('theme-body');
+        const btn = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme');
+
+        
+        function updateButtonText() {
+            if (body.classList.contains('theme-terminal')) {
+                btn.textContent = "Light Mode";
+            } else {
+                btn.textContent = "Dark Mode";
+            }
+        }
+
+        if (currentTheme === 'terminal') {
+            body.classList.add('theme-terminal');
+        }
+        
+        
+        updateButtonText();
+
+        btn.addEventListener('click', () => {
+            body.classList.toggle('theme-terminal');
+            updateButtonText();
+            
+            let theme = 'natural';
+            if (body.classList.contains('theme-terminal')) {
+                theme = 'terminal';
+            }
+            localStorage.setItem('theme', theme);
+        });
+    </script>
+</body>
+</html>

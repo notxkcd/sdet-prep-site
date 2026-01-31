@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Set | SDET Interview Preparation Kit</title>
+    <link rel="stylesheet" href="//localhost:1313/css/style.css">
+    <link rel="stylesheet" href="//localhost:1313/css/terminal.css">
+    
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    
+    <link rel="stylesheet" href="//localhost:1313/lib/katex/katex.min.css">
+    <script defer src="//localhost:1313/lib/katex/katex.min.js"></script>
+    <script defer src="//localhost:1313/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</head>
+<body id="theme-body">
+    <button id="theme-toggle">Switch Theme</button>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="//localhost:1313/">Index</a></li>
+                
+            </ul>
+        </nav>
+        <div class="site-breadcrumb">
+            <a href="//localhost:1313/">Home</a>
+            
+                
+                    <span>/</span> <a href="//localhost:1313/">SDET Interview Dashboard</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/dsa-42/">42 Algorithms &amp; 42 Data Structures</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/dsa-42/data_structures/">Data Structures</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/dsa-42/data_structures/fundamentals/">Fundamentals</a>
+                
+            
+            
+                <span>/</span> Set
+            
+        </div>
+    </header>
+
+    <main>
+        
+<article>
+    <div class="category-title" style="margin-bottom: 0.5rem;">Fundamentals</div>
+    <h1>Set</h1>
+    <div class="content-body" style="margin-top: 2rem;">
+        <p>Imagine a mathematical <code>set</code> – a collection of distinct elements, where the order doesn&rsquo;t matter and duplicates are not allowed. That&rsquo;s exactly what a <code>Set</code> data structure provides in computer science.</p>
+<p><code>Sets</code> are incredibly useful when you need to store unique items and quickly check for membership (if an item is in the <code>set</code>).</p>
+<h2 id="how-it-works">How it Works</h2>
+<h3 id="how-it-works-expanded">How it Works (Expanded)</h3>
+<p><code>Sets</code> are typically implemented using hash tables or balanced binary search trees internally, which allows for their efficient operations.</p>
+<hr>
+<p>Properties of a <code>Set</code>:</p>
+<ul>
+<li><strong>Uniqueness:</strong> All elements in a <code>set</code> must be unique. Adding a duplicate element has no effect.</li>
+<li><strong>Unordered:</strong> Elements in a <code>set</code> do not have a specific order.</li>
+<li><strong>Membership Testing:</strong> Very fast checking if an element exists in the <code>set</code>.</li>
+</ul>
+<p><a href="#code-walkthrough">Jump to Code Walkthrough</a></p>
+<h2 id="implementation">Implementation</h2>
+<h3 id="python">Python</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># Python&#39;s built-in &#39;set&#39; type.</span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">my_set</span> = {<span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#2aa198;font-weight:bold">2</span>, <span style="color:#2aa198;font-weight:bold">3</span>, <span style="color:#2aa198;font-weight:bold">4</span>, <span style="color:#2aa198;font-weight:bold">5</span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># Add (O(1) on average)</span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">my_set</span>.<span style="color:#268bd2">add</span>(<span style="color:#2aa198;font-weight:bold">6</span>)
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">my_set</span>.<span style="color:#268bd2">add</span>(<span style="color:#2aa198;font-weight:bold">3</span>) <span style="color:#93a1a1;font-style:italic"># No effect, 3 is already in the set</span>
+</span></span><span style="display:flex;"><span><span style="color:#cb4b16">print</span>(<span style="color:#2aa198">&#34;Set after adding:&#34;</span>, <span style="color:#268bd2">my_set</span>) <span style="color:#93a1a1;font-style:italic"># Order might vary: {1, 2, 3, 4, 5, 6}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># Remove (O(1) on average)</span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">my_set</span>.<span style="color:#268bd2">remove</span>(<span style="color:#2aa198;font-weight:bold">2</span>)
+</span></span><span style="display:flex;"><span><span style="color:#cb4b16">print</span>(<span style="color:#2aa198">&#34;Set after removing 2:&#34;</span>, <span style="color:#268bd2">my_set</span>) <span style="color:#93a1a1;font-style:italic"># {1, 3, 4, 5, 6}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># Check membership (O(1) on average)</span>
+</span></span><span style="display:flex;"><span><span style="color:#cb4b16">print</span>(<span style="color:#2aa198">&#34;Is 4 in set?&#34;</span>, <span style="color:#2aa198;font-weight:bold">4</span> <span style="color:#859900">in</span> <span style="color:#268bd2">my_set</span>)   <span style="color:#93a1a1;font-style:italic"># Output: True</span>
+</span></span><span style="display:flex;"><span><span style="color:#cb4b16">print</span>(<span style="color:#2aa198">&#34;Is 7 in set?&#34;</span>, <span style="color:#2aa198;font-weight:bold">7</span> <span style="color:#859900">in</span> <span style="color:#268bd2">my_set</span>)   <span style="color:#93a1a1;font-style:italic"># Output: False</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># Set operations</span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">set_a</span> = {<span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#2aa198;font-weight:bold">2</span>, <span style="color:#2aa198;font-weight:bold">3</span>, <span style="color:#2aa198;font-weight:bold">4</span>}
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">set_b</span> = {<span style="color:#2aa198;font-weight:bold">3</span>, <span style="color:#2aa198;font-weight:bold">4</span>, <span style="color:#2aa198;font-weight:bold">5</span>, <span style="color:#2aa198;font-weight:bold">6</span>}
+</span></span><span style="display:flex;"><span><span style="color:#cb4b16">print</span>(<span style="color:#2aa198">&#34;Union:&#34;</span>, <span style="color:#268bd2">set_a</span>.<span style="color:#268bd2">union</span>(<span style="color:#268bd2">set_b</span>))         <span style="color:#93a1a1;font-style:italic"># {1, 2, 3, 4, 5, 6}</span>
+</span></span><span style="display:flex;"><span><span style="color:#cb4b16">print</span>(<span style="color:#2aa198">&#34;Intersection:&#34;</span>, <span style="color:#268bd2">set_a</span>.<span style="color:#268bd2">intersection</span>(<span style="color:#268bd2">set_b</span>)) <span style="color:#93a1a1;font-style:italic"># {3, 4}</span>
+</span></span><span style="display:flex;"><span><span style="color:#cb4b16">print</span>(<span style="color:#2aa198">&#34;Difference (A-B):&#34;</span>, <span style="color:#268bd2">set_a</span>.<span style="color:#268bd2">difference</span>(<span style="color:#268bd2">set_b</span>)) <span style="color:#93a1a1;font-style:italic"># {1, 2}</span>
+</span></span></code></pre></div><h3 id="javascript">Javascript</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// JavaScript&#39;s built-in &#39;Set&#39; object.
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#859900">let</span> <span style="color:#268bd2">mySet</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">Set</span>([<span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#2aa198;font-weight:bold">2</span>, <span style="color:#2aa198;font-weight:bold">3</span>, <span style="color:#2aa198;font-weight:bold">4</span>, <span style="color:#2aa198;font-weight:bold">5</span>]);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Add (O(1) on average)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#268bd2">mySet</span>.<span style="color:#268bd2">add</span>(<span style="color:#2aa198;font-weight:bold">6</span>);
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">mySet</span>.<span style="color:#268bd2">add</span>(<span style="color:#2aa198;font-weight:bold">3</span>); <span style="color:#93a1a1;font-style:italic">// No effect, 3 is already in the Set
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#268bd2">console</span>.<span style="color:#268bd2">log</span>(<span style="color:#2aa198">&#34;Set after adding:&#34;</span>, <span style="color:#268bd2">mySet</span>); <span style="color:#93a1a1;font-style:italic">// Output: Set(6) {1, 2, 3, 4, 5, 6}
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Delete (O(1) on average)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#268bd2">mySet</span>.<span style="color:#859900">delete</span>(<span style="color:#2aa198;font-weight:bold">2</span>);
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">console</span>.<span style="color:#268bd2">log</span>(<span style="color:#2aa198">&#34;Set after deleting 2:&#34;</span>, <span style="color:#268bd2">mySet</span>); <span style="color:#93a1a1;font-style:italic">// Set(5) {1, 3, 4, 5, 6}
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Check membership (O(1) on average)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#268bd2">console</span>.<span style="color:#268bd2">log</span>(<span style="color:#2aa198">&#34;Is 4 in Set?&#34;</span>, <span style="color:#268bd2">mySet</span>.<span style="color:#268bd2">has</span>(<span style="color:#2aa198;font-weight:bold">4</span>));   <span style="color:#93a1a1;font-style:italic">// Output: true
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#268bd2">console</span>.<span style="color:#268bd2">log</span>(<span style="color:#2aa198">&#34;Is 7 in Set?&#34;</span>, <span style="color:#268bd2">mySet</span>.<span style="color:#268bd2">has</span>(<span style="color:#2aa198;font-weight:bold">7</span>));   <span style="color:#93a1a1;font-style:italic">// Output: false
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Set operations (manual for now, but often libraries provide these)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#859900">let</span> <span style="color:#268bd2">setA</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">Set</span>([<span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#2aa198;font-weight:bold">2</span>, <span style="color:#2aa198;font-weight:bold">3</span>, <span style="color:#2aa198;font-weight:bold">4</span>]);
+</span></span><span style="display:flex;"><span><span style="color:#859900">let</span> <span style="color:#268bd2">setB</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">Set</span>([<span style="color:#2aa198;font-weight:bold">3</span>, <span style="color:#2aa198;font-weight:bold">4</span>, <span style="color:#2aa198;font-weight:bold">5</span>, <span style="color:#2aa198;font-weight:bold">6</span>]);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">function</span> <span style="color:#268bd2">unionSets</span>(<span style="color:#268bd2">set1</span>, <span style="color:#268bd2">set2</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#859900">new</span> <span style="color:#268bd2">Set</span>([...<span style="color:#268bd2">set1</span>, ...<span style="color:#268bd2">set2</span>]);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">function</span> <span style="color:#268bd2">intersectionSets</span>(<span style="color:#268bd2">set1</span>, <span style="color:#268bd2">set2</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#859900">new</span> <span style="color:#268bd2">Set</span>([...<span style="color:#268bd2">set1</span>].<span style="color:#268bd2">filter</span>(<span style="color:#268bd2">x</span> =&gt; <span style="color:#268bd2">set2</span>.<span style="color:#268bd2">has</span>(<span style="color:#268bd2">x</span>)));
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">function</span> <span style="color:#268bd2">differenceSets</span>(<span style="color:#268bd2">set1</span>, <span style="color:#268bd2">set2</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#859900">new</span> <span style="color:#268bd2">Set</span>([...<span style="color:#268bd2">set1</span>].<span style="color:#268bd2">filter</span>(<span style="color:#268bd2">x</span> =&gt; !<span style="color:#268bd2">set2</span>.<span style="color:#268bd2">has</span>(<span style="color:#268bd2">x</span>)));
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">console</span>.<span style="color:#268bd2">log</span>(<span style="color:#2aa198">&#34;Union:&#34;</span>, <span style="color:#268bd2">unionSets</span>(<span style="color:#268bd2">setA</span>, <span style="color:#268bd2">setB</span>));         <span style="color:#93a1a1;font-style:italic">// Set(6) {1, 2, 3, 4, 5, 6}
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#268bd2">console</span>.<span style="color:#268bd2">log</span>(<span style="color:#2aa198">&#34;Intersection:&#34;</span>, <span style="color:#268bd2">intersectionSets</span>(<span style="color:#268bd2">setA</span>, <span style="color:#268bd2">setB</span>)); <span style="color:#93a1a1;font-style:italic">// Set(2) {3, 4}
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#268bd2">console</span>.<span style="color:#268bd2">log</span>(<span style="color:#2aa198">&#34;Difference (A-B):&#34;</span>, <span style="color:#268bd2">differenceSets</span>(<span style="color:#268bd2">setA</span>, <span style="color:#268bd2">setB</span>)); <span style="color:#93a1a1;font-style:italic">// Set(2) {1, 2}
+</span></span></span></code></pre></div><h3 id="cpp">Cpp</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;iostream&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;set&gt;</span><span style="color:#93a1a1;font-style:italic"> </span><span style="color:#93a1a1;font-style:italic">// Standard Library Set (implemented using a Red-Black Tree)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;algorithm&gt;</span><span style="color:#93a1a1;font-style:italic"> </span><span style="color:#93a1a1;font-style:italic">// For std::set_union, std::set_intersection, etc.
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;vector&gt;</span><span style="color:#93a1a1;font-style:italic"> </span><span style="color:#93a1a1;font-style:italic">// For temporary storage for set operations
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">main</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">set</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt; <span style="color:#268bd2">mySet</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Add (O(log n))
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">mySet</span>.<span style="color:#268bd2">insert</span>(<span style="color:#2aa198;font-weight:bold">1</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">mySet</span>.<span style="color:#268bd2">insert</span>(<span style="color:#2aa198;font-weight:bold">2</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">mySet</span>.<span style="color:#268bd2">insert</span>(<span style="color:#2aa198;font-weight:bold">3</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">mySet</span>.<span style="color:#268bd2">insert</span>(<span style="color:#2aa198;font-weight:bold">4</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">mySet</span>.<span style="color:#268bd2">insert</span>(<span style="color:#2aa198;font-weight:bold">5</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">mySet</span>.<span style="color:#268bd2">insert</span>(<span style="color:#2aa198;font-weight:bold">3</span>); <span style="color:#93a1a1;font-style:italic">// No effect, 3 is already in the set
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">cout</span> &lt;&lt; <span style="color:#2aa198">&#34;Set elements:&#34;</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">x</span> : <span style="color:#268bd2">mySet</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">std</span>::<span style="color:#268bd2">cout</span> &lt;&lt; <span style="color:#2aa198">&#34; &#34;</span> &lt;&lt; <span style="color:#268bd2">x</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">cout</span> &lt;&lt; <span style="color:#268bd2">std</span>::<span style="color:#268bd2">endl</span>; <span style="color:#93a1a1;font-style:italic">// Output: 1 2 3 4 5
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Remove (O(log n))
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">mySet</span>.<span style="color:#268bd2">erase</span>(<span style="color:#2aa198;font-weight:bold">2</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">cout</span> &lt;&lt; <span style="color:#2aa198">&#34;Set after erasing 2:&#34;</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">x</span> : <span style="color:#268bd2">mySet</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">std</span>::<span style="color:#268bd2">cout</span> &lt;&lt; <span style="color:#2aa198">&#34; &#34;</span> &lt;&lt; <span style="color:#268bd2">x</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">cout</span> &lt;&lt; <span style="color:#268bd2">std</span>::<span style="color:#268bd2">endl</span>; <span style="color:#93a1a1;font-style:italic">// Output: 1 3 4 5
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Check membership (O(log n))
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">cout</span> &lt;&lt; <span style="color:#2aa198">&#34;Is 4 in set? &#34;</span> &lt;&lt; (<span style="color:#268bd2">mySet</span>.<span style="color:#268bd2">count</span>(<span style="color:#2aa198;font-weight:bold">4</span>) ? <span style="color:#2aa198">&#34;True&#34;</span> : <span style="color:#2aa198">&#34;False&#34;</span>) &lt;&lt; <span style="color:#268bd2">std</span>::<span style="color:#268bd2">endl</span>; <span style="color:#93a1a1;font-style:italic">// Output: True
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">cout</span> &lt;&lt; <span style="color:#2aa198">&#34;Is 7 in set? &#34;</span> &lt;&lt; (<span style="color:#268bd2">mySet</span>.<span style="color:#268bd2">count</span>(<span style="color:#2aa198;font-weight:bold">7</span>) ? <span style="color:#2aa198">&#34;True&#34;</span> : <span style="color:#2aa198">&#34;False&#34;</span>) &lt;&lt; <span style="color:#268bd2">std</span>::<span style="color:#268bd2">endl</span>; <span style="color:#93a1a1;font-style:italic">// Output: False
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Set operations
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">set</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt; <span style="color:#268bd2">setA</span> = {<span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#2aa198;font-weight:bold">2</span>, <span style="color:#2aa198;font-weight:bold">3</span>, <span style="color:#2aa198;font-weight:bold">4</span>};
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">set</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt; <span style="color:#268bd2">setB</span> = {<span style="color:#2aa198;font-weight:bold">3</span>, <span style="color:#2aa198;font-weight:bold">4</span>, <span style="color:#2aa198;font-weight:bold">5</span>, <span style="color:#2aa198;font-weight:bold">6</span>};
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt; <span style="color:#268bd2">result</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Union
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">set_union</span>(<span style="color:#268bd2">setA</span>.<span style="color:#268bd2">begin</span>(), <span style="color:#268bd2">setA</span>.<span style="color:#268bd2">end</span>(),
+</span></span><span style="display:flex;"><span>                   <span style="color:#268bd2">setB</span>.<span style="color:#268bd2">begin</span>(), <span style="color:#268bd2">setB</span>.<span style="color:#268bd2">end</span>(),
+</span></span><span style="display:flex;"><span>                   <span style="color:#268bd2">std</span>::<span style="color:#268bd2">back_inserter</span>(<span style="color:#268bd2">result</span>));
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">cout</span> &lt;&lt; <span style="color:#2aa198">&#34;Union:&#34;</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">x</span> : <span style="color:#268bd2">result</span>) <span style="color:#268bd2">std</span>::<span style="color:#268bd2">cout</span> &lt;&lt; <span style="color:#2aa198">&#34; &#34;</span> &lt;&lt; <span style="color:#268bd2">x</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">cout</span> &lt;&lt; <span style="color:#268bd2">std</span>::<span style="color:#268bd2">endl</span>; <span style="color:#93a1a1;font-style:italic">// Output: 1 2 3 4 5 6
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">result</span>.<span style="color:#268bd2">clear</span>();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Intersection
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">set_intersection</span>(<span style="color:#268bd2">setA</span>.<span style="color:#268bd2">begin</span>(), <span style="color:#268bd2">setA</span>.<span style="color:#268bd2">end</span>(),
+</span></span><span style="display:flex;"><span>                          <span style="color:#268bd2">setB</span>.<span style="color:#268bd2">begin</span>(), <span style="color:#268bd2">setB</span>.<span style="color:#268bd2">end</span>(),
+</span></span><span style="display:flex;"><span>                          <span style="color:#268bd2">std</span>::<span style="color:#268bd2">back_inserter</span>(<span style="color:#268bd2">result</span>));
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">cout</span> &lt;&lt; <span style="color:#2aa198">&#34;Intersection:&#34;</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">x</span> : <span style="color:#268bd2">result</span>) <span style="color:#268bd2">std</span>::<span style="color:#268bd2">cout</span> &lt;&lt; <span style="color:#2aa198">&#34; &#34;</span> &lt;&lt; <span style="color:#268bd2">x</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">cout</span> &lt;&lt; <span style="color:#268bd2">std</span>::<span style="color:#268bd2">endl</span>; <span style="color:#93a1a1;font-style:italic">// Output: 3 4
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">result</span>.<span style="color:#268bd2">clear</span>();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Difference (A-B)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">set_difference</span>(<span style="color:#268bd2">setA</span>.<span style="color:#268bd2">begin</span>(), <span style="color:#268bd2">setA</span>.<span style="color:#268bd2">end</span>(),
+</span></span><span style="display:flex;"><span>                        <span style="color:#268bd2">setB</span>.<span style="color:#268bd2">begin</span>(), <span style="color:#268bd2">setB</span>.<span style="color:#268bd2">end</span>(),
+</span></span><span style="display:flex;"><span>                        <span style="color:#268bd2">std</span>::<span style="color:#268bd2">back_inserter</span>(<span style="color:#268bd2">result</span>));
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">cout</span> &lt;&lt; <span style="color:#2aa198">&#34;Difference (A-B):&#34;</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">x</span> : <span style="color:#268bd2">result</span>) <span style="color:#268bd2">std</span>::<span style="color:#268bd2">cout</span> &lt;&lt; <span style="color:#2aa198">&#34; &#34;</span> &lt;&lt; <span style="color:#268bd2">x</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">cout</span> &lt;&lt; <span style="color:#268bd2">std</span>::<span style="color:#268bd2">endl</span>; <span style="color:#93a1a1;font-style:italic">// Output: 1 2
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="code-walkthrough">Code Walkthrough</h2>
+<p><a href="#implementation">Back to Implementation</a></p>
+<h3 id="code-walkthrough-1">Code Walkthrough</h3>
+<p><code>Sets</code> are a core feature in many modern programming languages, often implemented with high efficiency.</p>
+<hr>
+<p><strong>Python:</strong> Has a built-in <code>set</code> type. Provides methods like <code>add()</code>, <code>remove()</code>, and operators/methods for <code>union</code> (<code>|</code> or <code>union()</code>), <code>intersection</code> (<code>&amp;</code> or <code>intersection()</code>), and <code>difference</code> (<code>-</code> or <code>difference()</code>).</p>
+<p><strong>JavaScript:</strong> The <code>Set</code> object allows you to store unique values of any type. It has methods like <code>add()</code>, <code>delete()</code>, and <code>has()</code>. <code>Set</code> operations (<code>union</code>, <code>intersection</code>, <code>difference</code>) are typically implemented manually using <code>array spread</code> syntax and <code>filter()</code>, as shown in the example.</p>
+<p><strong>C++:</strong> The STL provides <code>std::set</code> (implemented as a balanced binary search tree, offering <code>O(log n)</code> operations) and <code>std::unordered_set</code> (implemented as a hash table, offering <code>O(1)</code> on average operations). <code>Set</code> operations like <code>union</code>, <code>intersection</code>, and <code>difference</code> are available as algorithms in <code>&lt;algorithm&gt;</code>.</p>
+<p><a href="#implementation">Back to Implementation</a></p>
+
+    </div>
+</article>
+
+<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
+    
+    <a href="//localhost:1313/dsa-42/data_structures/fundamentals/stack/" class="nav-btn">← Previous</a>
+    
+    
+    <a href="//localhost:1313/dsa-42/data_structures/fundamentals/" class="nav-btn">Up</a>
+
+    
+    <a href="//localhost:1313/dsa-42/data_structures/fundamentals/queue/" class="nav-btn">Next →</a>
+    
+</div>
+
+    </main>
+
+    <footer class="footer">
+        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
+    </footer>
+
+    <script>
+        const body = document.getElementById('theme-body');
+        const btn = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme');
+
+        
+        function updateButtonText() {
+            if (body.classList.contains('theme-terminal')) {
+                btn.textContent = "Light Mode";
+            } else {
+                btn.textContent = "Dark Mode";
+            }
+        }
+
+        if (currentTheme === 'terminal') {
+            body.classList.add('theme-terminal');
+        }
+        
+        
+        updateButtonText();
+
+        btn.addEventListener('click', () => {
+            body.classList.toggle('theme-terminal');
+            updateButtonText();
+            
+            let theme = 'natural';
+            if (body.classList.contains('theme-terminal')) {
+                theme = 'terminal';
+            }
+            localStorage.setItem('theme', theme);
+        });
+    </script>
+</body>
+</html>

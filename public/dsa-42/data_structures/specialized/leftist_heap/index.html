@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leftist Heap | SDET Interview Preparation Kit</title>
+    <link rel="stylesheet" href="//localhost:1313/css/style.css">
+    <link rel="stylesheet" href="//localhost:1313/css/terminal.css">
+    
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    
+    <link rel="stylesheet" href="//localhost:1313/lib/katex/katex.min.css">
+    <script defer src="//localhost:1313/lib/katex/katex.min.js"></script>
+    <script defer src="//localhost:1313/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</head>
+<body id="theme-body">
+    <button id="theme-toggle">Switch Theme</button>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="//localhost:1313/">Index</a></li>
+                
+            </ul>
+        </nav>
+        <div class="site-breadcrumb">
+            <a href="//localhost:1313/">Home</a>
+            
+                
+                    <span>/</span> <a href="//localhost:1313/">SDET Interview Dashboard</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/dsa-42/">42 Algorithms &amp; 42 Data Structures</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/dsa-42/data_structures/">Data Structures</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/dsa-42/data_structures/specialized/">Specialized</a>
+                
+            
+            
+                <span>/</span> Leftist Heap
+            
+        </div>
+    </header>
+
+    <main>
+        
+<article>
+    <div class="category-title" style="margin-bottom: 0.5rem;">Specialized</div>
+    <h1>Leftist Heap</h1>
+    <div class="content-body" style="margin-top: 2rem;">
+        <h2 id="how-it-works">How it Works</h2>
+<h3 id="how-it-works-expanded">How it Works (Expanded)</h3>
+<p>A <code>Leftist Heap</code> is a <code>binary tree</code> that satisfies two main properties:</p>
+<ul>
+<li><strong><code>Heap Property</code>:</strong> The <code>key</code> of each <code>node</code> is less than or equal to the <code>keys</code> of its children (for a <code>min-heap</code>).</li>
+<li><strong><code>Leftist Property</code>:</strong> For every <code>node X</code>, the <code>null path length (npl)</code> of its <code>left child</code> is greater than or equal to the <code>null path length</code> of its <code>right child</code>. The <code>npl</code> of a <code>node</code> is the length of the shortest path from that <code>node</code> to a <code>node</code> that has less than two children (i.e., a <code>leaf</code> or a <code>node</code> with only one child). An empty <code>node</code> has an <code>npl</code> of <code>-1</code>, a <code>leaf node</code> has an <code>npl</code> of <code>0</code>.</li>
+</ul>
+<hr>
+<p>Conceptual Leftist Heap: (npl values shown)</p>
+<pre><code>      (Key=10, npl=2)
+     /             \
+(Key=20, npl=1) (Key=30, npl=0)
+</code></pre>
+<p>/      \           /
+(Key=40, npl=0) (Key=50, npl=0) (Key=60, npl=-1)</p>
+<h2 id="implementation">Implementation</h2>
+<h3 id="python">Python</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#cb4b16">LeftistNode</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">__init__</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">key</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">key</span> = <span style="color:#268bd2">key</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">left</span> = <span style="color:#859900;font-weight:bold">None</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">right</span> = <span style="color:#859900;font-weight:bold">None</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">npl</span> = <span style="color:#2aa198;font-weight:bold">0</span> <span style="color:#93a1a1;font-style:italic"># Null Path Length</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#cb4b16">LeftistHeap</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">__init__</span>(<span style="color:#cb4b16">self</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">root</span> = <span style="color:#859900;font-weight:bold">None</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">_npl</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">node</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">node</span>.<span style="color:#268bd2">npl</span> <span style="color:#859900">if</span> <span style="color:#268bd2">node</span> <span style="color:#859900">else</span> -<span style="color:#2aa198;font-weight:bold">1</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">_merge_recursive</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">h1</span>, <span style="color:#268bd2">h2</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#859900">not</span> <span style="color:#268bd2">h1</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#268bd2">h2</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#859900">not</span> <span style="color:#268bd2">h2</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#268bd2">h1</span>
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># Ensure h1.key &lt;= h2.key (min-heap property)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">h1</span>.<span style="color:#268bd2">key</span> &gt; <span style="color:#268bd2">h2</span>.<span style="color:#268bd2">key</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">h1</span>, <span style="color:#268bd2">h2</span> = <span style="color:#268bd2">h2</span>, <span style="color:#268bd2">h1</span>
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># Merge h1&#39;s right child with h2</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">h1</span>.<span style="color:#268bd2">right</span> = <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">_merge_recursive</span>(<span style="color:#268bd2">h1</span>.<span style="color:#268bd2">right</span>, <span style="color:#268bd2">h2</span>)
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># Restore leftist property: ensure npl(left) &gt;= npl(right)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">_npl</span>(<span style="color:#268bd2">h1</span>.<span style="color:#268bd2">left</span>) &lt; <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">_npl</span>(<span style="color:#268bd2">h1</span>.<span style="color:#268bd2">right</span>):
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">h1</span>.<span style="color:#268bd2">left</span>, <span style="color:#268bd2">h1</span>.<span style="color:#268bd2">right</span> = <span style="color:#268bd2">h1</span>.<span style="color:#268bd2">right</span>, <span style="color:#268bd2">h1</span>.<span style="color:#268bd2">left</span>
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># Update npl of h1</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">h1</span>.<span style="color:#268bd2">npl</span> = <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">_npl</span>(<span style="color:#268bd2">h1</span>.<span style="color:#268bd2">right</span>) + <span style="color:#2aa198;font-weight:bold">1</span>
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">h1</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">insert</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">key</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">new_node</span> = <span style="color:#268bd2">LeftistNode</span>(<span style="color:#268bd2">key</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">root</span> = <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">_merge_recursive</span>(<span style="color:#cb4b16">self</span>.<span style="color:#268bd2">root</span>, <span style="color:#268bd2">new_node</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">extract_min</span>(<span style="color:#cb4b16">self</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#859900">not</span> <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">root</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#859900;font-weight:bold">None</span>
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">min_key</span> = <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">root</span>.<span style="color:#268bd2">key</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">root</span> = <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">_merge_recursive</span>(<span style="color:#cb4b16">self</span>.<span style="color:#268bd2">root</span>.<span style="color:#268bd2">left</span>, <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">root</span>.<span style="color:#268bd2">right</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">min_key</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">find_min</span>(<span style="color:#cb4b16">self</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">root</span>.<span style="color:#268bd2">key</span> <span style="color:#859900">if</span> <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">root</span> <span style="color:#859900">else</span> <span style="color:#859900;font-weight:bold">None</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">merge</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">other_heap</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">root</span> = <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">_merge_recursive</span>(<span style="color:#cb4b16">self</span>.<span style="color:#268bd2">root</span>, <span style="color:#268bd2">other_heap</span>.<span style="color:#268bd2">root</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">other_heap</span>.<span style="color:#268bd2">root</span> = <span style="color:#859900;font-weight:bold">None</span> <span style="color:#93a1a1;font-style:italic"># Other heap is now empty</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># Example Usage:</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># heap1 = LeftistHeap()</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># heap1.insert(10)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># heap1.insert(30)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># heap1.insert(5)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(&#34;Heap1 min:&#34;, heap1.find_min()) # Expected: 5</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># heap2 = LeftistHeap()</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># heap2.insert(20)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># heap2.insert(2)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(&#34;Heap2 min:&#34;, heap2.find_min()) # Expected: 2</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># heap1.merge(heap2)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(&#34;Merged heap min:&#34;, heap1.find_min()) # Expected: 2</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(&#34;Extract min:&#34;, heap1.extract_min()) # Expected: 2</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(&#34;Merged heap min after extract:&#34;, heap1.find_min()) # Expected: 5</span>
+</span></span></code></pre></div><h3 id="javascript">Javascript</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#268bd2">LeftistNode</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">constructor</span>(<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">key</span> = <span style="color:#268bd2">key</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">left</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">right</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">npl</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#93a1a1;font-style:italic">// Null Path Length
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#268bd2">LeftistHeap</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">constructor</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">root</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">_npl</span>(<span style="color:#268bd2">node</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">node</span> ? <span style="color:#268bd2">node</span>.<span style="color:#268bd2">npl</span> : -<span style="color:#2aa198;font-weight:bold">1</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">_mergeRecursive</span>(<span style="color:#268bd2">h1</span>, <span style="color:#268bd2">h2</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (!<span style="color:#268bd2">h1</span>) <span style="color:#859900">return</span> <span style="color:#268bd2">h2</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (!<span style="color:#268bd2">h2</span>) <span style="color:#859900">return</span> <span style="color:#268bd2">h1</span>;
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Ensure h1.key &lt;= h2.key (min-heap property)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">h1</span>.<span style="color:#268bd2">key</span> &gt; <span style="color:#268bd2">h2</span>.<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>            [<span style="color:#268bd2">h1</span>, <span style="color:#268bd2">h2</span>] = [<span style="color:#268bd2">h2</span>, <span style="color:#268bd2">h1</span>]; <span style="color:#93a1a1;font-style:italic">// Swap h1 and h2
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Merge h1&#39;s right child with h2
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">h1</span>.<span style="color:#268bd2">right</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">_mergeRecursive</span>(<span style="color:#268bd2">h1</span>.<span style="color:#268bd2">right</span>, <span style="color:#268bd2">h2</span>);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Restore leftist property: ensure npl(left) &gt;= npl(right)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">if</span> (<span style="color:#859900">this</span>.<span style="color:#268bd2">_npl</span>(<span style="color:#268bd2">h1</span>.<span style="color:#268bd2">left</span>) &lt; <span style="color:#859900">this</span>.<span style="color:#268bd2">_npl</span>(<span style="color:#268bd2">h1</span>.<span style="color:#268bd2">right</span>)) {
+</span></span><span style="display:flex;"><span>            [<span style="color:#268bd2">h1</span>.<span style="color:#268bd2">left</span>, <span style="color:#268bd2">h1</span>.<span style="color:#268bd2">right</span>] = [<span style="color:#268bd2">h1</span>.<span style="color:#268bd2">right</span>, <span style="color:#268bd2">h1</span>.<span style="color:#268bd2">left</span>]; <span style="color:#93a1a1;font-style:italic">// Swap children
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Update npl of h1
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">h1</span>.<span style="color:#268bd2">npl</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">_npl</span>(<span style="color:#268bd2">h1</span>.<span style="color:#268bd2">right</span>) + <span style="color:#2aa198;font-weight:bold">1</span>;
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">h1</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">insert</span>(<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">const</span> <span style="color:#268bd2">newNode</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">LeftistNode</span>(<span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">root</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">_mergeRecursive</span>(<span style="color:#859900">this</span>.<span style="color:#268bd2">root</span>, <span style="color:#268bd2">newNode</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">extractMin</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (!<span style="color:#859900">this</span>.<span style="color:#268bd2">root</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">const</span> <span style="color:#268bd2">minKey</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">root</span>.<span style="color:#268bd2">key</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">root</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">_mergeRecursive</span>(<span style="color:#859900">this</span>.<span style="color:#268bd2">root</span>.<span style="color:#268bd2">left</span>, <span style="color:#859900">this</span>.<span style="color:#268bd2">root</span>.<span style="color:#268bd2">right</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">minKey</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">findMin</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#859900">this</span>.<span style="color:#268bd2">root</span> ? <span style="color:#859900">this</span>.<span style="color:#268bd2">root</span>.<span style="color:#268bd2">key</span> : <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">merge</span>(<span style="color:#268bd2">otherHeap</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">root</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">_mergeRecursive</span>(<span style="color:#859900">this</span>.<span style="color:#268bd2">root</span>, <span style="color:#268bd2">otherHeap</span>.<span style="color:#268bd2">root</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">otherHeap</span>.<span style="color:#268bd2">root</span> = <span style="color:#859900;font-weight:bold">null</span>; <span style="color:#93a1a1;font-style:italic">// Other heap is now empty
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const heap1 = new LeftistHeap();
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// heap1.insert(10);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// heap1.insert(30);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// heap1.insert(5);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Heap1 min:&#34;, heap1.findMin()); // Expected: 5
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const heap2 = new LeftistHeap();
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// heap2.insert(20);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// heap2.insert(2);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Heap2 min:&#34;, heap2.findMin()); // Expected: 2
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// heap1.merge(heap2);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Merged heap min:&#34;, heap1.findMin()); // Expected: 2
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Extract min:&#34;, heap1.extractMin()); // Expected: 2
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Merged heap min after extract:&#34;, heap1.findMin()); // Expected: 5
+</span></span></span></code></pre></div><h3 id="typescript">Typescript</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-typescript" data-lang="typescript"><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#268bd2">LeftistNodeTS</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">key</span>: <span style="color:#859900;font-weight:bold">number</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">left</span>: <span style="color:#859900;font-weight:bold">LeftistNodeTS</span> | <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">right</span>: <span style="color:#859900;font-weight:bold">LeftistNodeTS</span> | <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">npl</span>: <span style="color:#859900;font-weight:bold">number</span>; <span style="color:#93a1a1;font-style:italic">// Null Path Length
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">constructor</span>(<span style="color:#268bd2">key</span>: <span style="color:#859900;font-weight:bold">number</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">key</span> = <span style="color:#268bd2">key</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">left</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">right</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">npl</span> = <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#268bd2">LeftistHeapTS</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">root</span>: <span style="color:#859900;font-weight:bold">LeftistNodeTS</span> | <span style="color:#859900;font-weight:bold">null</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">private</span> <span style="color:#268bd2">_npl</span>(<span style="color:#268bd2">node</span>: <span style="color:#859900;font-weight:bold">LeftistNodeTS</span> | <span style="color:#859900;font-weight:bold">null</span>): <span style="color:#859900;font-weight:bold">number</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">node</span> ? <span style="color:#268bd2">node</span>.<span style="color:#268bd2">npl</span> : -<span style="color:#2aa198;font-weight:bold">1</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">private</span> <span style="color:#268bd2">_mergeRecursive</span>(<span style="color:#268bd2">h1</span>: <span style="color:#859900;font-weight:bold">LeftistNodeTS</span> | <span style="color:#859900;font-weight:bold">null</span>, <span style="color:#268bd2">h2</span>: <span style="color:#859900;font-weight:bold">LeftistNodeTS</span> | <span style="color:#859900;font-weight:bold">null</span>): <span style="color:#268bd2">LeftistNodeTS</span> | <span style="color:#859900;font-weight:bold">null</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (!<span style="color:#268bd2">h1</span>) <span style="color:#859900">return</span> <span style="color:#268bd2">h2</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (!<span style="color:#268bd2">h2</span>) <span style="color:#859900">return</span> <span style="color:#268bd2">h1</span>;
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Ensure h1.key &lt;= h2.key (min-heap property)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">h1</span>.<span style="color:#268bd2">key</span> &gt; <span style="color:#268bd2">h2</span>.<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>            [<span style="color:#268bd2">h1</span>, <span style="color:#268bd2">h2</span>] = [<span style="color:#268bd2">h2</span>, <span style="color:#268bd2">h1</span>]; <span style="color:#93a1a1;font-style:italic">// Swap h1 and h2
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Merge h1&#39;s right child with h2
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">h1</span>.<span style="color:#268bd2">right</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">_mergeRecursive</span>(<span style="color:#268bd2">h1</span>.<span style="color:#268bd2">right</span>, <span style="color:#268bd2">h2</span>);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Restore leftist property: ensure npl(left) &gt;= npl(right)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">if</span> (<span style="color:#859900">this</span>.<span style="color:#268bd2">_npl</span>(<span style="color:#268bd2">h1</span>.<span style="color:#268bd2">left</span>) &lt; <span style="color:#859900">this</span>.<span style="color:#268bd2">_npl</span>(<span style="color:#268bd2">h1</span>.<span style="color:#268bd2">right</span>)) {
+</span></span><span style="display:flex;"><span>            [<span style="color:#268bd2">h1</span>.<span style="color:#268bd2">left</span>, <span style="color:#268bd2">h1</span>.<span style="color:#268bd2">right</span>] = [<span style="color:#268bd2">h1</span>.<span style="color:#268bd2">right</span>, <span style="color:#268bd2">h1</span>.<span style="color:#268bd2">left</span>]; <span style="color:#93a1a1;font-style:italic">// Swap children
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Update npl of h1
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">h1</span>.<span style="color:#268bd2">npl</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">_npl</span>(<span style="color:#268bd2">h1</span>.<span style="color:#268bd2">right</span>) + <span style="color:#2aa198;font-weight:bold">1</span>;
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">h1</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">insert</span>(<span style="color:#268bd2">key</span>: <span style="color:#859900;font-weight:bold">number</span>): <span style="color:#859900">void</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">const</span> <span style="color:#268bd2">newNode</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">LeftistNodeTS</span>(<span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">root</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">_mergeRecursive</span>(<span style="color:#859900">this</span>.<span style="color:#268bd2">root</span>, <span style="color:#268bd2">newNode</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">extractMin</span>(): <span style="color:#859900;font-weight:bold">number</span> | <span style="color:#859900;font-weight:bold">null</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (!<span style="color:#859900">this</span>.<span style="color:#268bd2">root</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">const</span> <span style="color:#268bd2">minKey</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">root</span>.<span style="color:#268bd2">key</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">root</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">_mergeRecursive</span>(<span style="color:#859900">this</span>.<span style="color:#268bd2">root</span>.<span style="color:#268bd2">left</span>, <span style="color:#859900">this</span>.<span style="color:#268bd2">root</span>.<span style="color:#268bd2">right</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">minKey</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">findMin</span>(): <span style="color:#859900;font-weight:bold">number</span> | <span style="color:#859900;font-weight:bold">null</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#859900">this</span>.<span style="color:#268bd2">root</span> ? <span style="color:#859900">this</span>.<span style="color:#268bd2">root.key</span> : <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">merge</span>(<span style="color:#268bd2">otherHeap</span>: <span style="color:#859900;font-weight:bold">LeftistHeapTS</span>): <span style="color:#859900">void</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">root</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">_mergeRecursive</span>(<span style="color:#859900">this</span>.<span style="color:#268bd2">root</span>, <span style="color:#268bd2">otherHeap</span>.<span style="color:#268bd2">root</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">otherHeap</span>.<span style="color:#268bd2">root</span> = <span style="color:#859900;font-weight:bold">null</span>; <span style="color:#93a1a1;font-style:italic">// Other heap is now empty
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const heap1TS = new LeftistHeapTS();
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// heap1TS.insert(10);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// heap1TS.insert(30);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// heap1TS.insert(5);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Heap1 min:&#34;, heap1TS.findMin()); // Expected: 5
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const heap2TS = new LeftistHeapTS();
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// heap2TS.insert(20);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// heap2TS.insert(2);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Heap2 min:&#34;, heap2TS.findMin()); // Expected: 2
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// heap1TS.merge(heap2TS);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Merged heap min:&#34;, heap1TS.findMin()); // Expected: 2
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Extract min:&#34;, heap1TS.extractMin()); // Expected: 2
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Merged heap min after extract:&#34;, heap1TS.findMin()); // Expected: 5
+</span></span></span></code></pre></div><h3 id="cpp">Cpp</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;iostream&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;algorithm&gt;</span><span style="color:#93a1a1;font-style:italic"> </span><span style="color:#93a1a1;font-style:italic">// For std::swap
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#cb4b16">LeftistNode</span> {
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">key</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">LeftistNode</span> &lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">left</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">LeftistNode</span> &lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">right</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">npl</span>; <span style="color:#93a1a1;font-style:italic">// Null Path Length
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">LeftistNode</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">k</span>) : <span style="color:#268bd2">key</span>(<span style="color:#268bd2">k</span>), <span style="color:#268bd2">left</span>(<span style="color:#859900">nullptr</span>), <span style="color:#268bd2">right</span>(<span style="color:#859900">nullptr</span>), <span style="color:#268bd2">npl</span>(<span style="color:#2aa198;font-weight:bold">0</span>) {}
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#cb4b16">LeftistHeap</span> {
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">LeftistNode</span>&lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">root</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">LeftistHeap</span>() : <span style="color:#268bd2">root</span>(<span style="color:#859900">nullptr</span>) {}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Helper to get Null Path Length (NPL)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">getNpl</span>(<span style="color:#268bd2">LeftistNode</span>&lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">node</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">node</span> ? <span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">npl</span> : -<span style="color:#2aa198;font-weight:bold">1</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Main merge function
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">LeftistNode</span>&lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">mergeRecursive</span>(<span style="color:#268bd2">LeftistNode</span>&lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">h1</span>, <span style="color:#268bd2">LeftistNode</span>&lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">h2</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (!<span style="color:#268bd2">h1</span>) <span style="color:#859900">return</span> <span style="color:#268bd2">h2</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (!<span style="color:#268bd2">h2</span>) <span style="color:#859900">return</span> <span style="color:#268bd2">h1</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Ensure h1.key &lt;= h2.key (min-heap property)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">h1</span>-&gt;<span style="color:#268bd2">key</span> &gt; <span style="color:#268bd2">h2</span>-&gt;<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">std</span>::<span style="color:#268bd2">swap</span>(<span style="color:#268bd2">h1</span>, <span style="color:#268bd2">h2</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Merge h1&#39;s right child with h2
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">h1</span>-&gt;<span style="color:#268bd2">right</span> = <span style="color:#268bd2">mergeRecursive</span>(<span style="color:#268bd2">h1</span>-&gt;<span style="color:#268bd2">right</span>, <span style="color:#268bd2">h2</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Restore leftist property: ensure npl(left) &gt;= npl(right)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">getNpl</span>(<span style="color:#268bd2">h1</span>-&gt;<span style="color:#268bd2">left</span>) &lt; <span style="color:#268bd2">getNpl</span>(<span style="color:#268bd2">h1</span>-&gt;<span style="color:#268bd2">right</span>)) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">std</span>::<span style="color:#268bd2">swap</span>(<span style="color:#268bd2">h1</span>-&gt;<span style="color:#268bd2">left</span>, <span style="color:#268bd2">h1</span>-&gt;<span style="color:#268bd2">right</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Update npl of h1
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">h1</span>-&gt;<span style="color:#268bd2">npl</span> = <span style="color:#268bd2">getNpl</span>(<span style="color:#268bd2">h1</span>-&gt;<span style="color:#268bd2">right</span>) + <span style="color:#2aa198;font-weight:bold">1</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">h1</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">insert</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">LeftistNode</span>&lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">newNode</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">LeftistNode</span>(<span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">root</span> = <span style="color:#268bd2">mergeRecursive</span>(<span style="color:#268bd2">root</span>, <span style="color:#268bd2">newNode</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">extractMin</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (!<span style="color:#268bd2">root</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Handle error or return a sentinel value
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">return</span> -<span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#93a1a1;font-style:italic">// Or throw an exception
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">minKey</span> = <span style="color:#268bd2">root</span>-&gt;<span style="color:#268bd2">key</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">LeftistNode</span>&lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">oldRoot</span> = <span style="color:#268bd2">root</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">root</span> = <span style="color:#268bd2">mergeRecursive</span>(<span style="color:#268bd2">root</span>-&gt;<span style="color:#268bd2">left</span>, <span style="color:#268bd2">root</span>-&gt;<span style="color:#268bd2">right</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">delete</span> <span style="color:#268bd2">oldRoot</span>; <span style="color:#93a1a1;font-style:italic">// Free the old root node
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">return</span> <span style="color:#268bd2">minKey</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">findMin</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">root</span> ? <span style="color:#268bd2">root</span>-&gt;<span style="color:#268bd2">key</span> : -<span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#93a1a1;font-style:italic">// Or throw an exception
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">merge</span>(<span style="color:#268bd2">LeftistHeap</span>&amp; <span style="color:#268bd2">other_heap</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">root</span> = <span style="color:#268bd2">mergeRecursive</span>(<span style="color:#268bd2">root</span>, <span style="color:#268bd2">other_heap</span>.<span style="color:#268bd2">root</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">other_heap</span>.<span style="color:#268bd2">root</span> = <span style="color:#859900">nullptr</span>; <span style="color:#93a1a1;font-style:italic">// Other heap is now empty
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// int main() {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     LeftistHeap heap1;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     heap1.insert(10);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     heap1.insert(30);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     heap1.insert(5);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; &#34;Heap1 min: &#34; &lt;&lt; heap1.findMin() &lt;&lt; std::endl; // Expected: 5
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     LeftistHeap heap2;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     heap2.insert(20);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     heap2.insert(2);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; &#34;Heap2 min: &#34; &lt;&lt; heap2.findMin() &lt;&lt; std::endl; // Expected: 2
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     heap1.merge(heap2);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; &#34;Merged heap min: &#34; &lt;&lt; heap1.findMin() &lt;&lt; std::endl; // Expected: 2
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; &#34;Extract min: &#34; &lt;&lt; heap1.extractMin() &lt;&lt; std::endl; // Expected: 2
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; &#34;Merged heap min after extract: &#34; &lt;&lt; heap1.findMin() &lt;&lt; std::endl; // Expected: 5
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     return 0;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span></code></pre></div><h3 id="go">Go</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">package</span> <span style="color:#268bd2">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> (
+</span></span><span style="display:flex;"><span>    <span style="color:#2aa198">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">type</span> <span style="color:#268bd2">LeftistNode</span> <span style="color:#859900">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">Key</span>   <span style="color:#859900;font-weight:bold">int</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">Left</span>  &lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">LeftistNode</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">Right</span> &lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">LeftistNode</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">Npl</span>   <span style="color:#859900;font-weight:bold">int</span> <span style="color:#93a1a1;font-style:italic">// Null Path Length</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> <span style="color:#268bd2">NewLeftistNode</span>(<span style="color:#268bd2">key</span> <span style="color:#859900;font-weight:bold">int</span>) &lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">LeftistNode</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> &amp;<span style="color:#268bd2">LeftistNode</span>{<span style="color:#268bd2">Key</span>: <span style="color:#268bd2">key</span>, <span style="color:#268bd2">Npl</span>: <span style="color:#2aa198;font-weight:bold">0</span>}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">type</span> <span style="color:#268bd2">LeftistHeap</span> <span style="color:#859900">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">Root</span> &lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">LeftistNode</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> (<span style="color:#268bd2">lh</span> &lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">LeftistHeap</span>) <span style="color:#268bd2">npl</span>(<span style="color:#268bd2">node</span> &lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">LeftistNode</span>) <span style="color:#859900;font-weight:bold">int</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#268bd2">node</span> == <span style="color:#859900;font-weight:bold">nil</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> -<span style="color:#2aa198;font-weight:bold">1</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">node</span>.<span style="color:#268bd2">Npl</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> (<span style="color:#268bd2">lh</span> &lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">LeftistHeap</span>) <span style="color:#268bd2">mergeRecursive</span>(<span style="color:#268bd2">h1</span>, <span style="color:#268bd2">h2</span> &lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">LeftistNode</span>) &lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">LeftistNode</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#268bd2">h1</span> == <span style="color:#859900;font-weight:bold">nil</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">h2</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#268bd2">h2</span> == <span style="color:#859900;font-weight:bold">nil</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">h1</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Ensure h1.Key &lt;= h2.Key (min-heap property)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#268bd2">h1</span>.<span style="color:#268bd2">Key</span> &gt; <span style="color:#268bd2">h2</span>.<span style="color:#268bd2">Key</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">h1</span>, <span style="color:#268bd2">h2</span> = <span style="color:#268bd2">h2</span>, <span style="color:#268bd2">h1</span> <span style="color:#93a1a1;font-style:italic">// Swap h1 and h2</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Merge h1&#39;s right child with h2</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">h1</span>.<span style="color:#268bd2">Right</span> = <span style="color:#268bd2">lh</span>.<span style="color:#268bd2">mergeRecursive</span>(<span style="color:#268bd2">h1</span>.<span style="color:#268bd2">Right</span>, <span style="color:#268bd2">h2</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Restore leftist property: ensure npl(left) &gt;= npl(right)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#268bd2">lh</span>.<span style="color:#268bd2">npl</span>(<span style="color:#268bd2">h1</span>.<span style="color:#268bd2">Left</span>) &lt; <span style="color:#268bd2">lh</span>.<span style="color:#268bd2">npl</span>(<span style="color:#268bd2">h1</span>.<span style="color:#268bd2">Right</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">h1</span>.<span style="color:#268bd2">Left</span>, <span style="color:#268bd2">h1</span>.<span style="color:#268bd2">Right</span> = <span style="color:#268bd2">h1</span>.<span style="color:#268bd2">Right</span>, <span style="color:#268bd2">h1</span>.<span style="color:#268bd2">Left</span> <span style="color:#93a1a1;font-style:italic">// Swap children</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Update npl of h1</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">h1</span>.<span style="color:#268bd2">Npl</span> = <span style="color:#268bd2">lh</span>.<span style="color:#268bd2">npl</span>(<span style="color:#268bd2">h1</span>.<span style="color:#268bd2">Right</span>) + <span style="color:#2aa198;font-weight:bold">1</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">h1</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> (<span style="color:#268bd2">lh</span> &lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">LeftistHeap</span>) <span style="color:#268bd2">Insert</span>(<span style="color:#268bd2">key</span> <span style="color:#859900;font-weight:bold">int</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">newNode</span> := <span style="color:#268bd2">NewLeftistNode</span>(<span style="color:#268bd2">key</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">lh</span>.<span style="color:#268bd2">Root</span> = <span style="color:#268bd2">lh</span>.<span style="color:#268bd2">mergeRecursive</span>(<span style="color:#268bd2">lh</span>.<span style="color:#268bd2">Root</span>, <span style="color:#268bd2">newNode</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> (<span style="color:#268bd2">lh</span> &lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">LeftistHeap</span>) <span style="color:#268bd2">ExtractMin</span>() (<span style="color:#859900;font-weight:bold">int</span>, <span style="color:#859900;font-weight:bold">error</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#268bd2">lh</span>.<span style="color:#268bd2">Root</span> == <span style="color:#859900;font-weight:bold">nil</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#268bd2">fmt</span>.<span style="color:#268bd2">Errorf</span>(<span style="color:#2aa198">&#34;heap is empty&#34;</span>)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">minKey</span> := <span style="color:#268bd2">lh</span>.<span style="color:#268bd2">Root</span>.<span style="color:#268bd2">Key</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">lh</span>.<span style="color:#268bd2">Root</span> = <span style="color:#268bd2">lh</span>.<span style="color:#268bd2">mergeRecursive</span>(<span style="color:#268bd2">lh</span>.<span style="color:#268bd2">Root</span>.<span style="color:#268bd2">Left</span>, <span style="color:#268bd2">lh</span>.<span style="color:#268bd2">Root</span>.<span style="color:#268bd2">Right</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">minKey</span>, <span style="color:#859900;font-weight:bold">nil</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> (<span style="color:#268bd2">lh</span> &lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">LeftistHeap</span>) <span style="color:#268bd2">FindMin</span>() (<span style="color:#859900;font-weight:bold">int</span>, <span style="color:#859900;font-weight:bold">error</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#268bd2">lh</span>.<span style="color:#268bd2">Root</span> == <span style="color:#859900;font-weight:bold">nil</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#268bd2">fmt</span>.<span style="color:#268bd2">Errorf</span>(<span style="color:#2aa198">&#34;heap is empty&#34;</span>)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">lh</span>.<span style="color:#268bd2">Root</span>.<span style="color:#268bd2">Key</span>, <span style="color:#859900;font-weight:bold">nil</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> (<span style="color:#268bd2">lh</span> &lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">LeftistHeap</span>) <span style="color:#268bd2">Merge</span>(<span style="color:#268bd2">otherHeap</span> *<span style="color:#268bd2">LeftistHeap</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">lh</span>.<span style="color:#268bd2">Root</span> = <span style="color:#268bd2">lh</span>.<span style="color:#268bd2">mergeRecursive</span>(<span style="color:#268bd2">lh</span>.<span style="color:#268bd2">Root</span>, <span style="color:#268bd2">otherHeap</span>.<span style="color:#268bd2">Root</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">otherHeap</span>.<span style="color:#268bd2">Root</span> = <span style="color:#859900;font-weight:bold">nil</span> <span style="color:#93a1a1;font-style:italic">// Other heap is now empty</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// func main() {</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     heap1 := &amp;LeftistHeap{}</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     heap1.Insert(10)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     heap1.Insert(30)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     heap1.insert(5)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     min1, _ := heap1.FindMin()</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     fmt.Println(&#34;Heap1 min:&#34;, min1) // Expected: 5</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     heap2 := &amp;LeftistHeap{}</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     heap2.Insert(20)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     heap2.Insert(2)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     min2, _ := heap2.FindMin()</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     fmt.Println(&#34;Heap2 min:&#34;, min2) // Expected: 2</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     heap1.Merge(heap2)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     mergedMin, _ := heap1.FindMin()</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     fmt.Println(&#34;Merged heap min:&#34;, mergedMin) // Expected: 2</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     extractedMin, _ := heap1.ExtractMin()</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     fmt.Println(&#34;Extract min:&#34;, extractedMin) // Expected: 2</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     mergedMinAfterExtract, _ := heap1.FindMin()</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     fmt.Println(&#34;Merged heap min after extract:&#34;, mergedMinAfterExtract) // Expected: 5</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }</span>
+</span></span></code></pre></div><h3 id="d">D</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-d" data-lang="d"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.stdio</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.algorithm</span>; <span style="color:#93a1a1;font-style:italic">// For std.algorithm.swap
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.conv</span>; <span style="color:#93a1a1;font-style:italic">// For to!string
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#cb4b16">LeftistNode</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">key</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">LeftistNode</span> <span style="color:#268bd2">left</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">LeftistNode</span> <span style="color:#268bd2">right</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">npl</span>; <span style="color:#93a1a1;font-style:italic">// Null Path Length
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">this</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">k</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">key</span> = <span style="color:#268bd2">k</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">left</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">right</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">npl</span> = <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#cb4b16">LeftistHeap</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">LeftistNode</span> <span style="color:#268bd2">root</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">this</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">root</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">
+</span></span></span><span style="display:flex;"><span><span style="color:#268bd2">private:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">getNpl</span>(<span style="color:#268bd2">LeftistNode</span> <span style="color:#268bd2">node</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">node</span> ? <span style="color:#268bd2">node</span>.<span style="color:#268bd2">npl</span> : -<span style="color:#2aa198;font-weight:bold">1</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">LeftistNode</span> <span style="color:#268bd2">mergeRecursive</span>(<span style="color:#268bd2">LeftistNode</span> <span style="color:#268bd2">h1</span>, <span style="color:#268bd2">LeftistNode</span> <span style="color:#268bd2">h2</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">h1</span> <span style="color:#859900">is</span> <span style="color:#859900;font-weight:bold">null</span>) <span style="color:#859900">return</span> <span style="color:#268bd2">h2</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">h2</span> <span style="color:#859900">is</span> <span style="color:#859900;font-weight:bold">null</span>) <span style="color:#859900">return</span> <span style="color:#268bd2">h1</span>;
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Ensure h1.key &lt;= h2.key (min-heap property)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">h1</span>.<span style="color:#268bd2">key</span> &gt; <span style="color:#268bd2">h2</span>.<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">swap</span>(<span style="color:#268bd2">h1</span>, <span style="color:#268bd2">h2</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Merge h1&#39;s right child with h2
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">h1</span>.<span style="color:#268bd2">right</span> = <span style="color:#268bd2">mergeRecursive</span>(<span style="color:#268bd2">h1</span>.<span style="color:#268bd2">right</span>, <span style="color:#268bd2">h2</span>);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Restore leftist property: ensure npl(left) &gt;= npl(right)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">getNpl</span>(<span style="color:#268bd2">h1</span>.<span style="color:#268bd2">left</span>) &lt; <span style="color:#268bd2">getNpl</span>(<span style="color:#268bd2">h1</span>.<span style="color:#268bd2">right</span>)) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">swap</span>(<span style="color:#268bd2">h1</span>.<span style="color:#268bd2">left</span>, <span style="color:#268bd2">h1</span>.<span style="color:#268bd2">right</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Update npl of h1
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">h1</span>.<span style="color:#268bd2">npl</span> = <span style="color:#268bd2">getNpl</span>(<span style="color:#268bd2">h1</span>.<span style="color:#268bd2">right</span>) + <span style="color:#2aa198;font-weight:bold">1</span>;
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">h1</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">
+</span></span></span><span style="display:flex;"><span><span style="color:#268bd2">public:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">insert</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">LeftistNode</span> <span style="color:#268bd2">new_node</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">LeftistNode</span>(<span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">root</span> = <span style="color:#268bd2">mergeRecursive</span>(<span style="color:#268bd2">root</span>, <span style="color:#268bd2">new_node</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">extractMin</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">root</span> <span style="color:#859900">is</span> <span style="color:#859900;font-weight:bold">null</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">throw</span> <span style="color:#859900">new</span> <span style="color:#cb4b16">Exception</span>(<span style="color:#2aa198">&#34;Heap is empty&#34;</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">min_key</span> = <span style="color:#268bd2">root</span>.<span style="color:#268bd2">key</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">LeftistNode</span> <span style="color:#268bd2">old_root</span> = <span style="color:#268bd2">root</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">root</span> = <span style="color:#268bd2">mergeRecursive</span>(<span style="color:#268bd2">root</span>.<span style="color:#268bd2">left</span>, <span style="color:#268bd2">root</span>.<span style="color:#268bd2">right</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// In D, old_root will be garbage collected if no other references.
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">return</span> <span style="color:#268bd2">min_key</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">findMin</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">root</span> <span style="color:#859900">is</span> <span style="color:#859900;font-weight:bold">null</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">throw</span> <span style="color:#859900">new</span> <span style="color:#cb4b16">Exception</span>(<span style="color:#2aa198">&#34;Heap is empty&#34;</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">root</span>.<span style="color:#268bd2">key</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">merge</span>(<span style="color:#268bd2">LeftistHeap</span> <span style="color:#268bd2">other_heap</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">root</span> = <span style="color:#268bd2">mergeRecursive</span>(<span style="color:#268bd2">root</span>, <span style="color:#268bd2">other_heap</span>.<span style="color:#268bd2">root</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">other_heap</span>.<span style="color:#268bd2">root</span> = <span style="color:#859900;font-weight:bold">null</span>; <span style="color:#93a1a1;font-style:italic">// Other heap is now empty
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// void main() {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     auto heap1 = new LeftistHeap();
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     heap1.insert(10);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     heap1.insert(30);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     heap1.insert(5);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     writefln(&#34;Heap1 min: %s&#34;, heap1.findMin()); // Expected: 5
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     auto heap2 = new LeftistHeap();
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     heap2.insert(20);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     heap2.insert(2);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     writefln(&#34;Heap2 min: %s&#34;, heap2.findMin()); // Expected: 2
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     heap1.merge(heap2);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     writefln(&#34;Merged heap min: %s&#34;, heap1.findMin()); // Expected: 2
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     writefln(&#34;Extract min: %s&#34;, heap1.extractMin()); // Expected: 2
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     writefln(&#34;Merged heap min after extract: %s&#34;, heap1.findMin()); // Expected: 5
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span></code></pre></div><h2 id="applications">Applications</h2>
+<h3 id="application">Application</h3>
+<p>Leftist Heaps are a type of mergeable <code>priority queue</code>, meaning they efficiently support the operation of combining two heaps into one. This makes them suitable for applications where merging heaps is a common or critical operation.</p>
+<ul>
+<li><strong>Event Simulation:</strong> Managing events with different priorities, especially when events might be generated by multiple sources and their respective <code>priority queues</code> need to be combined.</li>
+<li><strong>Graph Algorithms:</strong> Can be used in algorithms like <code>Dijkstra's</code> or <code>Prim's</code> where <code>priority queues</code> are used, and especially if intermediate <code>priority queues</code> need to be merged.</li>
+<li><strong>Distributed Systems:</strong> Where <code>priority queues</code> might exist on different nodes and need to be periodically synchronized or merged.</li>
+<li><strong>Parallel Algorithms:</strong> Efficiently combining results from parallel computations that produce separate <code>priority queues</code>.</li>
+</ul>
+
+    </div>
+</article>
+
+<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
+    
+    <a href="//localhost:1313/dsa-42/data_structures/specialized/memory_pool/" class="nav-btn">← Previous</a>
+    
+    
+    <a href="//localhost:1313/dsa-42/data_structures/specialized/" class="nav-btn">Up</a>
+
+    
+    <a href="//localhost:1313/dsa-42/data_structures/specialized/k_d_tree/" class="nav-btn">Next →</a>
+    
+</div>
+
+    </main>
+
+    <footer class="footer">
+        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
+    </footer>
+
+    <script>
+        const body = document.getElementById('theme-body');
+        const btn = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme');
+
+        
+        function updateButtonText() {
+            if (body.classList.contains('theme-terminal')) {
+                btn.textContent = "Light Mode";
+            } else {
+                btn.textContent = "Dark Mode";
+            }
+        }
+
+        if (currentTheme === 'terminal') {
+            body.classList.add('theme-terminal');
+        }
+        
+        
+        updateButtonText();
+
+        btn.addEventListener('click', () => {
+            body.classList.toggle('theme-terminal');
+            updateButtonText();
+            
+            let theme = 'natural';
+            if (body.classList.contains('theme-terminal')) {
+                theme = 'terminal';
+            }
+            localStorage.setItem('theme', theme);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Binary Search Tree | SDET Interview Preparation Kit</title>
+    <link rel="stylesheet" href="//localhost:1313/css/style.css">
+    <link rel="stylesheet" href="//localhost:1313/css/terminal.css">
+    
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    
+    <link rel="stylesheet" href="//localhost:1313/lib/katex/katex.min.css">
+    <script defer src="//localhost:1313/lib/katex/katex.min.js"></script>
+    <script defer src="//localhost:1313/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</head>
+<body id="theme-body">
+    <button id="theme-toggle">Switch Theme</button>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="//localhost:1313/">Index</a></li>
+                
+            </ul>
+        </nav>
+        <div class="site-breadcrumb">
+            <a href="//localhost:1313/">Home</a>
+            
+                
+                    <span>/</span> <a href="//localhost:1313/">SDET Interview Dashboard</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/dsa-42/">42 Algorithms &amp; 42 Data Structures</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/dsa-42/data_structures/">Data Structures</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/dsa-42/data_structures/fundamentals/">Fundamentals</a>
+                
+            
+            
+                <span>/</span> Binary Search Tree
+            
+        </div>
+    </header>
+
+    <main>
+        
+<article>
+    <div class="category-title" style="margin-bottom: 0.5rem;">Fundamentals</div>
+    <h1>Binary Search Tree</h1>
+    <div class="content-body" style="margin-top: 2rem;">
+        <p>Imagine organizing a massive library. You wouldn&rsquo;t put every book on a single, long shelf. Instead, you&rsquo;d use a hierarchical system, like a card catalog, to quickly find what you&rsquo;re looking for. A Binary Search Tree (<code>BST</code>) works similarly, organizing data in a way that allows for efficient searching, insertion, and deletion.</p>
+<p>It&rsquo;s a tree-like structure where each &lsquo;<code>node</code>&rsquo; has at most two children: a &lsquo;<code>left</code>&rsquo; child and a &lsquo;<code>right</code>&rsquo; child. The <code>key</code> property is that all values in the <code>left</code> subtree are less than the <code>node</code>&rsquo;s <code>value</code>, and all values in the <code>right</code> subtree are greater.</p>
+<h2 id="how-it-works">How it Works</h2>
+<h3 id="how-it-works-expanded">How it Works (Expanded)</h3>
+<p>A <code>BST</code> maintains elements in a sorted order, which is crucial for its performance. Here are the core rules:</p>
+<ul>
+<li>Each <code>node</code> has a <code>value</code>.</li>
+<li>The <code>left</code> child&rsquo;s <code>value</code> (if it exists) is always less than the parent&rsquo;s <code>value</code>.</li>
+<li>The <code>right</code> child&rsquo;s <code>value</code> (if it exists) is always greater than the parent&rsquo;s <code>value</code>.</li>
+</ul>
+<p>This recursive definition allows you to quickly navigate the tree:</p>
+<hr>
+<pre><code>( 10 )
+</code></pre>
+<p>/    <br>
+( 5 ) ( 15 )
+/ \   /  <br>
+( 2 )( 7 )( 12 )( 18 )</p>
+<p><a href="#code-walkthrough">Jump to Code Walkthrough</a></p>
+<h2 id="implementation">Implementation</h2>
+<h3 id="python">Python</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#cb4b16">Node</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">__init__</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">key</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">key</span> = <span style="color:#268bd2">key</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">left</span> = <span style="color:#859900;font-weight:bold">None</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">right</span> = <span style="color:#859900;font-weight:bold">None</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#cb4b16">BST</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">__init__</span>(<span style="color:#cb4b16">self</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">root</span> = <span style="color:#859900;font-weight:bold">None</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">insert</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">key</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">root</span> = <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">_insert_recursive</span>(<span style="color:#cb4b16">self</span>.<span style="color:#268bd2">root</span>, <span style="color:#268bd2">key</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">_insert_recursive</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">node</span>, <span style="color:#268bd2">key</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">node</span> <span style="color:#859900">is</span> <span style="color:#859900;font-weight:bold">None</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#268bd2">Node</span>(<span style="color:#268bd2">key</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">key</span> &lt; <span style="color:#268bd2">node</span>.<span style="color:#268bd2">key</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">node</span>.<span style="color:#268bd2">left</span> = <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">_insert_recursive</span>(<span style="color:#268bd2">node</span>.<span style="color:#268bd2">left</span>, <span style="color:#268bd2">key</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">elif</span> <span style="color:#268bd2">key</span> &gt; <span style="color:#268bd2">node</span>.<span style="color:#268bd2">key</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">node</span>.<span style="color:#268bd2">right</span> = <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">_insert_recursive</span>(<span style="color:#268bd2">node</span>.<span style="color:#268bd2">right</span>, <span style="color:#268bd2">key</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">node</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">search</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">key</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">_search_recursive</span>(<span style="color:#cb4b16">self</span>.<span style="color:#268bd2">root</span>, <span style="color:#268bd2">key</span>) <span style="color:#859900">is</span> <span style="color:#859900">not</span> <span style="color:#859900;font-weight:bold">None</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">_search_recursive</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">node</span>, <span style="color:#268bd2">key</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">node</span> <span style="color:#859900">is</span> <span style="color:#859900;font-weight:bold">None</span> <span style="color:#859900">or</span> <span style="color:#268bd2">node</span>.<span style="color:#268bd2">key</span> == <span style="color:#268bd2">key</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#268bd2">node</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">key</span> &lt; <span style="color:#268bd2">node</span>.<span style="color:#268bd2">key</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">_search_recursive</span>(<span style="color:#268bd2">node</span>.<span style="color:#268bd2">left</span>, <span style="color:#268bd2">key</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">_search_recursive</span>(<span style="color:#268bd2">node</span>.<span style="color:#268bd2">right</span>, <span style="color:#268bd2">key</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">inorder_traversal</span>(<span style="color:#cb4b16">self</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">elements</span> = []
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">_inorder_recursive</span>(<span style="color:#cb4b16">self</span>.<span style="color:#268bd2">root</span>, <span style="color:#268bd2">elements</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">elements</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">_inorder_recursive</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">node</span>, <span style="color:#268bd2">elements</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">node</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">_inorder_recursive</span>(<span style="color:#268bd2">node</span>.<span style="color:#268bd2">left</span>, <span style="color:#268bd2">elements</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">elements</span>.<span style="color:#268bd2">append</span>(<span style="color:#268bd2">node</span>.<span style="color:#268bd2">key</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">_inorder_recursive</span>(<span style="color:#268bd2">node</span>.<span style="color:#268bd2">right</span>, <span style="color:#268bd2">elements</span>)
+</span></span></code></pre></div><h3 id="javascript">Javascript</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#268bd2">Node</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">constructor</span>(<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">key</span> = <span style="color:#268bd2">key</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">left</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">right</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#268bd2">BST</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">constructor</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">root</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">insert</span>(<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">root</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">_insertRecursive</span>(<span style="color:#859900">this</span>.<span style="color:#268bd2">root</span>, <span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">_insertRecursive</span>(<span style="color:#268bd2">node</span>, <span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">node</span> === <span style="color:#859900;font-weight:bold">null</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#859900">new</span> <span style="color:#268bd2">Node</span>(<span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">key</span> &lt; <span style="color:#268bd2">node</span>.<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">node</span>.<span style="color:#268bd2">left</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">_insertRecursive</span>(<span style="color:#268bd2">node</span>.<span style="color:#268bd2">left</span>, <span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> <span style="color:#859900">if</span> (<span style="color:#268bd2">key</span> &gt; <span style="color:#268bd2">node</span>.<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">node</span>.<span style="color:#268bd2">right</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">_insertRecursive</span>(<span style="color:#268bd2">node</span>.<span style="color:#268bd2">right</span>, <span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">node</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">search</span>(<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#859900">this</span>.<span style="color:#268bd2">_searchRecursive</span>(<span style="color:#859900">this</span>.<span style="color:#268bd2">root</span>, <span style="color:#268bd2">key</span>) !== <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">_searchRecursive</span>(<span style="color:#268bd2">node</span>, <span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">node</span> === <span style="color:#859900;font-weight:bold">null</span> || <span style="color:#268bd2">node</span>.<span style="color:#268bd2">key</span> === <span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#268bd2">node</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">key</span> &lt; <span style="color:#268bd2">node</span>.<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#859900">this</span>.<span style="color:#268bd2">_searchRecursive</span>(<span style="color:#268bd2">node</span>.<span style="color:#268bd2">left</span>, <span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#859900">this</span>.<span style="color:#268bd2">_searchRecursive</span>(<span style="color:#268bd2">node</span>.<span style="color:#268bd2">right</span>, <span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">inorderTraversal</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">const</span> <span style="color:#268bd2">elements</span> = [];
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">_inorderRecursive</span>(<span style="color:#859900">this</span>.<span style="color:#268bd2">root</span>, <span style="color:#268bd2">elements</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">elements</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">_inorderRecursive</span>(<span style="color:#268bd2">node</span>, <span style="color:#268bd2">elements</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">node</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">this</span>.<span style="color:#268bd2">_inorderRecursive</span>(<span style="color:#268bd2">node</span>.<span style="color:#268bd2">left</span>, <span style="color:#268bd2">elements</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">elements</span>.<span style="color:#268bd2">push</span>(<span style="color:#268bd2">node</span>.<span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">this</span>.<span style="color:#268bd2">_inorderRecursive</span>(<span style="color:#268bd2">node</span>.<span style="color:#268bd2">right</span>, <span style="color:#268bd2">elements</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="cpp">Cpp</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;iostream&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#cb4b16">Node</span> {
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">key</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">Node</span> &lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">left</span>, &lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">right</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">Node</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">item</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">key</span> = <span style="color:#268bd2">item</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">left</span> = <span style="color:#268bd2">right</span> = <span style="color:#859900">nullptr</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#cb4b16">BST</span> {
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">Node</span>&lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">root</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">BST</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">root</span> = <span style="color:#859900">nullptr</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Insert operation
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">Node</span>&lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">insertRecursive</span>(<span style="color:#268bd2">Node</span>&lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">node</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">node</span> == <span style="color:#859900">nullptr</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#859900">new</span> <span style="color:#268bd2">Node</span>(<span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">key</span> &lt; <span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">left</span> = <span style="color:#268bd2">insertRecursive</span>(<span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">left</span>, <span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> <span style="color:#268bd2">if</span> (<span style="color:#268bd2">key</span> &gt; <span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">right</span> = <span style="color:#268bd2">insertRecursive</span>(<span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">right</span>, <span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">node</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">insert</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">root</span> = <span style="color:#268bd2">insertRecursive</span>(<span style="color:#268bd2">root</span>, <span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Search operation
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">Node</span>&lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">searchRecursive</span>(<span style="color:#268bd2">Node</span>&lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">node</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">node</span> == <span style="color:#859900">nullptr</span> || <span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">key</span> == <span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#268bd2">node</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">key</span> &lt; <span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#268bd2">searchRecursive</span>(<span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">left</span>, <span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">searchRecursive</span>(<span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">right</span>, <span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">bool</span> <span style="color:#268bd2">search</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">searchRecursive</span>(<span style="color:#268bd2">root</span>, <span style="color:#268bd2">key</span>) != <span style="color:#859900">nullptr</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Inorder traversal (for printing sorted elements)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">inorderRecursive</span>(<span style="color:#268bd2">Node</span>&lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">node</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">node</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">inorderRecursive</span>(<span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">left</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">std</span>::<span style="color:#268bd2">cout</span> &lt;&lt; <span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">key</span> &lt;&lt; <span style="color:#2aa198">&#34; &#34;</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">inorderRecursive</span>(<span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">right</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">inorderTraversal</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">inorderRecursive</span>(<span style="color:#268bd2">root</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">std</span>::<span style="color:#268bd2">cout</span> &lt;&lt; <span style="color:#268bd2">std</span>::<span style="color:#268bd2">endl</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></div><h2 id="code-walkthrough">Code Walkthrough</h2>
+<p><a href="#implementation">Back to Implementation</a></p>
+<h3 id="code-walkthrough-1">Code Walkthrough</h3>
+<p>A <code>BST</code> is typically implemented using custom <code>Node</code> objects and recursive functions for operations.</p>
+<hr>
+<p><strong><code>Node</code> Class:</strong> Each <code>Node</code> holds a <code>key</code> (the <code>value</code>) and two pointers, <code>left</code> and <code>right</code>, initially <code>null</code>.</p>
+<p><strong><code>BST</code> Class:</strong> Manages the tree, primarily through its <code>root</code> <code>node</code>.</p>
+<ul>
+<li><strong><code>insert(key)</code>:</strong> Public method that calls a private recursive helper. The helper finds the correct spot to insert the new <code>key</code> while maintaining the <code>BST</code> property.</li>
+<li><strong><code>search(key)</code>:</strong> Public method calling a private recursive helper. The helper traverses the tree, going <code>left</code> or <code>right</code> based on the <code>key</code>&rsquo;s <code>value</code> compared to the current <code>node</code>, until the <code>key</code> is found or a <code>null</code> <code>node</code> is reached.</li>
+<li><strong><code>inorder_traversal()</code>:</strong> A common way to visit all <code>nodes</code>. It recursively visits the <code>left</code> subtree, then the current <code>node</code>, then the <code>right</code> subtree, resulting in an output of sorted elements.</li>
+</ul>
+<p><a href="#implementation">Back to Implementation</a></p>
+
+    </div>
+</article>
+
+<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
+    
+    <a href="//localhost:1313/dsa-42/data_structures/fundamentals/graph/" class="nav-btn">← Previous</a>
+    
+    
+    <a href="//localhost:1313/dsa-42/data_structures/fundamentals/" class="nav-btn">Up</a>
+
+    
+    <a href="//localhost:1313/dsa-42/data_structures/fundamentals/array/" class="nav-btn">Next →</a>
+    
+</div>
+
+    </main>
+
+    <footer class="footer">
+        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
+    </footer>
+
+    <script>
+        const body = document.getElementById('theme-body');
+        const btn = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme');
+
+        
+        function updateButtonText() {
+            if (body.classList.contains('theme-terminal')) {
+                btn.textContent = "Light Mode";
+            } else {
+                btn.textContent = "Dark Mode";
+            }
+        }
+
+        if (currentTheme === 'terminal') {
+            body.classList.add('theme-terminal');
+        }
+        
+        
+        updateButtonText();
+
+        btn.addEventListener('click', () => {
+            body.classList.toggle('theme-terminal');
+            updateButtonText();
+            
+            let theme = 'natural';
+            if (body.classList.contains('theme-terminal')) {
+                theme = 'terminal';
+            }
+            localStorage.setItem('theme', theme);
+        });
+    </script>
+</body>
+</html>

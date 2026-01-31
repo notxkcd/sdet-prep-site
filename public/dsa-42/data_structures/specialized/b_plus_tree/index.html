@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B&#43; Tree | SDET Interview Preparation Kit</title>
+    <link rel="stylesheet" href="//localhost:1313/css/style.css">
+    <link rel="stylesheet" href="//localhost:1313/css/terminal.css">
+    
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    
+    <link rel="stylesheet" href="//localhost:1313/lib/katex/katex.min.css">
+    <script defer src="//localhost:1313/lib/katex/katex.min.js"></script>
+    <script defer src="//localhost:1313/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</head>
+<body id="theme-body">
+    <button id="theme-toggle">Switch Theme</button>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="//localhost:1313/">Index</a></li>
+                
+            </ul>
+        </nav>
+        <div class="site-breadcrumb">
+            <a href="//localhost:1313/">Home</a>
+            
+                
+                    <span>/</span> <a href="//localhost:1313/">SDET Interview Dashboard</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/dsa-42/">42 Algorithms &amp; 42 Data Structures</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/dsa-42/data_structures/">Data Structures</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/dsa-42/data_structures/specialized/">Specialized</a>
+                
+            
+            
+                <span>/</span> B&#43; Tree
+            
+        </div>
+    </header>
+
+    <main>
+        
+<article>
+    <div class="category-title" style="margin-bottom: 0.5rem;">Specialized</div>
+    <h1>B&#43; Tree</h1>
+    <div class="content-body" style="margin-top: 2rem;">
+        <p>A <code>B+ Tree</code> is a tree data structure that is a variation of the <code>B-Tree</code>, primarily optimized for efficient retrieval of records in <code>block-oriented storage</code> (like disk or flash memory). Its key distinction is that all data records (or pointers to them) are stored only in the <code>leaf nodes</code>, and these <code>leaf nodes</code> are linked together to form a sequential <code>list</code>.</p>
+<p>This structure makes <code>B+ Trees</code> exceptionally good for <code>range queries</code> and for providing fast sequential access to records, which is crucial for <code>database systems</code> and <code>file systems</code>.</p>
+<h2 id="how-it-works">How it Works</h2>
+<h3 id="how-it-works-expanded">How it Works (Expanded)</h3>
+<p>The differences between a <code>B-Tree</code> and a <code>B+ Tree</code> are subtle but significant for performance in <code>disk-based storage</code>:</p>
+<hr>
+<p>Conceptual B+ Tree (Order M=3, max 2 keys per node, max 3 children)</p>
+<pre><code>      Internal Node (index keys only)
+          [ 50, 80 ]
+         /    |     \
+        /     |      \
+   [20,30] [60,70] [90,100]
+   / | \   / | \   / | \
+  /  |  \ /  |  \ /  |  \
+ V   V   V   V   V   V   V
+ [Leaf Node 1]&lt;-&gt;[Leaf Node 2]&lt;-&gt;[Leaf Node 3] ... (Actual data/records)
+ (20,data)(30,data) (50,data)(60,data) (80,data)(90,data)
+</code></pre>
+<h2 id="implementation">Implementation</h2>
+<h3 id="python">Python</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># Conceptual B+ Tree in Python (simplified, full implementation is very complex and disk-oriented)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># This focuses on the structural differences from a B-Tree: data only in leaves.</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#cb4b16">BPlusTreeNode</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">__init__</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">is_leaf</span>=<span style="color:#859900;font-weight:bold">True</span>, <span style="color:#268bd2">order</span>=<span style="color:#2aa198;font-weight:bold">3</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">is_leaf</span> = <span style="color:#268bd2">is_leaf</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">keys</span> = [] <span style="color:#93a1a1;font-style:italic"># Keys (for indexing in internal nodes, for data in leaf nodes)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">children</span> = [] <span style="color:#93a1a1;font-style:italic"># Pointers to child BPlusTreeNodes (internal nodes only)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">next_leaf</span> = <span style="color:#859900;font-weight:bold">None</span> <span style="color:#93a1a1;font-style:italic"># Pointer to next leaf node (leaf nodes only)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">parent</span> = <span style="color:#859900;font-weight:bold">None</span> <span style="color:#93a1a1;font-style:italic"># Parent pointer (optional, but simplifies implementation)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">order</span> = <span style="color:#268bd2">order</span> <span style="color:#93a1a1;font-style:italic"># Minimum degree</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># Conceptual B+ Tree class</span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#cb4b16">BPlusTree</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">__init__</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">order</span>=<span style="color:#2aa198;font-weight:bold">3</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">order</span> = <span style="color:#268bd2">order</span> <span style="color:#93a1a1;font-style:italic"># Max children (order)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">root</span> = <span style="color:#268bd2">BPlusTreeNode</span>(<span style="color:#268bd2">is_leaf</span>=<span style="color:#859900;font-weight:bold">True</span>, <span style="color:#268bd2">order</span>=<span style="color:#268bd2">order</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">_find_leaf</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">key</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">current</span> = <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">root</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">while</span> <span style="color:#859900">not</span> <span style="color:#268bd2">current</span>.<span style="color:#268bd2">is_leaf</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic"># Find the appropriate child to descend into</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">idx</span> = <span style="color:#2aa198;font-weight:bold">0</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">while</span> <span style="color:#268bd2">idx</span> &lt; <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">current</span>.<span style="color:#268bd2">keys</span>) <span style="color:#859900">and</span> <span style="color:#268bd2">key</span> &gt;= <span style="color:#268bd2">current</span>.<span style="color:#268bd2">keys</span>[<span style="color:#268bd2">idx</span>]:
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">idx</span> += <span style="color:#2aa198;font-weight:bold">1</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">current</span> = <span style="color:#268bd2">current</span>.<span style="color:#268bd2">children</span>[<span style="color:#268bd2">idx</span>]
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">current</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">insert</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">key</span>, <span style="color:#268bd2">data_payload</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">leaf</span> = <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">_find_leaf</span>(<span style="color:#268bd2">key</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># Simplified insert: Assumes no splitting or rebalancing for conceptual demo.</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># In a real B+Tree, you insert, then check for overflow, split node, and propagate.</span>
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># Insert key and data into leaf (conceptually)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">inserted</span> = <span style="color:#859900;font-weight:bold">False</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> <span style="color:#859900">in</span> <span style="color:#cb4b16">range</span>(<span style="color:#cb4b16">len</span>(<span style="color:#268bd2">leaf</span>.<span style="color:#268bd2">keys</span>)):
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> <span style="color:#268bd2">key</span> &lt; <span style="color:#268bd2">leaf</span>.<span style="color:#268bd2">keys</span>[<span style="color:#268bd2">i</span>]:
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">leaf</span>.<span style="color:#268bd2">keys</span>.<span style="color:#268bd2">insert</span>(<span style="color:#268bd2">i</span>, <span style="color:#268bd2">key</span>)
+</span></span><span style="display:flex;"><span>                <span style="color:#93a1a1;font-style:italic"># Assume data_payload inserted here as well</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">inserted</span> = <span style="color:#859900;font-weight:bold">True</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">break</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#859900">not</span> <span style="color:#268bd2">inserted</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">leaf</span>.<span style="color:#268bd2">keys</span>.<span style="color:#268bd2">append</span>(<span style="color:#268bd2">key</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic"># Assume data_payload appended here as well</span>
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># print(f&#34;Inserted {key} into leaf. Leaf keys: {leaf.keys}&#34;)</span>
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># Full insert would handle splits, promoting keys, and linking leaves.</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># This is where complexity arises.</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">search</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">key</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">leaf</span> = <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">_find_leaf</span>(<span style="color:#268bd2">key</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># Search linearly in the leaf for the key</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> <span style="color:#268bd2">k</span> <span style="color:#859900">in</span> <span style="color:#268bd2">leaf</span>.<span style="color:#268bd2">keys</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> <span style="color:#268bd2">k</span> == <span style="color:#268bd2">key</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#93a1a1;font-style:italic"># In real B+Tree, return data_payload associated with key</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">return</span> <span style="color:#2aa198">f</span><span style="color:#2aa198">&#34;Found key </span><span style="color:#2aa198">{</span><span style="color:#268bd2">key</span><span style="color:#2aa198">}</span><span style="color:#2aa198"> with associated data&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#2aa198">f</span><span style="color:#2aa198">&#34;Key </span><span style="color:#2aa198">{</span><span style="color:#268bd2">key</span><span style="color:#2aa198">}</span><span style="color:#2aa198"> not found&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">range_query</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">start_key</span>, <span style="color:#268bd2">end_key</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># Find the starting leaf</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">current_leaf</span> = <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">_find_leaf</span>(<span style="color:#268bd2">start_key</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">results</span> = []
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">while</span> <span style="color:#268bd2">current_leaf</span> <span style="color:#859900">is</span> <span style="color:#859900">not</span> <span style="color:#859900;font-weight:bold">None</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">for</span> <span style="color:#268bd2">key_in_leaf</span> <span style="color:#859900">in</span> <span style="color:#268bd2">current_leaf</span>.<span style="color:#268bd2">keys</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">if</span> <span style="color:#268bd2">key_in_leaf</span> &gt;= <span style="color:#268bd2">start_key</span> <span style="color:#859900">and</span> <span style="color:#268bd2">key_in_leaf</span> &lt;= <span style="color:#268bd2">end_key</span>:
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">results</span>.<span style="color:#268bd2">append</span>(<span style="color:#268bd2">key_in_leaf</span>)
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">elif</span> <span style="color:#268bd2">key_in_leaf</span> &gt; <span style="color:#268bd2">end_key</span>: <span style="color:#93a1a1;font-style:italic"># Optimization: keys are sorted</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#859900">return</span> <span style="color:#268bd2">results</span> <span style="color:#93a1a1;font-style:italic"># Range exceeded</span>
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic"># Move to next leaf (via linked list)</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">current_leaf</span> = <span style="color:#268bd2">current_leaf</span>.<span style="color:#268bd2">next_leaf</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic"># Stop if the next leaf is outside the range (e.g., its first key is &gt; end_key)</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> <span style="color:#268bd2">current_leaf</span> <span style="color:#859900">and</span> <span style="color:#268bd2">current_leaf</span>.<span style="color:#268bd2">keys</span> <span style="color:#859900">and</span> <span style="color:#268bd2">current_leaf</span>.<span style="color:#268bd2">keys</span>[<span style="color:#2aa198;font-weight:bold">0</span>] &gt; <span style="color:#268bd2">end_key</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">break</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">results</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># Example Usage:</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># bp_tree = BPlusTree(order=3) # Max 2 keys, 3 children</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># keys_data = [(10, &#34;data10&#34;), (20, &#34;data20&#34;), (5, &#34;data5&#34;), (30, &#34;data30&#34;), (15, &#34;data15&#34;)]</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># for k, d in keys_data:</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#     bp_tree.insert(k, d) # Conceptual insert</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(bp_tree.search(20))</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(bp_tree.search(25))</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(&#34;Range query [10, 25]:&#34;, bp_tree.range_query(10, 25))</span>
+</span></span></code></pre></div><h3 id="javascript">Javascript</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Conceptual B+ Tree in JavaScript (simplified, full implementation is very complex)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Focuses on structural differences: data only in leaves, linked leaves.
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#268bd2">BPlusTreeNode</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">constructor</span>(<span style="color:#268bd2">isLeaf</span> = <span style="color:#859900;font-weight:bold">true</span>, <span style="color:#268bd2">order</span> = <span style="color:#2aa198;font-weight:bold">3</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">isLeaf</span> = <span style="color:#268bd2">isLeaf</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">keys</span> = []; <span style="color:#93a1a1;font-style:italic">// Keys (for indexing in internal nodes, for data in leaf nodes)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">children</span> = []; <span style="color:#93a1a1;font-style:italic">// Pointers to child BPlusTreeNodes (internal nodes only)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">nextLeaf</span> = <span style="color:#859900;font-weight:bold">null</span>; <span style="color:#93a1a1;font-style:italic">// Pointer to next leaf node (leaf nodes only)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">parent</span> = <span style="color:#859900;font-weight:bold">null</span>; <span style="color:#93a1a1;font-style:italic">// Parent pointer (optional)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">order</span> = <span style="color:#268bd2">order</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#268bd2">BPlusTree</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">constructor</span>(<span style="color:#268bd2">order</span> = <span style="color:#2aa198;font-weight:bold">3</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">order</span> = <span style="color:#268bd2">order</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">root</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">BPlusTreeNode</span>(<span style="color:#859900;font-weight:bold">true</span>, <span style="color:#268bd2">order</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">_findLeaf</span>(<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">let</span> <span style="color:#268bd2">current</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">root</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">while</span> (!<span style="color:#268bd2">current</span>.<span style="color:#268bd2">isLeaf</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">let</span> <span style="color:#268bd2">idx</span> = <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">while</span> (<span style="color:#268bd2">idx</span> &lt; <span style="color:#268bd2">current</span>.<span style="color:#268bd2">keys</span>.<span style="color:#268bd2">length</span> &amp;&amp; <span style="color:#268bd2">key</span> &gt;= <span style="color:#268bd2">current</span>.<span style="color:#268bd2">keys</span>[<span style="color:#268bd2">idx</span>]) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">idx</span>++;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">current</span> = <span style="color:#268bd2">current</span>.<span style="color:#268bd2">children</span>[<span style="color:#268bd2">idx</span>];
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">current</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">insert</span>(<span style="color:#268bd2">key</span>, <span style="color:#268bd2">dataPayload</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">let</span> <span style="color:#268bd2">leaf</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">_findLeaf</span>(<span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Simplified insert: no splitting or rebalancing for conceptual demo.
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#93a1a1;font-style:italic">// In a real B+Tree, you insert, then check for overflow, split node, and propagate.
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Insert key and data into leaf (conceptually)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">let</span> <span style="color:#268bd2">inserted</span> = <span style="color:#859900;font-weight:bold">false</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">leaf</span>.<span style="color:#268bd2">keys</span>.<span style="color:#268bd2">length</span>; <span style="color:#268bd2">i</span>++) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">key</span> &lt; <span style="color:#268bd2">leaf</span>.<span style="color:#268bd2">keys</span>[<span style="color:#268bd2">i</span>]) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">leaf</span>.<span style="color:#268bd2">keys</span>.<span style="color:#268bd2">splice</span>(<span style="color:#268bd2">i</span>, <span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>                <span style="color:#93a1a1;font-style:italic">// Assume dataPayload inserted here as well
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#268bd2">inserted</span> = <span style="color:#859900;font-weight:bold">true</span>;
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">break</span>;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (!<span style="color:#268bd2">inserted</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">leaf</span>.<span style="color:#268bd2">keys</span>.<span style="color:#268bd2">push</span>(<span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Assume dataPayload appended here as well
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// console.log(&lt;code&gt;Inserted ${key} into leaf. Leaf keys: ${leaf.keys}&lt;/code&gt;);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">search</span>(<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">let</span> <span style="color:#268bd2">leaf</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">_findLeaf</span>(<span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> (<span style="color:#859900">const</span> <span style="color:#268bd2">k</span> <span style="color:#859900">of</span> <span style="color:#268bd2">leaf</span>.<span style="color:#268bd2">keys</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">k</span> === <span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">return</span> &lt;<span style="color:#268bd2">code</span>&gt;<span style="color:#268bd2">Found</span> <span style="color:#268bd2">key</span> <span style="color:#268bd2">$</span>{<span style="color:#268bd2">key</span>} <span style="color:#859900">with</span> <span style="color:#268bd2">associated</span> <span style="color:#268bd2">data</span>&lt;/code&gt;;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> &lt;<span style="color:#268bd2">code</span>&gt;<span style="color:#268bd2">Key</span> <span style="color:#268bd2">$</span>{<span style="color:#268bd2">key</span>} <span style="color:#268bd2">not</span> <span style="color:#268bd2">found</span>&lt;/code&gt;;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">rangeQuery</span>(<span style="color:#268bd2">startKey</span>, <span style="color:#268bd2">endKey</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">let</span> <span style="color:#268bd2">currentLeaf</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">_findLeaf</span>(<span style="color:#268bd2">startKey</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">const</span> <span style="color:#268bd2">results</span> = [];
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">while</span> (<span style="color:#268bd2">currentLeaf</span> !== <span style="color:#859900;font-weight:bold">null</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">for</span> (<span style="color:#859900">const</span> <span style="color:#268bd2">keyInLeaf</span> <span style="color:#859900">of</span> <span style="color:#268bd2">currentLeaf</span>.<span style="color:#268bd2">keys</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">if</span> (<span style="color:#268bd2">keyInLeaf</span> &gt;= <span style="color:#268bd2">startKey</span> &amp;&amp; <span style="color:#268bd2">keyInLeaf</span> &lt;= <span style="color:#268bd2">endKey</span>) {
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">results</span>.<span style="color:#268bd2">push</span>(<span style="color:#268bd2">keyInLeaf</span>);
+</span></span><span style="display:flex;"><span>                } <span style="color:#859900">else</span> <span style="color:#859900">if</span> (<span style="color:#268bd2">keyInLeaf</span> &gt; <span style="color:#268bd2">endKey</span>) {
+</span></span><span style="display:flex;"><span>                    <span style="color:#859900">return</span> <span style="color:#268bd2">results</span>; <span style="color:#93a1a1;font-style:italic">// Range exceeded
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">currentLeaf</span> = <span style="color:#268bd2">currentLeaf</span>.<span style="color:#268bd2">nextLeaf</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Stop if next leaf is outside the range
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">currentLeaf</span> &amp;&amp; <span style="color:#268bd2">currentLeaf</span>.<span style="color:#268bd2">keys</span>.<span style="color:#268bd2">length</span> &gt; <span style="color:#2aa198;font-weight:bold">0</span> &amp;&amp; <span style="color:#268bd2">currentLeaf</span>.<span style="color:#268bd2">keys</span>[<span style="color:#2aa198;font-weight:bold">0</span>] &gt; <span style="color:#268bd2">endKey</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">break</span>;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">results</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const bpTree = new BPlusTree(3); // Max 2 keys, 3 children
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const keysData = [[10, &#34;data10&#34;], [20, &#34;data20&#34;], [5, &#34;data5&#34;], [30, &#34;data30&#34;], [15, &#34;data15&#34;]];
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// for (const [k, d] of keysData) {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     bpTree.insert(k, d);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(bpTree.search(20));
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(bpTree.search(25));
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Range query [10, 25]:&#34;, bpTree.rangeQuery(10, 25));
+</span></span></span></code></pre></div><h3 id="typescript">Typescript</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-typescript" data-lang="typescript"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Conceptual B+ Tree in TypeScript (simplified)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#268bd2">BPlusTreeNodeTS</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">isLeaf</span>: <span style="color:#859900;font-weight:bold">boolean</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">keys</span>: <span style="color:#859900;font-weight:bold">number</span>[];
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">children</span>: <span style="color:#859900;font-weight:bold">BPlusTreeNodeTS</span>[];
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">nextLeaf</span>: <span style="color:#859900;font-weight:bold">BPlusTreeNodeTS</span> | <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">parent</span>: <span style="color:#859900;font-weight:bold">BPlusTreeNodeTS</span> | <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">order</span>: <span style="color:#859900;font-weight:bold">number</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">constructor</span>(<span style="color:#268bd2">isLeaf</span>: <span style="color:#859900;font-weight:bold">boolean</span> = <span style="color:#859900;font-weight:bold">true</span>, <span style="color:#268bd2">order</span>: <span style="color:#859900;font-weight:bold">number</span> = <span style="color:#2aa198;font-weight:bold">3</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">isLeaf</span> = <span style="color:#268bd2">isLeaf</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">keys</span> = [];
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">children</span> = [];
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">nextLeaf</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">parent</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">order</span> = <span style="color:#268bd2">order</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#268bd2">BPlusTreeTS</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">root</span>: <span style="color:#859900;font-weight:bold">BPlusTreeNodeTS</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">order</span>: <span style="color:#859900;font-weight:bold">number</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">constructor</span>(<span style="color:#268bd2">order</span>: <span style="color:#859900;font-weight:bold">number</span> = <span style="color:#2aa198;font-weight:bold">3</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">order</span> = <span style="color:#268bd2">order</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">root</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">BPlusTreeNodeTS</span>(<span style="color:#859900;font-weight:bold">true</span>, <span style="color:#268bd2">order</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">private</span> <span style="color:#268bd2">_findLeaf</span>(<span style="color:#268bd2">key</span>: <span style="color:#859900;font-weight:bold">number</span>): <span style="color:#268bd2">BPlusTreeNodeTS</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">let</span> <span style="color:#268bd2">current</span>: <span style="color:#859900;font-weight:bold">BPlusTreeNodeTS</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">root</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">while</span> (!<span style="color:#268bd2">current</span>.<span style="color:#268bd2">isLeaf</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">let</span> <span style="color:#268bd2">idx</span> = <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">while</span> (<span style="color:#268bd2">idx</span> &lt; <span style="color:#268bd2">current</span>.<span style="color:#268bd2">keys</span>.<span style="color:#268bd2">length</span> &amp;&amp; <span style="color:#268bd2">key</span> &gt;= <span style="color:#268bd2">current</span>.<span style="color:#268bd2">keys</span>[<span style="color:#268bd2">idx</span>]) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">idx</span>++;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">current</span> = <span style="color:#268bd2">current</span>.<span style="color:#268bd2">children</span>[<span style="color:#268bd2">idx</span>];
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">current</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">insert</span>(<span style="color:#268bd2">key</span>: <span style="color:#859900;font-weight:bold">number</span>, <span style="color:#268bd2">dataPayload</span>: <span style="color:#859900;font-weight:bold">any</span>): <span style="color:#859900">void</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">let</span> <span style="color:#268bd2">leaf</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">_findLeaf</span>(<span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Simplified insert: no splitting or rebalancing for conceptual demo.
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">let</span> <span style="color:#268bd2">inserted</span> = <span style="color:#859900;font-weight:bold">false</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">leaf</span>.<span style="color:#268bd2">keys</span>.<span style="color:#268bd2">length</span>; <span style="color:#268bd2">i</span>++) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">key</span> &lt; <span style="color:#268bd2">leaf</span>.<span style="color:#268bd2">keys</span>[<span style="color:#268bd2">i</span>]) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">leaf</span>.<span style="color:#268bd2">keys</span>.<span style="color:#268bd2">splice</span>(<span style="color:#268bd2">i</span>, <span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>                <span style="color:#93a1a1;font-style:italic">// Assume dataPayload associated with key is inserted here as well
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#268bd2">inserted</span> = <span style="color:#859900;font-weight:bold">true</span>;
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">break</span>;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (!<span style="color:#268bd2">inserted</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">leaf</span>.<span style="color:#268bd2">keys</span>.<span style="color:#268bd2">push</span>(<span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Assume dataPayload appended here as well
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">search</span>(<span style="color:#268bd2">key</span>: <span style="color:#859900;font-weight:bold">number</span>): <span style="color:#859900;font-weight:bold">string</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">let</span> <span style="color:#268bd2">leaf</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">_findLeaf</span>(<span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> (<span style="color:#859900">const</span> <span style="color:#268bd2">k</span> <span style="color:#859900">of</span> <span style="color:#268bd2">leaf</span>.<span style="color:#268bd2">keys</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">k</span> === <span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">return</span> &lt;<span style="color:#268bd2;font-weight:bold">code</span>&gt;<span style="color:#268bd2">Found</span> <span style="color:#268bd2">key</span> <span style="color:#268bd2">$</span>{<span style="color:#268bd2">key</span>} <span style="color:#859900">with</span> <span style="color:#268bd2">associated</span> <span style="color:#268bd2">data</span>&lt;/<span style="color:#268bd2;font-weight:bold">code</span>&gt;;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> &lt;<span style="color:#268bd2;font-weight:bold">code</span>&gt;<span style="color:#268bd2">Key</span> <span style="color:#268bd2">$</span>{<span style="color:#268bd2">key</span>} <span style="color:#268bd2">not</span> <span style="color:#268bd2">found</span>&lt;/<span style="color:#268bd2;font-weight:bold">code</span>&gt;;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">rangeQuery</span>(<span style="color:#268bd2">startKey</span>: <span style="color:#859900;font-weight:bold">number</span>, <span style="color:#268bd2">endKey</span>: <span style="color:#859900;font-weight:bold">number</span>): <span style="color:#859900;font-weight:bold">number</span>[] {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">let</span> <span style="color:#268bd2">currentLeaf</span>: <span style="color:#859900;font-weight:bold">BPlusTreeNodeTS</span> | <span style="color:#859900;font-weight:bold">null</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">_findLeaf</span>(<span style="color:#268bd2">startKey</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">const</span> <span style="color:#268bd2">results</span>: <span style="color:#859900;font-weight:bold">number</span>[] = [];
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">while</span> (<span style="color:#268bd2">currentLeaf</span> !== <span style="color:#859900;font-weight:bold">null</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">for</span> (<span style="color:#859900">const</span> <span style="color:#268bd2">keyInLeaf</span> <span style="color:#859900">of</span> <span style="color:#268bd2">currentLeaf</span>.<span style="color:#268bd2">keys</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">if</span> (<span style="color:#268bd2">keyInLeaf</span> &gt;= <span style="color:#268bd2">startKey</span> &amp;&amp; <span style="color:#268bd2">keyInLeaf</span> &lt;= <span style="color:#268bd2">endKey</span>) {
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">results</span>.<span style="color:#268bd2">push</span>(<span style="color:#268bd2">keyInLeaf</span>);
+</span></span><span style="display:flex;"><span>                } <span style="color:#859900">else</span> <span style="color:#859900">if</span> (<span style="color:#268bd2">keyInLeaf</span> &gt; <span style="color:#268bd2">endKey</span>) {
+</span></span><span style="display:flex;"><span>                    <span style="color:#859900">return</span> <span style="color:#268bd2">results</span>;
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">currentLeaf</span> = <span style="color:#268bd2">currentLeaf</span>.<span style="color:#268bd2">nextLeaf</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">currentLeaf</span> &amp;&amp; <span style="color:#268bd2">currentLeaf</span>.<span style="color:#268bd2">keys</span>.<span style="color:#268bd2">length</span> &gt; <span style="color:#2aa198;font-weight:bold">0</span> &amp;&amp; <span style="color:#268bd2">currentLeaf</span>.<span style="color:#268bd2">keys</span>[<span style="color:#2aa198;font-weight:bold">0</span>] &gt; <span style="color:#268bd2">endKey</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">break</span>;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">results</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const bpTreeTS = new BPlusTreeTS(3);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const keysDataTS: [number, any][] = [[10, &#34;data10&#34;], [20, &#34;data20&#34;], [5, &#34;data5&#34;], [30, &#34;data30&#34;], [15, &#34;data15&#34;]];
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// for (const [k, d] of keysDataTS) {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     bpTreeTS.insert(k, d);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(bpTreeTS.search(20));
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(bpTreeTS.search(25));
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Range query [10, 25]:&#34;, bpTreeTS.rangeQuery(10, 25));
+</span></span></span></code></pre></div><h3 id="cpp">Cpp</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;iostream&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;vector&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;algorithm&gt;</span><span style="color:#93a1a1;font-style:italic"> </span><span style="color:#93a1a1;font-style:italic">// For std::lower_bound
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Conceptual B+ Tree Node (simplified)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#859900">class</span> <span style="color:#cb4b16">BPlusTreeNode</span> {
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt; <span style="color:#268bd2">keys</span>;     <span style="color:#93a1a1;font-style:italic">// Keys
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#268bd2">BPlusTreeNode</span>&lt;<span style="color:#268bd2">em</span>&gt;&gt; <span style="color:#268bd2">children</span>; <span style="color:#93a1a1;font-style:italic">// Pointers to child nodes (internal nodes)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#268bd2">std</span>::<span style="color:#268bd2">string</span>&gt; <span style="color:#268bd2">data_payloads</span>; <span style="color:#93a1a1;font-style:italic">// Data associated with keys (leaf nodes only)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">BPlusTreeNode</span>&lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">next_leaf</span>;  <span style="color:#93a1a1;font-style:italic">// Pointer to next leaf node (leaf nodes only)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900;font-weight:bold">bool</span> <span style="color:#268bd2">is_leaf</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">order</span>; <span style="color:#93a1a1;font-style:italic">// Maximum children (also max keys + 1 in internal nodes)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">BPlusTreeNode</span>(<span style="color:#859900;font-weight:bold">bool</span> <span style="color:#268bd2">leaf_node</span> = <span style="color:#cb4b16">true</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">t_order</span> = <span style="color:#2aa198;font-weight:bold">3</span>) :
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">is_leaf</span>(<span style="color:#268bd2">leaf_node</span>), <span style="color:#268bd2">order</span>(<span style="color:#268bd2">t_order</span>), <span style="color:#268bd2">next_leaf</span>(<span style="color:#859900">nullptr</span>) {}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// For simplicity, no explicit destructor in this conceptual example. 
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#93a1a1;font-style:italic">// In a real implementation, children should be deleted recursively.
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Conceptual B+ Tree
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#859900">class</span> <span style="color:#cb4b16">BPlusTree</span> {
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">BPlusTreeNode</span>&lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">root</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">order</span>; <span style="color:#93a1a1;font-style:italic">// Maximum children (also max keys + 1 in internal nodes)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">BPlusTree</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">t_order</span> = <span style="color:#2aa198;font-weight:bold">3</span>) : <span style="color:#268bd2">order</span>(<span style="color:#268bd2">t_order</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">root</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">BPlusTreeNode</span>(<span style="color:#cb4b16">true</span>, <span style="color:#268bd2">order</span>); <span style="color:#93a1a1;font-style:italic">// Root is initially a leaf
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// For simplicity, no explicit destructor.
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">private</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">BPlusTreeNode</span>&lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">findLeaf</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">BPlusTreeNode</span>&lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">current</span> = <span style="color:#268bd2">root</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">while</span> (!<span style="color:#268bd2">current</span>-&gt;<span style="color:#268bd2">is_leaf</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">auto</span> <span style="color:#268bd2">it</span> = <span style="color:#268bd2">std</span>::<span style="color:#268bd2">lower_bound</span>(<span style="color:#268bd2">current</span>-&gt;<span style="color:#268bd2">keys</span>.<span style="color:#268bd2">begin</span>(), <span style="color:#268bd2">current</span>-&gt;<span style="color:#268bd2">keys</span>.<span style="color:#268bd2">end</span>(), <span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">idx</span> = <span style="color:#268bd2">std</span>::<span style="color:#268bd2">distance</span>(<span style="color:#268bd2">current</span>-&gt;<span style="color:#268bd2">keys</span>.<span style="color:#268bd2">begin</span>(), <span style="color:#268bd2">it</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">current</span> = <span style="color:#268bd2">current</span>-&gt;<span style="color:#268bd2">children</span>[<span style="color:#268bd2">idx</span>];
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">current</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">insert</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">key</span>, <span style="color:#859900">const</span> <span style="color:#268bd2">std</span>::<span style="color:#268bd2">string</span>&amp; <span style="color:#268bd2">data_payload</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">BPlusTreeNode</span>&lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">leaf</span> = <span style="color:#268bd2">findLeaf</span>(<span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Simplified insert: no splitting or rebalancing for conceptual demo.
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#93a1a1;font-style:italic">// In a real B+Tree, you insert, then check for overflow, split node, and propagate.
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">auto</span> <span style="color:#268bd2">it_key</span> = <span style="color:#268bd2">std</span>::<span style="color:#268bd2">lower_bound</span>(<span style="color:#268bd2">leaf</span>-&gt;<span style="color:#268bd2">keys</span>.<span style="color:#268bd2">begin</span>(), <span style="color:#268bd2">leaf</span>-&gt;<span style="color:#268bd2">keys</span>.<span style="color:#268bd2">end</span>(), <span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">idx</span> = <span style="color:#268bd2">std</span>::<span style="color:#268bd2">distance</span>(<span style="color:#268bd2">leaf</span>-&gt;<span style="color:#268bd2">keys</span>.<span style="color:#268bd2">begin</span>(), <span style="color:#268bd2">it_key</span>);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Assuming no duplicate keys for simplicity, or handling them by overwriting
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">it_key</span> != <span style="color:#268bd2">leaf</span>-&gt;<span style="color:#268bd2">keys</span>.<span style="color:#268bd2">end</span>() &amp;&amp; &lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">it_key</span> == <span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Key already exists, update data
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#268bd2">leaf</span>-&gt;<span style="color:#268bd2">data_payloads</span>[<span style="color:#268bd2">idx</span>] = <span style="color:#268bd2">data_payload</span>;
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">leaf</span>-&gt;<span style="color:#268bd2">keys</span>.<span style="color:#268bd2">insert</span>(<span style="color:#268bd2">it_key</span>, <span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">leaf</span>-&gt;<span style="color:#268bd2">data_payloads</span>.<span style="color:#268bd2">insert</span>(<span style="color:#268bd2">leaf</span>-&gt;<span style="color:#268bd2">data_payloads</span>.<span style="color:#268bd2">begin</span>() + <span style="color:#268bd2">idx</span>, <span style="color:#268bd2">data_payload</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Full insert would handle splits, promoting keys, and linking leaves.
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">string</span> <span style="color:#268bd2">search</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">BPlusTreeNode</span>&lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">leaf</span> = <span style="color:#268bd2">findLeaf</span>(<span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">auto</span> <span style="color:#268bd2">it_key</span> = <span style="color:#268bd2">std</span>::<span style="color:#268bd2">lower_bound</span>(<span style="color:#268bd2">leaf</span>-&gt;<span style="color:#268bd2">keys</span>.<span style="color:#268bd2">begin</span>(), <span style="color:#268bd2">leaf</span>-&gt;<span style="color:#268bd2">keys</span>.<span style="color:#268bd2">end</span>(), <span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">it_key</span> != <span style="color:#268bd2">leaf</span>-&gt;<span style="color:#268bd2">keys</span>.<span style="color:#268bd2">end</span>() &amp;&amp; &lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">it_key</span> == <span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">idx</span> = <span style="color:#268bd2">std</span>::<span style="color:#268bd2">distance</span>(<span style="color:#268bd2">leaf</span>-&gt;<span style="color:#268bd2">keys</span>.<span style="color:#268bd2">begin</span>(), <span style="color:#268bd2">it_key</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#2aa198">&#34;Found key &#34;</span> + <span style="color:#268bd2">std</span>::<span style="color:#268bd2">to_string</span>(<span style="color:#268bd2">key</span>) + <span style="color:#2aa198">&#34; with associated data: &#34;</span> + <span style="color:#268bd2">leaf</span>-&gt;<span style="color:#268bd2">data_payloads</span>[<span style="color:#268bd2">idx</span>];
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#2aa198">&#34;Key &#34;</span> + <span style="color:#268bd2">std</span>::<span style="color:#268bd2">to_string</span>(<span style="color:#268bd2">key</span>) + <span style="color:#2aa198">&#34; not found&#34;</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#268bd2">std</span>::<span style="color:#268bd2">string</span>&gt; <span style="color:#268bd2">rangeQuery</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">start_key</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">end_key</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">BPlusTreeNode</span>&lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">current_leaf</span> = <span style="color:#268bd2">findLeaf</span>(<span style="color:#268bd2">start_key</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#268bd2">std</span>::<span style="color:#268bd2">string</span>&gt; <span style="color:#268bd2">results</span>;
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">while</span> (<span style="color:#268bd2">current_leaf</span> != <span style="color:#859900">nullptr</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">for</span> (<span style="color:#268bd2">size_t</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">current_leaf</span>-&gt;<span style="color:#268bd2">keys</span>.<span style="color:#268bd2">size</span>(); ++<span style="color:#268bd2">i</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">if</span> (<span style="color:#268bd2">current_leaf</span>-&gt;<span style="color:#268bd2">keys</span>[<span style="color:#268bd2">i</span>] &gt;= <span style="color:#268bd2">start_key</span> &amp;&amp; <span style="color:#268bd2">current_leaf</span>-&gt;<span style="color:#268bd2">keys</span>[<span style="color:#268bd2">i</span>] &lt;= <span style="color:#268bd2">end_key</span>) {
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">results</span>.<span style="color:#268bd2">push_back</span>(<span style="color:#268bd2">current_leaf</span>-&gt;<span style="color:#268bd2">data_payloads</span>[<span style="color:#268bd2">i</span>]);
+</span></span><span style="display:flex;"><span>                } <span style="color:#859900">else</span> <span style="color:#268bd2">if</span> (<span style="color:#268bd2">current_leaf</span>-&gt;<span style="color:#268bd2">keys</span>[<span style="color:#268bd2">i</span>] &gt; <span style="color:#268bd2">end_key</span>) {
+</span></span><span style="display:flex;"><span>                    <span style="color:#859900">return</span> <span style="color:#268bd2">results</span>; <span style="color:#93a1a1;font-style:italic">// Range exceeded
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">current_leaf</span> = <span style="color:#268bd2">current_leaf</span>-&gt;<span style="color:#268bd2">next_leaf</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Stop if the next leaf&#39;s first key is already out of range
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">current_leaf</span> &amp;&amp; !<span style="color:#268bd2">current_leaf</span>-&gt;<span style="color:#268bd2">keys</span>.<span style="color:#268bd2">empty</span>() &amp;&amp; <span style="color:#268bd2">current_leaf</span>-&gt;<span style="color:#268bd2">keys</span>[<span style="color:#2aa198;font-weight:bold">0</span>] &gt; <span style="color:#268bd2">end_key</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">break</span>;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">results</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// int main() {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     BPlusTree bp_tree(3);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     bp_tree.insert(10, &#34;data10&#34;);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     bp_tree.insert(20, &#34;data20&#34;);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     bp_tree.insert(5, &#34;data5&#34;);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     bp_tree.insert(30, &#34;data30&#34;);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     bp_tree.insert(15, &#34;data15&#34;);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; bp_tree.search(20) &lt;&lt; std::endl;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; bp_tree.search(25) &lt;&lt; std::endl;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; &#34;Range query [10, 25]:&#34; &lt;&lt; std::endl;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::vector&lt;std::string&gt; range_results = bp_tree.rangeQuery(10, 25);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     for(const auto&amp; data : range_results) {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         std::cout &lt;&lt; &#34;- &#34; &lt;&lt; data &lt;&lt; std::endl;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     }
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     return 0;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span></code></pre></div><h3 id="go">Go</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">package</span> <span style="color:#268bd2">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> (
+</span></span><span style="display:flex;"><span>    <span style="color:#2aa198">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#2aa198">&#34;sort&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Conceptual BPlus Tree Node (simplified)</span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">type</span> <span style="color:#268bd2">BPlusTreeNode</span> <span style="color:#859900">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">IsLeaf</span>       <span style="color:#859900;font-weight:bold">bool</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">Keys</span>         []<span style="color:#859900;font-weight:bold">int</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">Children</span>     []&lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">BPlusTreeNode</span> <span style="color:#93a1a1;font-style:italic">// Pointers to child BPlusTreeNodes (internal nodes)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">DataPayloads</span> []<span style="color:#859900;font-weight:bold">string</span>         <span style="color:#93a1a1;font-style:italic">// Data associated with keys (leaf nodes only)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">NextLeaf</span>     &lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">BPlusTreeNode</span>   <span style="color:#93a1a1;font-style:italic">// Pointer to next leaf node (leaf nodes only)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">Parent</span>       &lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">BPlusTreeNode</span>   <span style="color:#93a1a1;font-style:italic">// Parent pointer (optional)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">Order</span>        <span style="color:#859900;font-weight:bold">int</span>              <span style="color:#93a1a1;font-style:italic">// Maximum children (also max keys + 1 in internal nodes)</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> <span style="color:#268bd2">NewBPlusTreeNode</span>(<span style="color:#268bd2">isLeaf</span> <span style="color:#859900;font-weight:bold">bool</span>, <span style="color:#268bd2">order</span> <span style="color:#859900;font-weight:bold">int</span>) &lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">BPlusTreeNode</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> &amp;<span style="color:#268bd2">BPlusTreeNode</span>{
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">IsLeaf</span>:       <span style="color:#268bd2">isLeaf</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">Keys</span>:         []<span style="color:#859900;font-weight:bold">int</span>{},
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">Children</span>:     []&lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">BPlusTreeNode</span>{},
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">DataPayloads</span>: []<span style="color:#859900;font-weight:bold">string</span>{},
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">Order</span>:        <span style="color:#268bd2">order</span>,
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Conceptual BPlus Tree</span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">type</span> <span style="color:#268bd2">BPlusTree</span> <span style="color:#859900">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">Root</span>  &lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">BPlusTreeNode</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">Order</span> <span style="color:#859900;font-weight:bold">int</span> <span style="color:#93a1a1;font-style:italic">// Maximum children (also max keys + 1 in internal nodes)</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> <span style="color:#268bd2">NewBPlusTree</span>(<span style="color:#268bd2">order</span> <span style="color:#859900;font-weight:bold">int</span>) &lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">BPlusTree</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> &amp;<span style="color:#268bd2">BPlusTree</span>{
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">Order</span>: <span style="color:#268bd2">order</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">Root</span>:  <span style="color:#268bd2">NewBPlusTreeNode</span>(<span style="color:#859900;font-weight:bold">true</span>, <span style="color:#268bd2">order</span>), <span style="color:#93a1a1;font-style:italic">// Root is initially a leaf</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> (<span style="color:#268bd2">bpt</span> &lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">BPlusTree</span>) <span style="color:#268bd2">findLeaf</span>(<span style="color:#268bd2">key</span> <span style="color:#859900;font-weight:bold">int</span>) &lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">BPlusTreeNode</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">current</span> := <span style="color:#268bd2">bpt</span>.<span style="color:#268bd2">Root</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> !<span style="color:#268bd2">current</span>.<span style="color:#268bd2">IsLeaf</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">idx</span> := <span style="color:#268bd2">sort</span>.<span style="color:#268bd2">SearchInts</span>(<span style="color:#268bd2">current</span>.<span style="color:#268bd2">Keys</span>, <span style="color:#268bd2">key</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">current</span> = <span style="color:#268bd2">current</span>.<span style="color:#268bd2">Children</span>[<span style="color:#268bd2">idx</span>]
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">current</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> (<span style="color:#268bd2">bpt</span> &lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">BPlusTree</span>) <span style="color:#268bd2">Insert</span>(<span style="color:#268bd2">key</span> <span style="color:#859900;font-weight:bold">int</span>, <span style="color:#268bd2">dataPayload</span> <span style="color:#859900;font-weight:bold">string</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">leaf</span> := <span style="color:#268bd2">bpt</span>.<span style="color:#268bd2">findLeaf</span>(<span style="color:#268bd2">key</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Simplified insert: no splitting or rebalancing for conceptual demo.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// In a real B+Tree, you insert, then check for overflow, split node, and propagate.</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Find insertion point</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">idx</span> := <span style="color:#268bd2">sort</span>.<span style="color:#268bd2">SearchInts</span>(<span style="color:#268bd2">leaf</span>.<span style="color:#268bd2">Keys</span>, <span style="color:#268bd2">key</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#268bd2">idx</span> &lt; <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">leaf</span>.<span style="color:#268bd2">Keys</span>) &amp;&amp; <span style="color:#268bd2">leaf</span>.<span style="color:#268bd2">Keys</span>[<span style="color:#268bd2">idx</span>] == <span style="color:#268bd2">key</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Key already exists, update data</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">leaf</span>.<span style="color:#268bd2">DataPayloads</span>[<span style="color:#268bd2">idx</span>] = <span style="color:#268bd2">dataPayload</span>
+</span></span><span style="display:flex;"><span>    } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Insert new key and data</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">leaf</span>.<span style="color:#268bd2">Keys</span> = <span style="color:#cb4b16">append</span>(<span style="color:#268bd2">leaf</span>.<span style="color:#268bd2">Keys</span>[:<span style="color:#268bd2">idx</span>], <span style="color:#cb4b16">append</span>([]<span style="color:#859900;font-weight:bold">int</span>{<span style="color:#268bd2">key</span>}, <span style="color:#268bd2">leaf</span>.<span style="color:#268bd2">Keys</span>[<span style="color:#268bd2">idx</span>:]...)...)
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">leaf</span>.<span style="color:#268bd2">DataPayloads</span> = <span style="color:#cb4b16">append</span>(<span style="color:#268bd2">leaf</span>.<span style="color:#268bd2">DataPayloads</span>[:<span style="color:#268bd2">idx</span>], <span style="color:#cb4b16">append</span>([]<span style="color:#859900;font-weight:bold">string</span>{<span style="color:#268bd2">dataPayload</span>}, <span style="color:#268bd2">leaf</span>.<span style="color:#268bd2">DataPayloads</span>[<span style="color:#268bd2">idx</span>:]...)...)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Full insert would handle splits, promoting keys, and linking leaves.</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> (<span style="color:#268bd2">bpt</span> &lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">BPlusTree</span>) <span style="color:#268bd2">Search</span>(<span style="color:#268bd2">key</span> <span style="color:#859900;font-weight:bold">int</span>) <span style="color:#859900;font-weight:bold">string</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">leaf</span> := <span style="color:#268bd2">bpt</span>.<span style="color:#268bd2">findLeaf</span>(<span style="color:#268bd2">key</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">idx</span> := <span style="color:#268bd2">sort</span>.<span style="color:#268bd2">SearchInts</span>(<span style="color:#268bd2">leaf</span>.<span style="color:#268bd2">Keys</span>, <span style="color:#268bd2">key</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#268bd2">idx</span> &lt; <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">leaf</span>.<span style="color:#268bd2">Keys</span>) &amp;&amp; <span style="color:#268bd2">leaf</span>.<span style="color:#268bd2">Keys</span>[<span style="color:#268bd2">idx</span>] == <span style="color:#268bd2">key</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">fmt</span>.<span style="color:#268bd2">Sprintf</span>(<span style="color:#2aa198">&#34;Found key %d with associated data: %s&#34;</span>, <span style="color:#268bd2">key</span>, <span style="color:#268bd2">leaf</span>.<span style="color:#268bd2">DataPayloads</span>[<span style="color:#268bd2">idx</span>])
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">fmt</span>.<span style="color:#268bd2">Sprintf</span>(<span style="color:#2aa198">&#34;Key %d not found&#34;</span>, <span style="color:#268bd2">key</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> (<span style="color:#268bd2">bpt</span> &lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">BPlusTree</span>) <span style="color:#268bd2">RangeQuery</span>(<span style="color:#268bd2">startKey</span>, <span style="color:#268bd2">endKey</span> <span style="color:#859900;font-weight:bold">int</span>) []<span style="color:#859900;font-weight:bold">string</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">currentLeaf</span> := <span style="color:#268bd2">bpt</span>.<span style="color:#268bd2">findLeaf</span>(<span style="color:#268bd2">startKey</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">var</span> <span style="color:#268bd2">results</span> []<span style="color:#859900;font-weight:bold">string</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">currentLeaf</span> != <span style="color:#859900;font-weight:bold">nil</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> <span style="color:#268bd2">i</span>, <span style="color:#268bd2">keyInLeaf</span> := <span style="color:#859900">range</span> <span style="color:#268bd2">currentLeaf</span>.<span style="color:#268bd2">Keys</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> <span style="color:#268bd2">keyInLeaf</span> &gt;= <span style="color:#268bd2">startKey</span> &amp;&amp; <span style="color:#268bd2">keyInLeaf</span> &lt;= <span style="color:#268bd2">endKey</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">results</span> = <span style="color:#cb4b16">append</span>(<span style="color:#268bd2">results</span>, <span style="color:#268bd2">currentLeaf</span>.<span style="color:#268bd2">DataPayloads</span>[<span style="color:#268bd2">i</span>])
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> <span style="color:#859900">if</span> <span style="color:#268bd2">keyInLeaf</span> &gt; <span style="color:#268bd2">endKey</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">return</span> <span style="color:#268bd2">results</span> <span style="color:#93a1a1;font-style:italic">// Range exceeded</span>
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">currentLeaf</span> = <span style="color:#268bd2">currentLeaf</span>.<span style="color:#268bd2">NextLeaf</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Stop if the next leaf&#39;s first key is already out of range</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">currentLeaf</span> != <span style="color:#859900;font-weight:bold">nil</span> &amp;&amp; <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">currentLeaf</span>.<span style="color:#268bd2">Keys</span>) &gt; <span style="color:#2aa198;font-weight:bold">0</span> &amp;&amp; <span style="color:#268bd2">currentLeaf</span>.<span style="color:#268bd2">Keys</span>[<span style="color:#2aa198;font-weight:bold">0</span>] &gt; <span style="color:#268bd2">endKey</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">break</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">results</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// func main() {</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     bpTree := NewBPlusTree(3)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     bpTree.Insert(10, &#34;data10&#34;)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     bpTree.Insert(20, &#34;data20&#34;)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     bpTree.Insert(5, &#34;data5&#34;)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     bpTree.Insert(30, &#34;data30&#34;)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     bpTree.Insert(15, &#34;data15&#34;)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     fmt.Println(bpTree.Search(20))</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     fmt.Println(bpTree.Search(25))</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     fmt.Println(&#34;Range query [10, 25]:&#34;)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     rangeResults := bpTree.RangeQuery(10, 25)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     for _, data := range rangeResults {</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         fmt.Printf(&#34;- %s\n&#34;, data)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     }</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }</span>
+</span></span></code></pre></div><h3 id="d">D</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-d" data-lang="d"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.stdio</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.array</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.algorithm</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.string</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.conv</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Conceptual B+ Tree Node (simplified)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#859900">class</span> <span style="color:#cb4b16">BPlusTreeNode</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">bool</span> <span style="color:#268bd2">is_leaf</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span>[] <span style="color:#268bd2">keys</span>;     <span style="color:#93a1a1;font-style:italic">// Keys
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">BPlusTreeNode</span>[] <span style="color:#268bd2">children</span>; <span style="color:#93a1a1;font-style:italic">// Pointers to child BPlusTreeNodes (internal nodes)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#cb4b16">string</span>[] <span style="color:#268bd2">data_payloads</span>; <span style="color:#93a1a1;font-style:italic">// Data associated with keys (leaf nodes only)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">BPlusTreeNode</span> <span style="color:#268bd2">next_leaf</span>;  <span style="color:#93a1a1;font-style:italic">// Pointer to next leaf node (leaf nodes only)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">order</span>; <span style="color:#93a1a1;font-style:italic">// Maximum children (also max keys + 1 in internal nodes)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">this</span>(<span style="color:#859900;font-weight:bold">bool</span> <span style="color:#268bd2">leaf_node</span> = <span style="color:#859900;font-weight:bold">true</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">t_order</span> = <span style="color:#2aa198;font-weight:bold">3</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">is_leaf</span> = <span style="color:#268bd2">leaf_node</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">order</span> = <span style="color:#268bd2">t_order</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">keys</span> = [];
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">children</span> = [];
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">data_payloads</span> = [];
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">next_leaf</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Deallocation managed by GC, no explicit destructor needed for this example.
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Conceptual B+ Tree
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#859900">class</span> <span style="color:#cb4b16">BPlusTree</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">BPlusTreeNode</span> <span style="color:#268bd2">root</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">order</span>; <span style="color:#93a1a1;font-style:italic">// Maximum children (also max keys + 1 in internal nodes)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">this</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">t_order</span> = <span style="color:#2aa198;font-weight:bold">3</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">order</span> = <span style="color:#268bd2">t_order</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">root</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">BPlusTreeNode</span>(<span style="color:#859900;font-weight:bold">true</span>, <span style="color:#268bd2">order</span>); <span style="color:#93a1a1;font-style:italic">// Root is initially a leaf
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    }
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">
+</span></span></span><span style="display:flex;"><span><span style="color:#268bd2">private:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">BPlusTreeNode</span> <span style="color:#268bd2">findLeaf</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">BPlusTreeNode</span> <span style="color:#268bd2">current</span> = <span style="color:#268bd2">root</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">while</span> (!<span style="color:#268bd2">current</span>.<span style="color:#268bd2">is_leaf</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">idx</span> = <span style="color:#268bd2">lowerBound</span>(<span style="color:#268bd2">current</span>.<span style="color:#268bd2">keys</span>, <span style="color:#268bd2">key</span>) - <span style="color:#268bd2">current</span>.<span style="color:#268bd2">keys</span>.<span style="color:#268bd2">ptr</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">current</span> = <span style="color:#268bd2">current</span>.<span style="color:#268bd2">children</span>[<span style="color:#268bd2">idx</span>];
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">current</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">
+</span></span></span><span style="display:flex;"><span><span style="color:#268bd2">public:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">insert</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">key</span>, <span style="color:#cb4b16">string</span> <span style="color:#268bd2">data_payload</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">BPlusTreeNode</span> <span style="color:#268bd2">leaf</span> = <span style="color:#268bd2">findLeaf</span>(<span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Simplified insert: no splitting or rebalancing for conceptual demo.
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">auto</span> <span style="color:#268bd2">it_key</span> = <span style="color:#268bd2">lowerBound</span>(<span style="color:#268bd2">leaf</span>.<span style="color:#268bd2">keys</span>, <span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">idx</span> = <span style="color:#859900">cast</span>(<span style="color:#859900;font-weight:bold">int</span>)(<span style="color:#268bd2">it_key</span> - <span style="color:#268bd2">leaf</span>.<span style="color:#268bd2">keys</span>.<span style="color:#268bd2">ptr</span>);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">idx</span> &lt; <span style="color:#268bd2">leaf</span>.<span style="color:#268bd2">keys</span>.<span style="color:#268bd2">length</span> &amp;&amp; <span style="color:#268bd2">leaf</span>.<span style="color:#268bd2">keys</span>[<span style="color:#268bd2">idx</span>] == <span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Key already exists, update data
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#268bd2">leaf</span>.<span style="color:#268bd2">data_payloads</span>[<span style="color:#268bd2">idx</span>] = <span style="color:#268bd2">data_payload</span>;
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">leaf</span>.<span style="color:#268bd2">keys</span>.<span style="color:#268bd2">insert</span>(<span style="color:#268bd2">idx</span>, <span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">leaf</span>.<span style="color:#268bd2">data_payloads</span>.<span style="color:#268bd2">insert</span>(<span style="color:#268bd2">idx</span>, <span style="color:#268bd2">data_payload</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Full insert would handle splits, promoting keys, and linking leaves.
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#cb4b16">string</span> <span style="color:#268bd2">search</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">BPlusTreeNode</span> <span style="color:#268bd2">leaf</span> = <span style="color:#268bd2">findLeaf</span>(<span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">auto</span> <span style="color:#268bd2">it_key</span> = <span style="color:#268bd2">lowerBound</span>(<span style="color:#268bd2">leaf</span>.<span style="color:#268bd2">keys</span>, <span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">it_key</span> &lt; <span style="color:#268bd2">leaf</span>.<span style="color:#268bd2">keys</span>.<span style="color:#268bd2">ptr</span> + <span style="color:#268bd2">leaf</span>.<span style="color:#268bd2">keys</span>.<span style="color:#268bd2">length</span> &amp;&amp; *<span style="color:#268bd2">it_key</span> == <span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">idx</span> = <span style="color:#859900">cast</span>(<span style="color:#859900;font-weight:bold">int</span>)(<span style="color:#268bd2">it_key</span> - <span style="color:#268bd2">leaf</span>.<span style="color:#268bd2">keys</span>.<span style="color:#268bd2">ptr</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#2aa198">&#34;Found key &#34;</span> ~ <span style="color:#268bd2">key</span>.<span style="color:#268bd2">to</span>!<span style="color:#cb4b16">string</span> ~ <span style="color:#2aa198">&#34; with associated data: &#34;</span> ~ <span style="color:#268bd2">leaf</span>.<span style="color:#268bd2">data_payloads</span>[<span style="color:#268bd2">idx</span>];
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#2aa198">&#34;Key &#34;</span> ~ <span style="color:#268bd2">key</span>.<span style="color:#268bd2">to</span>!<span style="color:#cb4b16">string</span> ~ <span style="color:#2aa198">&#34; not found&#34;</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#cb4b16">string</span>[] <span style="color:#268bd2">rangeQuery</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">start_key</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">end_key</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">BPlusTreeNode</span> <span style="color:#268bd2">current_leaf</span> = <span style="color:#268bd2">findLeaf</span>(<span style="color:#268bd2">start_key</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">string</span>[] <span style="color:#268bd2">results</span> = [];
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">while</span> (<span style="color:#268bd2">current_leaf</span> !<span style="color:#859900">is</span> <span style="color:#859900;font-weight:bold">null</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">foreach</span> (<span style="color:#268bd2">i</span>, <span style="color:#268bd2">key_in_leaf</span>; <span style="color:#268bd2">current_leaf</span>.<span style="color:#268bd2">keys</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">if</span> (<span style="color:#268bd2">key_in_leaf</span> &gt;= <span style="color:#268bd2">start_key</span> &amp;&amp; <span style="color:#268bd2">key_in_leaf</span> &lt;= <span style="color:#268bd2">end_key</span>) {
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">results</span> ~= <span style="color:#268bd2">current_leaf</span>.<span style="color:#268bd2">data_payloads</span>[<span style="color:#268bd2">i</span>];
+</span></span><span style="display:flex;"><span>                } <span style="color:#859900">else</span> <span style="color:#859900">if</span> (<span style="color:#268bd2">key_in_leaf</span> &gt; <span style="color:#268bd2">end_key</span>) {
+</span></span><span style="display:flex;"><span>                    <span style="color:#859900">return</span> <span style="color:#268bd2">results</span>; <span style="color:#93a1a1;font-style:italic">// Range exceeded
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">current_leaf</span> = <span style="color:#268bd2">current_leaf</span>.<span style="color:#268bd2">next_leaf</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">current_leaf</span> !<span style="color:#859900">is</span> <span style="color:#859900;font-weight:bold">null</span> &amp;&amp; <span style="color:#268bd2">current_leaf</span>.<span style="color:#268bd2">keys</span>.<span style="color:#268bd2">length</span> &gt; <span style="color:#2aa198;font-weight:bold">0</span> &amp;&amp; <span style="color:#268bd2">current_leaf</span>.<span style="color:#268bd2">keys</span>[<span style="color:#2aa198;font-weight:bold">0</span>] &gt; <span style="color:#268bd2">end_key</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">break</span>;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">results</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// void main() {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     auto bp_tree = new BPlusTree(3);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     bp_tree.insert(10, &#34;data10&#34;);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     bp_tree.insert(20, &#34;data20&#34;);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     bp_tree.insert(5, &#34;data5&#34;);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     bp_tree.insert(30, &#34;data30&#34;);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     bp_tree.insert(15, &#34;data15&#34;);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     writeln(bp_tree.search(20));
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     writeln(bp_tree.search(25));
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     writeln(&#34;Range query [10, 25]:&#34;);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     string[] range_results = bp_tree.rangeQuery(10, 25);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     foreach(data; range_results) {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         writeln(&#34;- &#34;, data);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     }
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span></code></pre></div><h2 id="applications">Applications</h2>
+<h3 id="application">Application</h3>
+<p>B+ Trees are the backbone of virtually all modern <code>relational database management systems (RDBMS)</code> and <code>file systems</code> due to their unparalleled efficiency for disk-based storage.</p>
+<ul>
+<li><strong>Database Indexing:</strong> The primary use case. Indexes in databases like <strong>MySQL (InnoDB)</strong>, <strong>PostgreSQL</strong>, <strong>SQL Server</strong>, and <strong>Oracle</strong> are typically implemented using B+ Trees. This allows for very fast retrieval of records based on key values and highly efficient range queries.</li>
+<li><strong>File Systems:</strong> Used in file systems (e.g., <strong>APFS</strong>, <strong>Btrfs</strong>, older versions of <strong>NTFS</strong>) for indexing file names and metadata, enabling quick file lookups.</li>
+<li><strong>Key-Value Stores:</strong> Some key-value storage engines (especially those that need sorted key access) utilize B+ Trees.</li>
+<li><strong>Operating System Memory Management:</strong> Can be used for managing virtual memory pages.</li>
+</ul>
+
+    </div>
+</article>
+
+<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
+    
+    <a href="//localhost:1313/dsa-42/data_structures/specialized/binomial_heap/" class="nav-btn">← Previous</a>
+    
+    
+    <a href="//localhost:1313/dsa-42/data_structures/specialized/" class="nav-btn">Up</a>
+
+    
+    <a href="//localhost:1313/dsa-42/data_structures/specialized/b_tree/" class="nav-btn">Next →</a>
+    
+</div>
+
+    </main>
+
+    <footer class="footer">
+        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
+    </footer>
+
+    <script>
+        const body = document.getElementById('theme-body');
+        const btn = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme');
+
+        
+        function updateButtonText() {
+            if (body.classList.contains('theme-terminal')) {
+                btn.textContent = "Light Mode";
+            } else {
+                btn.textContent = "Dark Mode";
+            }
+        }
+
+        if (currentTheme === 'terminal') {
+            body.classList.add('theme-terminal');
+        }
+        
+        
+        updateButtonText();
+
+        btn.addEventListener('click', () => {
+            body.classList.toggle('theme-terminal');
+            updateButtonText();
+            
+            let theme = 'natural';
+            if (body.classList.contains('theme-terminal')) {
+                theme = 'terminal';
+            }
+            localStorage.setItem('theme', theme);
+        });
+    </script>
+</body>
+</html>

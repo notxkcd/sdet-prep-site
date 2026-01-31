@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Huffman Coding Algorithm | SDET Interview Preparation Kit</title>
+    <link rel="stylesheet" href="//localhost:1313/css/style.css">
+    <link rel="stylesheet" href="//localhost:1313/css/terminal.css">
+    
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    
+    <link rel="stylesheet" href="//localhost:1313/lib/katex/katex.min.css">
+    <script defer src="//localhost:1313/lib/katex/katex.min.js"></script>
+    <script defer src="//localhost:1313/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</head>
+<body id="theme-body">
+    <button id="theme-toggle">Switch Theme</button>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="//localhost:1313/">Index</a></li>
+                
+            </ul>
+        </nav>
+        <div class="site-breadcrumb">
+            <a href="//localhost:1313/">Home</a>
+            
+                
+                    <span>/</span> <a href="//localhost:1313/">SDET Interview Dashboard</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/dsa-42/">42 Algorithms &amp; 42 Data Structures</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/dsa-42/algorithms/">Algorithms</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/dsa-42/algorithms/greedy/">Greedy</a>
+                
+            
+            
+                <span>/</span> Huffman Coding Algorithm
+            
+        </div>
+    </header>
+
+    <main>
+        
+<article>
+    <div class="category-title" style="margin-bottom: 0.5rem;">Greedy</div>
+    <h1>Huffman Coding Algorithm</h1>
+    <div class="content-body" style="margin-top: 2rem;">
+        <p><code>Huffman Coding</code> is a lossless data compression algorithm. It is a greedy algorithm that achieves optimal prefix codes (a type of variable-length code where no codeword is a prefix of any other codeword). The idea is to assign shorter codes to characters that appear more frequently and longer codes to characters that appear less frequently.</p>
+<p>The algorithm builds a binary tree, called a <strong>Huffman tree</strong> or <strong>Huffman code tree</strong>, where each leaf node represents a character and its frequency. The path from the root to a leaf defines the code for that character.</p>
+<h2 id="how-it-works">How it Works</h2>
+<h3 id="how-it-works-expanded">How it Works (Expanded)</h3>
+<p>The <code>Huffman Coding</code> algorithm constructs a binary tree in a bottom-up manner, ensuring that the most frequent characters are closer to the root, resulting in shorter codes.</p>
+<hr>
+<p>Example: Build Huffman Tree for text &ldquo;AAAAABBCD&rdquo;
+Frequencies: A:5, B:2, C:1, D:1</p>
+<ol>
+<li>
+<p>Initial Nodes (sorted by frequency):
+C:1, D:1, B:2, A:5</p>
+</li>
+<li>
+<p>Phase 1: Combine C and D (lowest frequencies)</p>
+</li>
+</ol>
+<ul>
+<li>Create internal node CD with frequency 1+1=2.</li>
+<li>Assign C, D as children.</li>
+<li>Nodes: B:2, CD:2, A:5</li>
+</ul>
+<ol start="3">
+<li>Phase 2: Combine B and CD (lowest frequencies)</li>
+</ol>
+<ul>
+<li>Create internal node BCD with frequency 2+2=4.</li>
+<li>Assign B, CD as children.</li>
+<li>Nodes: A:5, BCD:4</li>
+</ul>
+<ol start="4">
+<li>Phase 3: Combine BCD and A</li>
+</ol>
+<ul>
+<li>Create internal node Root with frequency 4+5=9.</li>
+<li>Assign BCD, A as children.</li>
+<li>Nodes: Root:9</li>
+</ul>
+<p>Huffman Tree (example codes):
+Root (9)
+/      <br>
+BCD (4)   A (5) (Code: 1)
+/    <br>
+B (2)  CD (2) (Code: 00)
+/  <br>
+C(1) D(1) (Code: 010) (Code: 011)</p>
+<p>Resulting Codes:
+A: 1
+B: 00
+C: 010
+D: 011</p>
+<p><a href="#code-walkthrough">Jump to Code Walkthrough</a></p>
+<h2 id="implementation">Implementation</h2>
+<h3 id="python">Python</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">heapq</span>
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">from</span> <span style="color:#268bd2">collections</span> <span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">Counter</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#cb4b16">HuffmanNode</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">__init__</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">char</span>, <span style="color:#268bd2">freq</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">char</span> = <span style="color:#268bd2">char</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">freq</span> = <span style="color:#268bd2">freq</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">left</span> = <span style="color:#859900;font-weight:bold">None</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">right</span> = <span style="color:#859900;font-weight:bold">None</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># For heapq to work as a min-priority queue based on frequency</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">__lt__</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">other</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">freq</span> &lt; <span style="color:#268bd2">other</span>.<span style="color:#268bd2">freq</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">def</span> <span style="color:#268bd2">build_huffman_tree</span>(<span style="color:#268bd2">text</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#859900">not</span> <span style="color:#268bd2">text</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#859900;font-weight:bold">None</span>, {}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># 1. Calculate frequencies</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">frequency</span> = <span style="color:#268bd2">Counter</span>(<span style="color:#268bd2">text</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># 2. Create leaf nodes and add to priority queue</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">priority_queue</span> = []
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">char</span>, <span style="color:#268bd2">freq</span> <span style="color:#859900">in</span> <span style="color:#268bd2">frequency</span>.<span style="color:#268bd2">items</span>():
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">heapq</span>.<span style="color:#268bd2">heappush</span>(<span style="color:#268bd2">priority_queue</span>, <span style="color:#268bd2">HuffmanNode</span>(<span style="color:#268bd2">char</span>, <span style="color:#268bd2">freq</span>))
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># 3. Build tree</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">while</span> <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">priority_queue</span>) &gt; <span style="color:#2aa198;font-weight:bold">1</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">left_node</span> = <span style="color:#268bd2">heapq</span>.<span style="color:#268bd2">heappop</span>(<span style="color:#268bd2">priority_queue</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">right_node</span> = <span style="color:#268bd2">heapq</span>.<span style="color:#268bd2">heappop</span>(<span style="color:#268bd2">priority_queue</span>)
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># Create new internal node</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">merged_freq</span> = <span style="color:#268bd2">left_node</span>.<span style="color:#268bd2">freq</span> + <span style="color:#268bd2">right_node</span>.<span style="color:#268bd2">freq</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">merged_node</span> = <span style="color:#268bd2">HuffmanNode</span>(<span style="color:#859900;font-weight:bold">None</span>, <span style="color:#268bd2">merged_freq</span>) <span style="color:#93a1a1;font-style:italic"># Internal node has no char</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">merged_node</span>.<span style="color:#268bd2">left</span> = <span style="color:#268bd2">left_node</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">merged_node</span>.<span style="color:#268bd2">right</span> = <span style="color:#268bd2">right_node</span>
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">heapq</span>.<span style="color:#268bd2">heappush</span>(<span style="color:#268bd2">priority_queue</span>, <span style="color:#268bd2">merged_node</span>)
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#859900">not</span> <span style="color:#268bd2">priority_queue</span>: <span style="color:#93a1a1;font-style:italic"># Handle empty text case (if text only has unique chars, it could be len 1 pq after all, but general empty text)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#859900;font-weight:bold">None</span>, {}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">huffman_root</span> = <span style="color:#268bd2">heapq</span>.<span style="color:#268bd2">heappop</span>(<span style="color:#268bd2">priority_queue</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># 4. Generate codes</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">huffman_codes</span> = {}
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">generate_codes_recursive</span>(<span style="color:#268bd2">node</span>, <span style="color:#268bd2">current_code</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">node</span> <span style="color:#859900">is</span> <span style="color:#859900;font-weight:bold">None</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span>
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># If it&#39;s a leaf node, assign the code</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">node</span>.<span style="color:#268bd2">char</span> <span style="color:#859900">is</span> <span style="color:#859900">not</span> <span style="color:#859900;font-weight:bold">None</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">huffman_codes</span>[<span style="color:#268bd2">node</span>.<span style="color:#268bd2">char</span>] = <span style="color:#268bd2">current_code</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span>
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># Traverse left (0) and right (1)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">generate_codes_recursive</span>(<span style="color:#268bd2">node</span>.<span style="color:#268bd2">left</span>, <span style="color:#268bd2">current_code</span> + <span style="color:#2aa198">&#34;0&#34;</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">generate_codes_recursive</span>(<span style="color:#268bd2">node</span>.<span style="color:#268bd2">right</span>, <span style="color:#268bd2">current_code</span> + <span style="color:#2aa198">&#34;1&#34;</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">generate_codes_recursive</span>(<span style="color:#268bd2">huffman_root</span>, <span style="color:#2aa198">&#34;&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">huffman_root</span>, <span style="color:#268bd2">huffman_codes</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">def</span> <span style="color:#268bd2">huffman_encode</span>(<span style="color:#268bd2">text</span>, <span style="color:#268bd2">huffman_codes</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#859900">not</span> <span style="color:#268bd2">text</span> <span style="color:#859900">or</span> <span style="color:#859900">not</span> <span style="color:#268bd2">huffman_codes</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#2aa198">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">encoded_text</span> = <span style="color:#2aa198">&#34;&#34;</span>.<span style="color:#268bd2">join</span>(<span style="color:#268bd2">huffman_codes</span>[<span style="color:#268bd2">char</span>] <span style="color:#859900">for</span> <span style="color:#268bd2">char</span> <span style="color:#859900">in</span> <span style="color:#268bd2">text</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">encoded_text</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">def</span> <span style="color:#268bd2">huffman_decode</span>(<span style="color:#268bd2">encoded_text</span>, <span style="color:#268bd2">huffman_root</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#859900">not</span> <span style="color:#268bd2">encoded_text</span> <span style="color:#859900">or</span> <span style="color:#268bd2">huffman_root</span> <span style="color:#859900">is</span> <span style="color:#859900;font-weight:bold">None</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#2aa198">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">decoded_text</span> = []
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">current_node</span> = <span style="color:#268bd2">huffman_root</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">bit</span> <span style="color:#859900">in</span> <span style="color:#268bd2">encoded_text</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">bit</span> == <span style="color:#2aa198">&#39;0&#39;</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">current_node</span> = <span style="color:#268bd2">current_node</span>.<span style="color:#268bd2">left</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">else</span>: <span style="color:#93a1a1;font-style:italic"># bit == &#39;1&#39;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">current_node</span> = <span style="color:#268bd2">current_node</span>.<span style="color:#268bd2">right</span>
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># If it&#39;s a leaf node, we found a character</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">current_node</span>.<span style="color:#268bd2">char</span> <span style="color:#859900">is</span> <span style="color:#859900">not</span> <span style="color:#859900;font-weight:bold">None</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">decoded_text</span>.<span style="color:#268bd2">append</span>(<span style="color:#268bd2">current_node</span>.<span style="color:#268bd2">char</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">current_node</span> = <span style="color:#268bd2">huffman_root</span> <span style="color:#93a1a1;font-style:italic"># Reset to root for next character</span>
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#2aa198">&#34;&#34;</span>.<span style="color:#268bd2">join</span>(<span style="color:#268bd2">decoded_text</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># Example</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># text_to_compress = &#34;AAAAABBCD&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># h_root, h_codes = build_huffman_tree(text_to_compress)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(&#34;Huffman Codes:&#34;, h_codes)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># # Expected: {&#39;A&#39;: &#39;1&#39;, &#39;B&#39;: &#39;00&#39;, &#39;C&#39;: &#39;010&#39;, &#39;D&#39;: &#39;011&#39;} (order and exact bit string might vary based on tie-breaking)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># encoded = huffman_encode(text_to_compress, h_codes)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(&#34;Encoded text:&#34;, encoded) # e.g., 111110000010011</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># decoded = huffman_decode(encoded, h_root)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(&#34;Decoded text:&#34;, decoded) # Expected: AAAAABBCD</span>
+</span></span></code></pre></div><h3 id="javascript">Javascript</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#268bd2">HuffmanNode</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">constructor</span>(<span style="color:#859900">char</span>, <span style="color:#268bd2">freq</span>, <span style="color:#268bd2">left</span> = <span style="color:#859900;font-weight:bold">null</span>, <span style="color:#268bd2">right</span> = <span style="color:#859900;font-weight:bold">null</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#859900">char</span> = <span style="color:#859900">char</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">freq</span> = <span style="color:#268bd2">freq</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">left</span> = <span style="color:#268bd2">left</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">right</span> = <span style="color:#268bd2">right</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Simple Priority Queue (min-heap) implementation for demonstration.
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// For production, use a more efficient data structure or library.
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#859900">class</span> <span style="color:#268bd2">MinPriorityQueue</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">constructor</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">heap</span> = [];
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">push</span>(<span style="color:#268bd2">item</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">heap</span>.<span style="color:#268bd2">push</span>(<span style="color:#268bd2">item</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">heap</span>.<span style="color:#268bd2">sort</span>((<span style="color:#268bd2">a</span>, <span style="color:#268bd2">b</span>) =&gt; <span style="color:#268bd2">a</span>.<span style="color:#268bd2">freq</span> - <span style="color:#268bd2">b</span>.<span style="color:#268bd2">freq</span>); <span style="color:#93a1a1;font-style:italic">// Keep sorted
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">pop</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#859900">this</span>.<span style="color:#268bd2">heap</span>.<span style="color:#268bd2">shift</span>(); <span style="color:#93a1a1;font-style:italic">// Remove smallest
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">size</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#859900">this</span>.<span style="color:#268bd2">heap</span>.<span style="color:#268bd2">length</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">function</span> <span style="color:#268bd2">buildHuffmanTree</span>(<span style="color:#268bd2">text</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> (!<span style="color:#268bd2">text</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> { <span style="color:#268bd2">root</span>: <span style="color:#859900;font-weight:bold">null</span>, <span style="color:#268bd2">codes</span>: {} };
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// 1. Calculate frequencies
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">const</span> <span style="color:#268bd2">frequency</span> = {};
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> (<span style="color:#859900">const</span> <span style="color:#859900">char</span> <span style="color:#859900">of</span> <span style="color:#268bd2">text</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">frequency</span>[<span style="color:#859900">char</span>] = (<span style="color:#268bd2">frequency</span>[<span style="color:#859900">char</span>] || <span style="color:#2aa198;font-weight:bold">0</span>) + <span style="color:#2aa198;font-weight:bold">1</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// 2. Create leaf nodes and add to priority queue
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">const</span> <span style="color:#268bd2">pq</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">MinPriorityQueue</span>();
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> (<span style="color:#859900">const</span> <span style="color:#859900">char</span> <span style="color:#859900">in</span> <span style="color:#268bd2">frequency</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">pq</span>.<span style="color:#268bd2">push</span>(<span style="color:#859900">new</span> <span style="color:#268bd2">HuffmanNode</span>(<span style="color:#859900">char</span>, <span style="color:#268bd2">frequency</span>[<span style="color:#859900">char</span>]));
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Handle single character edge case
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">pq</span>.<span style="color:#268bd2">size</span>() === <span style="color:#2aa198;font-weight:bold">1</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">const</span> <span style="color:#268bd2">node</span> = <span style="color:#268bd2">pq</span>.<span style="color:#268bd2">pop</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">const</span> <span style="color:#268bd2">root</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">HuffmanNode</span>(<span style="color:#859900;font-weight:bold">null</span>, <span style="color:#268bd2">node</span>.<span style="color:#268bd2">freq</span>, <span style="color:#268bd2">node</span>, <span style="color:#859900;font-weight:bold">null</span>); <span style="color:#93a1a1;font-style:italic">// Create an artificial parent
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">const</span> <span style="color:#268bd2">codes</span> = {};
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">codes</span>[<span style="color:#268bd2">node</span>.<span style="color:#859900">char</span>] = <span style="color:#2aa198">&#34;0&#34;</span>; <span style="color:#93a1a1;font-style:italic">// Assign a code
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">return</span> { <span style="color:#268bd2">root</span>, <span style="color:#268bd2">codes</span> };
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// 3. Build tree
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">while</span> (<span style="color:#268bd2">pq</span>.<span style="color:#268bd2">size</span>() &gt; <span style="color:#2aa198;font-weight:bold">1</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">const</span> <span style="color:#268bd2">leftNode</span> = <span style="color:#268bd2">pq</span>.<span style="color:#268bd2">pop</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">const</span> <span style="color:#268bd2">rightNode</span> = <span style="color:#268bd2">pq</span>.<span style="color:#268bd2">pop</span>();
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Create new internal node
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">const</span> <span style="color:#268bd2">mergedFreq</span> = <span style="color:#268bd2">leftNode</span>.<span style="color:#268bd2">freq</span> + <span style="color:#268bd2">rightNode</span>.<span style="color:#268bd2">freq</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">const</span> <span style="color:#268bd2">mergedNode</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">HuffmanNode</span>(<span style="color:#859900;font-weight:bold">null</span>, <span style="color:#268bd2">mergedFreq</span>, <span style="color:#268bd2">leftNode</span>, <span style="color:#268bd2">rightNode</span>);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">pq</span>.<span style="color:#268bd2">push</span>(<span style="color:#268bd2">mergedNode</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">const</span> <span style="color:#268bd2">huffmanRoot</span> = <span style="color:#268bd2">pq</span>.<span style="color:#268bd2">pop</span>();
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// 4. Generate codes
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">const</span> <span style="color:#268bd2">huffmanCodes</span> = {};
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">function</span> <span style="color:#268bd2">generateCodesRecursive</span>(<span style="color:#268bd2">node</span>, <span style="color:#268bd2">currentCode</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (!<span style="color:#268bd2">node</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// If it&#39;s a leaf node, assign the code
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">node</span>.<span style="color:#859900">char</span> !== <span style="color:#859900;font-weight:bold">null</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">huffmanCodes</span>[<span style="color:#268bd2">node</span>.<span style="color:#859900">char</span>] = <span style="color:#268bd2">currentCode</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Traverse left (0) and right (1)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">generateCodesRecursive</span>(<span style="color:#268bd2">node</span>.<span style="color:#268bd2">left</span>, <span style="color:#268bd2">currentCode</span> + <span style="color:#2aa198">&#34;0&#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">generateCodesRecursive</span>(<span style="color:#268bd2">node</span>.<span style="color:#268bd2">right</span>, <span style="color:#268bd2">currentCode</span> + <span style="color:#2aa198">&#34;1&#34;</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">generateCodesRecursive</span>(<span style="color:#268bd2">huffmanRoot</span>, <span style="color:#2aa198">&#34;&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> { <span style="color:#268bd2">root</span>: <span style="color:#268bd2">huffmanRoot</span>, <span style="color:#268bd2">codes</span>: <span style="color:#268bd2">huffmanCodes</span> };
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">function</span> <span style="color:#268bd2">huffmanEncode</span>(<span style="color:#268bd2">text</span>, <span style="color:#268bd2">huffmanCodes</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> (!<span style="color:#268bd2">text</span> || <span style="color:#cb4b16">Object</span>.<span style="color:#268bd2">keys</span>(<span style="color:#268bd2">huffmanCodes</span>).<span style="color:#268bd2">length</span> === <span style="color:#2aa198;font-weight:bold">0</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#2aa198">&#34;&#34;</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">let</span> <span style="color:#268bd2">encodedText</span> = <span style="color:#2aa198">&#34;&#34;</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> (<span style="color:#859900">const</span> <span style="color:#859900">char</span> <span style="color:#859900">of</span> <span style="color:#268bd2">text</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">encodedText</span> += <span style="color:#268bd2">huffmanCodes</span>[<span style="color:#859900">char</span>];
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">encodedText</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">function</span> <span style="color:#268bd2">huffmanDecode</span>(<span style="color:#268bd2">encodedText</span>, <span style="color:#268bd2">huffmanRoot</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> (!<span style="color:#268bd2">encodedText</span> || <span style="color:#268bd2">huffmanRoot</span> === <span style="color:#859900;font-weight:bold">null</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#2aa198">&#34;&#34;</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">let</span> <span style="color:#268bd2">decodedText</span> = [];
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">let</span> <span style="color:#268bd2">currentNode</span> = <span style="color:#268bd2">huffmanRoot</span>;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> (<span style="color:#859900">const</span> <span style="color:#268bd2">bit</span> <span style="color:#859900">of</span> <span style="color:#268bd2">encodedText</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">bit</span> === <span style="color:#2aa198">&#39;0&#39;</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">currentNode</span> = <span style="color:#268bd2">currentNode</span>.<span style="color:#268bd2">left</span>;
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> { <span style="color:#93a1a1;font-style:italic">// bit === &#39;1&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#268bd2">currentNode</span> = <span style="color:#268bd2">currentNode</span>.<span style="color:#268bd2">right</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// If it&#39;s a leaf node, we found a character
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">currentNode</span>.<span style="color:#859900">char</span> !== <span style="color:#859900;font-weight:bold">null</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">decodedText</span>.<span style="color:#268bd2">push</span>(<span style="color:#268bd2">currentNode</span>.<span style="color:#859900">char</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">currentNode</span> = <span style="color:#268bd2">huffmanRoot</span>; <span style="color:#93a1a1;font-style:italic">// Reset to root for next character
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        }
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">decodedText</span>.<span style="color:#268bd2">join</span>(<span style="color:#2aa198">&#34;&#34;</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const textToCompress = &#34;AAAAABBCD&#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const { root, codes } = buildHuffmanTree(textToCompress);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Huffman Codes:&#34;, codes);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const encoded = huffmanEncode(textToCompress, codes);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Encoded text:&#34;, encoded);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const decoded = huffmanDecode(encoded, root);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Decoded text:&#34;, decoded);
+</span></span></span></code></pre></div><h3 id="typescript">Typescript</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-typescript" data-lang="typescript"><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#268bd2">HuffmanNode</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">char</span>: <span style="color:#859900;font-weight:bold">string</span> | <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">freq</span>: <span style="color:#859900;font-weight:bold">number</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">left</span>: <span style="color:#859900;font-weight:bold">HuffmanNode</span> | <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">right</span>: <span style="color:#859900;font-weight:bold">HuffmanNode</span> | <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">constructor</span>(<span style="color:#268bd2">char</span>: <span style="color:#859900;font-weight:bold">string</span> | <span style="color:#859900;font-weight:bold">null</span>, <span style="color:#268bd2">freq</span>: <span style="color:#859900;font-weight:bold">number</span>, <span style="color:#268bd2">left</span>: <span style="color:#859900;font-weight:bold">HuffmanNode</span> | <span style="color:#859900;font-weight:bold">null</span> = <span style="color:#859900;font-weight:bold">null</span>, <span style="color:#268bd2">right</span>: <span style="color:#859900;font-weight:bold">HuffmanNode</span> | <span style="color:#859900;font-weight:bold">null</span> = <span style="color:#859900;font-weight:bold">null</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">char</span> = <span style="color:#268bd2">char</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">freq</span> = <span style="color:#268bd2">freq</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">left</span> = <span style="color:#268bd2">left</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">right</span> = <span style="color:#268bd2">right</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Minimal Priority Queue (min-heap) interface for demonstration.
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// For production, use a more efficient custom min-heap or a library.
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#859900">class</span> <span style="color:#268bd2">MinPriorityQueue</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">private</span> <span style="color:#268bd2">heap</span>: <span style="color:#859900;font-weight:bold">HuffmanNode</span>[] = [];
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">push</span>(<span style="color:#268bd2">item</span>: <span style="color:#859900;font-weight:bold">HuffmanNode</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">heap</span>.<span style="color:#268bd2">push</span>(<span style="color:#268bd2">item</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">heap</span>.<span style="color:#268bd2">sort</span>((<span style="color:#268bd2">a</span>, <span style="color:#268bd2">b</span>) =&gt; <span style="color:#268bd2">a</span>.<span style="color:#268bd2">freq</span> - <span style="color:#268bd2">b</span>.<span style="color:#268bd2">freq</span>); <span style="color:#93a1a1;font-style:italic">// Keep sorted
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">pop</span>(): <span style="color:#268bd2">HuffmanNode</span> | <span style="color:#859900;font-weight:bold">undefined</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#859900">this</span>.<span style="color:#268bd2">heap</span>.<span style="color:#268bd2">shift</span>(); <span style="color:#93a1a1;font-style:italic">// Remove smallest
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">size</span>(): <span style="color:#859900;font-weight:bold">number</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#859900">this</span>.<span style="color:#268bd2">heap</span>.<span style="color:#268bd2">length</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">function</span> <span style="color:#268bd2">buildHuffmanTreeTS</span>(<span style="color:#268bd2">text</span>: <span style="color:#859900;font-weight:bold">string</span>): { <span style="color:#268bd2">root</span>: <span style="color:#859900;font-weight:bold">HuffmanNode</span> | <span style="color:#859900;font-weight:bold">null</span>; <span style="color:#268bd2">codes</span>: { [<span style="color:#268bd2">key</span>: <span style="color:#859900;font-weight:bold">string</span>]: <span style="color:#859900;font-weight:bold">string</span> } } {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> (!<span style="color:#268bd2">text</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> { <span style="color:#268bd2">root</span>: <span style="color:#859900;font-weight:bold">null</span>, <span style="color:#268bd2">codes</span>: {} };
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// 1. Calculate frequencies
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">const</span> <span style="color:#268bd2">frequency</span>: { [<span style="color:#268bd2">key</span>: <span style="color:#859900;font-weight:bold">string</span>]: <span style="color:#859900;font-weight:bold">number</span> } = {};
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> (<span style="color:#859900">const</span> <span style="color:#268bd2">char</span> <span style="color:#859900">of</span> <span style="color:#268bd2">text</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">frequency</span>[<span style="color:#268bd2">char</span>] = (<span style="color:#268bd2">frequency</span>[<span style="color:#268bd2">char</span>] || <span style="color:#2aa198;font-weight:bold">0</span>) + <span style="color:#2aa198;font-weight:bold">1</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// 2. Create leaf nodes and add to priority queue
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">const</span> <span style="color:#268bd2">pq</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">MinPriorityQueue</span>();
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> (<span style="color:#859900">const</span> <span style="color:#268bd2">char</span> <span style="color:#859900">in</span> <span style="color:#268bd2">frequency</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">pq</span>.<span style="color:#268bd2">push</span>(<span style="color:#859900">new</span> <span style="color:#268bd2">HuffmanNode</span>(<span style="color:#268bd2">char</span>, <span style="color:#268bd2">frequency</span>[<span style="color:#268bd2">char</span>]));
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Handle single character edge case
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">pq</span>.<span style="color:#268bd2">size</span>() === <span style="color:#2aa198;font-weight:bold">1</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">const</span> <span style="color:#268bd2">node</span> = <span style="color:#268bd2">pq</span>.<span style="color:#268bd2">pop</span>()!;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">const</span> <span style="color:#268bd2">root</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">HuffmanNode</span>(<span style="color:#859900;font-weight:bold">null</span>, <span style="color:#268bd2">node</span>.<span style="color:#268bd2">freq</span>, <span style="color:#268bd2">node</span>, <span style="color:#859900;font-weight:bold">null</span>); <span style="color:#93a1a1;font-style:italic">// Create an artificial parent
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">const</span> <span style="color:#268bd2">codes</span>: { [<span style="color:#268bd2">key</span>: <span style="color:#859900;font-weight:bold">string</span>]: <span style="color:#859900;font-weight:bold">string</span> } = {};
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">codes</span>[<span style="color:#268bd2">node</span>.<span style="color:#268bd2">char</span>!] = <span style="color:#2aa198">&#34;0&#34;</span>; <span style="color:#93a1a1;font-style:italic">// Assign a code
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">return</span> { <span style="color:#268bd2">root</span>, <span style="color:#268bd2">codes</span> };
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// 3. Build tree
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">while</span> (<span style="color:#268bd2">pq</span>.<span style="color:#268bd2">size</span>() &gt; <span style="color:#2aa198;font-weight:bold">1</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">const</span> <span style="color:#268bd2">leftNode</span> = <span style="color:#268bd2">pq</span>.<span style="color:#268bd2">pop</span>()!;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">const</span> <span style="color:#268bd2">rightNode</span> = <span style="color:#268bd2">pq</span>.<span style="color:#268bd2">pop</span>()!;
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Create new internal node
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">const</span> <span style="color:#268bd2">mergedFreq</span> = <span style="color:#268bd2">leftNode</span>.<span style="color:#268bd2">freq</span> + <span style="color:#268bd2">rightNode</span>.<span style="color:#268bd2">freq</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">const</span> <span style="color:#268bd2">mergedNode</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">HuffmanNode</span>(<span style="color:#859900;font-weight:bold">null</span>, <span style="color:#268bd2">mergedFreq</span>, <span style="color:#268bd2">leftNode</span>, <span style="color:#268bd2">rightNode</span>);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">pq</span>.<span style="color:#268bd2">push</span>(<span style="color:#268bd2">mergedNode</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">const</span> <span style="color:#268bd2">huffmanRoot</span> = <span style="color:#268bd2">pq</span>.<span style="color:#268bd2">pop</span>()!;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// 4. Generate codes
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">const</span> <span style="color:#268bd2">huffmanCodes</span>: { [<span style="color:#268bd2">key</span>: <span style="color:#859900;font-weight:bold">string</span>]: <span style="color:#859900;font-weight:bold">string</span> } = {};
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">function</span> <span style="color:#268bd2">generateCodesRecursive</span>(<span style="color:#268bd2">node</span>: <span style="color:#859900;font-weight:bold">HuffmanNode</span> | <span style="color:#859900;font-weight:bold">null</span>, <span style="color:#268bd2">currentCode</span>: <span style="color:#859900;font-weight:bold">string</span>): <span style="color:#859900">void</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (!<span style="color:#268bd2">node</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// If it&#39;s a leaf node, assign the code
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">node</span>.<span style="color:#268bd2">char</span> !== <span style="color:#859900;font-weight:bold">null</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">huffmanCodes</span>[<span style="color:#268bd2">node</span>.<span style="color:#268bd2">char</span>] = <span style="color:#268bd2">currentCode</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Traverse left (0) and right (1)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">generateCodesRecursive</span>(<span style="color:#268bd2">node</span>.<span style="color:#268bd2">left</span>, <span style="color:#268bd2">currentCode</span> + <span style="color:#2aa198">&#34;0&#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">generateCodesRecursive</span>(<span style="color:#268bd2">node</span>.<span style="color:#268bd2">right</span>, <span style="color:#268bd2">currentCode</span> + <span style="color:#2aa198">&#34;1&#34;</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">generateCodesRecursive</span>(<span style="color:#268bd2">huffmanRoot</span>, <span style="color:#2aa198">&#34;&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> { <span style="color:#268bd2">root</span>: <span style="color:#859900;font-weight:bold">huffmanRoot</span>, <span style="color:#268bd2">codes</span>: <span style="color:#859900;font-weight:bold">huffmanCodes</span> };
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">function</span> <span style="color:#268bd2">huffmanEncodeTS</span>(<span style="color:#268bd2">text</span>: <span style="color:#859900;font-weight:bold">string</span>, <span style="color:#268bd2">huffmanCodes</span>: { [<span style="color:#268bd2">key</span>: <span style="color:#859900;font-weight:bold">string</span>]: <span style="color:#859900;font-weight:bold">string</span> }): <span style="color:#859900;font-weight:bold">string</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> (!<span style="color:#268bd2">text</span> || <span style="color:#cb4b16">Object</span>.<span style="color:#268bd2">keys</span>(<span style="color:#268bd2">huffmanCodes</span>).<span style="color:#268bd2">length</span> === <span style="color:#2aa198;font-weight:bold">0</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#2aa198">&#34;&#34;</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">let</span> <span style="color:#268bd2">encodedText</span> = <span style="color:#2aa198">&#34;&#34;</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> (<span style="color:#859900">const</span> <span style="color:#268bd2">char</span> <span style="color:#859900">of</span> <span style="color:#268bd2">text</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">encodedText</span> += <span style="color:#268bd2">huffmanCodes</span>[<span style="color:#268bd2">char</span>];
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">encodedText</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">function</span> <span style="color:#268bd2">huffmanDecodeTS</span>(<span style="color:#268bd2">encodedText</span>: <span style="color:#859900;font-weight:bold">string</span>, <span style="color:#268bd2">huffmanRoot</span>: <span style="color:#859900;font-weight:bold">HuffmanNode</span> | <span style="color:#859900;font-weight:bold">null</span>): <span style="color:#859900;font-weight:bold">string</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> (!<span style="color:#268bd2">encodedText</span> || <span style="color:#268bd2">huffmanRoot</span> === <span style="color:#859900;font-weight:bold">null</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#2aa198">&#34;&#34;</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">let</span> <span style="color:#268bd2">decodedText</span>: <span style="color:#859900;font-weight:bold">string</span>[] = [];
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">let</span> <span style="color:#268bd2">currentNode</span>: <span style="color:#859900;font-weight:bold">HuffmanNode</span> = <span style="color:#268bd2">huffmanRoot</span>;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> (<span style="color:#859900">const</span> <span style="color:#268bd2">bit</span> <span style="color:#859900">of</span> <span style="color:#268bd2">encodedText</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">bit</span> === <span style="color:#2aa198">&#39;0&#39;</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">currentNode</span> = <span style="color:#268bd2">currentNode</span>.<span style="color:#268bd2">left</span>!;
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> { <span style="color:#93a1a1;font-style:italic">// bit === &#39;1&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#268bd2">currentNode</span> = <span style="color:#268bd2">currentNode</span>.<span style="color:#268bd2">right</span>!;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// If it&#39;s a leaf node, we found a character
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">currentNode</span>.<span style="color:#268bd2">char</span> !== <span style="color:#859900;font-weight:bold">null</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">decodedText</span>.<span style="color:#268bd2">push</span>(<span style="color:#268bd2">currentNode</span>.<span style="color:#268bd2">char</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">currentNode</span> = <span style="color:#268bd2">huffmanRoot</span>; <span style="color:#93a1a1;font-style:italic">// Reset to root for next character
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        }
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">decodedText</span>.<span style="color:#268bd2">join</span>(<span style="color:#2aa198">&#34;&#34;</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const textToCompressTS = &#34;AAAAABBCD&#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const { root: h_root_ts, codes: h_codes_ts } = buildHuffmanTreeTS(textToCompressTS);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Huffman Codes:&#34;, h_codes_ts);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const encodedTS = huffmanEncodeTS(textToCompressTS, h_codes_ts);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Encoded text:&#34;, encodedTS);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const decodedTS = huffmanDecodeTS(encodedTS, h_root_ts);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Decoded text:&#34;, decodedTS);
+</span></span></span></code></pre></div><h3 id="cpp">Cpp</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;iostream&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;string&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;vector&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;queue&gt;</span><span style="color:#93a1a1;font-style:italic"> </span><span style="color:#93a1a1;font-style:italic">// For std::priority_queue
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;map&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;algorithm&gt;</span><span style="color:#93a1a1;font-style:italic"> </span><span style="color:#93a1a1;font-style:italic">// For std::reverse
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;functional&gt;</span><span style="color:#93a1a1;font-style:italic"> </span><span style="color:#93a1a1;font-style:italic">// For std::function
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Huffman Node structure
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#859900">struct</span> <span style="color:#cb4b16">HuffmanNode</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">char</span> <span style="color:#268bd2">data</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">freq</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">HuffmanNode</span> &lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">left</span>, &lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">right</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">HuffmanNode</span>(<span style="color:#859900;font-weight:bold">char</span> <span style="color:#268bd2">data</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">freq</span>) : <span style="color:#268bd2">data</span>(<span style="color:#268bd2">data</span>), <span style="color:#268bd2">freq</span>(<span style="color:#268bd2">freq</span>), <span style="color:#268bd2">left</span>(<span style="color:#859900">nullptr</span>), <span style="color:#268bd2">right</span>(<span style="color:#859900">nullptr</span>) {}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Destructor to free memory
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    ~<span style="color:#268bd2">HuffmanNode</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">delete</span> <span style="color:#268bd2">left</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">delete</span> <span style="color:#268bd2">right</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Custom comparator for min-priority queue (based on frequency)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#859900">struct</span> <span style="color:#cb4b16">CompareNodes</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">bool</span> <span style="color:#268bd2">operator</span>()(<span style="color:#268bd2">HuffmanNode</span>&lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">a</span>, <span style="color:#268bd2">HuffmanNode</span>&lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">b</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">a</span>-&gt;<span style="color:#268bd2">freq</span> &gt; <span style="color:#268bd2">b</span>-&gt;<span style="color:#268bd2">freq</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Function to build Huffman Tree and generate codes
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#268bd2">std</span>::<span style="color:#268bd2">pair</span>&lt;<span style="color:#268bd2">HuffmanNode</span>&lt;<span style="color:#268bd2">em</span>&gt;, <span style="color:#268bd2">std</span>::<span style="color:#268bd2">map</span>&lt;<span style="color:#859900;font-weight:bold">char</span>, <span style="color:#268bd2">std</span>::<span style="color:#268bd2">string</span>&gt;&gt; <span style="color:#268bd2">buildHuffmanTree</span>(<span style="color:#859900">const</span> <span style="color:#268bd2">std</span>::<span style="color:#268bd2">string</span>&amp; <span style="color:#268bd2">text</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">text</span>.<span style="color:#268bd2">empty</span>()) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> {<span style="color:#859900">nullptr</span>, {}};
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// 1. Calculate frequencies
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">map</span>&lt;<span style="color:#859900;font-weight:bold">char</span>, <span style="color:#859900;font-weight:bold">int</span>&gt; <span style="color:#268bd2">frequency</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">char</span> <span style="color:#268bd2">ch</span> : <span style="color:#268bd2">text</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">frequency</span>[<span style="color:#268bd2">ch</span>]++;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// 2. Create leaf nodes and add to priority queue
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">priority_queue</span>&lt;<span style="color:#268bd2">HuffmanNode</span>&lt;/<span style="color:#268bd2">em</span>&gt;, <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#268bd2">HuffmanNode</span>&lt;<span style="color:#268bd2">em</span>&gt;&gt;, <span style="color:#268bd2">CompareNodes</span>&gt; <span style="color:#268bd2">pq</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> (<span style="color:#859900">auto</span> <span style="color:#859900">const</span>&amp; [<span style="color:#268bd2">key</span>, <span style="color:#268bd2">val</span>] : <span style="color:#268bd2">frequency</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">pq</span>.<span style="color:#268bd2">push</span>(<span style="color:#859900">new</span> <span style="color:#268bd2">HuffmanNode</span>(<span style="color:#268bd2">key</span>, <span style="color:#268bd2">val</span>));
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Handle single character edge case
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">pq</span>.<span style="color:#268bd2">size</span>() == <span style="color:#2aa198;font-weight:bold">1</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">HuffmanNode</span>&lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">node</span> = <span style="color:#268bd2">pq</span>.<span style="color:#268bd2">top</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">pq</span>.<span style="color:#268bd2">pop</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">HuffmanNode</span>&lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">root</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">HuffmanNode</span>(<span style="color:#2aa198">&#39;\0&#39;</span>, <span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">freq</span>); <span style="color:#93a1a1;font-style:italic">// Artificial parent for single char
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">root</span>-&gt;<span style="color:#268bd2">left</span> = <span style="color:#268bd2">node</span>; <span style="color:#93a1a1;font-style:italic">// Assign as left child
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">std</span>::<span style="color:#268bd2">map</span>&lt;<span style="color:#859900;font-weight:bold">char</span>, <span style="color:#268bd2">std</span>::<span style="color:#268bd2">string</span>&gt; <span style="color:#268bd2">codes</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">codes</span>[<span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">data</span>] = <span style="color:#2aa198">&#34;0&#34;</span>; <span style="color:#93a1a1;font-style:italic">// Assign code &#34;0&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">return</span> {<span style="color:#268bd2">root</span>, <span style="color:#268bd2">codes</span>};
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// 3. Build tree
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">while</span> (<span style="color:#268bd2">pq</span>.<span style="color:#268bd2">size</span>() &gt; <span style="color:#2aa198;font-weight:bold">1</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">HuffmanNode</span> &lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">left</span> = <span style="color:#268bd2">pq</span>.<span style="color:#268bd2">top</span>(); <span style="color:#268bd2">pq</span>.<span style="color:#268bd2">pop</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">HuffmanNode</span> &lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">right</span> = <span style="color:#268bd2">pq</span>.<span style="color:#268bd2">top</span>(); <span style="color:#268bd2">pq</span>.<span style="color:#268bd2">pop</span>();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">HuffmanNode</span> &lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">top</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">HuffmanNode</span>(<span style="color:#2aa198">&#39;\0&#39;</span>, <span style="color:#268bd2">left</span>-&gt;<span style="color:#268bd2">freq</span> + <span style="color:#268bd2">right</span>-&gt;<span style="color:#268bd2">freq</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">top</span>-&gt;<span style="color:#268bd2">left</span> = <span style="color:#268bd2">left</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">top</span>-&gt;<span style="color:#268bd2">right</span> = <span style="color:#268bd2">right</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">pq</span>.<span style="color:#268bd2">push</span>(<span style="color:#268bd2">top</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">HuffmanNode</span> &lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">huffmanRoot</span> = <span style="color:#268bd2">pq</span>.<span style="color:#268bd2">top</span>();
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// 4. Generate codes
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">map</span>&lt;<span style="color:#859900;font-weight:bold">char</span>, <span style="color:#268bd2">std</span>::<span style="color:#268bd2">string</span>&gt; <span style="color:#268bd2">huffmanCodes</span>;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">function</span>&lt;<span style="color:#859900;font-weight:bold">void</span>(<span style="color:#268bd2">HuffmanNode</span>&lt;/<span style="color:#268bd2">em</span>&gt;, <span style="color:#268bd2">std</span>::<span style="color:#268bd2">string</span>)&gt; <span style="color:#268bd2">generateCodesRecursive</span> = 
+</span></span><span style="display:flex;"><span>        [&amp;](<span style="color:#268bd2">HuffmanNode</span>&lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">node</span>, <span style="color:#268bd2">std</span>::<span style="color:#268bd2">string</span> <span style="color:#268bd2">current_code</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (!<span style="color:#268bd2">node</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// If it&#39;s a leaf node, assign the code
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">data</span> != <span style="color:#2aa198">&#39;\0&#39;</span>) { <span style="color:#93a1a1;font-style:italic">// Internal nodes have &#39;\0&#39; data
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#268bd2">huffmanCodes</span>[<span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">data</span>] = <span style="color:#268bd2">current_code</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Traverse left (0) and right (1)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">generateCodesRecursive</span>(<span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">left</span>, <span style="color:#268bd2">current_code</span> + <span style="color:#2aa198">&#34;0&#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">generateCodesRecursive</span>(<span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">right</span>, <span style="color:#268bd2">current_code</span> + <span style="color:#2aa198">&#34;1&#34;</span>);
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">generateCodesRecursive</span>(<span style="color:#268bd2">huffmanRoot</span>, <span style="color:#2aa198">&#34;&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> {<span style="color:#268bd2">huffmanRoot</span>, <span style="color:#268bd2">huffmanCodes</span>};
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Function to encode text using Huffman codes
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#268bd2">std</span>::<span style="color:#268bd2">string</span> <span style="color:#268bd2">huffmanEncode</span>(<span style="color:#859900">const</span> <span style="color:#268bd2">std</span>::<span style="color:#268bd2">string</span>&amp; <span style="color:#268bd2">text</span>, <span style="color:#859900">const</span> <span style="color:#268bd2">std</span>::<span style="color:#268bd2">map</span>&lt;<span style="color:#859900;font-weight:bold">char</span>, <span style="color:#268bd2">std</span>::<span style="color:#268bd2">string</span>&gt;&amp; <span style="color:#268bd2">huffman_codes</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">text</span>.<span style="color:#268bd2">empty</span>() || <span style="color:#268bd2">huffman_codes</span>.<span style="color:#268bd2">empty</span>()) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#2aa198">&#34;&#34;</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">string</span> <span style="color:#268bd2">encoded_text</span> = <span style="color:#2aa198">&#34;&#34;</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">char</span> <span style="color:#268bd2">ch</span> : <span style="color:#268bd2">text</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">encoded_text</span> += <span style="color:#268bd2">huffman_codes</span>.<span style="color:#268bd2">at</span>(<span style="color:#268bd2">ch</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">encoded_text</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Function to decode encoded text
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#268bd2">std</span>::<span style="color:#268bd2">string</span> <span style="color:#268bd2">huffmanDecode</span>(<span style="color:#859900">const</span> <span style="color:#268bd2">std</span>::<span style="color:#268bd2">string</span>&amp; <span style="color:#268bd2">encoded_text</span>, <span style="color:#268bd2">HuffmanNode</span>&lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">huffman_root</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">encoded_text</span>.<span style="color:#268bd2">empty</span>() || <span style="color:#268bd2">huffman_root</span> == <span style="color:#859900">nullptr</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#2aa198">&#34;&#34;</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">string</span> <span style="color:#268bd2">decoded_text</span> = <span style="color:#2aa198">&#34;&#34;</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">HuffmanNode</span>&lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">current_node</span> = <span style="color:#268bd2">huffman_root</span>;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">char</span> <span style="color:#268bd2">bit</span> : <span style="color:#268bd2">encoded_text</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">bit</span> == <span style="color:#2aa198">&#39;0&#39;</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">current_node</span> = <span style="color:#268bd2">current_node</span>-&gt;<span style="color:#268bd2">left</span>;
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> { <span style="color:#93a1a1;font-style:italic">// bit == &#39;1&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#268bd2">current_node</span> = <span style="color:#268bd2">current_node</span>-&gt;<span style="color:#268bd2">right</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// If it&#39;s a leaf node, we found a character
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">current_node</span>-&gt;<span style="color:#268bd2">data</span> != <span style="color:#2aa198">&#39;\0&#39;</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">decoded_text</span> += <span style="color:#268bd2">current_node</span>-&gt;<span style="color:#268bd2">data</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">current_node</span> = <span style="color:#268bd2">huffman_root</span>; <span style="color:#93a1a1;font-style:italic">// Reset to root for next character
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        }
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">decoded_text</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// int main() {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::string text_to_compress = &#34;AAAAABBCD&#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     auto result = buildHuffmanTree(text_to_compress);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     HuffmanNode&lt;/em&gt; h_root = result.first;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::map&lt;char, std::string&gt; h_codes = result.second;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; &#34;Huffman Codes:&#34; &lt;&lt; std::endl;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     for (auto const&amp; [key, val] : h_codes) {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         std::cout &lt;&lt; key &lt;&lt; &#34;: &#34; &lt;&lt; val &lt;&lt; std::endl;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     }
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     // Expected: A:1, B:00, C:010, D:011 (order and exact bit string might vary)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::string encoded = huffmanEncode(text_to_compress, h_codes);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; &#34;Encoded text: &#34; &lt;&lt; encoded &lt;&lt; std::endl; // e.g., 111110000010011
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::string decoded = huffmanDecode(encoded, h_root);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; &#34;Decoded text: &#34; &lt;&lt; decoded &lt;&lt; std::endl; // AAAAABBCD
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     delete h_root; // Free memory
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     return 0;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span></code></pre></div><h3 id="go">Go</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">package</span> <span style="color:#268bd2">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> (
+</span></span><span style="display:flex;"><span>    <span style="color:#2aa198">&#34;container/heap&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#2aa198">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#2aa198">&#34;strings&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// HuffmanNode structure</span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">type</span> <span style="color:#268bd2">HuffmanNode</span> <span style="color:#859900">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">Char</span>  <span style="color:#859900;font-weight:bold">rune</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">Freq</span>  <span style="color:#859900;font-weight:bold">int</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">Left</span>  &lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">HuffmanNode</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">Right</span> &lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">HuffmanNode</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// IsLeaf checks if the node is a leaf node</span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> (<span style="color:#268bd2">node</span> &lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">HuffmanNode</span>) <span style="color:#268bd2">IsLeaf</span>() <span style="color:#859900;font-weight:bold">bool</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">node</span>.<span style="color:#268bd2">Left</span> == <span style="color:#859900;font-weight:bold">nil</span> &amp;&amp; <span style="color:#268bd2">node</span>.<span style="color:#268bd2">Right</span> == <span style="color:#859900;font-weight:bold">nil</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// A PriorityQueue implements heap.Interface for HuffmanNode pointers</span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">type</span> <span style="color:#268bd2">HuffmanPriorityQueue</span> []&lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">HuffmanNode</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> (<span style="color:#268bd2">pq</span> <span style="color:#268bd2">HuffmanPriorityQueue</span>) <span style="color:#268bd2">Len</span>() <span style="color:#859900;font-weight:bold">int</span> { <span style="color:#859900">return</span> <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">pq</span>) }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> (<span style="color:#268bd2">pq</span> <span style="color:#268bd2">HuffmanPriorityQueue</span>) <span style="color:#268bd2">Less</span>(<span style="color:#268bd2">i</span>, <span style="color:#268bd2">j</span> <span style="color:#859900;font-weight:bold">int</span>) <span style="color:#859900;font-weight:bold">bool</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">pq</span>[<span style="color:#268bd2">i</span>].<span style="color:#268bd2">Freq</span> &lt; <span style="color:#268bd2">pq</span>[<span style="color:#268bd2">j</span>].<span style="color:#268bd2">Freq</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> (<span style="color:#268bd2">pq</span> <span style="color:#268bd2">HuffmanPriorityQueue</span>) <span style="color:#268bd2">Swap</span>(<span style="color:#268bd2">i</span>, <span style="color:#268bd2">j</span> <span style="color:#859900;font-weight:bold">int</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">pq</span>[<span style="color:#268bd2">i</span>], <span style="color:#268bd2">pq</span>[<span style="color:#268bd2">j</span>] = <span style="color:#268bd2">pq</span>[<span style="color:#268bd2">j</span>], <span style="color:#268bd2">pq</span>[<span style="color:#268bd2">i</span>]
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> (<span style="color:#268bd2">pq</span> &lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">HuffmanPriorityQueue</span>) <span style="color:#268bd2">Push</span>(<span style="color:#268bd2">x</span> <span style="color:#859900">interface</span>{}) {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">item</span> := <span style="color:#268bd2">x</span>.(&lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">HuffmanNode</span>)
+</span></span><span style="display:flex;"><span>    &lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">pq</span> = <span style="color:#cb4b16">append</span>(&lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">pq</span>, <span style="color:#268bd2">item</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> (<span style="color:#268bd2">pq</span> &lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">HuffmanPriorityQueue</span>) <span style="color:#268bd2">Pop</span>() <span style="color:#859900">interface</span>{} {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">old</span> := &lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">pq</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">n</span> := <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">old</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">item</span> := <span style="color:#268bd2">old</span>[<span style="color:#268bd2">n</span>-<span style="color:#2aa198;font-weight:bold">1</span>]
+</span></span><span style="display:flex;"><span>    &lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">pq</span> = <span style="color:#268bd2">old</span>[<span style="color:#2aa198;font-weight:bold">0</span> : <span style="color:#268bd2">n</span>-<span style="color:#2aa198;font-weight:bold">1</span>]
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">item</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// buildHuffmanTree builds the Huffman tree and generates codes</span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> <span style="color:#268bd2">buildHuffmanTree</span>(<span style="color:#268bd2">text</span> <span style="color:#859900;font-weight:bold">string</span>) (&lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">HuffmanNode</span>, <span style="color:#859900">map</span>[<span style="color:#859900;font-weight:bold">rune</span>]<span style="color:#859900;font-weight:bold">string</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">text</span>) == <span style="color:#2aa198;font-weight:bold">0</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#859900;font-weight:bold">nil</span>, <span style="color:#cb4b16">make</span>(<span style="color:#859900">map</span>[<span style="color:#859900;font-weight:bold">rune</span>]<span style="color:#859900;font-weight:bold">string</span>)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// 1. Calculate frequencies</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">frequency</span> := <span style="color:#cb4b16">make</span>(<span style="color:#859900">map</span>[<span style="color:#859900;font-weight:bold">rune</span>]<span style="color:#859900;font-weight:bold">int</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">_</span>, <span style="color:#268bd2">char</span> := <span style="color:#859900">range</span> <span style="color:#268bd2">text</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">frequency</span>[<span style="color:#268bd2">char</span>]++
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// 2. Create leaf nodes and add to priority queue</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">pq</span> := <span style="color:#cb4b16">make</span>(<span style="color:#268bd2">HuffmanPriorityQueue</span>, <span style="color:#2aa198;font-weight:bold">0</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">char</span>, <span style="color:#268bd2">freq</span> := <span style="color:#859900">range</span> <span style="color:#268bd2">frequency</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">heap</span>.<span style="color:#268bd2">Push</span>(&amp;<span style="color:#268bd2">pq</span>, &amp;<span style="color:#268bd2">HuffmanNode</span>{<span style="color:#268bd2">Char</span>: <span style="color:#268bd2">char</span>, <span style="color:#268bd2">Freq</span>: <span style="color:#268bd2">freq</span>})
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Handle single character edge case</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#268bd2">pq</span>.<span style="color:#268bd2">Len</span>() == <span style="color:#2aa198;font-weight:bold">1</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">node</span> := <span style="color:#268bd2">heap</span>.<span style="color:#268bd2">Pop</span>(&amp;<span style="color:#268bd2">pq</span>).(&lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">HuffmanNode</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">root</span> := &amp;<span style="color:#268bd2">HuffmanNode</span>{<span style="color:#268bd2">Char</span>: <span style="color:#2aa198">&#39;\000&#39;</span>, <span style="color:#268bd2">Freq</span>: <span style="color:#268bd2">node</span>.<span style="color:#268bd2">Freq</span>, <span style="color:#268bd2">Left</span>: <span style="color:#268bd2">node</span>, <span style="color:#268bd2">Right</span>: <span style="color:#859900;font-weight:bold">nil</span>} <span style="color:#93a1a1;font-style:italic">// Artificial parent</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">codes</span> := <span style="color:#cb4b16">make</span>(<span style="color:#859900">map</span>[<span style="color:#859900;font-weight:bold">rune</span>]<span style="color:#859900;font-weight:bold">string</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">codes</span>[<span style="color:#268bd2">node</span>.<span style="color:#268bd2">Char</span>] = <span style="color:#2aa198">&#34;0&#34;</span> <span style="color:#93a1a1;font-style:italic">// Assign a code</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">root</span>, <span style="color:#268bd2">codes</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// 3. Build tree</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">pq</span>.<span style="color:#268bd2">Len</span>() &gt; <span style="color:#2aa198;font-weight:bold">1</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">leftNode</span> := <span style="color:#268bd2">heap</span>.<span style="color:#268bd2">Pop</span>(&amp;<span style="color:#268bd2">pq</span>).(&lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">HuffmanNode</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">rightNode</span> := <span style="color:#268bd2">heap</span>.<span style="color:#268bd2">Pop</span>(&amp;<span style="color:#268bd2">pq</span>).(&lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">HuffmanNode</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">mergedFreq</span> := <span style="color:#268bd2">leftNode</span>.<span style="color:#268bd2">Freq</span> + <span style="color:#268bd2">rightNode</span>.<span style="color:#268bd2">Freq</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">mergedNode</span> := &amp;<span style="color:#268bd2">HuffmanNode</span>{<span style="color:#268bd2">Char</span>: <span style="color:#2aa198">&#39;\000&#39;</span>, <span style="color:#268bd2">Freq</span>: <span style="color:#268bd2">mergedFreq</span>, <span style="color:#268bd2">Left</span>: <span style="color:#268bd2">leftNode</span>, <span style="color:#268bd2">Right</span>: <span style="color:#268bd2">rightNode</span>}
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">heap</span>.<span style="color:#268bd2">Push</span>(&amp;<span style="color:#268bd2">pq</span>, <span style="color:#268bd2">mergedNode</span>)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">huffmanRoot</span> := <span style="color:#268bd2">heap</span>.<span style="color:#268bd2">Pop</span>(&amp;<span style="color:#268bd2">pq</span>).(&lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">HuffmanNode</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// 4. Generate codes</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">huffmanCodes</span> := <span style="color:#cb4b16">make</span>(<span style="color:#859900">map</span>[<span style="color:#859900;font-weight:bold">rune</span>]<span style="color:#859900;font-weight:bold">string</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">var</span> <span style="color:#268bd2">generateCodesRecursive</span> <span style="color:#859900">func</span>(<span style="color:#268bd2">node</span> &lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">HuffmanNode</span>, <span style="color:#268bd2">currentCode</span> <span style="color:#859900;font-weight:bold">string</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">generateCodesRecursive</span> = <span style="color:#859900">func</span>(<span style="color:#268bd2">node</span> &lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">HuffmanNode</span>, <span style="color:#268bd2">currentCode</span> <span style="color:#859900;font-weight:bold">string</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">node</span> == <span style="color:#859900;font-weight:bold">nil</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// If it&#39;s a leaf node, assign the code</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">node</span>.<span style="color:#268bd2">IsLeaf</span>() {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">huffmanCodes</span>[<span style="color:#268bd2">node</span>.<span style="color:#268bd2">Char</span>] = <span style="color:#268bd2">currentCode</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Traverse left (0) and right (1)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">generateCodesRecursive</span>(<span style="color:#268bd2">node</span>.<span style="color:#268bd2">Left</span>, <span style="color:#268bd2">currentCode</span> + <span style="color:#2aa198">&#34;0&#34;</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">generateCodesRecursive</span>(<span style="color:#268bd2">node</span>.<span style="color:#268bd2">Right</span>, <span style="color:#268bd2">currentCode</span> + <span style="color:#2aa198">&#34;1&#34;</span>)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">generateCodesRecursive</span>(<span style="color:#268bd2">huffmanRoot</span>, <span style="color:#2aa198">&#34;&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">huffmanRoot</span>, <span style="color:#268bd2">huffmanCodes</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// huffmanEncode encodes the text using the generated Huffman codes</span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> <span style="color:#268bd2">huffmanEncode</span>(<span style="color:#268bd2">text</span> <span style="color:#859900;font-weight:bold">string</span>, <span style="color:#268bd2">huffmanCodes</span> <span style="color:#859900">map</span>[<span style="color:#859900;font-weight:bold">rune</span>]<span style="color:#859900;font-weight:bold">string</span>) <span style="color:#859900;font-weight:bold">string</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">text</span>) == <span style="color:#2aa198;font-weight:bold">0</span> || <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">huffmanCodes</span>) == <span style="color:#2aa198;font-weight:bold">0</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#2aa198">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">var</span> <span style="color:#268bd2">encodedText</span> <span style="color:#268bd2">strings</span>.<span style="color:#268bd2">Builder</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">_</span>, <span style="color:#268bd2">char</span> := <span style="color:#859900">range</span> <span style="color:#268bd2">text</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">encodedText</span>.<span style="color:#268bd2">WriteString</span>(<span style="color:#268bd2">huffmanCodes</span>[<span style="color:#268bd2">char</span>])
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">encodedText</span>.<span style="color:#268bd2">String</span>()
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// huffmanDecode decodes the encoded text using the Huffman tree</span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> <span style="color:#268bd2">huffmanDecode</span>(<span style="color:#268bd2">encodedText</span> <span style="color:#859900;font-weight:bold">string</span>, <span style="color:#268bd2">huffmanRoot</span> *<span style="color:#268bd2">HuffmanNode</span>) <span style="color:#859900;font-weight:bold">string</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">encodedText</span>) == <span style="color:#2aa198;font-weight:bold">0</span> || <span style="color:#268bd2">huffmanRoot</span> == <span style="color:#859900;font-weight:bold">nil</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#2aa198">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">var</span> <span style="color:#268bd2">decodedText</span> <span style="color:#268bd2">strings</span>.<span style="color:#268bd2">Builder</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">currentNode</span> := <span style="color:#268bd2">huffmanRoot</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">_</span>, <span style="color:#268bd2">bit</span> := <span style="color:#859900">range</span> <span style="color:#268bd2">encodedText</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">bit</span> == <span style="color:#2aa198">&#39;0&#39;</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">currentNode</span> = <span style="color:#268bd2">currentNode</span>.<span style="color:#268bd2">Left</span>
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> { <span style="color:#93a1a1;font-style:italic">// bit == &#39;1&#39;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">currentNode</span> = <span style="color:#268bd2">currentNode</span>.<span style="color:#268bd2">Right</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// If it&#39;s a leaf node, we found a character</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">currentNode</span>.<span style="color:#268bd2">IsLeaf</span>() {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">decodedText</span>.<span style="color:#268bd2">WriteRune</span>(<span style="color:#268bd2">currentNode</span>.<span style="color:#268bd2">Char</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">currentNode</span> = <span style="color:#268bd2">huffmanRoot</span> <span style="color:#93a1a1;font-style:italic">// Reset to root for next character</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">decodedText</span>.<span style="color:#268bd2">String</span>()
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// func main() {</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     textToCompress := &#34;AAAAABBCD&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     hRoot, hCodes := buildHuffmanTree(textToCompress)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     fmt.Println(&#34;Huffman Codes:&#34;, hCodes)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     // Example: map[A:1 B:00 C:010 D:011]</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     // (order and exact bit string might vary based on tie-breaking)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     encoded := huffmanEncode(textToCompress, hCodes)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     fmt.Println(&#34;Encoded text:&#34;, encoded) // e.g., 111110000010011</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     decoded := huffmanDecode(encoded, hRoot)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     fmt.Println(&#34;Decoded text:&#34;, decoded) // AAAAABBCD</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }</span>
+</span></span></code></pre></div><h3 id="d">D</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-d" data-lang="d"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.stdio</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.array</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.algorithm</span>; <span style="color:#93a1a1;font-style:italic">// For std.algorithm.sort, min, max
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.container.binaryheap</span>; <span style="color:#93a1a1;font-style:italic">// For BinaryHeap
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.sum</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.string</span>; <span style="color:#93a1a1;font-style:italic">// For strip, join
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.traits</span>; <span style="color:#93a1a1;font-style:italic">// For isIntegral
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.conv</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Huffman Node structure
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#859900">class</span> <span style="color:#cb4b16">HuffmanNode</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">char</span> <span style="color:#268bd2">data</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">freq</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">HuffmanNode</span> <span style="color:#268bd2">left</span>, <span style="color:#268bd2">right</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">this</span>(<span style="color:#859900;font-weight:bold">char</span> <span style="color:#268bd2">data</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">freq</span>, <span style="color:#268bd2">HuffmanNode</span> <span style="color:#268bd2">left</span> = <span style="color:#859900;font-weight:bold">null</span>, <span style="color:#268bd2">HuffmanNode</span> <span style="color:#268bd2">right</span> = <span style="color:#859900;font-weight:bold">null</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">data</span> = <span style="color:#268bd2">data</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">freq</span> = <span style="color:#268bd2">freq</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">left</span> = <span style="color:#268bd2">left</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">right</span> = <span style="color:#268bd2">right</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">bool</span> <span style="color:#268bd2">isLeaf</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">left</span> <span style="color:#859900">is</span> <span style="color:#859900;font-weight:bold">null</span> &amp;&amp; <span style="color:#268bd2">right</span> <span style="color:#859900">is</span> <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Custom comparison for BinaryHeap (min-priority queue based on frequency)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">opCmp</span>(<span style="color:#859900">const</span> <span style="color:#268bd2">HuffmanNode</span> <span style="color:#268bd2">other</span>) <span style="color:#859900">const</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#859900">this</span>.<span style="color:#268bd2">freq</span>.<span style="color:#268bd2">cmp</span>(<span style="color:#268bd2">other</span>.<span style="color:#268bd2">freq</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// buildHuffmanTree builds the Huffman tree and generates codes
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#268bd2">Tuple</span>!(<span style="color:#268bd2">HuffmanNode</span>, <span style="color:#859900;font-weight:bold">int</span>[<span style="color:#859900;font-weight:bold">char</span>]) <span style="color:#268bd2">buildHuffmanTree</span>(<span style="color:#cb4b16">string</span> <span style="color:#268bd2">text</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">text</span>.<span style="color:#268bd2">empty</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#859900">typeof</span>(<span style="color:#859900">return</span>)(<span style="color:#859900;font-weight:bold">null</span>, <span style="color:#859900;font-weight:bold">null</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// 1. Calculate frequencies
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900;font-weight:bold">int</span>[<span style="color:#859900;font-weight:bold">char</span>] <span style="color:#268bd2">frequency</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">foreach</span> (<span style="color:#268bd2">ch</span>; <span style="color:#268bd2">text</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">frequency</span>[<span style="color:#268bd2">ch</span>]++;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// 2. Create leaf nodes and add to priority queue
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">auto</span> <span style="color:#268bd2">pq</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">BinaryHeap</span>!(<span style="color:#268bd2">HuffmanNode</span>)();
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">foreach</span> (<span style="color:#859900;font-weight:bold">char</span>, <span style="color:#268bd2">freq</span>; <span style="color:#268bd2">frequency</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">pq</span>.<span style="color:#268bd2">insert</span>(<span style="color:#859900">new</span> <span style="color:#268bd2">HuffmanNode</span>(<span style="color:#859900;font-weight:bold">char</span>, <span style="color:#268bd2">freq</span>));
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Handle single character edge case
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">pq</span>.<span style="color:#268bd2">length</span> == <span style="color:#2aa198;font-weight:bold">1</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">auto</span> <span style="color:#268bd2">node</span> = <span style="color:#268bd2">pq</span>.<span style="color:#268bd2">front</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">pq</span>.<span style="color:#268bd2">removeFront</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">auto</span> <span style="color:#268bd2">root</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">HuffmanNode</span>(<span style="color:#2aa198">&#39;\0&#39;</span>, <span style="color:#268bd2">node</span>.<span style="color:#268bd2">freq</span>, <span style="color:#268bd2">node</span>, <span style="color:#859900;font-weight:bold">null</span>); <span style="color:#93a1a1;font-style:italic">// Artificial parent
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900;font-weight:bold">int</span>[<span style="color:#859900;font-weight:bold">char</span>] <span style="color:#268bd2">codes</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">codes</span>[<span style="color:#268bd2">node</span>.<span style="color:#268bd2">data</span>] = <span style="color:#2aa198">&#34;0&#34;</span>; <span style="color:#93a1a1;font-style:italic">// Assign a code
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">return</span> <span style="color:#859900">typeof</span>(<span style="color:#859900">return</span>)(<span style="color:#268bd2">root</span>, <span style="color:#268bd2">codes</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// 3. Build tree
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">while</span> (<span style="color:#268bd2">pq</span>.<span style="color:#268bd2">length</span> &gt; <span style="color:#2aa198;font-weight:bold">1</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">auto</span> <span style="color:#268bd2">left</span> = <span style="color:#268bd2">pq</span>.<span style="color:#268bd2">front</span>; <span style="color:#268bd2">pq</span>.<span style="color:#268bd2">removeFront</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">auto</span> <span style="color:#268bd2">right</span> = <span style="color:#268bd2">pq</span>.<span style="color:#268bd2">front</span>; <span style="color:#268bd2">pq</span>.<span style="color:#268bd2">removeFront</span>();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">auto</span> <span style="color:#268bd2">top</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">HuffmanNode</span>(<span style="color:#2aa198">&#39;\0&#39;</span>, <span style="color:#268bd2">left</span>.<span style="color:#268bd2">freq</span> + <span style="color:#268bd2">right</span>.<span style="color:#268bd2">freq</span>, <span style="color:#268bd2">left</span>, <span style="color:#268bd2">right</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">pq</span>.<span style="color:#268bd2">insert</span>(<span style="color:#268bd2">top</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">auto</span> <span style="color:#268bd2">huffmanRoot</span> = <span style="color:#268bd2">pq</span>.<span style="color:#268bd2">front</span>;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// 4. Generate codes
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900;font-weight:bold">int</span>[<span style="color:#859900;font-weight:bold">char</span>] <span style="color:#268bd2">huffmanCodes</span>;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">generateCodesRecursive</span>(<span style="color:#268bd2">HuffmanNode</span> <span style="color:#268bd2">node</span>, <span style="color:#cb4b16">string</span> <span style="color:#268bd2">currentCode</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">node</span> <span style="color:#859900">is</span> <span style="color:#859900;font-weight:bold">null</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// If it&#39;s a leaf node, assign the code
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">node</span>.<span style="color:#268bd2">isLeaf</span>()) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">huffmanCodes</span>[<span style="color:#268bd2">node</span>.<span style="color:#268bd2">data</span>] = <span style="color:#268bd2">currentCode</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Traverse left (0) and right (1)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">generateCodesRecursive</span>(<span style="color:#268bd2">node</span>.<span style="color:#268bd2">left</span>, <span style="color:#268bd2">currentCode</span> ~ <span style="color:#2aa198">&#34;0&#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">generateCodesRecursive</span>(<span style="color:#268bd2">node</span>.<span style="color:#268bd2">right</span>, <span style="color:#268bd2">currentCode</span> ~ <span style="color:#2aa198">&#34;1&#34;</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">generateCodesRecursive</span>(<span style="color:#268bd2">huffmanRoot</span>, <span style="color:#2aa198">&#34;&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#859900">typeof</span>(<span style="color:#859900">return</span>)(<span style="color:#268bd2">huffmanRoot</span>, <span style="color:#268bd2">huffmanCodes</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// huffmanEncode encodes the text using the generated Huffman codes
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#cb4b16">string</span> <span style="color:#268bd2">huffmanEncode</span>(<span style="color:#cb4b16">string</span> <span style="color:#268bd2">text</span>, <span style="color:#859900;font-weight:bold">int</span>[<span style="color:#859900;font-weight:bold">char</span>] <span style="color:#268bd2">huffmanCodes</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">text</span>.<span style="color:#268bd2">empty</span> || <span style="color:#268bd2">huffmanCodes</span>.<span style="color:#268bd2">empty</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#2aa198">&#34;&#34;</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#cb4b16">string</span> <span style="color:#268bd2">encodedText</span> = <span style="color:#2aa198">&#34;&#34;</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">foreach</span> (<span style="color:#268bd2">ch</span>; <span style="color:#268bd2">text</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">encodedText</span> ~= <span style="color:#268bd2">huffmanCodes</span>[<span style="color:#268bd2">ch</span>];
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">encodedText</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// huffmanDecode decodes the encoded text using the Huffman tree
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#cb4b16">string</span> <span style="color:#268bd2">huffmanDecode</span>(<span style="color:#cb4b16">string</span> <span style="color:#268bd2">encodedText</span>, <span style="color:#268bd2">HuffmanNode</span> <span style="color:#268bd2">huffmanRoot</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">encodedText</span>.<span style="color:#268bd2">empty</span> || <span style="color:#268bd2">huffmanRoot</span> <span style="color:#859900">is</span> <span style="color:#859900;font-weight:bold">null</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#2aa198">&#34;&#34;</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#cb4b16">string</span> <span style="color:#268bd2">decodedText</span> = <span style="color:#2aa198">&#34;&#34;</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">HuffmanNode</span> <span style="color:#268bd2">currentNode</span> = <span style="color:#268bd2">huffmanRoot</span>;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">foreach</span> (<span style="color:#268bd2">bit</span>; <span style="color:#268bd2">encodedText</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">bit</span> == <span style="color:#2aa198">&#39;0&#39;</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">currentNode</span> = <span style="color:#268bd2">currentNode</span>.<span style="color:#268bd2">left</span>;
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> { <span style="color:#93a1a1;font-style:italic">// bit == &#39;1&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#268bd2">currentNode</span> = <span style="color:#268bd2">currentNode</span>.<span style="color:#268bd2">right</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// If it&#39;s a leaf node, we found a character
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">currentNode</span>.<span style="color:#268bd2">isLeaf</span>()) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">decodedText</span> ~= <span style="color:#268bd2">currentNode</span>.<span style="color:#268bd2">data</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">currentNode</span> = <span style="color:#268bd2">huffmanRoot</span>; <span style="color:#93a1a1;font-style:italic">// Reset to root for next character
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        }
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">decodedText</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// void main() {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     string textToCompress = &#34;AAAAABBCD&#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     auto result = buildHuffmanTree(textToCompress);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     HuffmanNode hRoot = result._0;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     int[char] hCodes = result._1;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     writeln(&#34;Huffman Codes:&#34;);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     foreach (key, val; hCodes) {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         writefln(&#34;%s: %s&#34;, key, val);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     }
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     // Expected: A:1, B:00, C:010, D:011 (order and exact bit string might vary)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     string encoded = huffmanEncode(textToCompress, hCodes);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     writeln(&#34;Encoded text: &#34;, encoded); // e.g., 111110000010011
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     string decoded = huffmanDecode(encoded, hRoot);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     writeln(&#34;Decoded text: &#34;, decoded); // AAAAABBCD
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span></code></pre></div><h2 id="code-walkthrough">Code Walkthrough</h2>
+<p><a href="#implementation">Back to Implementation</a></p>
+<h3 id="code-walkthrough-1">Code Walkthrough</h3>
+<p><code>Huffman Coding</code> is a two-step process: building the Huffman tree and then using the tree to generate codes and encode/decode text.</p>
+<hr>
+<p><strong><code>HuffmanNode</code> Class:</strong></p>
+<ul>
+<li><code>char</code>: The character (if it&rsquo;s a leaf node), or <code>None</code>/<code>\0</code> if it&rsquo;s an internal node.</li>
+<li><code>freq</code>: The frequency of the character or the sum of frequencies of its children.</li>
+<li><code>left</code>, <code>right</code>: Pointers to child <code>HuffmanNode</code>s.</li>
+</ul>
+<p><strong><code>buildHuffmanTree(text)</code> Function:</strong></p>
+<ul>
+<li>
+<p><strong>Calculate Frequencies:</strong> Counts the occurrences of each character in the input <code>text</code>.</p>
+</li>
+<li>
+<p><strong>Create Leaf Nodes and Priority Queue:</strong> Each unique character becomes a <code>HuffmanNode</code> (a leaf node). These <code>nodes</code> are pushed into a <code>min-priority queue</code>, ordered by their <code>frequency</code>.</p>
+</li>
+<li>
+<p><strong>Build Tree:</strong> While there is more than one <code>node</code> in the <code>priority queue</code>:</p>
+</li>
+<li>
+<p>Two <code>nodes</code> with the lowest <code>frequencies</code> are extracted.</p>
+</li>
+<li>
+<p>A new internal <code>HuffmanNode</code> is created. Its <code>frequency</code> is the sum of the two extracted <code>nodes</code>&rsquo; <code>frequencies</code>. The two extracted <code>nodes</code> become its <code>left</code> and <code>right children</code>.</p>
+</li>
+<li>
+<p>This new internal <code>node</code> is pushed back into the <code>priority queue</code>.</p>
+  </li>
+</li>
+<li>
+<p>The final <code>node</code> remaining in the <code>priority queue</code> is the <code>root</code> of the <code>Huffman tree</code>.</p>
+</li>
+<li>
+<p><strong>Generate Codes:</strong> A recursive helper function <code>generate_codes_recursive</code> traverses the <code>Huffman tree</code>.</p>
+</li>
+<li>
+<p>If it reaches a leaf <code>node</code>, the <code>current_code</code> accumulated along the path is assigned to the <code>node</code>&rsquo;s character.</p>
+</li>
+<li>
+<p>If it&rsquo;s an internal <code>node</code>, it recursively calls itself for the <code>left child</code> (appending &lsquo;0&rsquo; to <code>current_code</code>) and the <code>right child</code> (appending &lsquo;1&rsquo;).</p>
+  </li>
+</li>
+</ul>
+<p><strong><code>huffman_encode(text, huffman_codes)</code> Function:</strong></p>
+<ul>
+<li>Takes the original <code>text</code> and the <code>huffman_codes</code> map.</li>
+<li>Iterates through the <code>text</code>, appending the <code>Huffman code</code> for each character to build the <code>encoded_text</code>.</li>
+</ul>
+<p><strong><code>huffman_decode(encoded_text, huffman_root)</code> Function:</strong></p>
+<ul>
+<li>
+<p>Takes the <code>encoded_text</code> and the <code>huffman_root</code> (the Huffman tree).</p>
+</li>
+<li>
+<p>Starts at the <code>root</code> of the <code>Huffman tree</code>. For each bit in <code>encoded_text</code>:</p>
+</li>
+<li>
+<p>If the bit is &lsquo;0&rsquo;, traverse to the <code>left child</code>.</p>
+</li>
+<li>
+<p>If the bit is &lsquo;1&rsquo;, traverse to the <code>right child</code>.</p>
+</li>
+<li>
+<p>When a leaf <code>node</code> is reached, append its <code>character</code> to the <code>decoded_text</code> and reset <code>current_node</code> back to the <code>huffman_root</code> to start decoding the next character.</p>
+  </li>
+</li>
+</ul>
+<p><a href="#implementation">Back to Implementation</a></p>
+<h2 id="applications">Applications</h2>
+<h3 id="application">Application</h3>
+<p><code>Huffman Coding</code> is a widely used algorithm for lossless data compression, which means no information is lost during compression. Its applications are extensive:</p>
+<ul>
+<li><strong>File Compression:</strong> Used in various file formats like JPEG (for chrominance data), MP3, and many general-purpose compression tools (e.g., PKZIP, GZIP).</li>
+<li><strong>Fax Machines:</strong> Early fax machines used Huffman coding to compress images.</li>
+<li><strong>Text and Document Archiving:</strong> Efficiently storing large text files or documents.</li>
+<li><strong>Network Communication:</strong> Reducing the amount of data transmitted over networks, improving bandwidth utilization.</li>
+<li><strong>Databases:</strong> Compressing fields with highly skewed data distributions.</li>
+<li><strong>Embedded Systems:</strong> In systems with limited memory and processing power, where efficient compression and decompression are crucial.</li>
+</ul>
+
+    </div>
+</article>
+
+<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
+    
+    <a href="//localhost:1313/dsa-42/algorithms/greedy/job_sequencing/" class="nav-btn">← Previous</a>
+    
+    
+    <a href="//localhost:1313/dsa-42/algorithms/greedy/" class="nav-btn">Up</a>
+
+    
+    <a href="//localhost:1313/dsa-42/algorithms/greedy/fractional_knapsack/" class="nav-btn">Next →</a>
+    
+</div>
+
+    </main>
+
+    <footer class="footer">
+        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
+    </footer>
+
+    <script>
+        const body = document.getElementById('theme-body');
+        const btn = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme');
+
+        
+        function updateButtonText() {
+            if (body.classList.contains('theme-terminal')) {
+                btn.textContent = "Light Mode";
+            } else {
+                btn.textContent = "Dark Mode";
+            }
+        }
+
+        if (currentTheme === 'terminal') {
+            body.classList.add('theme-terminal');
+        }
+        
+        
+        updateButtonText();
+
+        btn.addEventListener('click', () => {
+            body.classList.toggle('theme-terminal');
+            updateButtonText();
+            
+            let theme = 'natural';
+            if (body.classList.contains('theme-terminal')) {
+                theme = 'terminal';
+            }
+            localStorage.setItem('theme', theme);
+        });
+    </script>
+</body>
+</html>

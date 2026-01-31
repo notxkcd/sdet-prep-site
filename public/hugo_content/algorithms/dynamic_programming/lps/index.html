@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Longest Palindromic Subsequence | SDET Interview Preparation Kit</title>
+    <link rel="stylesheet" href="//localhost:1313/css/style.css">
+    <link rel="stylesheet" href="//localhost:1313/css/terminal.css">
+    
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    
+    <link rel="stylesheet" href="//localhost:1313/lib/katex/katex.min.css">
+    <script defer src="//localhost:1313/lib/katex/katex.min.js"></script>
+    <script defer src="//localhost:1313/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</head>
+<body id="theme-body">
+    <button id="theme-toggle">Switch Theme</button>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="//localhost:1313/">Index</a></li>
+                
+            </ul>
+        </nav>
+        <div class="site-breadcrumb">
+            <a href="//localhost:1313/">Home</a>
+            
+                
+                    <span>/</span> <a href="//localhost:1313/">SDET Interview Dashboard</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/hugo_content/">42 Algorithms &amp; 42 Data Structures</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/hugo_content/algorithms/">Algorithms</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/hugo_content/algorithms/dynamic_programming/">Dynamic Programming</a>
+                
+            
+            
+                <span>/</span> Longest Palindromic Subsequence
+            
+        </div>
+    </header>
+
+    <main>
+        
+<article>
+    <div class="category-title" style="margin-bottom: 0.5rem;">Dynamic Programming</div>
+    <h1>Longest Palindromic Subsequence</h1>
+    <div class="content-body" style="margin-top: 2rem;">
+        <p>The <code>Longest Palindromic Subsequence (LPS)</code> problem is a classic problem in <code>dynamic programming</code>. Given a string <code>S</code>, the goal is to find the longest <code>subsequence</code> of <code>S</code> that is also a <code>palindrome</code>. A <code>palindrome</code> is a sequence that reads the same forwards and backward (e.g., &ldquo;racecar&rdquo;, &ldquo;madam&rdquo;). A <code>subsequence</code> is formed by deleting zero or more <code>elements</code> from a sequence without changing the order of the remaining <code>elements</code>.</p>
+<p>For example, in the string <code>S = &quot;BBABCBCAB&quot;</code>, one <code>LPS</code> is <code>&quot;BABCBAB&quot;</code> with a length of 7.</p>
+<h2 id="how-it-works">How it Works</h2>
+<h3 id="how-it-works-expanded">How it Works (Expanded)</h3>
+<p>The <code>LPS problem</code> can be efficiently solved using <code>dynamic programming</code>. We build a 2D table <code>dp</code> where <code>dp[i][j]</code> stores the length of the <code>Longest Palindromic Subsequence</code> of the substring <code>S[i...j]</code> (from <code>index i</code> to <code>index j</code>, inclusive).</p>
+<hr>
+<p>Example: LPS of S = &ldquo;BBABCBCAB&rdquo;</p>
+<p>Initialize a DP table (matrix) of size n x n.</p>
+<p>dp[i][i] = 1 (single character is a palindrome of length 1)</p>
+<p>For a substring S[i&hellip;j]:</p>
+<ul>
+<li>If S[i] == S[j]: dp[i][j] = 2 + dp[i+1][j-1]
+(If characters match, they extend the LPS of the inner substring)</li>
+<li>Else (S[i] != S[j]): dp[i][j] = max(dp[i][j-1], dp[i+1][j])
+(If characters don&rsquo;t match, take the max LPS from excluding S[i] or S[j])</li>
+</ul>
+<p>The final dp[0][n-1] value will be the length of the LPS for the entire string.</p>
+<h2 id="implementation">Implementation</h2>
+<h3 id="python">Python</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#859900">def</span> <span style="color:#268bd2">longest_palindromic_subsequence</span>(<span style="color:#268bd2">s</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">n</span> = <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">s</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># dp[i][j] stores the length of LPS of substring s[i..j]</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">dp</span> = [[<span style="color:#2aa198;font-weight:bold">0</span> <span style="color:#859900">for</span> <span style="color:#268bd2">_</span> <span style="color:#859900">in</span> <span style="color:#cb4b16">range</span>(<span style="color:#268bd2">n</span>)] <span style="color:#859900">for</span> <span style="color:#268bd2">_</span> <span style="color:#859900">in</span> <span style="color:#cb4b16">range</span>(<span style="color:#268bd2">n</span>)]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># Base case: Every single character is a palindrome of length 1</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> <span style="color:#859900">in</span> <span style="color:#cb4b16">range</span>(<span style="color:#268bd2">n</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">i</span>] = <span style="color:#2aa198;font-weight:bold">1</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># Fill dp table</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># L is length of substring (from 2 to n)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">L</span> <span style="color:#859900">in</span> <span style="color:#cb4b16">range</span>(<span style="color:#2aa198;font-weight:bold">2</span>, <span style="color:#268bd2">n</span> + <span style="color:#2aa198;font-weight:bold">1</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> <span style="color:#859900">in</span> <span style="color:#cb4b16">range</span>(<span style="color:#268bd2">n</span> - <span style="color:#268bd2">L</span> + <span style="color:#2aa198;font-weight:bold">1</span>):
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">j</span> = <span style="color:#268bd2">i</span> + <span style="color:#268bd2">L</span> - <span style="color:#2aa198;font-weight:bold">1</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> <span style="color:#268bd2">s</span>[<span style="color:#268bd2">i</span>] == <span style="color:#268bd2">s</span>[<span style="color:#268bd2">j</span>]:
+</span></span><span style="display:flex;"><span>                <span style="color:#93a1a1;font-style:italic"># Characters match, extend LPS from inner substring</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#2aa198;font-weight:bold">2</span> + <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span> + <span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">j</span> - <span style="color:#2aa198;font-weight:bold">1</span>]
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">else</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#93a1a1;font-style:italic"># Characters don&#39;t match, take max from excluding s[i] or s[j]</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#cb4b16">max</span>(<span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span> - <span style="color:#2aa198;font-weight:bold">1</span>], <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span> + <span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">j</span>])
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">dp</span>[<span style="color:#2aa198;font-weight:bold">0</span>][<span style="color:#268bd2">n</span> - <span style="color:#2aa198;font-weight:bold">1</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># Example</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># s1 = &#34;BBABCBCAB&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(longest_palindromic_subsequence(s1)) # Expected: 7 (BABCBAB)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># s2 = &#34;GEEKSFORGEEKS&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(longest_palindromic_subsequence(s2)) # Expected: 5 (EEKEE)</span>
+</span></span></code></pre></div><h3 id="javascript">Javascript</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#859900">function</span> <span style="color:#268bd2">longestPalindromicSubsequence</span>(<span style="color:#268bd2">s</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">const</span> <span style="color:#268bd2">n</span> = <span style="color:#268bd2">s</span>.<span style="color:#268bd2">length</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// dp[i][j] stores the length of LPS of substring s[i..j]
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">const</span> <span style="color:#268bd2">dp</span> = <span style="color:#cb4b16">Array</span>(<span style="color:#268bd2">n</span>).<span style="color:#268bd2">fill</span>(<span style="color:#2aa198;font-weight:bold">0</span>).<span style="color:#268bd2">map</span>(() =&gt; <span style="color:#cb4b16">Array</span>(<span style="color:#268bd2">n</span>).<span style="color:#268bd2">fill</span>(<span style="color:#2aa198;font-weight:bold">0</span>));
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Base case: Every single character is a palindrome of length 1
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">n</span>; <span style="color:#268bd2">i</span>++) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">i</span>] = <span style="color:#2aa198;font-weight:bold">1</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Fill dp table
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#93a1a1;font-style:italic">// L is length of substring (from 2 to n)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">L</span> = <span style="color:#2aa198;font-weight:bold">2</span>; <span style="color:#268bd2">L</span> &lt;= <span style="color:#268bd2">n</span>; <span style="color:#268bd2">L</span>++) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt;= <span style="color:#268bd2">n</span> - <span style="color:#268bd2">L</span>; <span style="color:#268bd2">i</span>++) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">const</span> <span style="color:#268bd2">j</span> = <span style="color:#268bd2">i</span> + <span style="color:#268bd2">L</span> - <span style="color:#2aa198;font-weight:bold">1</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">s</span>[<span style="color:#268bd2">i</span>] === <span style="color:#268bd2">s</span>[<span style="color:#268bd2">j</span>]) {
+</span></span><span style="display:flex;"><span>                <span style="color:#93a1a1;font-style:italic">// Characters match, extend LPS from inner substring
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#2aa198;font-weight:bold">2</span> + (<span style="color:#268bd2">L</span> === <span style="color:#2aa198;font-weight:bold">2</span> ? <span style="color:#2aa198;font-weight:bold">0</span> : <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span> + <span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">j</span> - <span style="color:#2aa198;font-weight:bold">1</span>]);
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#93a1a1;font-style:italic">// Characters don&#39;t match, take max from excluding s[i] or s[j]
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#cb4b16">Math</span>.<span style="color:#268bd2">max</span>(<span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span> - <span style="color:#2aa198;font-weight:bold">1</span>], <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span> + <span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">j</span>]);
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">dp</span>[<span style="color:#2aa198;font-weight:bold">0</span>][<span style="color:#268bd2">n</span> - <span style="color:#2aa198;font-weight:bold">1</span>];
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const s1 = &#34;BBABCBCAB&#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(longestPalindromicSubsequence(s1)); // Expected: 7
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const s2 = &#34;GEEKSFORGEEKS&#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(longestPalindromicSubsequence(s2)); // Expected: 5
+</span></span></span></code></pre></div><h3 id="typescript">Typescript</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-typescript" data-lang="typescript"><span style="display:flex;"><span><span style="color:#859900">function</span> <span style="color:#268bd2">longestPalindromicSubsequenceTS</span>(<span style="color:#268bd2">s</span>: <span style="color:#859900;font-weight:bold">string</span>): <span style="color:#859900;font-weight:bold">number</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">const</span> <span style="color:#268bd2">n</span> = <span style="color:#268bd2">s</span>.<span style="color:#268bd2">length</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// dp[i][j] stores the length of LPS of substring s[i..j]
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">const</span> <span style="color:#268bd2">dp</span>: <span style="color:#859900;font-weight:bold">number</span>[][] = <span style="color:#cb4b16">Array</span>(<span style="color:#268bd2">n</span>).<span style="color:#268bd2">fill</span>(<span style="color:#2aa198;font-weight:bold">0</span>).<span style="color:#268bd2">map</span>(() =&gt; <span style="color:#cb4b16">Array</span>(<span style="color:#268bd2">n</span>).<span style="color:#268bd2">fill</span>(<span style="color:#2aa198;font-weight:bold">0</span>));
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Base case: Every single character is a palindrome of length 1
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">n</span>; <span style="color:#268bd2">i</span>++) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">i</span>] = <span style="color:#2aa198;font-weight:bold">1</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Fill dp table
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#93a1a1;font-style:italic">// L is length of substring (from 2 to n)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">L</span> = <span style="color:#2aa198;font-weight:bold">2</span>; <span style="color:#268bd2">L</span> &lt;= <span style="color:#268bd2">n</span>; <span style="color:#268bd2">L</span>++) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt;= <span style="color:#268bd2">n</span> - <span style="color:#268bd2">L</span>; <span style="color:#268bd2">i</span>++) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">const</span> <span style="color:#268bd2">j</span> = <span style="color:#268bd2">i</span> + <span style="color:#268bd2">L</span> - <span style="color:#2aa198;font-weight:bold">1</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">s</span>[<span style="color:#268bd2">i</span>] === <span style="color:#268bd2">s</span>[<span style="color:#268bd2">j</span>]) {
+</span></span><span style="display:flex;"><span>                <span style="color:#93a1a1;font-style:italic">// Characters match, extend LPS from inner substring
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#2aa198;font-weight:bold">2</span> + (<span style="color:#268bd2">L</span> === <span style="color:#2aa198;font-weight:bold">2</span> ? <span style="color:#268bd2">0</span> : <span style="color:#859900;font-weight:bold">dp</span>[<span style="color:#268bd2">i</span> + <span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">j</span> - <span style="color:#2aa198;font-weight:bold">1</span>]);
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#93a1a1;font-style:italic">// Characters don&#39;t match, take max from excluding s[i] or s[j]
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#cb4b16">Math</span>.<span style="color:#268bd2">max</span>(<span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span> - <span style="color:#2aa198;font-weight:bold">1</span>], <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span> + <span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">j</span>]);
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">dp</span>[<span style="color:#2aa198;font-weight:bold">0</span>][<span style="color:#268bd2">n</span> - <span style="color:#2aa198;font-weight:bold">1</span>];
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const s1TS = &#34;BBABCBCAB&#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(longestPalindromicSubsequenceTS(s1TS)); // Expected: 7
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const s2TS = &#34;GEEKSFORGEEKS&#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(longestPalindromicSubsequenceTS(s2TS)); // Expected: 5
+</span></span></span></code></pre></div><h3 id="cpp">Cpp</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;string&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;vector&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;iostream&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;algorithm&gt;</span><span style="color:#93a1a1;font-style:italic"> </span><span style="color:#93a1a1;font-style:italic">// For std::max
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">longestPalindromicSubsequence</span>(<span style="color:#859900">const</span> <span style="color:#268bd2">std</span>::<span style="color:#268bd2">string</span>&amp; <span style="color:#268bd2">s</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">n</span> = <span style="color:#268bd2">s</span>.<span style="color:#268bd2">length</span>();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// dp[i][j] stores the length of LPS of substring s[i..j]
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt;&gt; <span style="color:#268bd2">dp</span>(<span style="color:#268bd2">n</span>, <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt;(<span style="color:#268bd2">n</span>, <span style="color:#2aa198;font-weight:bold">0</span>));
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Base case: Every single character is a palindrome of length 1
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">n</span>; <span style="color:#268bd2">i</span>++) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">i</span>] = <span style="color:#2aa198;font-weight:bold">1</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Fill dp table
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#93a1a1;font-style:italic">// L is length of substring (from 2 to n)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">L</span> = <span style="color:#2aa198;font-weight:bold">2</span>; <span style="color:#268bd2">L</span> &lt;= <span style="color:#268bd2">n</span>; <span style="color:#268bd2">L</span>++) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt;= <span style="color:#268bd2">n</span> - <span style="color:#268bd2">L</span>; <span style="color:#268bd2">i</span>++) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">j</span> = <span style="color:#268bd2">i</span> + <span style="color:#268bd2">L</span> - <span style="color:#2aa198;font-weight:bold">1</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">s</span>[<span style="color:#268bd2">i</span>] == <span style="color:#268bd2">s</span>[<span style="color:#268bd2">j</span>]) {
+</span></span><span style="display:flex;"><span>                <span style="color:#93a1a1;font-style:italic">// Characters match, extend LPS from inner substring
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#93a1a1;font-style:italic">// If L == 2, then dp[i+1][j-1] would be dp[i+1][i], which is 0 for length.
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#93a1a1;font-style:italic">// It should be 0 because an empty string between two matching characters forms a LPS of length 2.
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#2aa198;font-weight:bold">2</span> + <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span> + <span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">j</span> - <span style="color:#2aa198;font-weight:bold">1</span>];
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#93a1a1;font-style:italic">// Characters don&#39;t match, take max from excluding s[i] or s[j]
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#268bd2">std</span>::<span style="color:#268bd2">max</span>(<span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span> - <span style="color:#2aa198;font-weight:bold">1</span>], <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span> + <span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">j</span>]);
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">dp</span>[<span style="color:#2aa198;font-weight:bold">0</span>][<span style="color:#268bd2">n</span> - <span style="color:#2aa198;font-weight:bold">1</span>];
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// int main() {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::string s1 = &#34;BBABCBCAB&#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; &#34;LPS length for &#34; &lt;&lt; s1 &lt;&lt; &#34;: &#34; &lt;&lt; longestPalindromicSubsequence(s1) &lt;&lt; std::endl; // 7
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::string s2 = &#34;GEEKSFORGEEKS&#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; &#34;LPS length for &#34; &lt;&lt; s2 &lt;&lt; &#34;: &#34; &lt;&lt; longestPalindromicSubsequence(s2) &lt;&lt; std::endl; // 5
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     return 0;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span></code></pre></div><h3 id="go">Go</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">package</span> <span style="color:#268bd2">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#2aa198">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> <span style="color:#268bd2">longestPalindromicSubsequence</span>(<span style="color:#268bd2">s</span> <span style="color:#859900;font-weight:bold">string</span>) <span style="color:#859900;font-weight:bold">int</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">n</span> := <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">s</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// dp[i][j] stores the length of LPS of substring s[i..j]</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">dp</span> := <span style="color:#cb4b16">make</span>([][]<span style="color:#859900;font-weight:bold">int</span>, <span style="color:#268bd2">n</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> := <span style="color:#859900">range</span> <span style="color:#268bd2">dp</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>] = <span style="color:#cb4b16">make</span>([]<span style="color:#859900;font-weight:bold">int</span>, <span style="color:#268bd2">n</span>)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Base case: Every single character is a palindrome of length 1</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> := <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">n</span>; <span style="color:#268bd2">i</span>++ {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">i</span>] = <span style="color:#2aa198;font-weight:bold">1</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Fill dp table</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// L is length of substring (from 2 to n)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">L</span> := <span style="color:#2aa198;font-weight:bold">2</span>; <span style="color:#268bd2">L</span> &lt;= <span style="color:#268bd2">n</span>; <span style="color:#268bd2">L</span>++ {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> := <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt;= <span style="color:#268bd2">n</span> - <span style="color:#268bd2">L</span>; <span style="color:#268bd2">i</span>++ {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">j</span> := <span style="color:#268bd2">i</span> + <span style="color:#268bd2">L</span> - <span style="color:#2aa198;font-weight:bold">1</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> <span style="color:#268bd2">s</span>[<span style="color:#268bd2">i</span>] == <span style="color:#268bd2">s</span>[<span style="color:#268bd2">j</span>] {
+</span></span><span style="display:flex;"><span>                <span style="color:#93a1a1;font-style:italic">// Characters match, extend LPS from inner substring</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#93a1a1;font-style:italic">// If L == 2, then dp[i+1][j-1] would be dp[i+1][i], which is 0 for length.</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#93a1a1;font-style:italic">// This correctly adds 2 for the two matching characters.</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#2aa198;font-weight:bold">2</span> + <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>+<span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">j</span>-<span style="color:#2aa198;font-weight:bold">1</span>]
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#93a1a1;font-style:italic">// Characters don&#39;t match, take max from excluding s[i] or s[j]</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#cb4b16">max</span>(<span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>-<span style="color:#2aa198;font-weight:bold">1</span>], <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>+<span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">j</span>])
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">dp</span>[<span style="color:#2aa198;font-weight:bold">0</span>][<span style="color:#268bd2">n</span>-<span style="color:#2aa198;font-weight:bold">1</span>]
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> <span style="color:#cb4b16">max</span>(<span style="color:#268bd2">a</span>, <span style="color:#268bd2">b</span> <span style="color:#859900;font-weight:bold">int</span>) <span style="color:#859900;font-weight:bold">int</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#268bd2">a</span> &gt; <span style="color:#268bd2">b</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">a</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">b</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// func main() {</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     s1 := &#34;BBABCBCAB&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     fmt.Printf(&#34;LPS length for %s: %d\n&#34;, s1, longestPalindromicSubsequence(s1)) // 7</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     s2 := &#34;GEEKSFORGEEKS&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     fmt.Printf(&#34;LPS length for %s: %d\n&#34;, s2, longestPalindromicSubsequence(s2)) // 5</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }</span>
+</span></span></code></pre></div><h3 id="d">D</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-d" data-lang="d"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.stdio</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.array</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.algorithm</span>; <span style="color:#93a1a1;font-style:italic">// For std.algorithm.max
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">longestPalindromicSubsequence</span>(<span style="color:#cb4b16">string</span> <span style="color:#268bd2">s</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">auto</span> <span style="color:#268bd2">n</span> = <span style="color:#268bd2">s</span>.<span style="color:#268bd2">length</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// dp[i][j] stores the length of LPS of substring s[i..j]
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">auto</span> <span style="color:#268bd2">dp</span> = <span style="color:#859900">new</span> <span style="color:#859900;font-weight:bold">int</span>[<span style="color:#268bd2">n</span>][<span style="color:#268bd2">n</span>];
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Base case: Every single character is a palindrome of length 1
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">foreach</span> (<span style="color:#268bd2">i</span>; <span style="color:#2aa198;font-weight:bold">0</span> .. <span style="color:#268bd2">n</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">i</span>] = <span style="color:#2aa198;font-weight:bold">1</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Fill dp table
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#93a1a1;font-style:italic">// L is length of substring (from 2 to n)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">foreach</span> (<span style="color:#268bd2">L</span>; <span style="color:#2aa198;font-weight:bold">2</span> .. <span style="color:#268bd2">n</span> + <span style="color:#2aa198;font-weight:bold">1</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">foreach</span> (<span style="color:#268bd2">i</span>; <span style="color:#2aa198;font-weight:bold">0</span> .. <span style="color:#268bd2">n</span> - <span style="color:#268bd2">L</span> + <span style="color:#2aa198;font-weight:bold">1</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">auto</span> <span style="color:#268bd2">j</span> = <span style="color:#268bd2">i</span> + <span style="color:#268bd2">L</span> - <span style="color:#2aa198;font-weight:bold">1</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">s</span>[<span style="color:#268bd2">i</span>] == <span style="color:#268bd2">s</span>[<span style="color:#268bd2">j</span>]) {
+</span></span><span style="display:flex;"><span>                <span style="color:#93a1a1;font-style:italic">// Characters match, extend LPS from inner substring
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#93a1a1;font-style:italic">// dp[i+1][j-1] will be 0 if L == 2 (i.e., i+1 &gt; j-1), which is correct
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#2aa198;font-weight:bold">2</span> + <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span> + <span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">j</span> - <span style="color:#2aa198;font-weight:bold">1</span>];
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#93a1a1;font-style:italic">// Characters don&#39;t match, take max from excluding s[i] or s[j]
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#268bd2">max</span>(<span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span> - <span style="color:#2aa198;font-weight:bold">1</span>], <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span> + <span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">j</span>]);
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">dp</span>[<span style="color:#2aa198;font-weight:bold">0</span>][<span style="color:#268bd2">n</span> - <span style="color:#2aa198;font-weight:bold">1</span>];
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// void main() {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     string s1 = &#34;BBABCBCAB&#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     writeln(&#34;LPS length for &#34;, s1, &#34;: &#34;, longestPalindromicSubsequence(s1)); // 7
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     string s2 = &#34;GEEKSFORGEEKS&#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     writeln(&#34;LPS length for &#34;, s2, &#34;: &#34;, longestPalindromicSubsequence(s2)); // 5
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span></code></pre></div><h2 id="code-walkthrough">Code Walkthrough</h2>
+<h3 id="code-walkthrough-1">Code Walkthrough</h3>
+<p>The <code>Longest Palindromic Subsequence</code> problem is solved using <code>dynamic programming</code> to fill a 2D table where <code>dp[i][j]</code> represents the <code>LPS</code> length for the substring <code>s[i...j]</code>.</p>
+<hr>
+<p><strong>Initialization:</strong></p>
+<pre><code>- `n`: The length of the input string `s`.
+
+- A 2D `dp` table (`n x n`) is created and initialized with zeros. `dp[i][j]` will store the length of the `LPS` for the substring `s[i...j]`.
+
+- **Base Case:** All `dp[i][i]` (single-character substrings) are initialized to 1, as a single character is a palindrome of length 1.
+</code></pre>
+<p><strong>Filling the DP Table:</strong></p>
+<pre><code>- The table is filled iteratively by considering substrings of increasing `length` (`L`). `L` goes from 2 to `n`.
+
+- For each `length L`, `i` (the starting `index`) iterates from 0 to `n - L`.
+
+- `j` (the ending `index`) is calculated as `i + L - 1`.
+
+- For each substring `s[i...j]`:
+
+        - **Case 1: `s[i] == s[j]`**
+
+                - If the characters at the ends of the substring match, they can be part of the `LPS`. The length of the `LPS` for `s[i...j]` is 2 (for `s[i]` and `s[j]`) plus the `LPS` length of the inner substring `s[i+1...j-1]` (`dp[i+1][j-1]`).
+
+                - If `L` is 2 (e.g., &quot;aa&quot;), `dp[i+1][j-1]` refers to `dp[i+1][i]`, which is 0 for an empty inner substring, correctly resulting in `2 + 0 = 2`.
+
+        &lt;/li&gt;
+        - **Case 2: `s[i] != s[j]`**
+
+                - If the characters at the ends do not match, we cannot include both `s[i]` and `s[j]` in the `LPS`.
+
+                - We must choose the maximum `LPS` length from two options:
+
+                        - Excluding `s[i]`: `dp[i][j-1]` (LPS of `s[i...j-1]`).
+
+                        - Excluding `s[j]`: `dp[i+1][j]` (LPS of `s[i+1...j]`).
+
+                &lt;/li&gt;
+
+        &lt;/li&gt;
+
+&lt;/li&gt;
+</code></pre>
+<p><strong>Result:</strong></p>
+<pre><code>- The final answer, the length of the `Longest Palindromic Subsequence` for the entire string, is stored in `dp[0][n-1]`.
+</code></pre>
+<h2 id="applications">Applications</h2>
+<h3 id="application">Application</h3>
+<p>The <code>Longest Palindromic Subsequence (LPS)</code> problem has several applications in various fields:</p>
+<pre><code>    - **Bioinformatics:** Analyzing DNA and protein sequences, where palindromic structures can indicate functional significance. Finding `LPS` can help identify regions with high symmetry.
+
+    - **Text Compression:** In some compression algorithms, identifying palindromic subsequences can help in representing data more compactly.
+
+    - **Speech Recognition:** Detecting palindromic patterns in speech signals.
+
+    - **Pattern Recognition:** Useful in generalized pattern matching tasks where identifying symmetric patterns in data is important.
+
+    - **String Similarity:** While not a direct measure of `edit distance`, the length of the `LPS` can provide insights into the structural similarity of a string to its reverse, or be a component in more complex string comparison metrics.
+</code></pre>
+
+    </div>
+</article>
+
+<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
+    
+    <a href="//localhost:1313/hugo_content/algorithms/dynamic_programming/matrix_chain_multiplication/" class="nav-btn">← Previous</a>
+    
+    
+    <a href="//localhost:1313/hugo_content/algorithms/dynamic_programming/" class="nav-btn">Up</a>
+
+    
+    <a href="//localhost:1313/hugo_content/algorithms/dynamic_programming/lcs_substring/" class="nav-btn">Next →</a>
+    
+</div>
+
+    </main>
+
+    <footer class="footer">
+        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
+    </footer>
+
+    <script>
+        const body = document.getElementById('theme-body');
+        const btn = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme');
+
+        
+        function updateButtonText() {
+            if (body.classList.contains('theme-terminal')) {
+                btn.textContent = "Light Mode";
+            } else {
+                btn.textContent = "Dark Mode";
+            }
+        }
+
+        if (currentTheme === 'terminal') {
+            body.classList.add('theme-terminal');
+        }
+        
+        
+        updateButtonText();
+
+        btn.addEventListener('click', () => {
+            body.classList.toggle('theme-terminal');
+            updateButtonText();
+            
+            let theme = 'natural';
+            if (body.classList.contains('theme-terminal')) {
+                theme = 'terminal';
+            }
+            localStorage.setItem('theme', theme);
+        });
+    </script>
+</body>
+</html>

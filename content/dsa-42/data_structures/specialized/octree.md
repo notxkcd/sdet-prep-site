@@ -1,0 +1,767 @@
+---
+title: "Octree"
+---
+
+An `Octree` is a tree data structure in which each internal `node` has exactly eight children. It is the three-dimensional (`3D`) analogue of a `Quadtree`, which partitions a `2D space`. `Octrees` are used to partition a `3D space` by recursively subdividing it into eight octants or regions.
+
+They are particularly useful in `computer graphics`, `game development`, and `computational geometry` for efficiently storing and querying `spatial data` (e.g., collision detection in `3D games`, managing detailed `3D models`).
+
+## How it Works
+
+### How it Works (Expanded)
+
+Similar to a `Quadtree`, an `Octree` works by recursively dividing a `3D cubic space` into eight equal-sized child regions (octants). This subdivision continues until each `region` contains at most a predefined number of `objects` or reaches a minimum size.
+
+---
+
+Conceptual Octants in 3D Space (view from corner):
+
+  +-------+-------+
+  | Back-Top-Left | Back-Top-Right |
+  +-------+-------+
+  | Back-Bot-Left | Back-Bot-Right |
+  +-------+-------+
+  
+  +-------+-------+
+  | Front-Top-Left| Front-Top-Right|
+  +-------+-------+
+  | Front-Bot-Left| Front-Bot-Right|
+  +-------+-------+
+
+## Implementation {#implementation}
+
+### Python
+
+```python
+class Point3D:
+    def __init__(self, x, y, z):
+        self.x = x
+        self.y = y
+        self.z = z
+
+class Box:
+    def __init__(self, x_min, y_min, z_min, x_max, y_max, z_max):
+        self.x_min = x_min
+        self.y_min = y_min
+        self.z_min = z_min
+        self.x_max = x_max
+        self.y_max = y_max
+        self.z_max = z_max
+
+    def contains(self, point):
+        return (self.x_min <= point.x <= self.x_max and
+                self.y_min <= point.y <= self.y_max and
+                self.z_min <= point.z <= self.z_max)
+
+    def intersects(self, other_box):
+        return not (self.x_max < other_box.x_min or self.x_min > other_box.x_max or
+                    self.y_max < other_box.y_min or self.y_min > other_box.y_max or
+                    self.z_max < other_box.z_min or self.z_min > other_box.z_max)
+
+class OctreeNode:
+    def __init__(self, boundary, capacity):
+        self.boundary = boundary
+        self.capacity = capacity
+        self.points = []
+        self.divided = False
+        self.children = [None] <em> 8 # 8 children for an octree
+
+    def subdivide(self):
+        x_mid = (self.boundary.x_min + self.boundary.x_max) / 2
+        y_mid = (self.boundary.y_min + self.boundary.y_max) / 2
+        z_mid = (self.boundary.z_min + self.boundary.z_max) / 2
+
+        # Order of children is typically Z-Y-X (e.g., front-bottom-left)
+        # 0: front-bottom-left (x_min, y_min, z_min to x_mid, y_mid, z_mid)
+        self.children[0] = OctreeNode(Box(self.boundary.x_min, self.boundary.y_min, self.boundary.z_min, x_mid, y_mid, z_mid), self.capacity)
+        self.children[1] = OctreeNode(Box(x_mid, self.boundary.y_min, self.boundary.z_min, self.boundary.x_max, y_mid, z_mid), self.capacity)
+        self.children[2] = OctreeNode(Box(self.boundary.x_min, y_mid, self.boundary.z_min, x_mid, self.boundary.y_max, z_mid), self.capacity)
+        self.children[3] = OctreeNode(Box(x_mid, y_mid, self.boundary.z_min, self.boundary.x_max, self.boundary.y_max, z_mid), self.capacity)
+        self.children[4] = OctreeNode(Box(self.boundary.x_min, self.boundary.y_min, z_mid, x_mid, y_mid, self.boundary.z_max), self.capacity)
+        self.children[5] = OctreeNode(Box(x_mid, self.boundary.y_min, z_mid, self.boundary.x_max, y_mid, self.boundary.z_max), self.capacity)
+        self.children[6] = OctreeNode(Box(self.boundary.x_min, y_mid, z_mid, x_mid, self.boundary.y_max, self.boundary.z_max), self.capacity)
+        self.children[7] = OctreeNode(Box(x_mid, y_mid, z_mid, self.boundary.x_max, self.boundary.y_max, self.boundary.z_max), self.capacity)
+
+        self.divided = True
+
+    def insert(self, point):
+        if not self.boundary.contains(point):
+            return False
+
+        if len(self.points) < self.capacity and not self.divided:
+            self.points.append(point)
+            return True
+        
+        if not self.divided:
+            self.subdivide()
+        
+        for child in self.children:
+            if child.insert(point):
+                return True
+        return False
+
+    def query(self, query_box, found_points=None):
+        if found_points is None:
+            found_points = []
+        
+        if not self.boundary.intersects(query_box):
+            return found_points
+
+        for p in self.points:
+            if query_box.contains(p):
+                found_points.append(p)
+
+        if self.divided:
+            for child in self.children:
+                child.query(query_box, found_points)
+        return found_points
+
+# Example Usage:
+# bounds = Box(0, 0, 0, 100, 100, 100)
+# octree = OctreeNode(bounds, 4)
+# octree.insert(Point3D(10, 10, 10))
+# octree.insert(Point3D(90, 90, 90))
+# octree.insert(Point3D(5, 5, 5))
+# octree.insert(Point3D(55, 55, 55))
+# octree.insert(Point3D(12, 12, 12)) # This should cause a subdivision
+
+# query_area = Box(0, 0, 0, 50, 50, 50)
+# results = octree.query(query_area)
+# print(f"Found {len(results)} points in query area.")
+# for p in results:
+#     print(f"({p.x}, {p.y}, {p.z})")
+```
+
+### Javascript
+
+```javascript
+class Point3D {
+    constructor(x, y, z) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+    }
+}
+
+class Box {
+    constructor(xMin, yMin, zMin, xMax, yMax, zMax) {
+        this.xMin = xMin;
+        this.yMin = yMin;
+        this.zMin = zMin;
+        this.xMax = xMax;
+        this.yMax = yMax;
+        this.zMax = zMax;
+    }
+
+    contains(point) {
+        return (this.xMin <= point.x && point.x <= this.xMax &&
+                this.yMin <= point.y && point.y <= this.yMax &&
+                this.zMin <= point.z && point.z <= this.zMax);
+    }
+
+    intersects(otherBox) {
+        return !(this.xMax < otherBox.xMin || this.xMin > otherBox.xMax ||
+                 this.yMax < otherBox.yMin || this.yMin > otherBox.yMax ||
+                 this.zMax < otherBox.zMin || this.zMin > otherBox.zMax);
+    }
+}
+
+class OctreeNode {
+    constructor(boundary, capacity) {
+        this.boundary = boundary;
+        this.capacity = capacity;
+        this.points = [];
+        this.divided = false;
+        this.children = new Array(8).fill(null);
+    }
+
+    subdivide() {
+        const xMid = (this.boundary.xMin + this.boundary.xMax) / 2;
+        const yMid = (this.boundary.yMin + this.boundary.yMax) / 2;
+        const zMid = (this.boundary.zMin + this.boundary.zMax) / 2;
+
+        // Children order (e.g., front-bottom-left, front-bottom-right, etc.)
+        this.children[0] = new OctreeNode(new Box(this.boundary.xMin, this.boundary.yMin, this.boundary.zMin, xMid, yMid, zMid), this.capacity);
+        this.children[1] = new OctreeNode(new Box(xMid, this.boundary.yMin, this.boundary.zMin, this.boundary.xMax, yMid, zMid), this.capacity);
+        this.children[2] = new OctreeNode(new Box(this.boundary.xMin, yMid, this.boundary.zMin, xMid, this.boundary.yMax, zMid), this.capacity);
+        this.children[3] = new OctreeNode(new Box(xMid, yMid, this.boundary.zMin, this.boundary.xMax, this.boundary.yMax, zMid), this.capacity);
+        this.children[4] = new OctreeNode(new Box(this.boundary.xMin, this.boundary.yMin, zMid, xMid, yMid, this.boundary.zMax), this.capacity);
+        this.children[5] = new OctreeNode(new Box(xMid, this.boundary.yMin, zMid, this.boundary.xMax, yMid, this.boundary.zMax), this.capacity);
+        this.children[6] = new OctreeNode(new Box(this.boundary.xMin, yMid, zMid, xMid, this.boundary.yMax, this.boundary.zMax), this.capacity);
+        this.children[7] = new OctreeNode(new Box(xMid, yMid, zMid, this.boundary.xMax, this.boundary.yMax, this.boundary.zMax), this.capacity);
+
+        this.divided = true;
+    }
+
+    insert(point) {
+        if (!this.boundary.contains(point)) {
+            return false;
+        }
+
+        if (this.points.length < this.capacity && !this.divided) {
+            this.points.push(point);
+            return true;
+        }
+        
+        if (!this.divided) {
+            this.subdivide();
+        }
+        
+        for (const child of this.children) {
+            if (child.insert(point)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    query(queryBox, foundPoints = []) {
+        if (!this.boundary.intersects(queryBox)) {
+            return foundPoints;
+        }
+
+        for (const p of this.points) {
+            if (queryBox.contains(p)) {
+                foundPoints.push(p);
+            }
+        }
+
+        if (this.divided) {
+            for (const child of this.children) {
+                child.query(queryBox, foundPoints);
+            }
+        }
+        return foundPoints;
+    }
+}
+
+// const bounds = new Box(0, 0, 0, 100, 100, 100);
+// const octree = new OctreeNode(bounds, 4);
+// octree.insert(new Point3D(10, 10, 10));
+// octree.insert(new Point3D(90, 90, 90));
+// octree.insert(new Point3D(5, 5, 5));
+// octree.insert(new Point3D(55, 55, 55));
+// octree.insert(new Point3D(12, 12, 12)); // This should cause a subdivision
+
+// const queryArea = new Box(0, 0, 0, 50, 50, 50);
+// const results = octree.query(queryArea);
+// console.log(<code>Found ${results.length} points in query area.</code>);
+// for (const p of results) {
+//     console.log(<code>(${p.x}, ${p.y}, ${p.z})</code>);
+// }
+```
+
+### Typescript
+
+```typescript
+class Point3DTS {
+    constructor(public x: number, public y: number, public z: number) {}
+}
+
+class BoxTS {
+    constructor(
+        public xMin: number, public yMin: number, public zMin: number,
+        public xMax: number, public yMax: number, public zMax: number
+    ) {}
+
+    contains(point: Point3DTS): boolean {
+        return (
+            this.xMin <= point.x && point.x <= this.xMax &&
+            this.yMin <= point.y && point.y <= this.yMax &&
+            this.zMin <= point.z && point.z <= this.zMax
+        );
+    }
+
+    intersects(otherBox: BoxTS): boolean {
+        return !(
+            this.xMax < otherBox.xMin || this.xMin > otherBox.xMax ||
+            this.yMax < otherBox.yMin || this.yMin > otherBox.yMax ||
+            this.zMax < otherBox.zMin || this.zMin > otherBox.zMax
+        );
+    }
+}
+
+class OctreeNodeTS {
+    public boundary: BoxTS;
+    public capacity: number;
+    public points: Point3DTS[];
+    public divided: boolean;
+    public children: (OctreeNodeTS | null)[];
+
+    constructor(boundary: BoxTS, capacity: number) {
+        this.boundary = boundary;
+        this.capacity = capacity;
+        this.points = [];
+        this.divided = false;
+        this.children = new Array(8).fill(null);
+    }
+
+    subdivide(): void {
+        const xMid = (this.boundary.xMin + this.boundary.xMax) / 2;
+        const yMid = (this.boundary.yMin + this.boundary.yMax) / 2;
+        const zMid = (this.boundary.zMin + this.boundary.zMax) / 2;
+
+        this.children[0] = new OctreeNodeTS(new BoxTS(this.boundary.xMin, this.boundary.yMin, this.boundary.zMin, xMid, yMid, zMid), this.capacity);
+        this.children[1] = new OctreeNodeTS(new BoxTS(xMid, this.boundary.yMin, this.boundary.zMin, this.boundary.xMax, yMid, zMid), this.capacity);
+        this.children[2] = new OctreeNodeTS(new BoxTS(this.boundary.xMin, yMid, this.boundary.zMin, xMid, this.boundary.yMax, zMid), this.capacity);
+        this.children[3] = new OctreeNodeTS(new BoxTS(xMid, yMid, this.boundary.zMin, this.boundary.xMax, this.boundary.yMax, zMid), this.capacity);
+        this.children[4] = new OctreeNodeTS(new BoxTS(this.boundary.xMin, this.boundary.yMin, zMid, xMid, yMid, this.boundary.zMax), this.capacity);
+        this.children[5] = new OctreeNodeTS(new BoxTS(xMid, this.boundary.yMin, zMid, this.boundary.xMax, yMid, this.boundary.zMax), this.capacity);
+        this.children[6] = new OctreeNodeTS(new BoxTS(this.boundary.xMin, yMid, zMid, xMid, this.boundary.yMax, this.boundary.zMax), this.capacity);
+        this.children[7] = new OctreeNodeTS(new BoxTS(xMid, yMid, zMid, this.boundary.xMax, this.boundary.yMax, this.boundary.zMax), this.capacity);
+
+        this.divided = true;
+    }
+
+    insert(point: Point3DTS): boolean {
+        if (!this.boundary.contains(point)) {
+            return false;
+        }
+
+        if (this.points.length < this.capacity && !this.divided) {
+            this.points.push(point);
+            return true;
+        }
+        
+        if (!this.divided) {
+            this.subdivide();
+        }
+        
+        for (const child of this.children) {
+            if (child!.insert(point)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    query(queryBox: BoxTS, foundPoints: Point3DTS[] = []): Point3DTS[] {
+        if (!this.boundary.intersects(queryBox)) {
+            return foundPoints;
+        }
+
+        for (const p of this.points) {
+            if (queryBox.contains(p)) {
+                foundPoints.push(p);
+            }
+        }
+
+        if (this.divided) {
+            for (const child of this.children) {
+                child!.query(queryBox, foundPoints);
+            }
+        }
+        return foundPoints;
+    }
+}
+
+// const boundsTS = new BoxTS(0, 0, 0, 100, 100, 100);
+// const octreeTS = new OctreeNodeTS(boundsTS, 4);
+// octreeTS.insert(new Point3DTS(10, 10, 10));
+// octreeTS.insert(new Point3DTS(90, 90, 90));
+// octreeTS.insert(new Point3DTS(5, 5, 5));
+// octreeTS.insert(new Point3DTS(55, 55, 55));
+// octreeTS.insert(new Point3DTS(12, 12, 12)); // This should cause a subdivision
+
+// const queryAreaTS = new BoxTS(0, 0, 0, 50, 50, 50);
+// const resultsTS = octreeTS.query(queryAreaTS);
+// console.log(<code>Found ${resultsTS.length} points in query area.</code>);
+// for (const p of resultsTS) {
+//     console.log(<code>(${p.x}, ${p.y}, ${p.z})</code>);
+// }
+```
+
+### Cpp
+
+```cpp
+#include <vector>
+#include <iostream>
+#include <algorithm> // For std::max, std::min
+
+class Point3D {
+public:
+    double x, y, z;
+    Point3D(double px, double py, double pz) : x(px), y(py), z(pz) {}
+};
+
+class Box {
+public:
+    double x_min, y_min, z_min;
+    double x_max, y_max, z_max;
+
+    Box(double x1, double y1, double z1, double x2, double y2, double z2) :
+        x_min(x1), y_min(y1), z_min(z1), x_max(x2), y_max(y2), z_max(z2) {}
+
+    bool contains(const Point3D& point) const {
+        return (x_min <= point.x && point.x <= x_max &&
+                y_min <= point.y && point.y <= y_max &&
+                z_min <= point.z && point.z <= z_max);
+    }
+
+    bool intersects(const Box& other_box) const {
+        return !(x_max < other_box.x_min || x_min > other_box.x_max ||
+                 y_max < other_box.y_min || y_min > other_box.y_max ||
+                 z_max < other_box.z_min || z_min > other_box.z_max);
+    }
+};
+
+class OctreeNode {
+public:
+    Box boundary;
+    int capacity;
+    std::vector<Point3D> points;
+    bool divided;
+    std::vector<OctreeNode</em>> children; // 8 children for an octree
+
+    OctreeNode(Box b, int cap) : boundary(b), capacity(cap), divided(false) {
+        children.resize(8, nullptr);
+    }
+
+    ~OctreeNode() {
+        for (OctreeNode<em> child : children) {
+            delete child;
+        }
+    }
+
+    void subdivide() {
+        double x_mid = (boundary.x_min + boundary.x_max) / 2;
+        double y_mid = (boundary.y_min + boundary.y_max) / 2;
+        double z_mid = (boundary.z_min + boundary.z_max) / 2;
+
+        children[0] = new OctreeNode(Box(boundary.x_min, boundary.y_min, boundary.z_min, x_mid, y_mid, z_mid), capacity);
+        children[1] = new OctreeNode(Box(x_mid, boundary.y_min, boundary.z_min, boundary.x_max, y_mid, z_mid), capacity);
+        children[2] = new OctreeNode(Box(boundary.x_min, y_mid, boundary.z_min, x_mid, boundary.y_max, z_mid), capacity);
+        children[3] = new OctreeNode(Box(x_mid, y_mid, boundary.z_min, boundary.x_max, boundary.y_max, z_mid), capacity);
+        children[4] = new OctreeNode(Box(boundary.x_min, boundary.y_min, z_mid, x_mid, y_mid, boundary.z_max), capacity);
+        children[5] = new OctreeNode(Box(x_mid, boundary.y_min, z_mid, boundary.x_max, y_mid, boundary.z_max), capacity);
+        children[6] = new OctreeNode(Box(boundary.x_min, y_mid, z_mid, x_mid, boundary.y_max, boundary.z_max), capacity);
+        children[7] = new OctreeNode(Box(x_mid, y_mid, z_mid, boundary.x_max, boundary.y_max, boundary.z_max), capacity);
+
+        divided = true;
+    }
+
+    bool insert(const Point3D& point) {
+        if (!boundary.contains(point)) {
+            return false;
+        }
+
+        if (points.size() < capacity && !divided) {
+            points.push_back(point);
+            return true;
+        }
+        
+        if (!divided) {
+            subdivide();
+        }
+        
+        for (OctreeNode</em> child : children) {
+            if (child->insert(point)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    std::vector<Point3D> query(const Box& query_box, std::vector<Point3D> found_points = {}) const {
+        if (!boundary.intersects(query_box)) {
+            return found_points;
+        }
+
+        for (const Point3D& p : points) {
+            if (query_box.contains(p)) {
+                found_points.push_back(p);
+            }
+        }
+
+        if (divided) {
+            for (OctreeNode<em> child : children) {
+                if (child) { // Ensure child exists before querying
+                    found_points = child->query(query_box, found_points);
+                }
+            }
+        }
+        return found_points;
+    }
+};
+
+// int main() {
+//     Box bounds(0, 0, 0, 100, 100, 100);
+//     OctreeNode octree(bounds, 4);
+//     octree.insert(Point3D(10, 10, 10));
+//     octree.insert(Point3D(90, 90, 90));
+//     octree.insert(Point3D(5, 5, 5));
+//     octree.insert(Point3D(55, 55, 55));
+//     octree.insert(Point3D(12, 12, 12)); // This should cause a subdivision
+
+//     Box query_area(0, 0, 0, 50, 50, 50);
+//     std::vector<Point3D> results = octree.query(query_area);
+//     std::cout << "Found " << results.size() << " points in query area." << std::endl;
+//     for (const Point3D& p : results) {
+//         std::cout << "(" << p.x << ", " << p.y << ", " << p.z << ")" << std::endl;
+//     }
+//     return 0;
+// }
+```
+
+### Go
+
+```go
+package main
+
+import "fmt"
+
+type Point3D struct {
+    X, Y, Z float64
+}
+
+type Box struct {
+    XMin, YMin, ZMin float64
+    XMax, YMax, ZMax float64
+}
+
+func (b </em>Box) Contains(point Point3D) bool {
+    return b.XMin <= point.X && point.X <= b.XMax &&
+           b.YMin <= point.Y && point.Y <= b.YMax &&
+           b.ZMin <= point.Z && point.Z <= b.ZMax
+}
+
+func (b <em>Box) Intersects(otherBox </em>Box) bool {
+    return !(b.XMax < otherBox.XMin || b.XMin > otherBox.XMax ||
+             b.YMax < otherBox.YMin || b.YMin > otherBox.YMax ||
+             b.ZMax < otherBox.ZMin || b.ZMin > otherBox.ZMax)
+}
+
+type OctreeNode struct {
+    Boundary Box
+    Capacity int
+    Points   []Point3D
+    Divided  bool
+    Children []<em>OctreeNode // 8 children for an octree
+}
+
+func NewOctreeNode(boundary Box, capacity int) </em>OctreeNode {
+    return &OctreeNode{
+        Boundary: boundary,
+        Capacity: capacity,
+        Points:   []Point3D{},
+        Children: make([]<em>OctreeNode, 8),
+    }
+}
+
+func (node </em>OctreeNode) Subdivide() {
+    xMid := (node.Boundary.XMin + node.Boundary.XMax) / 2
+    yMid := (node.Boundary.YMin + node.Boundary.YMax) / 2
+    zMid := (node.Boundary.ZMin + node.Boundary.ZMax) / 2
+
+    node.Children[0] = NewOctreeNode(Box{node.Boundary.XMin, node.Boundary.YMin, node.Boundary.ZMin, xMid, yMid, zMid}, node.Capacity)
+    node.Children[1] = NewOctreeNode(Box{xMid, node.Boundary.YMin, node.Boundary.ZMin, node.Boundary.XMax, yMid, zMid}, node.Capacity)
+    node.Children[2] = NewOctreeNode(Box{node.Boundary.XMin, yMid, node.Boundary.ZMin, xMid, node.Boundary.YMax, zMid}, node.Capacity)
+    node.Children[3] = NewOctreeNode(Box{xMid, yMid, node.Boundary.ZMin, node.Boundary.XMax, node.Boundary.YMax, zMid}, node.Capacity)
+    node.Children[4] = NewOctreeNode(Box{node.Boundary.XMin, node.Boundary.YMin, zMid, xMid, yMid, node.Boundary.ZMax}, node.Capacity)
+    node.Children[5] = NewOctreeNode(Box{xMid, node.Boundary.YMin, zMid, node.Boundary.XMax, yMid, node.Boundary.ZMax}, node.Capacity)
+    node.Children[6] = NewOctreeNode(Box{node.Boundary.XMin, yMid, zMid, xMid, node.Boundary.YMax, node.Boundary.ZMax}, node.Capacity)
+    node.Children[7] = NewOctreeNode(Box{xMid, yMid, zMid, node.Boundary.XMax, node.Boundary.YMax, node.Boundary.ZMax}, node.Capacity)
+
+    node.Divided = true
+}
+
+func (node <em>OctreeNode) Insert(point Point3D) bool {
+    if !node.Boundary.Contains(point) {
+        return false
+    }
+
+    if len(node.Points) < node.Capacity && !node.Divided {
+        node.Points = append(node.Points, point)
+        return true
+    }
+
+    if !node.Divided {
+        node.Subdivide()
+    }
+
+    for _, child := range node.Children {
+        if child.Insert(point) {
+            return true
+        }
+    }
+    return false
+}
+
+func (node </em>OctreeNode) Query(queryBox <em>Box, foundPoints </em>[]Point3D) {
+    if !node.Boundary.Intersects(queryBox) {
+        return
+    }
+
+    for _, p := range node.Points {
+        if queryBox.Contains(p) {
+            <em>foundPoints = append(</em>foundPoints, p)
+        }
+    }
+
+    if node.Divided {
+        for _, child := range node.Children {
+            child.Query(queryBox, foundPoints)
+        }
+    }
+}
+
+// func main() {
+//     bounds := Box{0, 0, 0, 100, 100, 100}
+//     octree := NewOctreeNode(bounds, 4)
+//     octree.Insert(Point3D{10, 10, 10})
+//     octree.Insert(Point3D{90, 90, 90})
+//     octree.Insert(Point3D{5, 5, 5})
+//     octree.Insert(Point3D{55, 55, 55})
+//     octree.Insert(Point3D{12, 12, 12}) // This should cause a subdivision
+
+//     queryArea := &Box{0, 0, 0, 50, 50, 50}
+//     var results []Point3D
+//     octree.Query(queryArea, &results)
+//     fmt.Printf("Found %d points in query area.\n", len(results))
+//     for _, p := range results {
+//         fmt.Printf("(%f, %f, %f)\n", p.X, p.Y, p.Z)
+//     }
+// }
+```
+
+### D
+
+```d
+import std.stdio;
+import std.algorithm;
+import std.array;
+
+class Point3D {
+    double x, y, z;
+    this(double px, double py, double pz) {
+        x = px; y = py; z = pz;
+    }
+}
+
+class Box {
+    double x_min, y_min, z_min;
+    double x_max, y_max, z_max;
+
+    this(double x1, double y1, double z1, double x2, double y2, double z2) {
+        x_min = x1; y_min = y1; z_min = z1;
+        x_max = x2; y_max = y2; z_max = z2;
+    }
+
+    bool contains(Point3D point) {
+        return (x_min <= point.x && point.x <= x_max &&
+                y_min <= point.y && point.y <= y_max &&
+                z_min <= point.z && point.z <= z_max);
+    }
+
+    bool intersects(Box other_box) {
+        return !(x_max < other_box.x_min || x_min > other_box.x_max ||
+                 y_max < other_box.y_min || y_min > other_box.y_max ||
+                 z_max < other_box.z_min || z_min > other_box.z_max);
+    }
+}
+
+class OctreeNode {
+    Box boundary;
+    int capacity;
+    Point3D[] points;
+    bool divided;
+    OctreeNode[] children; // 8 children for an octree
+
+    this(Box b, int cap) {
+        boundary = b;
+        capacity = cap;
+        points = [];
+        divided = false;
+        children = new OctreeNode[8]; // Default to null
+    }
+
+    void subdivide() {
+        double x_mid = (boundary.x_min + boundary.x_max) / 2;
+        double y_mid = (boundary.y_min + boundary.y_max) / 2;
+        double z_mid = (boundary.z_min + boundary.z_max) / 2;
+
+        children[0] = new OctreeNode(new Box(boundary.x_min, boundary.y_min, boundary.z_min, x_mid, y_mid, z_mid), capacity);
+        children[1] = new OctreeNode(new Box(x_mid, boundary.y_min, boundary.z_min, boundary.x_max, y_mid, z_mid), capacity);
+        children[2] = new OctreeNode(new Box(boundary.x_min, y_mid, boundary.z_min, x_mid, boundary.y_max, z_mid), capacity);
+        children[3] = new OctreeNode(new Box(x_mid, y_mid, boundary.z_min, boundary.x_max, boundary.y_max, z_mid), capacity);
+        children[4] = new OctreeNode(new Box(boundary.x_min, boundary.y_min, z_mid, x_mid, y_mid, boundary.z_max), capacity);
+        children[5] = new OctreeNode(new Box(x_mid, boundary.y_min, z_mid, boundary.x_max, y_mid, boundary.z_max), capacity);
+        children[6] = new OctreeNode(new Box(boundary.x_min, y_mid, z_mid, x_mid, boundary.y_max, boundary.z_max), capacity);
+        children[7] = new OctreeNode(new Box(x_mid, y_mid, z_mid, boundary.x_max, boundary.y_max, boundary.z_max), capacity);
+
+        divided = true;
+    }
+
+    bool insert(Point3D point) {
+        if (!boundary.contains(point)) {
+            return false;
+        }
+
+        if (points.length < capacity && !divided) {
+            points ~= point;
+            return true;
+        }
+        
+        if (!divided) {
+            subdivide();
+        }
+        
+        foreach (child; children) {
+            if (child.insert(point)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    Point3D[] query(Box query_box, Point3D[] found_points = []) {
+        if (!boundary.intersects(query_box)) {
+            return found_points;
+        }
+
+        foreach (p; points) {
+            if (query_box.contains(p)) {
+                found_points ~= p;
+            }
+        }
+
+        if (divided) {
+            foreach (child; children) {
+                if (child) { // Ensure child exists before querying
+                    found_points = child.query(query_box, found_points);
+                }
+            }
+        }
+        return found_points;
+    }
+}
+
+// void main() {
+//     auto bounds = new Box(0, 0, 0, 100, 100, 100);
+//     auto octree = new OctreeNode(bounds, 4);
+//     octree.insert(new Point3D(10, 10, 10));
+//     octree.insert(new Point3D(90, 90, 90));
+//     octree.insert(new Point3D(5, 5, 5));
+//     octree.insert(new Point3D(55, 55, 55));
+//     octree.insert(new Point3D(12, 12, 12)); // This should cause a subdivision
+
+//     auto query_area = new Box(0, 0, 0, 50, 50, 50);
+//     auto results = octree.query(query_area);
+//     writefln("Found %d points in query area.", results.length);
+//     foreach (p; results) {
+//         writefln("(%s, %s, %s)", p.x, p.y, p.z);
+//     }
+// }
+```
+
+## Applications
+
+### Application
+
+Octrees are crucial for optimizing operations in `3D computer graphics`, `game engines`, and `computational simulations` where spatial indexing in three dimensions is required.
+- **3D Collision Detection:** Efficiently determines if `3D objects` in a scene are overlapping, reducing the number of pairwise checks needed.
+- **View Frustum Culling:** In `game engines`, `Octrees` help to quickly identify which `3D objects` are within the camera's view, and thus need to be rendered, significantly improving rendering performance.
+- **Level of Detail (LOD) Management:** For dynamically switching between high- and low-detail versions of distant `3D models`.
+- **Ray Tracing:** Accelerating the intersection tests between rays and complex `3D scenes`.
+- **Volume Rendering:** Managing and processing volumetric data (e.g., medical imaging, fluid simulations).
+

@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Sort | SDET Interview Preparation Kit</title>
+    <link rel="stylesheet" href="//localhost:1313/css/style.css">
+    <link rel="stylesheet" href="//localhost:1313/css/terminal.css">
+    
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    
+    <link rel="stylesheet" href="//localhost:1313/lib/katex/katex.min.css">
+    <script defer src="//localhost:1313/lib/katex/katex.min.js"></script>
+    <script defer src="//localhost:1313/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</head>
+<body id="theme-body">
+    <button id="theme-toggle">Switch Theme</button>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="//localhost:1313/">Index</a></li>
+                
+            </ul>
+        </nav>
+        <div class="site-breadcrumb">
+            <a href="//localhost:1313/">Home</a>
+            
+                
+                    <span>/</span> <a href="//localhost:1313/">SDET Interview Dashboard</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/dsa-42_/">42 Algorithms &amp; 42 Data Structures</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/dsa-42_/algorithms/">Algorithms</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/dsa-42_/algorithms/sorting_searching/">Sorting Searching</a>
+                
+            
+            
+                <span>/</span> Quick Sort
+            
+        </div>
+    </header>
+
+    <main>
+        
+<article>
+    <div class="category-title" style="margin-bottom: 0.5rem;">Sorting Searching</div>
+    <h1>Quick Sort</h1>
+    <div class="content-body" style="margin-top: 2rem;">
+        <p><code>Quick Sort</code> is a highly efficient, in-place sorting algorithm. It is a &ldquo;<code>divide and conquer</code>&rdquo; algorithm that works by selecting a &lsquo;<code>pivot</code>&rsquo; element from the array and partitioning the other elements into two sub-arrays, according to whether they are less than or greater than the <code>pivot</code>. The sub-arrays are then sorted recursively.</p>
+<p>Its average-case time complexity is <code>O(N log N)</code>, which makes it one of the fastest sorting algorithms in practice. However, its worst-case performance is <code>O(N^2)</code>, though this can be mitigated with good pivot selection strategies.</p>
+<h2 id="how-it-works">How it Works</h2>
+<h3 id="how-it-works-expanded">How it Works (Expanded)</h3>
+<p>The core of <code>Quick Sort</code> is the <strong>partitioning</strong> step. Given an array and an element <code>x</code> (the <code>pivot</code>), <code>partitioning</code> rearranges the array so that all elements less than <code>x</code> come before <code>x</code>, and all elements greater than <code>x</code> come after <code>x</code>.</p>
+<hr>
+<p>Example: Partitioning [38, 27, 43, 3, 9, 82, 10] with pivot 38</p>
+<ul>
+<li>Partitioning can result in: [10, 27, 3, 9] | 38 | [82, 43]
+(Order within sub-arrays doesn&rsquo;t matter yet)</li>
+</ul>
+<p>Then, recursively sort the sub-arrays.</p>
+<h2 id="implementation">Implementation</h2>
+<h3 id="python">Python</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#859900">def</span> <span style="color:#268bd2">quick_sort_recursive</span>(<span style="color:#268bd2">arr</span>, <span style="color:#268bd2">low</span>, <span style="color:#268bd2">high</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#268bd2">low</span> &lt; <span style="color:#268bd2">high</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># pi is partitioning index, arr[p] is now at right place</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">pi</span> = <span style="color:#268bd2">partition</span>(<span style="color:#268bd2">arr</span>, <span style="color:#268bd2">low</span>, <span style="color:#268bd2">high</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># Separately sort elements before partition and after partition</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">quick_sort_recursive</span>(<span style="color:#268bd2">arr</span>, <span style="color:#268bd2">low</span>, <span style="color:#268bd2">pi</span> - <span style="color:#2aa198;font-weight:bold">1</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">quick_sort_recursive</span>(<span style="color:#268bd2">arr</span>, <span style="color:#268bd2">pi</span> + <span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">high</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">def</span> <span style="color:#268bd2">partition</span>(<span style="color:#268bd2">arr</span>, <span style="color:#268bd2">low</span>, <span style="color:#268bd2">high</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># Choosing the last element as pivot</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">pivot</span> = <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">high</span>]
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># Index of smaller element</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">i</span> = <span style="color:#268bd2">low</span> - <span style="color:#2aa198;font-weight:bold">1</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">j</span> <span style="color:#859900">in</span> <span style="color:#cb4b16">range</span>(<span style="color:#268bd2">low</span>, <span style="color:#268bd2">high</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># If current element is smaller than or equal to pivot</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">j</span>] &lt;= <span style="color:#268bd2">pivot</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">i</span> = <span style="color:#268bd2">i</span> + <span style="color:#2aa198;font-weight:bold">1</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">i</span>], <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">j</span>] = <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">j</span>], <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">i</span>]
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">i</span> + <span style="color:#2aa198;font-weight:bold">1</span>], <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">high</span>] = <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">high</span>], <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">i</span> + <span style="color:#2aa198;font-weight:bold">1</span>]
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">i</span> + <span style="color:#2aa198;font-weight:bold">1</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">def</span> <span style="color:#268bd2">quick_sort</span>(<span style="color:#268bd2">arr</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">quick_sort_recursive</span>(<span style="color:#268bd2">arr</span>, <span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">arr</span>) - <span style="color:#2aa198;font-weight:bold">1</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">arr</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># Example</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># my_arr = [38, 27, 43, 3, 9, 82, 10]</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(quick_sort(my_arr)) # [3, 9, 10, 27, 38, 43, 82]</span>
+</span></span></code></pre></div><h3 id="javascript">Javascript</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#859900">function</span> <span style="color:#268bd2">quickSortRecursive</span>(<span style="color:#268bd2">arr</span>, <span style="color:#268bd2">low</span>, <span style="color:#268bd2">high</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">low</span> &lt; <span style="color:#268bd2">high</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// pi is partitioning index, arr[p] is now at right place
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">let</span> <span style="color:#268bd2">pi</span> = <span style="color:#268bd2">partition</span>(<span style="color:#268bd2">arr</span>, <span style="color:#268bd2">low</span>, <span style="color:#268bd2">high</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Separately sort elements before partition and after partition
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">quickSortRecursive</span>(<span style="color:#268bd2">arr</span>, <span style="color:#268bd2">low</span>, <span style="color:#268bd2">pi</span> - <span style="color:#2aa198;font-weight:bold">1</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">quickSortRecursive</span>(<span style="color:#268bd2">arr</span>, <span style="color:#268bd2">pi</span> + <span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">high</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">function</span> <span style="color:#268bd2">partition</span>(<span style="color:#268bd2">arr</span>, <span style="color:#268bd2">low</span>, <span style="color:#268bd2">high</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Choosing the last element as pivot
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">let</span> <span style="color:#268bd2">pivot</span> = <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">high</span>];
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Index of smaller element
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">let</span> <span style="color:#268bd2">i</span> = <span style="color:#268bd2">low</span> - <span style="color:#2aa198;font-weight:bold">1</span>;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">j</span> = <span style="color:#268bd2">low</span>; <span style="color:#268bd2">j</span> &lt; <span style="color:#268bd2">high</span>; <span style="color:#268bd2">j</span>++) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// If current element is smaller than or equal to pivot
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">arr</span>[<span style="color:#268bd2">j</span>] &lt;= <span style="color:#268bd2">pivot</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">i</span>++;
+</span></span><span style="display:flex;"><span>            [<span style="color:#268bd2">arr</span>[<span style="color:#268bd2">i</span>], <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">j</span>]] = [<span style="color:#268bd2">arr</span>[<span style="color:#268bd2">j</span>], <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">i</span>]]; <span style="color:#93a1a1;font-style:italic">// Swap
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    [<span style="color:#268bd2">arr</span>[<span style="color:#268bd2">i</span> + <span style="color:#2aa198;font-weight:bold">1</span>], <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">high</span>]] = [<span style="color:#268bd2">arr</span>[<span style="color:#268bd2">high</span>], <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">i</span> + <span style="color:#2aa198;font-weight:bold">1</span>]];
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">i</span> + <span style="color:#2aa198;font-weight:bold">1</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">function</span> <span style="color:#268bd2">quickSort</span>(<span style="color:#268bd2">arr</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">quickSortRecursive</span>(<span style="color:#268bd2">arr</span>, <span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#268bd2">arr</span>.<span style="color:#268bd2">length</span> - <span style="color:#2aa198;font-weight:bold">1</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">arr</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const myArr = [38, 27, 43, 3, 9, 82, 10];
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(quickSort(myArr)); // [3, 9, 10, 27, 38, 43, 82]
+</span></span></span></code></pre></div><h3 id="typescript">Typescript</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-typescript" data-lang="typescript"><span style="display:flex;"><span><span style="color:#859900">function</span> <span style="color:#268bd2">quickSortRecursiveTS</span>(<span style="color:#268bd2">arr</span>: <span style="color:#859900;font-weight:bold">number</span>[], <span style="color:#268bd2">low</span>: <span style="color:#859900;font-weight:bold">number</span>, <span style="color:#268bd2">high</span>: <span style="color:#859900;font-weight:bold">number</span>): <span style="color:#859900">void</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">low</span> &lt; <span style="color:#268bd2">high</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// pi is partitioning index, arr[p] is now at right place
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">let</span> <span style="color:#268bd2">pi</span> = <span style="color:#268bd2">partitionTS</span>(<span style="color:#268bd2">arr</span>, <span style="color:#268bd2">low</span>, <span style="color:#268bd2">high</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Separately sort elements before partition and after partition
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">quickSortRecursiveTS</span>(<span style="color:#268bd2">arr</span>, <span style="color:#268bd2">low</span>, <span style="color:#268bd2">pi</span> - <span style="color:#2aa198;font-weight:bold">1</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">quickSortRecursiveTS</span>(<span style="color:#268bd2">arr</span>, <span style="color:#268bd2">pi</span> + <span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">high</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">function</span> <span style="color:#268bd2">partitionTS</span>(<span style="color:#268bd2">arr</span>: <span style="color:#859900;font-weight:bold">number</span>[], <span style="color:#268bd2">low</span>: <span style="color:#859900;font-weight:bold">number</span>, <span style="color:#268bd2">high</span>: <span style="color:#859900;font-weight:bold">number</span>): <span style="color:#859900;font-weight:bold">number</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Choosing the last element as pivot
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">let</span> <span style="color:#268bd2">pivot</span> = <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">high</span>];
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Index of smaller element
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">let</span> <span style="color:#268bd2">i</span> = <span style="color:#268bd2">low</span> - <span style="color:#2aa198;font-weight:bold">1</span>;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">j</span> = <span style="color:#268bd2">low</span>; <span style="color:#268bd2">j</span> &lt; <span style="color:#268bd2">high</span>; <span style="color:#268bd2">j</span>++) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// If current element is smaller than or equal to pivot
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">arr</span>[<span style="color:#268bd2">j</span>] &lt;= <span style="color:#268bd2">pivot</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">i</span>++;
+</span></span><span style="display:flex;"><span>            [<span style="color:#268bd2">arr</span>[<span style="color:#268bd2">i</span>], <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">j</span>]] = [<span style="color:#268bd2">arr</span>[<span style="color:#268bd2">j</span>], <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">i</span>]]; <span style="color:#93a1a1;font-style:italic">// Swap
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    [<span style="color:#268bd2">arr</span>[<span style="color:#268bd2">i</span> + <span style="color:#2aa198;font-weight:bold">1</span>], <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">high</span>]] = [<span style="color:#268bd2">arr</span>[<span style="color:#268bd2">high</span>], <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">i</span> + <span style="color:#2aa198;font-weight:bold">1</span>]];
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">i</span> + <span style="color:#2aa198;font-weight:bold">1</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">function</span> <span style="color:#268bd2">quickSortTS</span>(<span style="color:#268bd2">arr</span>: <span style="color:#859900;font-weight:bold">number</span>[]): <span style="color:#859900;font-weight:bold">number</span>[] {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">quickSortRecursiveTS</span>(<span style="color:#268bd2">arr</span>, <span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#268bd2">arr</span>.<span style="color:#268bd2">length</span> - <span style="color:#2aa198;font-weight:bold">1</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">arr</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const myArrTS: number[] = [38, 27, 43, 3, 9, 82, 10];
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(quickSortTS(myArrTS)); // [3, 9, 10, 27, 38, 43, 82]
+</span></span></span></code></pre></div><h3 id="cpp">Cpp</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;vector&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;utility&gt;</span><span style="color:#93a1a1;font-style:italic"> </span><span style="color:#93a1a1;font-style:italic">// For std::swap
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Partition the array using the last element as the pivot
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">partition</span>(<span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt;&amp; <span style="color:#268bd2">arr</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">low</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">high</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">pivot</span> = <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">high</span>];
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i</span> = <span style="color:#268bd2">low</span> - <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#93a1a1;font-style:italic">// Index of smaller element
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">j</span> = <span style="color:#268bd2">low</span>; <span style="color:#268bd2">j</span> &lt; <span style="color:#268bd2">high</span>; <span style="color:#268bd2">j</span>++) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// If current element is smaller than or equal to pivot
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">arr</span>[<span style="color:#268bd2">j</span>] &lt;= <span style="color:#268bd2">pivot</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">i</span>++;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">std</span>::<span style="color:#268bd2">swap</span>(<span style="color:#268bd2">arr</span>[<span style="color:#268bd2">i</span>], <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">j</span>]);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">swap</span>(<span style="color:#268bd2">arr</span>[<span style="color:#268bd2">i</span> + <span style="color:#2aa198;font-weight:bold">1</span>], <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">high</span>]);
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">i</span> + <span style="color:#2aa198;font-weight:bold">1</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// The main function that implements QuickSort
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">quickSort</span>(<span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt;&amp; <span style="color:#268bd2">arr</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">low</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">high</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">low</span> &lt; <span style="color:#268bd2">high</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// pi is partitioning index, arr[p] is now at right place
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">pi</span> = <span style="color:#268bd2">partition</span>(<span style="color:#268bd2">arr</span>, <span style="color:#268bd2">low</span>, <span style="color:#268bd2">high</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Separately sort elements before partition and after partition
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">quickSort</span>(<span style="color:#268bd2">arr</span>, <span style="color:#268bd2">low</span>, <span style="color:#268bd2">pi</span> - <span style="color:#2aa198;font-weight:bold">1</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">quickSort</span>(<span style="color:#268bd2">arr</span>, <span style="color:#268bd2">pi</span> + <span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">high</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// #include &lt;iostream&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// int main() {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::vector&lt;int&gt; myArr = {38, 27, 43, 3, 9, 82, 10};
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     quickSort(myArr, 0, myArr.size() - 1);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     for(int val : myArr) {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         std::cout &lt;&lt; val &lt;&lt; &#34; &#34;; // 3 9 10 27 38 43 82
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     }
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; std::endl;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span></code></pre></div><h3 id="go">Go</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">package</span> <span style="color:#268bd2">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#2aa198">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> <span style="color:#268bd2">quickSortRecursive</span>(<span style="color:#268bd2">arr</span> []<span style="color:#859900;font-weight:bold">int</span>, <span style="color:#268bd2">low</span>, <span style="color:#268bd2">high</span> <span style="color:#859900;font-weight:bold">int</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#268bd2">low</span> &lt; <span style="color:#268bd2">high</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// pi is partitioning index, arr[p] is now at right place</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">pi</span> := <span style="color:#268bd2">partition</span>(<span style="color:#268bd2">arr</span>, <span style="color:#268bd2">low</span>, <span style="color:#268bd2">high</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Separately sort elements before partition and after partition</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">quickSortRecursive</span>(<span style="color:#268bd2">arr</span>, <span style="color:#268bd2">low</span>, <span style="color:#268bd2">pi</span>-<span style="color:#2aa198;font-weight:bold">1</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">quickSortRecursive</span>(<span style="color:#268bd2">arr</span>, <span style="color:#268bd2">pi</span>+<span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">high</span>)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> <span style="color:#268bd2">partition</span>(<span style="color:#268bd2">arr</span> []<span style="color:#859900;font-weight:bold">int</span>, <span style="color:#268bd2">low</span>, <span style="color:#268bd2">high</span> <span style="color:#859900;font-weight:bold">int</span>) <span style="color:#859900;font-weight:bold">int</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Choosing the last element as pivot</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">pivot</span> := <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">high</span>]
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Index of smaller element</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">i</span> := <span style="color:#268bd2">low</span> - <span style="color:#2aa198;font-weight:bold">1</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">j</span> := <span style="color:#268bd2">low</span>; <span style="color:#268bd2">j</span> &lt; <span style="color:#268bd2">high</span>; <span style="color:#268bd2">j</span>++ {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// If current element is smaller than or equal to pivot</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">j</span>] &lt;= <span style="color:#268bd2">pivot</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">i</span>++
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">i</span>], <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">j</span>] = <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">j</span>], <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">i</span>] <span style="color:#93a1a1;font-style:italic">// Swap</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">i</span>+<span style="color:#2aa198;font-weight:bold">1</span>], <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">high</span>] = <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">high</span>], <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">i</span>+<span style="color:#2aa198;font-weight:bold">1</span>]
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">i</span> + <span style="color:#2aa198;font-weight:bold">1</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> <span style="color:#268bd2">quickSort</span>(<span style="color:#268bd2">arr</span> []<span style="color:#859900;font-weight:bold">int</span>) []<span style="color:#859900;font-weight:bold">int</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">quickSortRecursive</span>(<span style="color:#268bd2">arr</span>, <span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">arr</span>)-<span style="color:#2aa198;font-weight:bold">1</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">arr</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// func main() {</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     myArr := []int{38, 27, 43, 3, 9, 82, 10}</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     fmt.Println(quickSort(myArr)) // [3 9 10 27 38 43 82]</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }</span>
+</span></span></code></pre></div><h3 id="d">D</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-d" data-lang="d"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.algorithm</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">quickSortRecursive</span>(<span style="color:#859900;font-weight:bold">int</span>[] <span style="color:#268bd2">arr</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">low</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">high</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">low</span> &lt; <span style="color:#268bd2">high</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// pi is partitioning index, arr[p] is now at right place
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">pi</span> = <span style="color:#268bd2">partition</span>(<span style="color:#268bd2">arr</span>, <span style="color:#268bd2">low</span>, <span style="color:#268bd2">high</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Separately sort elements before partition and after partition
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">quickSortRecursive</span>(<span style="color:#268bd2">arr</span>, <span style="color:#268bd2">low</span>, <span style="color:#268bd2">pi</span> - <span style="color:#2aa198;font-weight:bold">1</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">quickSortRecursive</span>(<span style="color:#268bd2">arr</span>, <span style="color:#268bd2">pi</span> + <span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">high</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">partition</span>(<span style="color:#859900;font-weight:bold">int</span>[] <span style="color:#268bd2">arr</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">low</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">high</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Choosing the last element as pivot
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">pivot</span> = <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">high</span>];
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Index of smaller element
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i</span> = <span style="color:#268bd2">low</span> - <span style="color:#2aa198;font-weight:bold">1</span>;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">j</span> = <span style="color:#268bd2">low</span>; <span style="color:#268bd2">j</span> &lt; <span style="color:#268bd2">high</span>; <span style="color:#268bd2">j</span>++) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// If current element is smaller than or equal to pivot
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">arr</span>[<span style="color:#268bd2">j</span>] &lt;= <span style="color:#268bd2">pivot</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">i</span>++;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">swap</span>(<span style="color:#268bd2">arr</span>[<span style="color:#268bd2">i</span>], <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">j</span>]);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">swap</span>(<span style="color:#268bd2">arr</span>[<span style="color:#268bd2">i</span> + <span style="color:#2aa198;font-weight:bold">1</span>], <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">high</span>]);
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">i</span> + <span style="color:#2aa198;font-weight:bold">1</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">quickSort</span>(<span style="color:#859900;font-weight:bold">int</span>[] <span style="color:#268bd2">arr</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">quickSortRecursive</span>(<span style="color:#268bd2">arr</span>, <span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#859900">cast</span>(<span style="color:#859900;font-weight:bold">int</span>)<span style="color:#268bd2">arr</span>.<span style="color:#268bd2">length</span> - <span style="color:#2aa198;font-weight:bold">1</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// import std.stdio;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// void main() {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     auto myArr = [38, 27, 43, 3, 9, 82, 10];
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     quickSort(myArr);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     writeln(myArr); // [3, 9, 10, 27, 38, 43, 82]
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span></code></pre></div><h2 id="code-walkthrough">Code Walkthrough</h2>
+<h3 id="code-walkthrough-1">Code Walkthrough</h3>
+<p><code>Quick Sort</code> is typically implemented recursively. The main logic lies in the <code>partition</code> function.</p>
+<hr>
+<p><strong><code>quickSort(arr, low, high)</code> Function:</strong></p>
+<pre><code>- This is the recursive &quot;driver&quot; function.
+
+- The base case for the recursion is `low &gt;= high`, which means the sub-array has 0 or 1 elements and is already sorted.
+
+- It calls the `partition` function to place a pivot element in its correct sorted position.
+
+- It then recursively calls itself for the two sub-arrays on either side of the now-placed pivot.
+</code></pre>
+<p><strong><code>partition(arr, low, high)</code> Function (Lomuto partition scheme):</strong></p>
+<pre><code>- Chooses a `pivot` (in this common implementation, the last element).
+
+- Initializes an `index i` (the &quot;wall&quot;) to `low - 1`. This `index` tracks the boundary of elements smaller than the pivot.
+
+- Iterates through the array from `low` to `high-1` with another `index j`.
+
+- If an element `arr[j]` is found to be less than or equal to the `pivot`, the &quot;wall&quot; `i` is incremented, and `arr[i]` is swapped with `arr[j]`. This moves the smaller element behind the wall.
+
+- After the loop, the pivot element (originally at `arr[high]`) is swapped with the element at `arr[i + 1]`. This places the pivot correctly, with all smaller elements to its left and larger elements to its right.
+
+- The function returns the final sorted position of the pivot (`i + 1`).
+</code></pre>
+<h2 id="applications">Applications</h2>
+<h3 id="application">Application</h3>
+<p><code>Quick Sort</code> is one of the most widely used general-purpose sorting algorithms, often outperforming <code>Merge Sort</code> and <code>Heap Sort</code> in practice due to its smaller constant factors and good cache performance.</p>
+<pre><code>    - **Standard Library Implementations:** Many standard library sort functions use a hybrid algorithm called `Introsort`, which starts with `Quick Sort` and switches to `Heap Sort` if the recursion depth gets too large (to avoid worst-case `O(N^2)`), and then switches to `Insertion Sort` for small partitions.
+
+    - **Large Datasets:** It's an excellent choice for sorting large arrays in-memory.
+
+    - **Recursive Algorithms:** Its &quot;divide and conquer&quot; nature makes it a useful building block in other algorithms, such as finding the k-th smallest element in an unsorted array (Quickselect).
+</code></pre>
+
+    </div>
+</article>
+
+<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
+    
+    <a href="//localhost:1313/dsa-42_/algorithms/sorting_searching/radix_sort/" class="nav-btn">← Previous</a>
+    
+    
+    <a href="//localhost:1313/dsa-42_/algorithms/sorting_searching/" class="nav-btn">Up</a>
+
+    
+    <a href="//localhost:1313/dsa-42_/algorithms/sorting_searching/merge_sort/" class="nav-btn">Next →</a>
+    
+</div>
+
+    </main>
+
+    <footer class="footer">
+        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
+    </footer>
+
+    <script>
+        const body = document.getElementById('theme-body');
+        const btn = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme');
+
+        
+        function updateButtonText() {
+            if (body.classList.contains('theme-terminal')) {
+                btn.textContent = "Light Mode";
+            } else {
+                btn.textContent = "Dark Mode";
+            }
+        }
+
+        if (currentTheme === 'terminal') {
+            body.classList.add('theme-terminal');
+        }
+        
+        
+        updateButtonText();
+
+        btn.addEventListener('click', () => {
+            body.classList.toggle('theme-terminal');
+            updateButtonText();
+            
+            let theme = 'natural';
+            if (body.classList.contains('theme-terminal')) {
+                theme = 'terminal';
+            }
+            localStorage.setItem('theme', theme);
+        });
+    </script>
+</body>
+</html>

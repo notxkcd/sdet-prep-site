@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Treap | SDET Interview Preparation Kit</title>
+    <link rel="stylesheet" href="//localhost:1313/css/style.css">
+    <link rel="stylesheet" href="//localhost:1313/css/terminal.css">
+    
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    
+    <link rel="stylesheet" href="//localhost:1313/lib/katex/katex.min.css">
+    <script defer src="//localhost:1313/lib/katex/katex.min.js"></script>
+    <script defer src="//localhost:1313/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</head>
+<body id="theme-body">
+    <button id="theme-toggle">Switch Theme</button>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="//localhost:1313/">Index</a></li>
+                
+            </ul>
+        </nav>
+        <div class="site-breadcrumb">
+            <a href="//localhost:1313/">Home</a>
+            
+                
+                    <span>/</span> <a href="//localhost:1313/">SDET Interview Dashboard</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/dsa-42/">42 Algorithms &amp; 42 Data Structures</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/dsa-42/data_structures/">Data Structures</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/dsa-42/data_structures/specialized/">Specialized</a>
+                
+            
+            
+                <span>/</span> Treap
+            
+        </div>
+    </header>
+
+    <main>
+        
+<article>
+    <div class="category-title" style="margin-bottom: 0.5rem;">Specialized</div>
+    <h1>Treap</h1>
+    <div class="content-body" style="margin-top: 2rem;">
+        <p>A <code>Treap</code> is a randomized <code>binary search tree</code> (<code>BST</code>) data structure that combines the properties of a <code>binary search tree</code> and a <code>binary heap</code>. Each <code>node</code> in a <code>Treap</code> stores both a <code>key</code> (like a <code>BST</code>) and a randomly assigned <code>priority</code> (like a <code>heap</code>).</p>
+<p>The <code>tree</code> is ordered by <code>key</code> according to <code>BST properties</code> (left child &lt; parent &lt; right child) AND ordered by <code>priority</code> according to <code>heap properties</code> (parent&rsquo;s <code>priority</code> is higher/lower than children&rsquo;s, depending on min/max heap). This dual ordering ensures that the <code>Treap</code> remains balanced with high probability, achieving <code>O(log N)</code> average-case time complexity for <code>search</code>, <code>insertion</code>, and <code>deletion</code>.</p>
+<h2 id="how-it-works">How it Works</h2>
+<h3 id="how-it-works-expanded">How it Works (Expanded)</h3>
+<p>The balancing act in a <code>Treap</code> comes from its random <code>priority</code> assignments. Since <code>priorities</code> are random, the structure of the <code>Treap</code> is equivalent to a randomly built <code>BST</code>. It turns out that a randomly built <code>BST</code> is balanced with high probability, thus providing <code>O(log N)</code> average-case performance.</p>
+<hr>
+<p>Example Treap (Key, Priority): (min-heap property for priority)</p>
+<pre><code>    (10, 5)
+   /       \
+(5, 8)     (15, 7)
+</code></pre>
+<p>/      \    /      <br>
+(2, 12) (7, 9) (12, 11) (18, 10)</p>
+<p>Key ordering: 2&lt;5&lt;7&lt;10&lt;12&lt;15&lt;18 (BST)
+Priority ordering: 5&lt;8,9; 7&lt;11,10 (Min-Heap)</p>
+<h2 id="implementation">Implementation</h2>
+<h3 id="python">Python</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">random</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#cb4b16">TreapNode</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">__init__</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">key</span>, <span style="color:#268bd2">priority</span>=<span style="color:#859900;font-weight:bold">None</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">key</span> = <span style="color:#268bd2">key</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">priority</span> = <span style="color:#268bd2">priority</span> <span style="color:#859900">if</span> <span style="color:#268bd2">priority</span> <span style="color:#859900">is</span> <span style="color:#859900">not</span> <span style="color:#859900;font-weight:bold">None</span> <span style="color:#859900">else</span> <span style="color:#268bd2">random</span>.<span style="color:#268bd2">randint</span>(<span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#2aa198;font-weight:bold">10000</span>) <span style="color:#93a1a1;font-style:italic"># Random priority</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">left</span> = <span style="color:#859900;font-weight:bold">None</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">right</span> = <span style="color:#859900;font-weight:bold">None</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#cb4b16">Treap</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">__init__</span>(<span style="color:#cb4b16">self</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">root</span> = <span style="color:#859900;font-weight:bold">None</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">_rotate_left</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">x</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">y</span> = <span style="color:#268bd2">x</span>.<span style="color:#268bd2">right</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">x</span>.<span style="color:#268bd2">right</span> = <span style="color:#268bd2">y</span>.<span style="color:#268bd2">left</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">y</span>.<span style="color:#268bd2">left</span> = <span style="color:#268bd2">x</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">y</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">_rotate_right</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">y</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">x</span> = <span style="color:#268bd2">y</span>.<span style="color:#268bd2">left</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">y</span>.<span style="color:#268bd2">left</span> = <span style="color:#268bd2">x</span>.<span style="color:#268bd2">right</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">x</span>.<span style="color:#268bd2">right</span> = <span style="color:#268bd2">y</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">x</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">insert</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">root</span>, <span style="color:#268bd2">key</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#859900">not</span> <span style="color:#268bd2">root</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#268bd2">TreapNode</span>(<span style="color:#268bd2">key</span>)
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">key</span> &lt; <span style="color:#268bd2">root</span>.<span style="color:#268bd2">key</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">root</span>.<span style="color:#268bd2">left</span> = <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">insert</span>(<span style="color:#268bd2">root</span>.<span style="color:#268bd2">left</span>, <span style="color:#268bd2">key</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic"># Fix heap property if child&#39;s priority is higher (assuming max-heap for priority)</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> <span style="color:#268bd2">root</span>.<span style="color:#268bd2">left</span> <span style="color:#859900">and</span> <span style="color:#268bd2">root</span>.<span style="color:#268bd2">left</span>.<span style="color:#268bd2">priority</span> &gt; <span style="color:#268bd2">root</span>.<span style="color:#268bd2">priority</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">root</span> = <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">_rotate_right</span>(<span style="color:#268bd2">root</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">else</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">root</span>.<span style="color:#268bd2">right</span> = <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">insert</span>(<span style="color:#268bd2">root</span>.<span style="color:#268bd2">right</span>, <span style="color:#268bd2">key</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic"># Fix heap property</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> <span style="color:#268bd2">root</span>.<span style="color:#268bd2">right</span> <span style="color:#859900">and</span> <span style="color:#268bd2">root</span>.<span style="color:#268bd2">right</span>.<span style="color:#268bd2">priority</span> &gt; <span style="color:#268bd2">root</span>.<span style="color:#268bd2">priority</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">root</span> = <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">_rotate_left</span>(<span style="color:#268bd2">root</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">root</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">search</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">root</span>, <span style="color:#268bd2">key</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#859900">not</span> <span style="color:#268bd2">root</span> <span style="color:#859900">or</span> <span style="color:#268bd2">root</span>.<span style="color:#268bd2">key</span> == <span style="color:#268bd2">key</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#268bd2">root</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">key</span> &lt; <span style="color:#268bd2">root</span>.<span style="color:#268bd2">key</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">search</span>(<span style="color:#268bd2">root</span>.<span style="color:#268bd2">left</span>, <span style="color:#268bd2">key</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">search</span>(<span style="color:#268bd2">root</span>.<span style="color:#268bd2">right</span>, <span style="color:#268bd2">key</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">delete</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">root</span>, <span style="color:#268bd2">key</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#859900">not</span> <span style="color:#268bd2">root</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#859900;font-weight:bold">None</span>
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">key</span> &lt; <span style="color:#268bd2">root</span>.<span style="color:#268bd2">key</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">root</span>.<span style="color:#268bd2">left</span> = <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">delete</span>(<span style="color:#268bd2">root</span>.<span style="color:#268bd2">left</span>, <span style="color:#268bd2">key</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">elif</span> <span style="color:#268bd2">key</span> &gt; <span style="color:#268bd2">root</span>.<span style="color:#268bd2">key</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">root</span>.<span style="color:#268bd2">right</span> = <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">delete</span>(<span style="color:#268bd2">root</span>.<span style="color:#268bd2">right</span>, <span style="color:#268bd2">key</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">else</span>: <span style="color:#93a1a1;font-style:italic"># Found node to delete</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> <span style="color:#859900">not</span> <span style="color:#268bd2">root</span>.<span style="color:#268bd2">left</span> <span style="color:#859900">and</span> <span style="color:#859900">not</span> <span style="color:#268bd2">root</span>.<span style="color:#268bd2">right</span>: <span style="color:#93a1a1;font-style:italic"># Leaf node</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">return</span> <span style="color:#859900;font-weight:bold">None</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">elif</span> <span style="color:#859900">not</span> <span style="color:#268bd2">root</span>.<span style="color:#268bd2">left</span>: <span style="color:#93a1a1;font-style:italic"># Only right child</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">return</span> <span style="color:#268bd2">root</span>.<span style="color:#268bd2">right</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">elif</span> <span style="color:#859900">not</span> <span style="color:#268bd2">root</span>.<span style="color:#268bd2">right</span>: <span style="color:#93a1a1;font-style:italic"># Only left child</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">return</span> <span style="color:#268bd2">root</span>.<span style="color:#268bd2">left</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">else</span>: <span style="color:#93a1a1;font-style:italic"># Two children, rotate to make it a leaf</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">if</span> <span style="color:#268bd2">root</span>.<span style="color:#268bd2">left</span>.<span style="color:#268bd2">priority</span> &gt; <span style="color:#268bd2">root</span>.<span style="color:#268bd2">right</span>.<span style="color:#268bd2">priority</span>: <span style="color:#93a1a1;font-style:italic"># Rotate right</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">root</span> = <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">_rotate_right</span>(<span style="color:#268bd2">root</span>)
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">root</span>.<span style="color:#268bd2">right</span> = <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">delete</span>(<span style="color:#268bd2">root</span>.<span style="color:#268bd2">right</span>, <span style="color:#268bd2">key</span>)
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">else</span>: <span style="color:#93a1a1;font-style:italic"># Rotate left</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">root</span> = <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">_rotate_left</span>(<span style="color:#268bd2">root</span>)
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">root</span>.<span style="color:#268bd2">left</span> = <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">delete</span>(<span style="color:#268bd2">root</span>.<span style="color:#268bd2">left</span>, <span style="color:#268bd2">key</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">root</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># Example Usage:</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># treap_tree = Treap()</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># root = None</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># keys_to_insert = [50, 30, 70, 20, 40, 60, 80]</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># for k in keys_to_insert:</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#     root = treap_tree.insert(root, k)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(&#34;Search for 40:&#34;, treap_tree.search(root, 40).key if treap_tree.search(root, 40) else &#34;Not Found&#34;)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># root = treap_tree.delete(root, 30)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(&#34;Search for 30 after deletion:&#34;, treap_tree.search(root, 30))</span>
+</span></span></code></pre></div><h3 id="javascript">Javascript</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#268bd2">TreapNode</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">constructor</span>(<span style="color:#268bd2">key</span>, <span style="color:#268bd2">priority</span> = <span style="color:#cb4b16">Math</span>.<span style="color:#268bd2">floor</span>(<span style="color:#cb4b16">Math</span>.<span style="color:#268bd2">random</span>() &lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#2aa198;font-weight:bold">10000</span>)) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">key</span> = <span style="color:#268bd2">key</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">priority</span> = <span style="color:#268bd2">priority</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">left</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">right</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#268bd2">Treap</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">constructor</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">root</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">_rotateLeft</span>(<span style="color:#268bd2">x</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">let</span> <span style="color:#268bd2">y</span> = <span style="color:#268bd2">x</span>.<span style="color:#268bd2">right</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">x</span>.<span style="color:#268bd2">right</span> = <span style="color:#268bd2">y</span>.<span style="color:#268bd2">left</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">y</span>.<span style="color:#268bd2">left</span> = <span style="color:#268bd2">x</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">y</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">_rotateRight</span>(<span style="color:#268bd2">y</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">let</span> <span style="color:#268bd2">x</span> = <span style="color:#268bd2">y</span>.<span style="color:#268bd2">left</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">y</span>.<span style="color:#268bd2">left</span> = <span style="color:#268bd2">x</span>.<span style="color:#268bd2">right</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">x</span>.<span style="color:#268bd2">right</span> = <span style="color:#268bd2">y</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">x</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">insert</span>(<span style="color:#268bd2">root</span>, <span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (!<span style="color:#268bd2">root</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#859900">new</span> <span style="color:#268bd2">TreapNode</span>(<span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">key</span> &lt; <span style="color:#268bd2">root</span>.<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">root</span>.<span style="color:#268bd2">left</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">insert</span>(<span style="color:#268bd2">root</span>.<span style="color:#268bd2">left</span>, <span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Fix heap property (assuming max-heap for priority)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">root</span>.<span style="color:#268bd2">left</span> &amp;&amp; <span style="color:#268bd2">root</span>.<span style="color:#268bd2">left</span>.<span style="color:#268bd2">priority</span> &gt; <span style="color:#268bd2">root</span>.<span style="color:#268bd2">priority</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">root</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">_rotateRight</span>(<span style="color:#268bd2">root</span>);
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">root</span>.<span style="color:#268bd2">right</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">insert</span>(<span style="color:#268bd2">root</span>.<span style="color:#268bd2">right</span>, <span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Fix heap property
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">root</span>.<span style="color:#268bd2">right</span> &amp;&amp; <span style="color:#268bd2">root</span>.<span style="color:#268bd2">right</span>.<span style="color:#268bd2">priority</span> &gt; <span style="color:#268bd2">root</span>.<span style="color:#268bd2">priority</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">root</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">_rotateLeft</span>(<span style="color:#268bd2">root</span>);
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">root</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">search</span>(<span style="color:#268bd2">root</span>, <span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (!<span style="color:#268bd2">root</span> || <span style="color:#268bd2">root</span>.<span style="color:#268bd2">key</span> === <span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#268bd2">root</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">key</span> &lt; <span style="color:#268bd2">root</span>.<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#859900">this</span>.<span style="color:#268bd2">search</span>(<span style="color:#268bd2">root</span>.<span style="color:#268bd2">left</span>, <span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#859900">this</span>.<span style="color:#268bd2">search</span>(<span style="color:#268bd2">root</span>.<span style="color:#268bd2">right</span>, <span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">delete</span>(<span style="color:#268bd2">root</span>, <span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (!<span style="color:#268bd2">root</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">key</span> &lt; <span style="color:#268bd2">root</span>.<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">root</span>.<span style="color:#268bd2">left</span> = <span style="color:#859900">this</span>.<span style="color:#859900">delete</span>(<span style="color:#268bd2">root</span>.<span style="color:#268bd2">left</span>, <span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> <span style="color:#859900">if</span> (<span style="color:#268bd2">key</span> &gt; <span style="color:#268bd2">root</span>.<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">root</span>.<span style="color:#268bd2">right</span> = <span style="color:#859900">this</span>.<span style="color:#859900">delete</span>(<span style="color:#268bd2">root</span>.<span style="color:#268bd2">right</span>, <span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> { <span style="color:#93a1a1;font-style:italic">// Found node to delete
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">if</span> (!<span style="color:#268bd2">root</span>.<span style="color:#268bd2">left</span> &amp;&amp; !<span style="color:#268bd2">root</span>.<span style="color:#268bd2">right</span>) { <span style="color:#93a1a1;font-style:italic">// Leaf node
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#859900">return</span> <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> <span style="color:#859900">if</span> (!<span style="color:#268bd2">root</span>.<span style="color:#268bd2">left</span>) { <span style="color:#93a1a1;font-style:italic">// Only right child
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#859900">return</span> <span style="color:#268bd2">root</span>.<span style="color:#268bd2">right</span>;
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> <span style="color:#859900">if</span> (!<span style="color:#268bd2">root</span>.<span style="color:#268bd2">right</span>) { <span style="color:#93a1a1;font-style:italic">// Only left child
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#859900">return</span> <span style="color:#268bd2">root</span>.<span style="color:#268bd2">left</span>;
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> { <span style="color:#93a1a1;font-style:italic">// Two children, rotate to make it a leaf
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#859900">if</span> (<span style="color:#268bd2">root</span>.<span style="color:#268bd2">left</span>.<span style="color:#268bd2">priority</span> &gt; <span style="color:#268bd2">root</span>.<span style="color:#268bd2">right</span>.<span style="color:#268bd2">priority</span>) { <span style="color:#93a1a1;font-style:italic">// Rotate right
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                    <span style="color:#268bd2">root</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">_rotateRight</span>(<span style="color:#268bd2">root</span>);
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">root</span>.<span style="color:#268bd2">right</span> = <span style="color:#859900">this</span>.<span style="color:#859900">delete</span>(<span style="color:#268bd2">root</span>.<span style="color:#268bd2">right</span>, <span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>                } <span style="color:#859900">else</span> { <span style="color:#93a1a1;font-style:italic">// Rotate left
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                    <span style="color:#268bd2">root</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">_rotateLeft</span>(<span style="color:#268bd2">root</span>);
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">root</span>.<span style="color:#268bd2">left</span> = <span style="color:#859900">this</span>.<span style="color:#859900">delete</span>(<span style="color:#268bd2">root</span>.<span style="color:#268bd2">left</span>, <span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">root</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const treapTree = new Treap();
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// let root = null;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const keysToInsert = [50, 30, 70, 20, 40, 60, 80];
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// for (const k of keysToInsert) {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     root = treapTree.insert(root, k);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Search for 40:&#34;, treapTree.search(root, 40)?.key || &#34;Not Found&#34;);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// root = treapTree.delete(root, 30);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Search for 30 after deletion:&#34;, treapTree.search(root, 30));
+</span></span></span></code></pre></div><h3 id="typescript">Typescript</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-typescript" data-lang="typescript"><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#268bd2">TreapNodeTS</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">key</span>: <span style="color:#859900;font-weight:bold">number</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">priority</span>: <span style="color:#859900;font-weight:bold">number</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">left</span>: <span style="color:#859900;font-weight:bold">TreapNodeTS</span> | <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">right</span>: <span style="color:#859900;font-weight:bold">TreapNodeTS</span> | <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">constructor</span>(<span style="color:#268bd2">key</span>: <span style="color:#859900;font-weight:bold">number</span>, <span style="color:#268bd2">priority</span>: <span style="color:#859900;font-weight:bold">number</span> = <span style="color:#cb4b16">Math</span>.<span style="color:#268bd2">floor</span>(<span style="color:#cb4b16">Math</span>.<span style="color:#268bd2">random</span>() &lt;/<span style="color:#268bd2;font-weight:bold">em</span>&gt; <span style="color:#2aa198;font-weight:bold">10000</span>)) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">key</span> = <span style="color:#268bd2">key</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">priority</span> = <span style="color:#268bd2">priority</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">left</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">right</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#268bd2">TreapTS</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">root</span>: <span style="color:#859900;font-weight:bold">TreapNodeTS</span> | <span style="color:#859900;font-weight:bold">null</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">private</span> <span style="color:#268bd2">_rotateLeft</span>(<span style="color:#268bd2">x</span>: <span style="color:#859900;font-weight:bold">TreapNodeTS</span>): <span style="color:#268bd2">TreapNodeTS</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">let</span> <span style="color:#268bd2">y</span> = <span style="color:#268bd2">x</span>.<span style="color:#268bd2">right</span>!;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">x</span>.<span style="color:#268bd2">right</span> = <span style="color:#268bd2">y</span>.<span style="color:#268bd2">left</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">y</span>.<span style="color:#268bd2">left</span> = <span style="color:#268bd2">x</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">y</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">private</span> <span style="color:#268bd2">_rotateRight</span>(<span style="color:#268bd2">y</span>: <span style="color:#859900;font-weight:bold">TreapNodeTS</span>): <span style="color:#268bd2">TreapNodeTS</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">let</span> <span style="color:#268bd2">x</span> = <span style="color:#268bd2">y</span>.<span style="color:#268bd2">left</span>!;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">y</span>.<span style="color:#268bd2">left</span> = <span style="color:#268bd2">x</span>.<span style="color:#268bd2">right</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">x</span>.<span style="color:#268bd2">right</span> = <span style="color:#268bd2">y</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">x</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">insert</span>(<span style="color:#268bd2">rootNode</span>: <span style="color:#859900;font-weight:bold">TreapNodeTS</span> | <span style="color:#859900;font-weight:bold">null</span>, <span style="color:#268bd2">key</span>: <span style="color:#859900;font-weight:bold">number</span>): <span style="color:#268bd2">TreapNodeTS</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (!<span style="color:#268bd2">rootNode</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#859900">new</span> <span style="color:#268bd2">TreapNodeTS</span>(<span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">key</span> &lt; <span style="color:#268bd2">rootNode</span>.<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">rootNode</span>.<span style="color:#268bd2">left</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">insert</span>(<span style="color:#268bd2">rootNode</span>.<span style="color:#268bd2">left</span>, <span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Fix heap property (assuming max-heap for priority)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">rootNode</span>.<span style="color:#268bd2">left</span> &amp;&amp; <span style="color:#268bd2">rootNode</span>.<span style="color:#268bd2">left</span>.<span style="color:#268bd2">priority</span> &gt; <span style="color:#268bd2">rootNode</span>.<span style="color:#268bd2">priority</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">rootNode</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">_rotateRight</span>(<span style="color:#268bd2">rootNode</span>);
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">rootNode</span>.<span style="color:#268bd2">right</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">insert</span>(<span style="color:#268bd2">rootNode</span>.<span style="color:#268bd2">right</span>, <span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Fix heap property
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">rootNode</span>.<span style="color:#268bd2">right</span> &amp;&amp; <span style="color:#268bd2">rootNode</span>.<span style="color:#268bd2">right</span>.<span style="color:#268bd2">priority</span> &gt; <span style="color:#268bd2">rootNode</span>.<span style="color:#268bd2">priority</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">rootNode</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">_rotateLeft</span>(<span style="color:#268bd2">rootNode</span>);
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">rootNode</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">search</span>(<span style="color:#268bd2">rootNode</span>: <span style="color:#859900;font-weight:bold">TreapNodeTS</span> | <span style="color:#859900;font-weight:bold">null</span>, <span style="color:#268bd2">key</span>: <span style="color:#859900;font-weight:bold">number</span>): <span style="color:#268bd2">TreapNodeTS</span> | <span style="color:#859900;font-weight:bold">null</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (!<span style="color:#268bd2">rootNode</span> || <span style="color:#268bd2">rootNode</span>.<span style="color:#268bd2">key</span> === <span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#268bd2">rootNode</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">key</span> &lt; <span style="color:#268bd2">rootNode</span>.<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#859900">this</span>.<span style="color:#268bd2">search</span>(<span style="color:#268bd2">rootNode</span>.<span style="color:#268bd2">left</span>, <span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#859900">this</span>.<span style="color:#268bd2">search</span>(<span style="color:#268bd2">rootNode</span>.<span style="color:#268bd2">right</span>, <span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#859900">delete</span>(<span style="color:#268bd2">rootNode</span>: <span style="color:#859900;font-weight:bold">TreapNodeTS</span> | <span style="color:#859900;font-weight:bold">null</span>, <span style="color:#268bd2">key</span>: <span style="color:#859900;font-weight:bold">number</span>): <span style="color:#268bd2">TreapNodeTS</span> | <span style="color:#859900;font-weight:bold">null</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (!<span style="color:#268bd2">rootNode</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">key</span> &lt; <span style="color:#268bd2">rootNode</span>.<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">rootNode</span>.<span style="color:#268bd2">left</span> = <span style="color:#859900">this</span>.<span style="color:#859900">delete</span>(<span style="color:#268bd2">rootNode</span>.<span style="color:#268bd2">left</span>, <span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> <span style="color:#859900">if</span> (<span style="color:#268bd2">key</span> &gt; <span style="color:#268bd2">rootNode</span>.<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">rootNode</span>.<span style="color:#268bd2">right</span> = <span style="color:#859900">this</span>.<span style="color:#859900">delete</span>(<span style="color:#268bd2">rootNode</span>.<span style="color:#268bd2">right</span>, <span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> { <span style="color:#93a1a1;font-style:italic">// Found node to delete
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">if</span> (!<span style="color:#268bd2">rootNode</span>.<span style="color:#268bd2">left</span> &amp;&amp; !<span style="color:#268bd2">rootNode</span>.<span style="color:#268bd2">right</span>) { <span style="color:#93a1a1;font-style:italic">// Leaf node
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#859900">return</span> <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> <span style="color:#859900">if</span> (!<span style="color:#268bd2">rootNode</span>.<span style="color:#268bd2">left</span>) { <span style="color:#93a1a1;font-style:italic">// Only right child
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#859900">return</span> <span style="color:#268bd2">rootNode</span>.<span style="color:#268bd2">right</span>;
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> <span style="color:#859900">if</span> (!<span style="color:#268bd2">rootNode</span>.<span style="color:#268bd2">right</span>) { <span style="color:#93a1a1;font-style:italic">// Only left child
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#859900">return</span> <span style="color:#268bd2">rootNode</span>.<span style="color:#268bd2">left</span>;
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> { <span style="color:#93a1a1;font-style:italic">// Two children, rotate to make it a leaf
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#859900">if</span> (<span style="color:#268bd2">rootNode</span>.<span style="color:#268bd2">left</span>.<span style="color:#268bd2">priority</span> &gt; <span style="color:#268bd2">rootNode</span>.<span style="color:#268bd2">right</span>.<span style="color:#268bd2">priority</span>) { <span style="color:#93a1a1;font-style:italic">// Rotate right
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                    <span style="color:#268bd2">rootNode</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">_rotateRight</span>(<span style="color:#268bd2">rootNode</span>);
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">rootNode</span>.<span style="color:#268bd2">right</span> = <span style="color:#859900">this</span>.<span style="color:#859900">delete</span>(<span style="color:#268bd2">rootNode</span>.<span style="color:#268bd2">right</span>, <span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>                } <span style="color:#859900">else</span> { <span style="color:#93a1a1;font-style:italic">// Rotate left
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                    <span style="color:#268bd2">rootNode</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">_rotateLeft</span>(<span style="color:#268bd2">rootNode</span>);
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">rootNode</span>.<span style="color:#268bd2">left</span> = <span style="color:#859900">this</span>.<span style="color:#859900">delete</span>(<span style="color:#268bd2">rootNode</span>.<span style="color:#268bd2">left</span>, <span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">rootNode</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const treapTreeTS = new TreapTS();
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// let rootTS: TreapNodeTS | null = null;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const keysToInsertTS: number[] = [50, 30, 70, 20, 40, 60, 80];
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// for (const k of keysToInsertTS) {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     rootTS = treapTreeTS.insert(rootTS, k);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Search for 40:&#34;, treapTreeTS.search(rootTS, 40)?.key || &#34;Not Found&#34;);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// rootTS = treapTreeTS.delete(rootTS, 30);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Search for 30 after deletion:&#34;, treapTreeTS.search(rootTS, 30));
+</span></span></span></code></pre></div><h3 id="cpp">Cpp</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;iostream&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;vector&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;algorithm&gt;</span><span style="color:#93a1a1;font-style:italic"> </span><span style="color:#93a1a1;font-style:italic">// For std::max
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;random&gt;</span><span style="color:#93a1a1;font-style:italic">    </span><span style="color:#93a1a1;font-style:italic">// For std::mt19937, std::uniform_int_distribution
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;chrono&gt;</span><span style="color:#93a1a1;font-style:italic">    </span><span style="color:#93a1a1;font-style:italic">// For std::chrono::high_resolution_clock
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#cb4b16">TreapNode</span> {
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">key</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">priority</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">TreapNode</span> &lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">left</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">TreapNode</span> &lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">right</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">TreapNode</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">k</span>) : <span style="color:#268bd2">key</span>(<span style="color:#268bd2">k</span>), <span style="color:#268bd2">left</span>(<span style="color:#859900">nullptr</span>), <span style="color:#268bd2">right</span>(<span style="color:#859900">nullptr</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Generate a random priority
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">static</span> <span style="color:#268bd2">std</span>::<span style="color:#268bd2">mt19937</span> <span style="color:#268bd2">gen</span>(<span style="color:#268bd2">std</span>::<span style="color:#268bd2">chrono</span>::<span style="color:#268bd2">high_resolution_clock</span>::<span style="color:#268bd2">now</span>().<span style="color:#268bd2">time_since_epoch</span>().<span style="color:#268bd2">count</span>());
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">static</span> <span style="color:#268bd2">std</span>::<span style="color:#268bd2">uniform_int_distribution</span>&lt;&gt; <span style="color:#268bd2">dist</span>(<span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#2aa198;font-weight:bold">10000</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">priority</span> = <span style="color:#268bd2">dist</span>(<span style="color:#268bd2">gen</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#cb4b16">Treap</span> {
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">TreapNode</span>&lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">root</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">Treap</span>() : <span style="color:#268bd2">root</span>(<span style="color:#859900">nullptr</span>) {}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">private</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Left rotation
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">TreapNode</span>&lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">rotateLeft</span>(<span style="color:#268bd2">TreapNode</span>&lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">x</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">TreapNode</span>&lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">y</span> = <span style="color:#268bd2">x</span>-&gt;<span style="color:#268bd2">right</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">x</span>-&gt;<span style="color:#268bd2">right</span> = <span style="color:#268bd2">y</span>-&gt;<span style="color:#268bd2">left</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">y</span>-&gt;<span style="color:#268bd2">left</span> = <span style="color:#268bd2">x</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">y</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Right rotation
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">TreapNode</span>&lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">rotateRight</span>(<span style="color:#268bd2">TreapNode</span>&lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">y</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">TreapNode</span>&lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">x</span> = <span style="color:#268bd2">y</span>-&gt;<span style="color:#268bd2">left</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">y</span>-&gt;<span style="color:#268bd2">left</span> = <span style="color:#268bd2">x</span>-&gt;<span style="color:#268bd2">right</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">x</span>-&gt;<span style="color:#268bd2">right</span> = <span style="color:#268bd2">y</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">x</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Insert operation
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">TreapNode</span>&lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">insert</span>(<span style="color:#268bd2">TreapNode</span>&lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">node</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">node</span> == <span style="color:#859900">nullptr</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#859900">new</span> <span style="color:#268bd2">TreapNode</span>(<span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">key</span> &lt; <span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">left</span> = <span style="color:#268bd2">insert</span>(<span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">left</span>, <span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Fix heap property (assuming max-heap for priority)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">left</span>-&gt;<span style="color:#268bd2">priority</span> &gt; <span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">priority</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">node</span> = <span style="color:#268bd2">rotateRight</span>(<span style="color:#268bd2">node</span>);
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> <span style="color:#268bd2">if</span> (<span style="color:#268bd2">key</span> &gt; <span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">right</span> = <span style="color:#268bd2">insert</span>(<span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">right</span>, <span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Fix heap property
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">right</span>-&gt;<span style="color:#268bd2">priority</span> &gt; <span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">priority</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">node</span> = <span style="color:#268bd2">rotateLeft</span>(<span style="color:#268bd2">node</span>);
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// If key == node-&gt;key, do nothing (no duplicates)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">return</span> <span style="color:#268bd2">node</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Search operation
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">TreapNode</span>&lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">search</span>(<span style="color:#268bd2">TreapNode</span>&lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">node</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">node</span> == <span style="color:#859900">nullptr</span> || <span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">key</span> == <span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#268bd2">node</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">key</span> &lt; <span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#268bd2">search</span>(<span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">left</span>, <span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">search</span>(<span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">right</span>, <span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Delete operation
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">TreapNode</span>&lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">deleteNode</span>(<span style="color:#268bd2">TreapNode</span>&lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">node</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">node</span> == <span style="color:#859900">nullptr</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#859900">nullptr</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">key</span> &lt; <span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">left</span> = <span style="color:#268bd2">deleteNode</span>(<span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">left</span>, <span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> <span style="color:#268bd2">if</span> (<span style="color:#268bd2">key</span> &gt; <span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">right</span> = <span style="color:#268bd2">deleteNode</span>(<span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">right</span>, <span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> { <span style="color:#93a1a1;font-style:italic">// Found node to delete
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">left</span> == <span style="color:#859900">nullptr</span> &amp;&amp; <span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">right</span> == <span style="color:#859900">nullptr</span>) { <span style="color:#93a1a1;font-style:italic">// Leaf node
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#859900">delete</span> <span style="color:#268bd2">node</span>;
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">return</span> <span style="color:#859900">nullptr</span>;
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> <span style="color:#268bd2">if</span> (<span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">left</span> == <span style="color:#859900">nullptr</span>) { <span style="color:#93a1a1;font-style:italic">// Only right child
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#268bd2">TreapNode</span>&lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">temp</span> = <span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">right</span>;
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">delete</span> <span style="color:#268bd2">node</span>;
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">return</span> <span style="color:#268bd2">temp</span>;
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> <span style="color:#268bd2">if</span> (<span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">right</span> == <span style="color:#859900">nullptr</span>) { <span style="color:#93a1a1;font-style:italic">// Only left child
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#268bd2">TreapNode</span>&lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">temp</span> = <span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">left</span>;
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">delete</span> <span style="color:#268bd2">node</span>;
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">return</span> <span style="color:#268bd2">temp</span>;
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> { <span style="color:#93a1a1;font-style:italic">// Two children, rotate to make it a leaf
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#859900">if</span> (<span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">left</span>-&gt;<span style="color:#268bd2">priority</span> &gt; <span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">right</span>-&gt;<span style="color:#268bd2">priority</span>) { <span style="color:#93a1a1;font-style:italic">// Rotate right
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                    <span style="color:#268bd2">node</span> = <span style="color:#268bd2">rotateRight</span>(<span style="color:#268bd2">node</span>);
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">right</span> = <span style="color:#268bd2">deleteNode</span>(<span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">right</span>, <span style="color:#268bd2">key</span>); <span style="color:#93a1a1;font-style:italic">// Recursive call on rotated child
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                } <span style="color:#859900">else</span> { <span style="color:#93a1a1;font-style:italic">// Rotate left
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                    <span style="color:#268bd2">node</span> = <span style="color:#268bd2">rotateLeft</span>(<span style="color:#268bd2">node</span>);
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">left</span> = <span style="color:#268bd2">deleteNode</span>(<span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">left</span>, <span style="color:#268bd2">key</span>); <span style="color:#93a1a1;font-style:italic">// Recursive call on rotated child
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">node</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">insert</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">root</span> = <span style="color:#268bd2">insert</span>(<span style="color:#268bd2">root</span>, <span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">TreapNode</span>&lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">search</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">search</span>(<span style="color:#268bd2">root</span>, <span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">deleteKey</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">root</span> = <span style="color:#268bd2">deleteNode</span>(<span style="color:#268bd2">root</span>, <span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// int main() {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     Treap treap_tree;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::vector&lt;int&gt; keys_to_insert = {50, 30, 70, 20, 40, 60, 80};
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     for (int k : keys_to_insert) {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         treap_tree.insert(k);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     }
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     TreapNode&lt;em&gt; found = treap_tree.search(40);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     if (found) {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         std::cout &lt;&lt; &#34;Search for 40: Found (Key: &#34; &lt;&lt; found-&gt;key &lt;&lt; &#34;)&#34; &lt;&lt; std::endl;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     } else {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         std::cout &lt;&lt; &#34;Search for 40: Not Found&#34; &lt;&lt; std::endl;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     }
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     treap_tree.deleteKey(30);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     found = treap_tree.search(30);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     if (found) {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         std::cout &lt;&lt; &#34;Search for 30 after deletion: Found (Key: &#34; &lt;&lt; found-&gt;key &lt;&lt; &#34;)&#34; &lt;&lt; std::endl;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     } else {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         std::cout &lt;&lt; &#34;Search for 30 after deletion: Not Found&#34; &lt;&lt; std::endl;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     }
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     return 0;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span></code></pre></div><h3 id="go">Go</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">package</span> <span style="color:#268bd2">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> (
+</span></span><span style="display:flex;"><span>    <span style="color:#2aa198">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#2aa198">&#34;math/rand&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#2aa198">&#34;time&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">type</span> <span style="color:#268bd2">TreapNode</span> <span style="color:#859900">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">Key</span>      <span style="color:#859900;font-weight:bold">int</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">Priority</span> <span style="color:#859900;font-weight:bold">int</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">Left</span>     &lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">TreapNode</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">Right</span>    &lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">TreapNode</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> <span style="color:#268bd2">NewTreapNode</span>(<span style="color:#268bd2">key</span> <span style="color:#859900;font-weight:bold">int</span>) &lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">TreapNode</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Seed the random number generator once</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">rand</span>.<span style="color:#268bd2">Seed</span>(<span style="color:#268bd2">time</span>.<span style="color:#268bd2">Now</span>().<span style="color:#268bd2">UnixNano</span>())
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> &amp;<span style="color:#268bd2">TreapNode</span>{<span style="color:#268bd2">Key</span>: <span style="color:#268bd2">key</span>, <span style="color:#268bd2">Priority</span>: <span style="color:#268bd2">rand</span>.<span style="color:#268bd2">Intn</span>(<span style="color:#2aa198;font-weight:bold">10000</span>)}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">type</span> <span style="color:#268bd2">Treap</span> <span style="color:#859900">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">Root</span> &lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">TreapNode</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> (<span style="color:#268bd2">t</span> &lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">Treap</span>) <span style="color:#268bd2">rotateLeft</span>(<span style="color:#268bd2">x</span> &lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">TreapNode</span>) &lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">TreapNode</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">y</span> := <span style="color:#268bd2">x</span>.<span style="color:#268bd2">Right</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">x</span>.<span style="color:#268bd2">Right</span> = <span style="color:#268bd2">y</span>.<span style="color:#268bd2">Left</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">y</span>.<span style="color:#268bd2">Left</span> = <span style="color:#268bd2">x</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">y</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> (<span style="color:#268bd2">t</span> &lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">Treap</span>) <span style="color:#268bd2">rotateRight</span>(<span style="color:#268bd2">y</span> &lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">TreapNode</span>) &lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">TreapNode</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">x</span> := <span style="color:#268bd2">y</span>.<span style="color:#268bd2">Left</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">y</span>.<span style="color:#268bd2">Left</span> = <span style="color:#268bd2">x</span>.<span style="color:#268bd2">Right</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">x</span>.<span style="color:#268bd2">Right</span> = <span style="color:#268bd2">y</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">x</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> (<span style="color:#268bd2">t</span> &lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">Treap</span>) <span style="color:#268bd2">insert</span>(<span style="color:#268bd2">node</span> &lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">TreapNode</span>, <span style="color:#268bd2">key</span> <span style="color:#859900;font-weight:bold">int</span>) &lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">TreapNode</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#268bd2">node</span> == <span style="color:#859900;font-weight:bold">nil</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">NewTreapNode</span>(<span style="color:#268bd2">key</span>)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#268bd2">key</span> &lt; <span style="color:#268bd2">node</span>.<span style="color:#268bd2">Key</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">node</span>.<span style="color:#268bd2">Left</span> = <span style="color:#268bd2">t</span>.<span style="color:#268bd2">insert</span>(<span style="color:#268bd2">node</span>.<span style="color:#268bd2">Left</span>, <span style="color:#268bd2">key</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Fix heap property (assuming max-heap for priority)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">node</span>.<span style="color:#268bd2">Left</span>.<span style="color:#268bd2">Priority</span> &gt; <span style="color:#268bd2">node</span>.<span style="color:#268bd2">Priority</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">node</span> = <span style="color:#268bd2">t</span>.<span style="color:#268bd2">rotateRight</span>(<span style="color:#268bd2">node</span>)
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    } <span style="color:#859900">else</span> <span style="color:#859900">if</span> <span style="color:#268bd2">key</span> &gt; <span style="color:#268bd2">node</span>.<span style="color:#268bd2">Key</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">node</span>.<span style="color:#268bd2">Right</span> = <span style="color:#268bd2">t</span>.<span style="color:#268bd2">insert</span>(<span style="color:#268bd2">node</span>.<span style="color:#268bd2">Right</span>, <span style="color:#268bd2">key</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Fix heap property</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">node</span>.<span style="color:#268bd2">Right</span>.<span style="color:#268bd2">Priority</span> &gt; <span style="color:#268bd2">node</span>.<span style="color:#268bd2">Priority</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">node</span> = <span style="color:#268bd2">t</span>.<span style="color:#268bd2">rotateLeft</span>(<span style="color:#268bd2">node</span>)
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// If key == node.Key, do nothing (no duplicates)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">node</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> (<span style="color:#268bd2">t</span> &lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">Treap</span>) <span style="color:#268bd2">search</span>(<span style="color:#268bd2">node</span> &lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">TreapNode</span>, <span style="color:#268bd2">key</span> <span style="color:#859900;font-weight:bold">int</span>) &lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">TreapNode</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#268bd2">node</span> == <span style="color:#859900;font-weight:bold">nil</span> || <span style="color:#268bd2">node</span>.<span style="color:#268bd2">Key</span> == <span style="color:#268bd2">key</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">node</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#268bd2">key</span> &lt; <span style="color:#268bd2">node</span>.<span style="color:#268bd2">Key</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">t</span>.<span style="color:#268bd2">search</span>(<span style="color:#268bd2">node</span>.<span style="color:#268bd2">Left</span>, <span style="color:#268bd2">key</span>)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">t</span>.<span style="color:#268bd2">search</span>(<span style="color:#268bd2">node</span>.<span style="color:#268bd2">Right</span>, <span style="color:#268bd2">key</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> (<span style="color:#268bd2">t</span> &lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">Treap</span>) <span style="color:#268bd2">deleteNode</span>(<span style="color:#268bd2">node</span> &lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">TreapNode</span>, <span style="color:#268bd2">key</span> <span style="color:#859900;font-weight:bold">int</span>) &lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">TreapNode</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#268bd2">node</span> == <span style="color:#859900;font-weight:bold">nil</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#859900;font-weight:bold">nil</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#268bd2">key</span> &lt; <span style="color:#268bd2">node</span>.<span style="color:#268bd2">Key</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">node</span>.<span style="color:#268bd2">Left</span> = <span style="color:#268bd2">t</span>.<span style="color:#268bd2">deleteNode</span>(<span style="color:#268bd2">node</span>.<span style="color:#268bd2">Left</span>, <span style="color:#268bd2">key</span>)
+</span></span><span style="display:flex;"><span>    } <span style="color:#859900">else</span> <span style="color:#859900">if</span> <span style="color:#268bd2">key</span> &gt; <span style="color:#268bd2">node</span>.<span style="color:#268bd2">Key</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">node</span>.<span style="color:#268bd2">Right</span> = <span style="color:#268bd2">t</span>.<span style="color:#268bd2">deleteNode</span>(<span style="color:#268bd2">node</span>.<span style="color:#268bd2">Right</span>, <span style="color:#268bd2">key</span>)
+</span></span><span style="display:flex;"><span>    } <span style="color:#859900">else</span> { <span style="color:#93a1a1;font-style:italic">// Found node to delete</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">node</span>.<span style="color:#268bd2">Left</span> == <span style="color:#859900;font-weight:bold">nil</span> &amp;&amp; <span style="color:#268bd2">node</span>.<span style="color:#268bd2">Right</span> == <span style="color:#859900;font-weight:bold">nil</span> { <span style="color:#93a1a1;font-style:italic">// Leaf node</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#859900;font-weight:bold">nil</span>
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> <span style="color:#859900">if</span> <span style="color:#268bd2">node</span>.<span style="color:#268bd2">Left</span> == <span style="color:#859900;font-weight:bold">nil</span> { <span style="color:#93a1a1;font-style:italic">// Only right child</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#268bd2">node</span>.<span style="color:#268bd2">Right</span>
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> <span style="color:#859900">if</span> <span style="color:#268bd2">node</span>.<span style="color:#268bd2">Right</span> == <span style="color:#859900;font-weight:bold">nil</span> { <span style="color:#93a1a1;font-style:italic">// Only left child</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#268bd2">node</span>.<span style="color:#268bd2">Left</span>
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> { <span style="color:#93a1a1;font-style:italic">// Two children, rotate to make it a leaf</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> <span style="color:#268bd2">node</span>.<span style="color:#268bd2">Left</span>.<span style="color:#268bd2">Priority</span> &gt; <span style="color:#268bd2">node</span>.<span style="color:#268bd2">Right</span>.<span style="color:#268bd2">Priority</span> { <span style="color:#93a1a1;font-style:italic">// Rotate right</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">node</span> = <span style="color:#268bd2">t</span>.<span style="color:#268bd2">rotateRight</span>(<span style="color:#268bd2">node</span>)
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">node</span>.<span style="color:#268bd2">Right</span> = <span style="color:#268bd2">t</span>.<span style="color:#268bd2">deleteNode</span>(<span style="color:#268bd2">node</span>.<span style="color:#268bd2">Right</span>, <span style="color:#268bd2">key</span>)
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> { <span style="color:#93a1a1;font-style:italic">// Rotate left</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">node</span> = <span style="color:#268bd2">t</span>.<span style="color:#268bd2">rotateLeft</span>(<span style="color:#268bd2">node</span>)
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">node</span>.<span style="color:#268bd2">Left</span> = <span style="color:#268bd2">t</span>.<span style="color:#268bd2">deleteNode</span>(<span style="color:#268bd2">node</span>.<span style="color:#268bd2">Left</span>, <span style="color:#268bd2">key</span>)
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">node</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> (<span style="color:#268bd2">t</span> &lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">Treap</span>) <span style="color:#268bd2">Insert</span>(<span style="color:#268bd2">key</span> <span style="color:#859900;font-weight:bold">int</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">t</span>.<span style="color:#268bd2">Root</span> = <span style="color:#268bd2">t</span>.<span style="color:#268bd2">insert</span>(<span style="color:#268bd2">t</span>.<span style="color:#268bd2">Root</span>, <span style="color:#268bd2">key</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> (<span style="color:#268bd2">t</span> &lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">Treap</span>) <span style="color:#268bd2">Search</span>(<span style="color:#268bd2">key</span> <span style="color:#859900;font-weight:bold">int</span>) &lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">TreapNode</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">t</span>.<span style="color:#268bd2">search</span>(<span style="color:#268bd2">t</span>.<span style="color:#268bd2">Root</span>, <span style="color:#268bd2">key</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> (<span style="color:#268bd2">t</span> &lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">Treap</span>) <span style="color:#268bd2">Delete</span>(<span style="color:#268bd2">key</span> <span style="color:#859900;font-weight:bold">int</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">t</span>.<span style="color:#268bd2">Root</span> = <span style="color:#268bd2">t</span>.<span style="color:#268bd2">deleteNode</span>(<span style="color:#268bd2">t</span>.<span style="color:#268bd2">Root</span>, <span style="color:#268bd2">key</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// func main() {</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     treapTree := &amp;Treap{}</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     keysToInsert := []int{50, 30, 70, 20, 40, 60, 80}</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     for _, k := range keysToInsert {</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         treapTree.Insert(k)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     }</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     found := treapTree.Search(40)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     if found != nil {</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         fmt.Printf(&#34;Search for 40: Found (Key: %d)\n&#34;, found.Key)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     } else {</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         fmt.Println(&#34;Search for 40: Not Found&#34;)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     }</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     treapTree.Delete(30)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     found = treapTree.Search(30)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     if found != nil {</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         fmt.Printf(&#34;Search for 30 after deletion: Found (Key: %d)\n&#34;, found.Key)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     } else {</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         fmt.Println(&#34;Search for 30 after deletion: Not Found&#34;)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     }</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }</span>
+</span></span></code></pre></div><h3 id="d">D</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-d" data-lang="d"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.stdio</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.random</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.algorithm</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#cb4b16">TreapNode</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">key</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">priority</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">TreapNode</span> <span style="color:#268bd2">left</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">TreapNode</span> <span style="color:#268bd2">right</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">this</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">k</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">key</span> = <span style="color:#268bd2">k</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">priority</span> = <span style="color:#268bd2">uniform</span>(<span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#2aa198;font-weight:bold">10000</span>); <span style="color:#93a1a1;font-style:italic">// Random priority
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">left</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">right</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#cb4b16">Treap</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">TreapNode</span> <span style="color:#268bd2">root</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">this</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">root</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">
+</span></span></span><span style="display:flex;"><span><span style="color:#268bd2">private:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">TreapNode</span> <span style="color:#268bd2">rotateLeft</span>(<span style="color:#268bd2">TreapNode</span> <span style="color:#268bd2">x</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">TreapNode</span> <span style="color:#268bd2">y</span> = <span style="color:#268bd2">x</span>.<span style="color:#268bd2">right</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">x</span>.<span style="color:#268bd2">right</span> = <span style="color:#268bd2">y</span>.<span style="color:#268bd2">left</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">y</span>.<span style="color:#268bd2">left</span> = <span style="color:#268bd2">x</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">y</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">TreapNode</span> <span style="color:#268bd2">rotateRight</span>(<span style="color:#268bd2">TreapNode</span> <span style="color:#268bd2">y</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">TreapNode</span> <span style="color:#268bd2">x</span> = <span style="color:#268bd2">y</span>.<span style="color:#268bd2">left</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">y</span>.<span style="color:#268bd2">left</span> = <span style="color:#268bd2">x</span>.<span style="color:#268bd2">right</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">x</span>.<span style="color:#268bd2">right</span> = <span style="color:#268bd2">y</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">x</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">TreapNode</span> <span style="color:#268bd2">insert</span>(<span style="color:#268bd2">TreapNode</span> <span style="color:#268bd2">node</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">node</span> <span style="color:#859900">is</span> <span style="color:#859900;font-weight:bold">null</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#859900">new</span> <span style="color:#268bd2">TreapNode</span>(<span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">key</span> &lt; <span style="color:#268bd2">node</span>.<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">node</span>.<span style="color:#268bd2">left</span> = <span style="color:#268bd2">insert</span>(<span style="color:#268bd2">node</span>.<span style="color:#268bd2">left</span>, <span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Fix heap property (assuming max-heap for priority)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">node</span>.<span style="color:#268bd2">left</span> !<span style="color:#859900">is</span> <span style="color:#859900;font-weight:bold">null</span> &amp;&amp; <span style="color:#268bd2">node</span>.<span style="color:#268bd2">left</span>.<span style="color:#268bd2">priority</span> &gt; <span style="color:#268bd2">node</span>.<span style="color:#268bd2">priority</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">node</span> = <span style="color:#268bd2">rotateRight</span>(<span style="color:#268bd2">node</span>);
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> <span style="color:#859900">if</span> (<span style="color:#268bd2">key</span> &gt; <span style="color:#268bd2">node</span>.<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">node</span>.<span style="color:#268bd2">right</span> = <span style="color:#268bd2">insert</span>(<span style="color:#268bd2">node</span>.<span style="color:#268bd2">right</span>, <span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Fix heap property
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">node</span>.<span style="color:#268bd2">right</span> !<span style="color:#859900">is</span> <span style="color:#859900;font-weight:bold">null</span> &amp;&amp; <span style="color:#268bd2">node</span>.<span style="color:#268bd2">right</span>.<span style="color:#268bd2">priority</span> &gt; <span style="color:#268bd2">node</span>.<span style="color:#268bd2">priority</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">node</span> = <span style="color:#268bd2">rotateLeft</span>(<span style="color:#268bd2">node</span>);
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// If key == node.key, do nothing (no duplicates)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">return</span> <span style="color:#268bd2">node</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">TreapNode</span> <span style="color:#268bd2">search</span>(<span style="color:#268bd2">TreapNode</span> <span style="color:#268bd2">node</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">node</span> <span style="color:#859900">is</span> <span style="color:#859900;font-weight:bold">null</span> || <span style="color:#268bd2">node</span>.<span style="color:#268bd2">key</span> == <span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#268bd2">node</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">key</span> &lt; <span style="color:#268bd2">node</span>.<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#268bd2">search</span>(<span style="color:#268bd2">node</span>.<span style="color:#268bd2">left</span>, <span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">search</span>(<span style="color:#268bd2">node</span>.<span style="color:#268bd2">right</span>, <span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">TreapNode</span> <span style="color:#268bd2">deleteNode</span>(<span style="color:#268bd2">TreapNode</span> <span style="color:#268bd2">node</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">node</span> <span style="color:#859900">is</span> <span style="color:#859900;font-weight:bold">null</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">key</span> &lt; <span style="color:#268bd2">node</span>.<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">node</span>.<span style="color:#268bd2">left</span> = <span style="color:#268bd2">deleteNode</span>(<span style="color:#268bd2">node</span>.<span style="color:#268bd2">left</span>, <span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> <span style="color:#859900">if</span> (<span style="color:#268bd2">key</span> &gt; <span style="color:#268bd2">node</span>.<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">node</span>.<span style="color:#268bd2">right</span> = <span style="color:#268bd2">deleteNode</span>(<span style="color:#268bd2">node</span>.<span style="color:#268bd2">right</span>, <span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> { <span style="color:#93a1a1;font-style:italic">// Found node to delete
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">node</span>.<span style="color:#268bd2">left</span> <span style="color:#859900">is</span> <span style="color:#859900;font-weight:bold">null</span> &amp;&amp; <span style="color:#268bd2">node</span>.<span style="color:#268bd2">right</span> <span style="color:#859900">is</span> <span style="color:#859900;font-weight:bold">null</span>) { <span style="color:#93a1a1;font-style:italic">// Leaf node
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#859900">return</span> <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> <span style="color:#859900">if</span> (<span style="color:#268bd2">node</span>.<span style="color:#268bd2">left</span> <span style="color:#859900">is</span> <span style="color:#859900;font-weight:bold">null</span>) { <span style="color:#93a1a1;font-style:italic">// Only right child
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#859900">return</span> <span style="color:#268bd2">node</span>.<span style="color:#268bd2">right</span>;
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> <span style="color:#859900">if</span> (<span style="color:#268bd2">node</span>.<span style="color:#268bd2">right</span> <span style="color:#859900">is</span> <span style="color:#859900;font-weight:bold">null</span>) { <span style="color:#93a1a1;font-style:italic">// Only left child
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#859900">return</span> <span style="color:#268bd2">node</span>.<span style="color:#268bd2">left</span>;
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> { <span style="color:#93a1a1;font-style:italic">// Two children, rotate to make it a leaf
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#859900">if</span> (<span style="color:#268bd2">node</span>.<span style="color:#268bd2">left</span>.<span style="color:#268bd2">priority</span> &gt; <span style="color:#268bd2">node</span>.<span style="color:#268bd2">right</span>.<span style="color:#268bd2">priority</span>) { <span style="color:#93a1a1;font-style:italic">// Rotate right
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                    <span style="color:#268bd2">node</span> = <span style="color:#268bd2">rotateRight</span>(<span style="color:#268bd2">node</span>);
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">node</span>.<span style="color:#268bd2">right</span> = <span style="color:#268bd2">deleteNode</span>(<span style="color:#268bd2">node</span>.<span style="color:#268bd2">right</span>, <span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>                } <span style="color:#859900">else</span> { <span style="color:#93a1a1;font-style:italic">// Rotate left
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                    <span style="color:#268bd2">node</span> = <span style="color:#268bd2">rotateLeft</span>(<span style="color:#268bd2">node</span>);
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">node</span>.<span style="color:#268bd2">left</span> = <span style="color:#268bd2">deleteNode</span>(<span style="color:#268bd2">node</span>.<span style="color:#268bd2">left</span>, <span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">node</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">
+</span></span></span><span style="display:flex;"><span><span style="color:#268bd2">public:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">insert</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">root</span> = <span style="color:#268bd2">insert</span>(<span style="color:#268bd2">root</span>, <span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">TreapNode</span> <span style="color:#268bd2">search</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">search</span>(<span style="color:#268bd2">root</span>, <span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">deleteKey</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">root</span> = <span style="color:#268bd2">deleteNode</span>(<span style="color:#268bd2">root</span>, <span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// void main() {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     auto treapTree = new Treap();
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     int[] keysToInsert = [50, 30, 70, 20, 40, 60, 80];
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     foreach (k; keysToInsert) {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         treapTree.insert(k);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     }
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     auto found = treapTree.search(40);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     if (found !is null) {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         writefln(&#34;Search for 40: Found (Key: %d)&#34;, found.key);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     } else {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         writefln(&#34;Search for 40: Not Found&#34;);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     }
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     treapTree.deleteKey(30);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     found = treapTree.search(30);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     if (found !is null) {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         writefln(&#34;Search for 30 after deletion: Found (Key: %d)&#34;, found.key);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     } else {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         writefln(&#34;Search for 30 after deletion: Not Found&#34;);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     }
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span></code></pre></div><h2 id="applications">Applications</h2>
+<h3 id="application">Application</h3>
+<p>Treaps are a fascinating data structure that provide the advantages of self-balancing binary search trees (<code>O(log N)</code> average time complexity for all major operations) with a simpler implementation, primarily due to their probabilistic balancing.</p>
+<ul>
+<li><strong>Randomized Data Structures:</strong> Good for scenarios where performance needs to be robust against adversarial inputs, as its balance depends on random priorities rather than input order.</li>
+<li><strong>Implicit Data Structures:</strong> Can be used to build other implicit data structures or as a component in more complex algorithms.</li>
+<li><strong>Range Queries:</strong> Can be extended to support various range query operations efficiently.</li>
+<li><strong>Competitive Programming:</strong> Favored in some competitive programming contexts for their balance of performance and ease of implementation.</li>
+</ul>
+
+    </div>
+</article>
+
+<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
+    
+    <a href="//localhost:1313/dsa-42/data_structures/specialized/trie/" class="nav-btn">← Previous</a>
+    
+    
+    <a href="//localhost:1313/dsa-42/data_structures/specialized/" class="nav-btn">Up</a>
+
+    
+    <a href="//localhost:1313/dsa-42/data_structures/specialized/suffix_tree/" class="nav-btn">Next →</a>
+    
+</div>
+
+    </main>
+
+    <footer class="footer">
+        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
+    </footer>
+
+    <script>
+        const body = document.getElementById('theme-body');
+        const btn = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme');
+
+        
+        function updateButtonText() {
+            if (body.classList.contains('theme-terminal')) {
+                btn.textContent = "Light Mode";
+            } else {
+                btn.textContent = "Dark Mode";
+            }
+        }
+
+        if (currentTheme === 'terminal') {
+            body.classList.add('theme-terminal');
+        }
+        
+        
+        updateButtonText();
+
+        btn.addEventListener('click', () => {
+            body.classList.toggle('theme-terminal');
+            updateButtonText();
+            
+            let theme = 'natural';
+            if (body.classList.contains('theme-terminal')) {
+                theme = 'terminal';
+            }
+            localStorage.setItem('theme', theme);
+        });
+    </script>
+</body>
+</html>

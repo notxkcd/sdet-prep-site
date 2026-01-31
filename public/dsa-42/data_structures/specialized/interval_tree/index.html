@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interval Tree | SDET Interview Preparation Kit</title>
+    <link rel="stylesheet" href="//localhost:1313/css/style.css">
+    <link rel="stylesheet" href="//localhost:1313/css/terminal.css">
+    
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    
+    <link rel="stylesheet" href="//localhost:1313/lib/katex/katex.min.css">
+    <script defer src="//localhost:1313/lib/katex/katex.min.js"></script>
+    <script defer src="//localhost:1313/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</head>
+<body id="theme-body">
+    <button id="theme-toggle">Switch Theme</button>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="//localhost:1313/">Index</a></li>
+                
+            </ul>
+        </nav>
+        <div class="site-breadcrumb">
+            <a href="//localhost:1313/">Home</a>
+            
+                
+                    <span>/</span> <a href="//localhost:1313/">SDET Interview Dashboard</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/dsa-42/">42 Algorithms &amp; 42 Data Structures</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/dsa-42/data_structures/">Data Structures</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/dsa-42/data_structures/specialized/">Specialized</a>
+                
+            
+            
+                <span>/</span> Interval Tree
+            
+        </div>
+    </header>
+
+    <main>
+        
+<article>
+    <div class="category-title" style="margin-bottom: 0.5rem;">Specialized</div>
+    <h1>Interval Tree</h1>
+    <div class="content-body" style="margin-top: 2rem;">
+        <p>An <code>Interval Tree</code> is a tree data structure that efficiently stores intervals and allows for quick querying of all intervals that overlap with a given point or another interval. It is particularly useful when dealing with datasets that have many overlapping intervals, such as in scheduling applications, genomic data analysis, or event management.</p>
+<p>It is typically built upon a balanced <code>binary search tree</code>, where each <code>node</code> is augmented with additional information about the <code>intervals</code> in its subtree to speed up queries.</p>
+<h2 id="how-it-works">How it Works</h2>
+<h3 id="how-it-works-expanded">How it Works (Expanded)</h3>
+<p>An <code>Interval Tree</code> augments a balanced <code>BST</code> structure. Each <code>node</code> in the <code>tree</code> stores:</p>
+<ul>
+<li>A &ldquo;center&rdquo; point: The midpoint or endpoint of some interval.</li>
+<li>A <code>list</code> of <code>intervals</code> that &ldquo;stab&rdquo; (contain) the center point.</li>
+<li>A <code>left subtree</code> containing <code>intervals</code> completely to the <code>left</code> of the center point.</li>
+<li>A <code>right subtree</code> containing <code>intervals</code> completely to the <code>right</code> of the center point.</li>
+</ul>
+<hr>
+<p>Example: Interval Tree for intervals [1,5], [2,6], [4,8], [9,12]</p>
+<p>Center 7: (for entire range [1,12])
+Intervals: None stab 7
+Left subtree (for [1,6]):
+Center 4:
+Intervals: [1,5], [2,6], [4,8] (all stab 4)
+Left subtree (for [1,3]): &hellip;
+Right subtree (for [5,6]): &hellip;
+Right subtree (for [8,12]):
+Center 10:
+Intervals: [9,12] (stabs 10)
+Left subtree (for [8,9]): &hellip;
+Right subtree (for [11,12]): &hellip;</p>
+<h2 id="implementation">Implementation</h2>
+<h3 id="python">Python</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#cb4b16">Interval</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">__init__</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">start</span>, <span style="color:#268bd2">end</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">start</span> = <span style="color:#268bd2">start</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">end</span> = <span style="color:#268bd2">end</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">overlaps</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">other_interval</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">start</span> &lt;= <span style="color:#268bd2">other_interval</span>.<span style="color:#268bd2">end</span> <span style="color:#859900">and</span> <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">end</span> &gt;= <span style="color:#268bd2">other_interval</span>.<span style="color:#268bd2">start</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#cb4b16">IntervalTreeNode</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">__init__</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">center</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">center</span> = <span style="color:#268bd2">center</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">intervals_left</span> = []  <span style="color:#93a1a1;font-style:italic"># Intervals that start left of center and end right of center</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">intervals_right</span> = [] <span style="color:#93a1a1;font-style:italic"># Intervals that start left of center and end right of center</span>
+</span></span><span style="display:flex;"><span>                                  <span style="color:#93a1a1;font-style:italic"># Sorted by start point for intervals_left, by end point for intervals_right</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">left_child</span> = <span style="color:#859900;font-weight:bold">None</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">right_child</span> = <span style="color:#859900;font-weight:bold">None</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># Max end point in this subtree, useful for optimizing queries</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">max_end</span> = -<span style="color:#cb4b16">float</span>(<span style="color:#2aa198">&#39;inf&#39;</span>) 
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#cb4b16">IntervalTree</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">__init__</span>(<span style="color:#cb4b16">self</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">root</span> = <span style="color:#859900;font-weight:bold">None</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">insert</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">root</span>, <span style="color:#268bd2">interval</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#859900">not</span> <span style="color:#268bd2">root</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic"># Pick the midpoint of the interval as the center for the root node</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic"># For simplicity, we&#39;ll pick the start of the interval being inserted as the center</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic"># A more robust approach would use a global median or a balanced BST</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">new_node</span> = <span style="color:#268bd2">IntervalTreeNode</span>(<span style="color:#268bd2">interval</span>.<span style="color:#268bd2">start</span>) 
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">new_node</span>.<span style="color:#268bd2">max_end</span> = <span style="color:#268bd2">interval</span>.<span style="color:#268bd2">end</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">new_node</span>.<span style="color:#268bd2">intervals_left</span>.<span style="color:#268bd2">append</span>(<span style="color:#268bd2">interval</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#268bd2">new_node</span>
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">root</span>.<span style="color:#268bd2">max_end</span> = <span style="color:#cb4b16">max</span>(<span style="color:#268bd2">root</span>.<span style="color:#268bd2">max_end</span>, <span style="color:#268bd2">interval</span>.<span style="color:#268bd2">end</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">interval</span>.<span style="color:#268bd2">end</span> &lt; <span style="color:#268bd2">root</span>.<span style="color:#268bd2">center</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">root</span>.<span style="color:#268bd2">left_child</span> = <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">insert</span>(<span style="color:#268bd2">root</span>.<span style="color:#268bd2">left_child</span>, <span style="color:#268bd2">interval</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">elif</span> <span style="color:#268bd2">interval</span>.<span style="color:#268bd2">start</span> &gt; <span style="color:#268bd2">root</span>.<span style="color:#268bd2">center</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">root</span>.<span style="color:#268bd2">right_child</span> = <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">insert</span>(<span style="color:#268bd2">root</span>.<span style="color:#268bd2">right_child</span>, <span style="color:#268bd2">interval</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">else</span>: <span style="color:#93a1a1;font-style:italic"># Interval overlaps the center</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">root</span>.<span style="color:#268bd2">intervals_left</span>.<span style="color:#268bd2">append</span>(<span style="color:#268bd2">interval</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">root</span>.<span style="color:#268bd2">intervals_right</span>.<span style="color:#268bd2">append</span>(<span style="color:#268bd2">interval</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic"># Sorting these lists helps with query speed</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">root</span>.<span style="color:#268bd2">intervals_left</span>.<span style="color:#268bd2">sort</span>(<span style="color:#268bd2">key</span>=<span style="color:#859900">lambda</span> <span style="color:#268bd2">i</span>: <span style="color:#268bd2">i</span>.<span style="color:#268bd2">start</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">root</span>.<span style="color:#268bd2">intervals_right</span>.<span style="color:#268bd2">sort</span>(<span style="color:#268bd2">key</span>=<span style="color:#859900">lambda</span> <span style="color:#268bd2">i</span>: <span style="color:#268bd2">i</span>.<span style="color:#268bd2">end</span>, <span style="color:#268bd2">reverse</span>=<span style="color:#859900;font-weight:bold">True</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">root</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">query</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">root</span>, <span style="color:#268bd2">query_interval</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#859900">not</span> <span style="color:#268bd2">root</span> <span style="color:#859900">or</span> <span style="color:#268bd2">query_interval</span>.<span style="color:#268bd2">start</span> &gt; <span style="color:#268bd2">root</span>.<span style="color:#268bd2">max_end</span>: <span style="color:#93a1a1;font-style:italic"># Pruning optimization</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> []
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">results</span> = []
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># Query intervals_left (overlapping to the right of query_interval.start)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> <span style="color:#268bd2">interval</span> <span style="color:#859900">in</span> <span style="color:#268bd2">root</span>.<span style="color:#268bd2">intervals_left</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> <span style="color:#268bd2">interval</span>.<span style="color:#268bd2">overlaps</span>(<span style="color:#268bd2">query_interval</span>):
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">results</span>.<span style="color:#268bd2">append</span>(<span style="color:#268bd2">interval</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">elif</span> <span style="color:#268bd2">interval</span>.<span style="color:#268bd2">start</span> &gt; <span style="color:#268bd2">query_interval</span>.<span style="color:#268bd2">end</span>: <span style="color:#93a1a1;font-style:italic"># Optimization: intervals_left sorted by start</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">break</span> <span style="color:#93a1a1;font-style:italic"># No more overlaps possible in this direction</span>
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">query_interval</span>.<span style="color:#268bd2">start</span> &lt; <span style="color:#268bd2">root</span>.<span style="color:#268bd2">center</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">results</span>.<span style="color:#268bd2">extend</span>(<span style="color:#cb4b16">self</span>.<span style="color:#268bd2">query</span>(<span style="color:#268bd2">root</span>.<span style="color:#268bd2">left_child</span>, <span style="color:#268bd2">query_interval</span>))
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">query_interval</span>.<span style="color:#268bd2">end</span> &gt; <span style="color:#268bd2">root</span>.<span style="color:#268bd2">center</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">results</span>.<span style="color:#268bd2">extend</span>(<span style="color:#cb4b16">self</span>.<span style="color:#268bd2">query</span>(<span style="color:#268bd2">root</span>.<span style="color:#268bd2">right_child</span>, <span style="color:#268bd2">query_interval</span>))
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">results</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># Example Usage:</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># tree = IntervalTree()</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># root_node = None</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># intervals = [</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#     Interval(1, 5), Interval(2, 6), Interval(4, 8),</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#     Interval(9, 12), Interval(10, 14), Interval(0, 3)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># ]</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># for i in intervals:</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#     root_node = tree.insert(root_node, i)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># query_int = Interval(3, 7)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># overlaps = tree.query(root_node, query_int)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(f&#34;Intervals overlapping with [{query_int.start}, {query_int.end}]:&#34;)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># for o in overlaps:</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#     print(f&#34;[{o.start}, {o.end}]&#34;) # Expected: [1,5], [2,6], [4,8]</span>
+</span></span></code></pre></div><h3 id="javascript">Javascript</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#268bd2">Interval</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">constructor</span>(<span style="color:#268bd2">start</span>, <span style="color:#268bd2">end</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">start</span> = <span style="color:#268bd2">start</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">end</span> = <span style="color:#268bd2">end</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">overlaps</span>(<span style="color:#268bd2">otherInterval</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#859900">this</span>.<span style="color:#268bd2">start</span> &lt;= <span style="color:#268bd2">otherInterval</span>.<span style="color:#268bd2">end</span> &amp;&amp; <span style="color:#859900">this</span>.<span style="color:#268bd2">end</span> &gt;= <span style="color:#268bd2">otherInterval</span>.<span style="color:#268bd2">start</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#268bd2">IntervalTreeNode</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">constructor</span>(<span style="color:#268bd2">center</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">center</span> = <span style="color:#268bd2">center</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">intervalsLeft</span> = []; <span style="color:#93a1a1;font-style:italic">// Intervals that start left of center and end right of center
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">intervalsRight</span> = []; <span style="color:#93a1a1;font-style:italic">// Intervals that start left of center and end right of center
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">leftChild</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">rightChild</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">maxEnd</span> = -<span style="color:#859900;font-weight:bold">Infinity</span>; <span style="color:#93a1a1;font-style:italic">// Max end point in this subtree, useful for optimizing queries
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#268bd2">IntervalTree</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">constructor</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">root</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">insert</span>(<span style="color:#268bd2">root</span>, <span style="color:#268bd2">interval</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (!<span style="color:#268bd2">root</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">const</span> <span style="color:#268bd2">newNode</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">IntervalTreeNode</span>(<span style="color:#268bd2">interval</span>.<span style="color:#268bd2">start</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">newNode</span>.<span style="color:#268bd2">maxEnd</span> = <span style="color:#268bd2">interval</span>.<span style="color:#268bd2">end</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">newNode</span>.<span style="color:#268bd2">intervalsLeft</span>.<span style="color:#268bd2">push</span>(<span style="color:#268bd2">interval</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#268bd2">newNode</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">root</span>.<span style="color:#268bd2">maxEnd</span> = <span style="color:#cb4b16">Math</span>.<span style="color:#268bd2">max</span>(<span style="color:#268bd2">root</span>.<span style="color:#268bd2">maxEnd</span>, <span style="color:#268bd2">interval</span>.<span style="color:#268bd2">end</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">interval</span>.<span style="color:#268bd2">end</span> &lt; <span style="color:#268bd2">root</span>.<span style="color:#268bd2">center</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">root</span>.<span style="color:#268bd2">leftChild</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">insert</span>(<span style="color:#268bd2">root</span>.<span style="color:#268bd2">leftChild</span>, <span style="color:#268bd2">interval</span>);
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> <span style="color:#859900">if</span> (<span style="color:#268bd2">interval</span>.<span style="color:#268bd2">start</span> &gt; <span style="color:#268bd2">root</span>.<span style="color:#268bd2">center</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">root</span>.<span style="color:#268bd2">rightChild</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">insert</span>(<span style="color:#268bd2">root</span>.<span style="color:#268bd2">rightChild</span>, <span style="color:#268bd2">interval</span>);
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> { <span style="color:#93a1a1;font-style:italic">// Interval overlaps the center
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#268bd2">root</span>.<span style="color:#268bd2">intervalsLeft</span>.<span style="color:#268bd2">push</span>(<span style="color:#268bd2">interval</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">root</span>.<span style="color:#268bd2">intervalsRight</span>.<span style="color:#268bd2">push</span>(<span style="color:#268bd2">interval</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">root</span>.<span style="color:#268bd2">intervalsLeft</span>.<span style="color:#268bd2">sort</span>((<span style="color:#268bd2">a</span>, <span style="color:#268bd2">b</span>) =&gt; <span style="color:#268bd2">a</span>.<span style="color:#268bd2">start</span> - <span style="color:#268bd2">b</span>.<span style="color:#268bd2">start</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">root</span>.<span style="color:#268bd2">intervalsRight</span>.<span style="color:#268bd2">sort</span>((<span style="color:#268bd2">a</span>, <span style="color:#268bd2">b</span>) =&gt; <span style="color:#268bd2">b</span>.<span style="color:#268bd2">end</span> - <span style="color:#268bd2">a</span>.<span style="color:#268bd2">end</span>); <span style="color:#93a1a1;font-style:italic">// Descending for faster overlap checks
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">root</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">query</span>(<span style="color:#268bd2">root</span>, <span style="color:#268bd2">queryInterval</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (!<span style="color:#268bd2">root</span> || <span style="color:#268bd2">queryInterval</span>.<span style="color:#268bd2">start</span> &gt; <span style="color:#268bd2">root</span>.<span style="color:#268bd2">maxEnd</span>) { <span style="color:#93a1a1;font-style:italic">// Pruning optimization
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">return</span> [];
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">let</span> <span style="color:#268bd2">results</span> = [];
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Query intervalsLeft
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">for</span> (<span style="color:#859900">const</span> <span style="color:#268bd2">interval</span> <span style="color:#859900">of</span> <span style="color:#268bd2">root</span>.<span style="color:#268bd2">intervalsLeft</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">interval</span>.<span style="color:#268bd2">overlaps</span>(<span style="color:#268bd2">queryInterval</span>)) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">results</span>.<span style="color:#268bd2">push</span>(<span style="color:#268bd2">interval</span>);
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> <span style="color:#859900">if</span> (<span style="color:#268bd2">interval</span>.<span style="color:#268bd2">start</span> &gt; <span style="color:#268bd2">queryInterval</span>.<span style="color:#268bd2">end</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">break</span>; <span style="color:#93a1a1;font-style:italic">// Optimization: intervalsLeft sorted by start
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">queryInterval</span>.<span style="color:#268bd2">start</span> &lt; <span style="color:#268bd2">root</span>.<span style="color:#268bd2">center</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">results</span> = <span style="color:#268bd2">results</span>.<span style="color:#268bd2">concat</span>(<span style="color:#859900">this</span>.<span style="color:#268bd2">query</span>(<span style="color:#268bd2">root</span>.<span style="color:#268bd2">leftChild</span>, <span style="color:#268bd2">queryInterval</span>));
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">queryInterval</span>.<span style="color:#268bd2">end</span> &gt; <span style="color:#268bd2">root</span>.<span style="color:#268bd2">center</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">results</span> = <span style="color:#268bd2">results</span>.<span style="color:#268bd2">concat</span>(<span style="color:#859900">this</span>.<span style="color:#268bd2">query</span>(<span style="color:#268bd2">root</span>.<span style="color:#268bd2">rightChild</span>, <span style="color:#268bd2">queryInterval</span>));
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">results</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const tree = new IntervalTree();
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// let rootNode = null;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const intervals = [
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     new Interval(1, 5), new Interval(2, 6), new Interval(4, 8),
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     new Interval(9, 12), new Interval(10, 14), new Interval(0, 3)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// ];
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// for (const i of intervals) {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     rootNode = tree.insert(rootNode, i);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const queryInt = new Interval(3, 7);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const overlaps = tree.query(rootNode, queryInt);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&lt;code&gt;Intervals overlapping with [${queryInt.start}, ${queryInt.end}]:&lt;/code&gt;);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// for (const o of overlaps) {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     console.log(&lt;code&gt;[${o.start}, ${o.end}]&lt;/code&gt;); // Expected: [1,5], [2,6], [4,8]
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span></code></pre></div><h3 id="typescript">Typescript</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-typescript" data-lang="typescript"><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#268bd2">IntervalTS</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">constructor</span>(<span style="color:#859900">public</span> <span style="color:#268bd2">start</span>: <span style="color:#859900;font-weight:bold">number</span>, <span style="color:#859900">public</span> <span style="color:#268bd2">end</span>: <span style="color:#859900;font-weight:bold">number</span>) {}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">overlaps</span>(<span style="color:#268bd2">otherInterval</span>: <span style="color:#859900;font-weight:bold">IntervalTS</span>): <span style="color:#859900">boolean</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#859900">this</span>.<span style="color:#268bd2">start</span> &lt;= <span style="color:#268bd2">otherInterval</span>.<span style="color:#268bd2">end</span> &amp;&amp; <span style="color:#859900">this</span>.<span style="color:#268bd2">end</span> &gt;= <span style="color:#268bd2">otherInterval</span>.<span style="color:#268bd2">start</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#268bd2">IntervalTreeNodeTS</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">center</span>: <span style="color:#859900;font-weight:bold">number</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">intervalsLeft</span>: <span style="color:#859900;font-weight:bold">IntervalTS</span>[];
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">intervalsRight</span>: <span style="color:#859900;font-weight:bold">IntervalTS</span>[];
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">leftChild</span>: <span style="color:#859900;font-weight:bold">IntervalTreeNodeTS</span> | <span style="color:#859900;font-weight:bold">null</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">rightChild</span>: <span style="color:#859900;font-weight:bold">IntervalTreeNodeTS</span> | <span style="color:#859900;font-weight:bold">null</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">maxEnd</span>: <span style="color:#859900;font-weight:bold">number</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">constructor</span>(<span style="color:#268bd2">center</span>: <span style="color:#859900;font-weight:bold">number</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">center</span> = <span style="color:#268bd2">center</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">intervalsLeft</span> = [];
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">intervalsRight</span> = [];
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">maxEnd</span> = -<span style="color:#859900;font-weight:bold">Infinity</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#268bd2">IntervalTreeTS</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">root</span>: <span style="color:#859900;font-weight:bold">IntervalTreeNodeTS</span> | <span style="color:#859900;font-weight:bold">null</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">insert</span>(<span style="color:#268bd2">rootNode</span>: <span style="color:#859900;font-weight:bold">IntervalTreeNodeTS</span> | <span style="color:#859900;font-weight:bold">null</span>, <span style="color:#268bd2">interval</span>: <span style="color:#859900;font-weight:bold">IntervalTS</span>): <span style="color:#268bd2">IntervalTreeNodeTS</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (!<span style="color:#268bd2">rootNode</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">const</span> <span style="color:#268bd2">newNode</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">IntervalTreeNodeTS</span>(<span style="color:#268bd2">interval</span>.<span style="color:#268bd2">start</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">newNode</span>.<span style="color:#268bd2">maxEnd</span> = <span style="color:#268bd2">interval</span>.<span style="color:#268bd2">end</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">newNode</span>.<span style="color:#268bd2">intervalsLeft</span>.<span style="color:#268bd2">push</span>(<span style="color:#268bd2">interval</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#268bd2">newNode</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">rootNode</span>.<span style="color:#268bd2">maxEnd</span> = <span style="color:#cb4b16">Math</span>.<span style="color:#268bd2">max</span>(<span style="color:#268bd2">rootNode</span>.<span style="color:#268bd2">maxEnd</span>, <span style="color:#268bd2">interval</span>.<span style="color:#268bd2">end</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">interval</span>.<span style="color:#268bd2">end</span> &lt; <span style="color:#268bd2">rootNode</span>.<span style="color:#268bd2">center</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">rootNode</span>.<span style="color:#268bd2">leftChild</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">insert</span>(<span style="color:#268bd2">rootNode</span>.<span style="color:#268bd2">leftChild</span>, <span style="color:#268bd2">interval</span>);
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> <span style="color:#859900">if</span> (<span style="color:#268bd2">interval</span>.<span style="color:#268bd2">start</span> &gt; <span style="color:#268bd2">rootNode</span>.<span style="color:#268bd2">center</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">rootNode</span>.<span style="color:#268bd2">rightChild</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">insert</span>(<span style="color:#268bd2">rootNode</span>.<span style="color:#268bd2">rightChild</span>, <span style="color:#268bd2">interval</span>);
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">rootNode</span>.<span style="color:#268bd2">intervalsLeft</span>.<span style="color:#268bd2">push</span>(<span style="color:#268bd2">interval</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">rootNode</span>.<span style="color:#268bd2">intervalsRight</span>.<span style="color:#268bd2">push</span>(<span style="color:#268bd2">interval</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">rootNode</span>.<span style="color:#268bd2">intervalsLeft</span>.<span style="color:#268bd2">sort</span>((<span style="color:#268bd2">a</span>, <span style="color:#268bd2">b</span>) =&gt; <span style="color:#268bd2">a</span>.<span style="color:#268bd2">start</span> - <span style="color:#268bd2">b</span>.<span style="color:#268bd2">start</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">rootNode</span>.<span style="color:#268bd2">intervalsRight</span>.<span style="color:#268bd2">sort</span>((<span style="color:#268bd2">a</span>, <span style="color:#268bd2">b</span>) =&gt; <span style="color:#268bd2">b</span>.<span style="color:#268bd2">end</span> - <span style="color:#268bd2">a</span>.<span style="color:#268bd2">end</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">rootNode</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">query</span>(<span style="color:#268bd2">rootNode</span>: <span style="color:#859900;font-weight:bold">IntervalTreeNodeTS</span> | <span style="color:#859900;font-weight:bold">null</span>, <span style="color:#268bd2">queryInterval</span>: <span style="color:#859900;font-weight:bold">IntervalTS</span>): <span style="color:#268bd2">IntervalTS</span>[] {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (!<span style="color:#268bd2">rootNode</span> || <span style="color:#268bd2">queryInterval</span>.<span style="color:#268bd2">start</span> &gt; <span style="color:#268bd2">rootNode</span>.<span style="color:#268bd2">maxEnd</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> [];
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">let</span> <span style="color:#268bd2">results</span>: <span style="color:#859900;font-weight:bold">IntervalTS</span>[] = [];
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> (<span style="color:#859900">const</span> <span style="color:#268bd2">interval</span> <span style="color:#859900">of</span> <span style="color:#268bd2">rootNode</span>.<span style="color:#268bd2">intervalsLeft</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">interval</span>.<span style="color:#268bd2">overlaps</span>(<span style="color:#268bd2">queryInterval</span>)) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">results</span>.<span style="color:#268bd2">push</span>(<span style="color:#268bd2">interval</span>);
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> <span style="color:#859900">if</span> (<span style="color:#268bd2">interval</span>.<span style="color:#268bd2">start</span> &gt; <span style="color:#268bd2">queryInterval</span>.<span style="color:#268bd2">end</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">break</span>;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">queryInterval</span>.<span style="color:#268bd2">start</span> &lt; <span style="color:#268bd2">rootNode</span>.<span style="color:#268bd2">center</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">results</span> = <span style="color:#268bd2">results</span>.<span style="color:#268bd2">concat</span>(<span style="color:#859900">this</span>.<span style="color:#268bd2">query</span>(<span style="color:#268bd2">rootNode</span>.<span style="color:#268bd2">leftChild</span>, <span style="color:#268bd2">queryInterval</span>));
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">queryInterval</span>.<span style="color:#268bd2">end</span> &gt; <span style="color:#268bd2">rootNode</span>.<span style="color:#268bd2">center</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">results</span> = <span style="color:#268bd2">results</span>.<span style="color:#268bd2">concat</span>(<span style="color:#859900">this</span>.<span style="color:#268bd2">query</span>(<span style="color:#268bd2">rootNode</span>.<span style="color:#268bd2">rightChild</span>, <span style="color:#268bd2">queryInterval</span>));
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">results</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const treeTS = new IntervalTreeTS();
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// let rootNodeTS: IntervalTreeNodeTS | null = null;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const intervalsTS: IntervalTS[] = [
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     new IntervalTS(1, 5), new IntervalTS(2, 6), new IntervalTS(4, 8),
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     new IntervalTS(9, 12), new IntervalTS(10, 14), new IntervalTS(0, 3)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// ];
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// for (const i of intervalsTS) {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     rootNodeTS = treeTS.insert(rootNodeTS, i);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const queryIntTS = new IntervalTS(3, 7);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const overlapsTS = treeTS.query(rootNodeTS, queryIntTS);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&lt;code&gt;Intervals overlapping with [${queryIntTS.start}, ${queryIntTS.end}]:&lt;/code&gt;);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// for (const o of overlapsTS) {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     console.log(&lt;code&gt;[${o.start}, ${o.end}]&lt;/code&gt;); // Expected: [1,5], [2,6], [4,8]
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span></code></pre></div><h3 id="cpp">Cpp</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;iostream&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;vector&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;algorithm&gt;</span><span style="color:#93a1a1;font-style:italic"> </span><span style="color:#93a1a1;font-style:italic">// For std::max, std::sort
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;limits&gt;</span><span style="color:#93a1a1;font-style:italic">    </span><span style="color:#93a1a1;font-style:italic">// For std::numeric_limits
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#cb4b16">Interval</span> {
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">start</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">end</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">Interval</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">s</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">e</span>) : <span style="color:#268bd2">start</span>(<span style="color:#268bd2">s</span>), <span style="color:#268bd2">end</span>(<span style="color:#268bd2">e</span>) {}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">bool</span> <span style="color:#268bd2">overlaps</span>(<span style="color:#859900">const</span> <span style="color:#268bd2">Interval</span>&amp; <span style="color:#268bd2">other_interval</span>) <span style="color:#859900">const</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">start</span> &lt;= <span style="color:#268bd2">other_interval</span>.<span style="color:#268bd2">end</span> &amp;&amp; <span style="color:#268bd2">end</span> &gt;= <span style="color:#268bd2">other_interval</span>.<span style="color:#268bd2">start</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#cb4b16">IntervalTreeNode</span> {
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">center</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#268bd2">Interval</span>&gt; <span style="color:#268bd2">intervals_left</span>; <span style="color:#93a1a1;font-style:italic">// Intervals that start left of center and end right of center
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#268bd2">Interval</span>&gt; <span style="color:#268bd2">intervals_right</span>; <span style="color:#93a1a1;font-style:italic">// Intervals that start left of center and end right of center
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">IntervalTreeNode</span>&lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">left_child</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">IntervalTreeNode</span>&lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">right_child</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">max_end</span>; <span style="color:#93a1a1;font-style:italic">// Max end point in this subtree, useful for optimizing queries
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">IntervalTreeNode</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">c</span>) : <span style="color:#268bd2">center</span>(<span style="color:#268bd2">c</span>), <span style="color:#268bd2">left_child</span>(<span style="color:#859900">nullptr</span>), <span style="color:#268bd2">right_child</span>(<span style="color:#859900">nullptr</span>), <span style="color:#268bd2">max_end</span>(<span style="color:#268bd2">std</span>::<span style="color:#268bd2">numeric_limits</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt;::<span style="color:#268bd2">min</span>()) {}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    ~<span style="color:#268bd2">IntervalTreeNode</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">delete</span> <span style="color:#268bd2">left_child</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">delete</span> <span style="color:#268bd2">right_child</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#cb4b16">IntervalTree</span> {
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">IntervalTreeNode</span>&lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">root</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">IntervalTree</span>() : <span style="color:#268bd2">root</span>(<span style="color:#859900">nullptr</span>) {}
+</span></span><span style="display:flex;"><span>    ~<span style="color:#268bd2">IntervalTree</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">delete</span> <span style="color:#268bd2">root</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">IntervalTreeNode</span>&lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">insert</span>(<span style="color:#268bd2">IntervalTreeNode</span>&lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">node</span>, <span style="color:#859900">const</span> <span style="color:#268bd2">Interval</span>&amp; <span style="color:#268bd2">interval</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">node</span> == <span style="color:#859900">nullptr</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// For simplicity, pick the interval&#39;s start as center if node is null
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#93a1a1;font-style:italic">// A more robust approach would dynamically pick a center
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#268bd2">IntervalTreeNode</span>&lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">new_node</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">IntervalTreeNode</span>(<span style="color:#268bd2">interval</span>.<span style="color:#268bd2">start</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">new_node</span>-&gt;<span style="color:#268bd2">max_end</span> = <span style="color:#268bd2">interval</span>.<span style="color:#268bd2">end</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">new_node</span>-&gt;<span style="color:#268bd2">intervals_left</span>.<span style="color:#268bd2">push_back</span>(<span style="color:#268bd2">interval</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#268bd2">new_node</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">max_end</span> = <span style="color:#268bd2">std</span>::<span style="color:#268bd2">max</span>(<span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">max_end</span>, <span style="color:#268bd2">interval</span>.<span style="color:#268bd2">end</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">interval</span>.<span style="color:#268bd2">end</span> &lt; <span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">center</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">left_child</span> = <span style="color:#268bd2">insert</span>(<span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">left_child</span>, <span style="color:#268bd2">interval</span>);
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> <span style="color:#268bd2">if</span> (<span style="color:#268bd2">interval</span>.<span style="color:#268bd2">start</span> &gt; <span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">center</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">right_child</span> = <span style="color:#268bd2">insert</span>(<span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">right_child</span>, <span style="color:#268bd2">interval</span>);
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> { <span style="color:#93a1a1;font-style:italic">// Interval overlaps the center
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">intervals_left</span>.<span style="color:#268bd2">push_back</span>(<span style="color:#268bd2">interval</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">intervals_right</span>.<span style="color:#268bd2">push_back</span>(<span style="color:#268bd2">interval</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Sorting these lists helps with query speed
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#268bd2">std</span>::<span style="color:#268bd2">sort</span>(<span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">intervals_left</span>.<span style="color:#268bd2">begin</span>(), <span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">intervals_left</span>.<span style="color:#268bd2">end</span>(), 
+</span></span><span style="display:flex;"><span>                      [](<span style="color:#859900">const</span> <span style="color:#268bd2">Interval</span>&amp; <span style="color:#268bd2">a</span>, <span style="color:#859900">const</span> <span style="color:#268bd2">Interval</span>&amp; <span style="color:#268bd2">b</span>){ <span style="color:#859900">return</span> <span style="color:#268bd2">a</span>.<span style="color:#268bd2">start</span> &lt; <span style="color:#268bd2">b</span>.<span style="color:#268bd2">start</span>; });
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">std</span>::<span style="color:#268bd2">sort</span>(<span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">intervals_right</span>.<span style="color:#268bd2">begin</span>(), <span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">intervals_right</span>.<span style="color:#268bd2">end</span>(), 
+</span></span><span style="display:flex;"><span>                      [](<span style="color:#859900">const</span> <span style="color:#268bd2">Interval</span>&amp; <span style="color:#268bd2">a</span>, <span style="color:#859900">const</span> <span style="color:#268bd2">Interval</span>&amp; <span style="color:#268bd2">b</span>){ <span style="color:#859900">return</span> <span style="color:#268bd2">a</span>.<span style="color:#268bd2">end</span> &gt; <span style="color:#268bd2">b</span>.<span style="color:#268bd2">end</span>; }); <span style="color:#93a1a1;font-style:italic">// Descending
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">node</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#268bd2">Interval</span>&gt; <span style="color:#268bd2">query</span>(<span style="color:#268bd2">IntervalTreeNode</span>&lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">node</span>, <span style="color:#859900">const</span> <span style="color:#268bd2">Interval</span>&amp; <span style="color:#268bd2">query_interval</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#268bd2">Interval</span>&gt; <span style="color:#268bd2">results</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">node</span> == <span style="color:#859900">nullptr</span> || <span style="color:#268bd2">query_interval</span>.<span style="color:#268bd2">start</span> &gt; <span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">max_end</span>) { <span style="color:#93a1a1;font-style:italic">// Pruning optimization
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">return</span> <span style="color:#268bd2">results</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Query intervals_left (overlapping to the right of query_interval.start)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">for</span> (<span style="color:#859900">const</span> <span style="color:#859900">auto</span>&amp; <span style="color:#268bd2">interval</span> : <span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">intervals_left</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">interval</span>.<span style="color:#268bd2">overlaps</span>(<span style="color:#268bd2">query_interval</span>)) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">results</span>.<span style="color:#268bd2">push_back</span>(<span style="color:#268bd2">interval</span>);
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> <span style="color:#268bd2">if</span> (<span style="color:#268bd2">interval</span>.<span style="color:#268bd2">start</span> &gt; <span style="color:#268bd2">query_interval</span>.<span style="color:#268bd2">end</span>) { <span style="color:#93a1a1;font-style:italic">// Optimization: intervals_left sorted by start
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#859900">break</span>; 
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">query_interval</span>.<span style="color:#268bd2">start</span> &lt; <span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">center</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#268bd2">Interval</span>&gt; <span style="color:#268bd2">left_results</span> = <span style="color:#268bd2">query</span>(<span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">left_child</span>, <span style="color:#268bd2">query_interval</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">results</span>.<span style="color:#268bd2">insert</span>(<span style="color:#268bd2">results</span>.<span style="color:#268bd2">end</span>(), <span style="color:#268bd2">left_results</span>.<span style="color:#268bd2">begin</span>(), <span style="color:#268bd2">left_results</span>.<span style="color:#268bd2">end</span>());
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">query_interval</span>.<span style="color:#268bd2">end</span> &gt; <span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">center</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#268bd2">Interval</span>&gt; <span style="color:#268bd2">right_results</span> = <span style="color:#268bd2">query</span>(<span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">right_child</span>, <span style="color:#268bd2">query_interval</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">results</span>.<span style="color:#268bd2">insert</span>(<span style="color:#268bd2">results</span>.<span style="color:#268bd2">end</span>(), <span style="color:#268bd2">right_results</span>.<span style="color:#268bd2">begin</span>(), <span style="color:#268bd2">right_results</span>.<span style="color:#268bd2">end</span>());
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">results</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// int main() {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     IntervalTree tree;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::vector&lt;Interval&gt; intervals_to_insert = {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         Interval(1, 5), Interval(2, 6), Interval(4, 8),
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         Interval(9, 12), Interval(10, 14), Interval(0, 3)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     };
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     for (const auto&amp; i : intervals_to_insert) {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         tree.root = tree.insert(tree.root, i);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     }
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     Interval query_int(3, 7);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::vector&lt;Interval&gt; overlaps = tree.query(tree.root, query_int);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; &#34;Intervals overlapping with [&#34; &lt;&lt; query_int.start &lt;&lt; &#34;, &#34; &lt;&lt; query_int.end &lt;&lt; &#34;]:
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#2aa198">&#34;;</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     for (const auto&amp; o : overlaps) {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         std::cout &lt;&lt; &#34;[&#34; &lt;&lt; o.start &lt;&lt; &#34;, &#34; &lt;&lt; o.end &lt;&lt; &#34;]&#34; &lt;&lt; std::endl; // Expected: [1,5], [2,6], [4,8]
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     }
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     return 0;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span></code></pre></div><h3 id="go">Go</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">package</span> <span style="color:#268bd2">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> (
+</span></span><span style="display:flex;"><span>    <span style="color:#2aa198">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#2aa198">&#34;math&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#2aa198">&#34;sort&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">type</span> <span style="color:#268bd2">Interval</span> <span style="color:#859900">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">Start</span> <span style="color:#859900;font-weight:bold">int</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">End</span>   <span style="color:#859900;font-weight:bold">int</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> (<span style="color:#268bd2">i</span> <span style="color:#268bd2">Interval</span>) <span style="color:#268bd2">Overlaps</span>(<span style="color:#268bd2">otherInterval</span> <span style="color:#268bd2">Interval</span>) <span style="color:#859900;font-weight:bold">bool</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">i</span>.<span style="color:#268bd2">Start</span> &lt;= <span style="color:#268bd2">otherInterval</span>.<span style="color:#268bd2">End</span> &amp;&amp; <span style="color:#268bd2">i</span>.<span style="color:#268bd2">End</span> &gt;= <span style="color:#268bd2">otherInterval</span>.<span style="color:#268bd2">Start</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">type</span> <span style="color:#268bd2">IntervalTreeNode</span> <span style="color:#859900">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">Center</span>        <span style="color:#859900;font-weight:bold">int</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">IntervalsLeft</span> []<span style="color:#268bd2">Interval</span> <span style="color:#93a1a1;font-style:italic">// Intervals that start left of center and end right of center</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">IntervalsRight</span> []<span style="color:#268bd2">Interval</span> <span style="color:#93a1a1;font-style:italic">// Intervals that start left of center and end right of center</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">LeftChild</span>     &lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">IntervalTreeNode</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">RightChild</span>    &lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">IntervalTreeNode</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">MaxEnd</span>        <span style="color:#859900;font-weight:bold">int</span> <span style="color:#93a1a1;font-style:italic">// Max end point in this subtree, useful for optimizing queries</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> <span style="color:#268bd2">NewIntervalTreeNode</span>(<span style="color:#268bd2">center</span> <span style="color:#859900;font-weight:bold">int</span>) &lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">IntervalTreeNode</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> &amp;<span style="color:#268bd2">IntervalTreeNode</span>{
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">Center</span>:        <span style="color:#268bd2">center</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">IntervalsLeft</span>:  []<span style="color:#268bd2">Interval</span>{},
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">IntervalsRight</span>: []<span style="color:#268bd2">Interval</span>{},
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">MaxEnd</span>:        <span style="color:#268bd2">math</span>.<span style="color:#268bd2">MinInt32</span>,
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">type</span> <span style="color:#268bd2">IntervalTree</span> <span style="color:#859900">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">Root</span> &lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">IntervalTreeNode</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> (<span style="color:#268bd2">t</span> &lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">IntervalTree</span>) <span style="color:#268bd2">Insert</span>(<span style="color:#268bd2">node</span> &lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">IntervalTreeNode</span>, <span style="color:#268bd2">interval</span> <span style="color:#268bd2">Interval</span>) &lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">IntervalTreeNode</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#268bd2">node</span> == <span style="color:#859900;font-weight:bold">nil</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">newNode</span> := <span style="color:#268bd2">NewIntervalTreeNode</span>(<span style="color:#268bd2">interval</span>.<span style="color:#268bd2">Start</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">newNode</span>.<span style="color:#268bd2">MaxEnd</span> = <span style="color:#268bd2">interval</span>.<span style="color:#268bd2">End</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">newNode</span>.<span style="color:#268bd2">IntervalsLeft</span> = <span style="color:#cb4b16">append</span>(<span style="color:#268bd2">newNode</span>.<span style="color:#268bd2">IntervalsLeft</span>, <span style="color:#268bd2">interval</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">newNode</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">node</span>.<span style="color:#268bd2">MaxEnd</span> = <span style="color:#cb4b16">int</span>(<span style="color:#268bd2">math</span>.<span style="color:#268bd2">Max</span>(<span style="color:#cb4b16">float64</span>(<span style="color:#268bd2">node</span>.<span style="color:#268bd2">MaxEnd</span>), <span style="color:#cb4b16">float64</span>(<span style="color:#268bd2">interval</span>.<span style="color:#268bd2">End</span>)))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#268bd2">interval</span>.<span style="color:#268bd2">End</span> &lt; <span style="color:#268bd2">node</span>.<span style="color:#268bd2">Center</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">node</span>.<span style="color:#268bd2">LeftChild</span> = <span style="color:#268bd2">t</span>.<span style="color:#268bd2">Insert</span>(<span style="color:#268bd2">node</span>.<span style="color:#268bd2">LeftChild</span>, <span style="color:#268bd2">interval</span>)
+</span></span><span style="display:flex;"><span>    } <span style="color:#859900">else</span> <span style="color:#859900">if</span> <span style="color:#268bd2">interval</span>.<span style="color:#268bd2">Start</span> &gt; <span style="color:#268bd2">node</span>.<span style="color:#268bd2">Center</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">node</span>.<span style="color:#268bd2">RightChild</span> = <span style="color:#268bd2">t</span>.<span style="color:#268bd2">Insert</span>(<span style="color:#268bd2">node</span>.<span style="color:#268bd2">RightChild</span>, <span style="color:#268bd2">interval</span>)
+</span></span><span style="display:flex;"><span>    } <span style="color:#859900">else</span> { <span style="color:#93a1a1;font-style:italic">// Interval overlaps the center</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">node</span>.<span style="color:#268bd2">IntervalsLeft</span> = <span style="color:#cb4b16">append</span>(<span style="color:#268bd2">node</span>.<span style="color:#268bd2">IntervalsLeft</span>, <span style="color:#268bd2">interval</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">node</span>.<span style="color:#268bd2">IntervalsRight</span> = <span style="color:#cb4b16">append</span>(<span style="color:#268bd2">node</span>.<span style="color:#268bd2">IntervalsRight</span>, <span style="color:#268bd2">interval</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">sort</span>.<span style="color:#268bd2">Slice</span>(<span style="color:#268bd2">node</span>.<span style="color:#268bd2">IntervalsLeft</span>, <span style="color:#859900">func</span>(<span style="color:#268bd2">i</span>, <span style="color:#268bd2">j</span> <span style="color:#859900;font-weight:bold">int</span>) <span style="color:#859900;font-weight:bold">bool</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#268bd2">node</span>.<span style="color:#268bd2">IntervalsLeft</span>[<span style="color:#268bd2">i</span>].<span style="color:#268bd2">Start</span> &lt; <span style="color:#268bd2">node</span>.<span style="color:#268bd2">IntervalsLeft</span>[<span style="color:#268bd2">j</span>].<span style="color:#268bd2">Start</span>
+</span></span><span style="display:flex;"><span>        })
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">sort</span>.<span style="color:#268bd2">Slice</span>(<span style="color:#268bd2">node</span>.<span style="color:#268bd2">IntervalsRight</span>, <span style="color:#859900">func</span>(<span style="color:#268bd2">i</span>, <span style="color:#268bd2">j</span> <span style="color:#859900;font-weight:bold">int</span>) <span style="color:#859900;font-weight:bold">bool</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#268bd2">node</span>.<span style="color:#268bd2">IntervalsRight</span>[<span style="color:#268bd2">i</span>].<span style="color:#268bd2">End</span> &gt; <span style="color:#268bd2">node</span>.<span style="color:#268bd2">IntervalsRight</span>[<span style="color:#268bd2">j</span>].<span style="color:#268bd2">End</span>
+</span></span><span style="display:flex;"><span>        }) <span style="color:#93a1a1;font-style:italic">// Descending</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">node</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> (<span style="color:#268bd2">t</span> &lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">IntervalTree</span>) <span style="color:#268bd2">Query</span>(<span style="color:#268bd2">node</span> &lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">IntervalTreeNode</span>, <span style="color:#268bd2">queryInterval</span> <span style="color:#268bd2">Interval</span>) []<span style="color:#268bd2">Interval</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">var</span> <span style="color:#268bd2">results</span> []<span style="color:#268bd2">Interval</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#268bd2">node</span> == <span style="color:#859900;font-weight:bold">nil</span> || <span style="color:#268bd2">queryInterval</span>.<span style="color:#268bd2">Start</span> &gt; <span style="color:#268bd2">node</span>.<span style="color:#268bd2">MaxEnd</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">results</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Query IntervalsLeft</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">_</span>, <span style="color:#268bd2">interval</span> := <span style="color:#859900">range</span> <span style="color:#268bd2">node</span>.<span style="color:#268bd2">IntervalsLeft</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">interval</span>.<span style="color:#268bd2">Overlaps</span>(<span style="color:#268bd2">queryInterval</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">results</span> = <span style="color:#cb4b16">append</span>(<span style="color:#268bd2">results</span>, <span style="color:#268bd2">interval</span>)
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> <span style="color:#859900">if</span> <span style="color:#268bd2">interval</span>.<span style="color:#268bd2">Start</span> &gt; <span style="color:#268bd2">queryInterval</span>.<span style="color:#268bd2">End</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">break</span> <span style="color:#93a1a1;font-style:italic">// Optimization: IntervalsLeft sorted by Start</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#268bd2">queryInterval</span>.<span style="color:#268bd2">Start</span> &lt; <span style="color:#268bd2">node</span>.<span style="color:#268bd2">Center</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">results</span> = <span style="color:#cb4b16">append</span>(<span style="color:#268bd2">results</span>, <span style="color:#268bd2">t</span>.<span style="color:#268bd2">Query</span>(<span style="color:#268bd2">node</span>.<span style="color:#268bd2">LeftChild</span>, <span style="color:#268bd2">queryInterval</span>)...)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#268bd2">queryInterval</span>.<span style="color:#268bd2">End</span> &gt; <span style="color:#268bd2">node</span>.<span style="color:#268bd2">Center</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">results</span> = <span style="color:#cb4b16">append</span>(<span style="color:#268bd2">results</span>, <span style="color:#268bd2">t</span>.<span style="color:#268bd2">Query</span>(<span style="color:#268bd2">node</span>.<span style="color:#268bd2">RightChild</span>, <span style="color:#268bd2">queryInterval</span>)...)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">results</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// func main() {</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     tree := &amp;IntervalTree{}</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     intervals := []Interval{</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         {1, 5}, {2, 6}, {4, 8},</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         {9, 12}, {10, 14}, {0, 3},</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     }</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     for _, i := range intervals {</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         tree.Root = tree.Insert(tree.Root, i)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     }</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     queryInt := Interval{3, 7}</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     overlaps := tree.Query(tree.Root, queryInt)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     fmt.Printf(&#34;Intervals overlapping with [%d, %d]:\n&#34;, queryInt.Start, queryInt.End)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     for _, o := range overlaps {</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         fmt.Printf(&#34;[%d, %d]\n&#34;, o.Start, o.End) // Expected: [1,5], [2,6], [4,8]</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     }</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }</span>
+</span></span></code></pre></div><h3 id="d">D</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-d" data-lang="d"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.stdio</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.algorithm</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.array</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.container.array</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.math</span>; <span style="color:#93a1a1;font-style:italic">// For real.max
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#cb4b16">Interval</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">start</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">end</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">this</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">s</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">e</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">start</span> = <span style="color:#268bd2">s</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">end</span> = <span style="color:#268bd2">e</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">bool</span> <span style="color:#268bd2">overlaps</span>(<span style="color:#268bd2">Interval</span> <span style="color:#268bd2">other_interval</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#859900">this</span>.<span style="color:#268bd2">start</span> &lt;= <span style="color:#268bd2">other_interval</span>.<span style="color:#268bd2">end</span> &amp;&amp; <span style="color:#859900">this</span>.<span style="color:#268bd2">end</span> &gt;= <span style="color:#268bd2">other_interval</span>.<span style="color:#268bd2">start</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#cb4b16">IntervalTreeNode</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">center</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">Interval</span>[] <span style="color:#268bd2">intervals_left</span>;  <span style="color:#93a1a1;font-style:italic">// Intervals that start left of center and end right of center
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">Interval</span>[] <span style="color:#268bd2">intervals_right</span>; <span style="color:#93a1a1;font-style:italic">// Intervals that start left of center and end right of center
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">IntervalTreeNode</span> <span style="color:#268bd2">left_child</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">IntervalTreeNode</span> <span style="color:#268bd2">right_child</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">max_end</span>; <span style="color:#93a1a1;font-style:italic">// Max end point in this subtree, useful for optimizing queries
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">this</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">c</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">center</span> = <span style="color:#268bd2">c</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">intervals_left</span> = [];
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">intervals_right</span> = [];
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">left_child</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">right_child</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">max_end</span> = <span style="color:#859900;font-weight:bold">int</span>.<span style="color:#268bd2">min</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#cb4b16">IntervalTree</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">IntervalTreeNode</span> <span style="color:#268bd2">root</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">this</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">root</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">IntervalTreeNode</span> <span style="color:#268bd2">insert</span>(<span style="color:#268bd2">IntervalTreeNode</span> <span style="color:#268bd2">node</span>, <span style="color:#268bd2">Interval</span> <span style="color:#268bd2">interval</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">node</span> <span style="color:#859900">is</span> <span style="color:#859900;font-weight:bold">null</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// For simplicity, pick the interval&#39;s start as center if node is null
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#268bd2">IntervalTreeNode</span> <span style="color:#268bd2">new_node</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">IntervalTreeNode</span>(<span style="color:#268bd2">interval</span>.<span style="color:#268bd2">start</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">new_node</span>.<span style="color:#268bd2">max_end</span> = <span style="color:#268bd2">interval</span>.<span style="color:#268bd2">end</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">new_node</span>.<span style="color:#268bd2">intervals_left</span> ~= <span style="color:#268bd2">interval</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#268bd2">new_node</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">node</span>.<span style="color:#268bd2">max_end</span> = <span style="color:#268bd2">max</span>(<span style="color:#268bd2">node</span>.<span style="color:#268bd2">max_end</span>, <span style="color:#268bd2">interval</span>.<span style="color:#268bd2">end</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">interval</span>.<span style="color:#268bd2">end</span> &lt; <span style="color:#268bd2">node</span>.<span style="color:#268bd2">center</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">node</span>.<span style="color:#268bd2">left_child</span> = <span style="color:#268bd2">insert</span>(<span style="color:#268bd2">node</span>.<span style="color:#268bd2">left_child</span>, <span style="color:#268bd2">interval</span>);
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> <span style="color:#859900">if</span> (<span style="color:#268bd2">interval</span>.<span style="color:#268bd2">start</span> &gt; <span style="color:#268bd2">node</span>.<span style="color:#268bd2">center</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">node</span>.<span style="color:#268bd2">right_child</span> = <span style="color:#268bd2">insert</span>(<span style="color:#268bd2">node</span>.<span style="color:#268bd2">right_child</span>, <span style="color:#268bd2">interval</span>);
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> { <span style="color:#93a1a1;font-style:italic">// Interval overlaps the center
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#268bd2">node</span>.<span style="color:#268bd2">intervals_left</span> ~= <span style="color:#268bd2">interval</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">node</span>.<span style="color:#268bd2">intervals_right</span> ~= <span style="color:#268bd2">interval</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">node</span>.<span style="color:#268bd2">intervals_left</span>.<span style="color:#268bd2">sort</span>!((<span style="color:#268bd2">a</span>, <span style="color:#268bd2">b</span>) =&gt; <span style="color:#268bd2">a</span>.<span style="color:#268bd2">start</span> &lt; <span style="color:#268bd2">b</span>.<span style="color:#268bd2">start</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">node</span>.<span style="color:#268bd2">intervals_right</span>.<span style="color:#268bd2">sort</span>!((<span style="color:#268bd2">a</span>, <span style="color:#268bd2">b</span>) =&gt; <span style="color:#268bd2">a</span>.<span style="color:#268bd2">end</span> &gt; <span style="color:#268bd2">b</span>.<span style="color:#268bd2">end</span>); <span style="color:#93a1a1;font-style:italic">// Descending
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">node</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">Interval</span>[] <span style="color:#268bd2">query</span>(<span style="color:#268bd2">IntervalTreeNode</span> <span style="color:#268bd2">node</span>, <span style="color:#268bd2">Interval</span> <span style="color:#268bd2">query_interval</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">Interval</span>[] <span style="color:#268bd2">results</span> = [];
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">node</span> <span style="color:#859900">is</span> <span style="color:#859900;font-weight:bold">null</span> || <span style="color:#268bd2">query_interval</span>.<span style="color:#268bd2">start</span> &gt; <span style="color:#268bd2">node</span>.<span style="color:#268bd2">max_end</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#268bd2">results</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Query intervals_left (overlapping to the right of query_interval.start)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">foreach</span> (<span style="color:#268bd2">interval</span>; <span style="color:#268bd2">node</span>.<span style="color:#268bd2">intervals_left</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">interval</span>.<span style="color:#268bd2">overlaps</span>(<span style="color:#268bd2">query_interval</span>)) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">results</span> ~= <span style="color:#268bd2">interval</span>;
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> <span style="color:#859900">if</span> (<span style="color:#268bd2">interval</span>.<span style="color:#268bd2">start</span> &gt; <span style="color:#268bd2">query_interval</span>.<span style="color:#268bd2">end</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">break</span>; <span style="color:#93a1a1;font-style:italic">// Optimization: intervals_left sorted by start
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">query_interval</span>.<span style="color:#268bd2">start</span> &lt; <span style="color:#268bd2">node</span>.<span style="color:#268bd2">center</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">results</span> ~= <span style="color:#268bd2">query</span>(<span style="color:#268bd2">node</span>.<span style="color:#268bd2">left_child</span>, <span style="color:#268bd2">query_interval</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">query_interval</span>.<span style="color:#268bd2">end</span> &gt; <span style="color:#268bd2">node</span>.<span style="color:#268bd2">center</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">results</span> ~= <span style="color:#268bd2">query</span>(<span style="color:#268bd2">node</span>.<span style="color:#268bd2">right_child</span>, <span style="color:#268bd2">query_interval</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">results</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// void main() {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     auto tree = new IntervalTree();
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     Interval[] intervals_to_insert = [
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         new Interval(1, 5), new Interval(2, 6), new Interval(4, 8),
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         new Interval(9, 12), new Interval(10, 14), new Interval(0, 3)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     ];
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     foreach (i; intervals_to_insert) {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         tree.root = tree.insert(tree.root, i);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     }
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     Interval query_int = new Interval(3, 7);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     auto overlaps = tree.query(tree.root, query_int);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     writeln(&#34;Intervals overlapping with [%s, %s]:&#34;, query_int.start, query_int.end);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     foreach (o; overlaps) {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         writeln(&#34;[%s, %s]&#34;, o.start, o.end); // Expected: [1,5], [2,6], [4,8]
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     }
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span></code></pre></div><h2 id="applications">Applications</h2>
+<h3 id="application">Application</h3>
+<p>Interval Trees are powerful tools for managing and querying sets of intervals. Their applications include:</p>
+<ul>
+<li><strong>Genomic Data Analysis:</strong> Finding overlapping genes, mutations, or regions in DNA sequences.</li>
+<li><strong>Calendar and Scheduling Software:</strong> Efficiently finding all events that overlap with a particular time slot.</li>
+<li><strong>Computational Geometry:</strong> Various problems involving intersections of line segments or rectangles.</li>
+<li><strong>Event Management:</strong> Managing event timelines and finding concurrent events.</li>
+<li><strong>Graphical User Interfaces (GUIs):</strong> For hit-testing, where you need to find all UI elements that overlap with a mouse click (point query) or a selection box (interval query).</li>
+<li><strong>Database Systems:</strong> For handling queries on temporal data or ranges.</li>
+</ul>
+
+    </div>
+</article>
+
+<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
+    
+    <a href="//localhost:1313/dsa-42/data_structures/specialized/k_d_tree/" class="nav-btn">← Previous</a>
+    
+    
+    <a href="//localhost:1313/dsa-42/data_structures/specialized/" class="nav-btn">Up</a>
+
+    
+    <a href="//localhost:1313/dsa-42/data_structures/specialized/hyperloglog/" class="nav-btn">Next →</a>
+    
+</div>
+
+    </main>
+
+    <footer class="footer">
+        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
+    </footer>
+
+    <script>
+        const body = document.getElementById('theme-body');
+        const btn = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme');
+
+        
+        function updateButtonText() {
+            if (body.classList.contains('theme-terminal')) {
+                btn.textContent = "Light Mode";
+            } else {
+                btn.textContent = "Dark Mode";
+            }
+        }
+
+        if (currentTheme === 'terminal') {
+            body.classList.add('theme-terminal');
+        }
+        
+        
+        updateButtonText();
+
+        btn.addEventListener('click', () => {
+            body.classList.toggle('theme-terminal');
+            updateButtonText();
+            
+            let theme = 'natural';
+            if (body.classList.contains('theme-terminal')) {
+                theme = 'terminal';
+            }
+            localStorage.setItem('theme', theme);
+        });
+    </script>
+</body>
+</html>

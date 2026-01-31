@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Step 8: Client Discipline | SDET Interview Preparation Kit</title>
+    <link rel="stylesheet" href="//localhost:1313/css/style.css">
+    <link rel="stylesheet" href="//localhost:1313/css/terminal.css">
+    
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    
+    <link rel="stylesheet" href="//localhost:1313/lib/katex/katex.min.css">
+    <script defer src="//localhost:1313/lib/katex/katex.min.js"></script>
+    <script defer src="//localhost:1313/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</head>
+<body id="theme-body">
+    <button id="theme-toggle">Switch Theme</button>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="//localhost:1313/">Index</a></li>
+                
+            </ul>
+        </nav>
+        <div class="site-breadcrumb">
+            <a href="//localhost:1313/">Home</a>
+            
+                
+                    <span>/</span> <a href="//localhost:1313/">SDET Interview Dashboard</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/api-from-first-principle/">API from First Principles</a>
+                
+            
+            
+                <span>/</span> Step 8: Client Discipline
+            
+        </div>
+    </header>
+
+    <main>
+        
+<article>
+    <div class="category-title" style="margin-bottom: 0.5rem;">API from First Principles</div>
+    <h1>Step 8: Client Discipline</h1>
+    <div class="content-body" style="margin-top: 2rem;">
+        <h2 id="1-what-problem-this-step-solves">1. What problem this step solves</h2>
+<p>Until now, we&rsquo;ve focused on the Server. But what happens if the network goes down for 2 seconds? Or if the Server is slow? A poorly written Client will hang, crash, or spam the server with thousands of requests, potentially causing a &ldquo;Self-Denial of Service&rdquo; (Self-DoS).</p>
+<h2 id="2-concepts-introduced-in-this-step">2. Concepts introduced in this step</h2>
+<ul>
+<li><strong>Timeout:</strong> How long to wait before giving up on a request.</li>
+<li><strong>Retry Logic:</strong> Attempting the request again if it fails (with caution).</li>
+<li><strong>Exponential Backoff:</strong> Waiting longer and longer between retries (e.g., wait 1s, then 2s, then 4s&hellip;).</li>
+<li><strong>User Agent:</strong> Identifying who the client is.</li>
+</ul>
+<h2 id="3-why-these-concepts-exist-why-focused">3. Why these concepts exist (WHY-focused)</h2>
+<p>The network is <strong>unreliable</strong>.</p>
+<ul>
+<li><strong>Timeouts</strong> prevent your program from &ldquo;freezing&rdquo; forever if a server doesn&rsquo;t respond.</li>
+<li><strong>Backoff</strong> is &ldquo;politeness.&rdquo; If a server is crashing because it&rsquo;s overloaded, and 1,000 clients all retry immediately at the same time, the server will never recover.</li>
+<li><strong>User Agents</strong> help server owners. If your client has a bug, the server owner can look at their logs, see &ldquo;Client: ShahidApp-v1.0&rdquo;, and contact you to fix it.</li>
+</ul>
+<h2 id="4-common-confusions--doubts-explicit-qa">4. Common confusions &amp; doubts (explicit Q&amp;A)</h2>
+<p><strong>Q: Should I retry every error?</strong><br>
+A: No! Only retry &ldquo;Transient&rdquo; errors (like a <code>503 Service Unavailable</code> or a network timeout). Never retry a <code>400 Bad Request</code>—the data is wrong, and retrying won&rsquo;t change that.</p>
+<p><strong>Q: What is a good timeout value?</strong><br>
+A: It depends. For a fast UI, 2-5 seconds. For a heavy data report, maybe 30 seconds. Never leave it at &ldquo;Infinite.&rdquo;</p>
+<p><strong>Q: Why not just use a <code>while True</code> loop for retries?</strong><br>
+A: Without a limit, your program will loop forever and eat your CPU if the server is permanently down. Always set a <code>max_retries</code> limit (usually 3 or 5).</p>
+<h2 id="5-ascii-diagrams">5. ASCII diagrams</h2>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>RETRY WITH EXPONENTIAL BACKOFF:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Request 1 (Fail) -&gt; Wait 1s
+</span></span><span style="display:flex;"><span>Request 2 (Fail) -&gt; Wait 2s
+</span></span><span style="display:flex;"><span>Request 3 (Fail) -&gt; Wait 4s
+</span></span><span style="display:flex;"><span>Request 4 (Fail) -&gt; Wait 8s
+</span></span><span style="display:flex;"><span>Request 5 (Fail) -&gt; GIVE UP &amp; LOG ERROR
+</span></span></code></pre></div><h2 id="6-full-working-python-code">6. Full working Python code</h2>
+<p><em>We will use the popular <code>requests</code> library style (simulated) to show disciplined API consumption.</em></p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">time</span>
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">random</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">def</span> <span style="color:#268bd2">mock_server_api</span>(<span style="color:#268bd2">request_count</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#2aa198">&#34;&#34;&#34;Simulates a flaky server that fails 50</span><span style="color:#2aa198">% o</span><span style="color:#2aa198">f the time.&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#268bd2">random</span>.<span style="color:#268bd2">random</span>() &lt; <span style="color:#2aa198;font-weight:bold">0.5</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> {<span style="color:#2aa198">&#34;status&#34;</span>: <span style="color:#2aa198;font-weight:bold">500</span>, <span style="color:#2aa198">&#34;body&#34;</span>: <span style="color:#2aa198">&#34;Internal Server Error&#34;</span>}
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> {<span style="color:#2aa198">&#34;status&#34;</span>: <span style="color:#2aa198;font-weight:bold">200</span>, <span style="color:#2aa198">&#34;body&#34;</span>: {<span style="color:#2aa198">&#34;result&#34;</span>: <span style="color:#2aa198">&#34;Success!&#34;</span>}}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">def</span> <span style="color:#268bd2">disciplined_client_call</span>():
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">max_retries</span> = <span style="color:#2aa198;font-weight:bold">3</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">base_delay</span> = <span style="color:#2aa198;font-weight:bold">1</span> <span style="color:#93a1a1;font-style:italic"># second</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">attempt</span> <span style="color:#859900">in</span> <span style="color:#cb4b16">range</span>(<span style="color:#268bd2">max_retries</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">print</span>(<span style="color:#2aa198">f</span><span style="color:#2aa198">&#34;Attempt </span><span style="color:#2aa198">{</span><span style="color:#268bd2">attempt</span> + <span style="color:#2aa198;font-weight:bold">1</span><span style="color:#2aa198">}</span><span style="color:#2aa198">...&#34;</span>)
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">response</span> = <span style="color:#268bd2">mock_server_api</span>(<span style="color:#268bd2">attempt</span>)
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">response</span>[<span style="color:#2aa198">&#34;status&#34;</span>] == <span style="color:#2aa198;font-weight:bold">200</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#268bd2">response</span>[<span style="color:#2aa198">&#34;body&#34;</span>]
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">response</span>[<span style="color:#2aa198">&#34;status&#34;</span>] &gt;= <span style="color:#2aa198;font-weight:bold">500</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic"># Server error, wait and try again</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">delay</span> = <span style="color:#268bd2">base_delay</span> * (<span style="color:#2aa198;font-weight:bold">2</span> ** <span style="color:#268bd2">attempt</span>) <span style="color:#93a1a1;font-style:italic"># Exponential: 1, 2, 4...</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#cb4b16">print</span>(<span style="color:#2aa198">f</span><span style="color:#2aa198">&#34;Server failed. Retrying in </span><span style="color:#2aa198">{</span><span style="color:#268bd2">delay</span><span style="color:#2aa198">}</span><span style="color:#2aa198">s...&#34;</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">time</span>.<span style="color:#268bd2">sleep</span>(<span style="color:#268bd2">delay</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">else</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic"># Client error (400s), don&#39;t retry</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#cb4b16">print</span>(<span style="color:#2aa198">f</span><span style="color:#2aa198">&#34;Client error </span><span style="color:#2aa198">{</span><span style="color:#268bd2">response</span>[<span style="color:#2aa198">&#39;status&#39;</span>]<span style="color:#2aa198">}</span><span style="color:#2aa198">. Aborting.&#34;</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">break</span>
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#2aa198">&#34;All attempts failed.&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># Run the client</span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">result</span> = <span style="color:#268bd2">disciplined_client_call</span>()
+</span></span><span style="display:flex;"><span><span style="color:#cb4b16">print</span>(<span style="color:#2aa198">f</span><span style="color:#2aa198">&#34;Final Result: </span><span style="color:#2aa198">{</span><span style="color:#268bd2">result</span><span style="color:#2aa198">}</span><span style="color:#2aa198">&#34;</span>)
+</span></span></code></pre></div><h2 id="7-how-this-connects-to-the-next-step">7. How this connects to the next step</h2>
+<p>Now that we have a professional Client and Server, we need to think about the &ldquo;Real World.&rdquo; The internet is full of bad actors and limited resources. In <strong>Step 9</strong>, we will discuss <strong>Security, Rate Limiting, and Authentication</strong>.</p>
+
+    </div>
+</article>
+
+<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
+    
+    <a href="//localhost:1313/api-from-first-principle/step-9-real-world-constraints/" class="nav-btn">← Previous</a>
+    
+    
+    <a href="//localhost:1313/api-from-first-principle/" class="nav-btn">Up</a>
+
+    
+    <a href="//localhost:1313/api-from-first-principle/step-7-versioning-and-errors/" class="nav-btn">Next →</a>
+    
+</div>
+
+    </main>
+
+    <footer class="footer">
+        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
+    </footer>
+
+    <script>
+        const body = document.getElementById('theme-body');
+        const btn = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme');
+
+        
+        function updateButtonText() {
+            if (body.classList.contains('theme-terminal')) {
+                btn.textContent = "Light Mode";
+            } else {
+                btn.textContent = "Dark Mode";
+            }
+        }
+
+        if (currentTheme === 'terminal') {
+            body.classList.add('theme-terminal');
+        }
+        
+        
+        updateButtonText();
+
+        btn.addEventListener('click', () => {
+            body.classList.toggle('theme-terminal');
+            updateButtonText();
+            
+            let theme = 'natural';
+            if (body.classList.contains('theme-terminal')) {
+                theme = 'terminal';
+            }
+            localStorage.setItem('theme', theme);
+        });
+    </script>
+</body>
+</html>

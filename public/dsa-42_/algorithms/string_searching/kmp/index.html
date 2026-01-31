@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Knuth-Morris-Pratt (KMP) | SDET Interview Preparation Kit</title>
+    <link rel="stylesheet" href="//localhost:1313/css/style.css">
+    <link rel="stylesheet" href="//localhost:1313/css/terminal.css">
+    
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    
+    <link rel="stylesheet" href="//localhost:1313/lib/katex/katex.min.css">
+    <script defer src="//localhost:1313/lib/katex/katex.min.js"></script>
+    <script defer src="//localhost:1313/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</head>
+<body id="theme-body">
+    <button id="theme-toggle">Switch Theme</button>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="//localhost:1313/">Index</a></li>
+                
+            </ul>
+        </nav>
+        <div class="site-breadcrumb">
+            <a href="//localhost:1313/">Home</a>
+            
+                
+                    <span>/</span> <a href="//localhost:1313/">SDET Interview Dashboard</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/dsa-42_/">42 Algorithms &amp; 42 Data Structures</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/dsa-42_/algorithms/">Algorithms</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/dsa-42_/algorithms/string_searching/">String Searching</a>
+                
+            
+            
+                <span>/</span> Knuth-Morris-Pratt (KMP)
+            
+        </div>
+    </header>
+
+    <main>
+        
+<article>
+    <div class="category-title" style="margin-bottom: 0.5rem;">String Searching</div>
+    <h1>Knuth-Morris-Pratt (KMP)</h1>
+    <div class="content-body" style="margin-top: 2rem;">
+        <p>The <code>Knuth-Morris-Pratt (KMP)</code> algorithm is a highly efficient string searching algorithm that finds the occurrences of a &ldquo;<code>pattern</code>&rdquo; within a &ldquo;<code>text</code>&rdquo;. It is famous for its ability to avoid re-comparing characters that were already matched. When a mismatch occurs, it uses a precomputed table (often called a &ldquo;<code>prefix function</code>&rdquo; or &ldquo;<code>LPS array</code>&rdquo;) to intelligently shift the pattern, rather than naively shifting by one position.</p>
+<p>This preprocessing step allows the main search phase to run in <code>O(N)</code> time, where <code>N</code> is the length of the text, resulting in a total time complexity of <code>O(N + M)</code>, where <code>M</code> is the length of the pattern. This is a significant improvement over the naive <code>O(N&lt;em&gt;M)</code> approach.</p>
+<h2 id="how-it-works">How it Works</h2>
+<h3 id="how-it-works-expanded">How it Works (Expanded)</h3>
+<p>The core idea of <code>KMP</code> is the &ldquo;<code>Longest Proper Prefix that is also a Suffix</code>&rdquo; (LPS) array. A &ldquo;proper prefix&rdquo; is any prefix of a string other than the string itself. The <code>LPS</code> array tells us, for each position in the pattern, the length of the longest proper prefix of the pattern&rsquo;s substring <code>pattern[0...i]</code> that is also a suffix of that substring.</p>
+<hr>
+<p>Example: LPS array for pattern &ldquo;ababaca&rdquo;</p>
+<ul>
+<li>&ldquo;a&rdquo;:       LPS = 0</li>
+<li>&ldquo;ab&rdquo;:      LPS = 0</li>
+<li>&ldquo;aba&rdquo;:     LPS = 1 (&ldquo;a&rdquo;)</li>
+<li>&ldquo;abab&rdquo;:    LPS = 2 (&ldquo;ab&rdquo;)</li>
+<li>&ldquo;ababa&rdquo;:   LPS = 3 (&ldquo;aba&rdquo;)</li>
+<li>&ldquo;ababac&rdquo;:  LPS = 0</li>
+<li>&ldquo;ababaca&rdquo;: LPS = 1 (&ldquo;a&rdquo;)</li>
+</ul>
+<p>LPS Array: [0, 0, 1, 2, 3, 0, 1]</p>
+<p>How it&rsquo;s used: If a mismatch occurs at <code>pattern[i]</code> while comparing against <code>text</code>, we don&rsquo;t have to go back in the <code>text</code>. We can consult <code>LPS[i-1]</code> to know how many characters we can &ldquo;skip&rdquo; in the pattern, as they are guaranteed to match.</p>
+<h2 id="implementation">Implementation</h2>
+<h3 id="python">Python</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#859900">def</span> <span style="color:#268bd2">compute_lps_array</span>(<span style="color:#268bd2">pattern</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">m</span> = <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">pattern</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">lps</span> = [<span style="color:#2aa198;font-weight:bold">0</span>] &lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">m</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">length</span> = <span style="color:#2aa198;font-weight:bold">0</span>  <span style="color:#93a1a1;font-style:italic"># Length of the previous longest prefix suffix</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">1</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">while</span> <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">m</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">pattern</span>[<span style="color:#268bd2">i</span>] == <span style="color:#268bd2">pattern</span>[<span style="color:#268bd2">length</span>]:
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">length</span> += <span style="color:#2aa198;font-weight:bold">1</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">lps</span>[<span style="color:#268bd2">i</span>] = <span style="color:#268bd2">length</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">i</span> += <span style="color:#2aa198;font-weight:bold">1</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">else</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> <span style="color:#268bd2">length</span> != <span style="color:#2aa198;font-weight:bold">0</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">length</span> = <span style="color:#268bd2">lps</span>[<span style="color:#268bd2">length</span> - <span style="color:#2aa198;font-weight:bold">1</span>]
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">else</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">lps</span>[<span style="color:#268bd2">i</span>] = <span style="color:#2aa198;font-weight:bold">0</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">i</span> += <span style="color:#2aa198;font-weight:bold">1</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">lps</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">def</span> <span style="color:#268bd2">kmp_search</span>(<span style="color:#268bd2">text</span>, <span style="color:#268bd2">pattern</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">n</span> = <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">text</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">m</span> = <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">pattern</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">lps</span> = <span style="color:#268bd2">compute_lps_array</span>(<span style="color:#268bd2">pattern</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>  <span style="color:#93a1a1;font-style:italic"># index for text</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">j</span> = <span style="color:#2aa198;font-weight:bold">0</span>  <span style="color:#93a1a1;font-style:italic"># index for pattern</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">results</span> = []
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">while</span> <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">n</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">pattern</span>[<span style="color:#268bd2">j</span>] == <span style="color:#268bd2">text</span>[<span style="color:#268bd2">i</span>]:
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">i</span> += <span style="color:#2aa198;font-weight:bold">1</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">j</span> += <span style="color:#2aa198;font-weight:bold">1</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">j</span> == <span style="color:#268bd2">m</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">results</span>.<span style="color:#268bd2">append</span>(<span style="color:#268bd2">i</span> - <span style="color:#268bd2">j</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">j</span> = <span style="color:#268bd2">lps</span>[<span style="color:#268bd2">j</span> - <span style="color:#2aa198;font-weight:bold">1</span>]
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">elif</span> <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">n</span> <span style="color:#859900">and</span> <span style="color:#268bd2">pattern</span>[<span style="color:#268bd2">j</span>] != <span style="color:#268bd2">text</span>[<span style="color:#268bd2">i</span>]:
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> <span style="color:#268bd2">j</span> != <span style="color:#2aa198;font-weight:bold">0</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">j</span> = <span style="color:#268bd2">lps</span>[<span style="color:#268bd2">j</span> - <span style="color:#2aa198;font-weight:bold">1</span>]
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">else</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">i</span> += <span style="color:#2aa198;font-weight:bold">1</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">results</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># Example</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># text = &#34;ABABDABACDABABCABAB&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># pattern = &#34;ABABCABAB&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(kmp_search(text, pattern)) # [10]</span>
+</span></span></code></pre></div><h3 id="javascript">Javascript</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#859900">function</span> <span style="color:#268bd2">computeLPSArray</span>(<span style="color:#268bd2">pattern</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">const</span> <span style="color:#268bd2">m</span> = <span style="color:#268bd2">pattern</span>.<span style="color:#268bd2">length</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">const</span> <span style="color:#268bd2">lps</span> = <span style="color:#859900">new</span> <span style="color:#cb4b16">Array</span>(<span style="color:#268bd2">m</span>).<span style="color:#268bd2">fill</span>(<span style="color:#2aa198;font-weight:bold">0</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">let</span> <span style="color:#268bd2">length</span> = <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">let</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">1</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">while</span> (<span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">m</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">pattern</span>[<span style="color:#268bd2">i</span>] === <span style="color:#268bd2">pattern</span>[<span style="color:#268bd2">length</span>]) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">length</span>++;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">lps</span>[<span style="color:#268bd2">i</span>] = <span style="color:#268bd2">length</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">i</span>++;
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">length</span> !== <span style="color:#2aa198;font-weight:bold">0</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">length</span> = <span style="color:#268bd2">lps</span>[<span style="color:#268bd2">length</span> - <span style="color:#2aa198;font-weight:bold">1</span>];
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">lps</span>[<span style="color:#268bd2">i</span>] = <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">i</span>++;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">lps</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">function</span> <span style="color:#268bd2">kmpSearch</span>(<span style="color:#268bd2">text</span>, <span style="color:#268bd2">pattern</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">const</span> <span style="color:#268bd2">n</span> = <span style="color:#268bd2">text</span>.<span style="color:#268bd2">length</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">const</span> <span style="color:#268bd2">m</span> = <span style="color:#268bd2">pattern</span>.<span style="color:#268bd2">length</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">m</span> === <span style="color:#2aa198;font-weight:bold">0</span>) <span style="color:#859900">return</span> [];
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">const</span> <span style="color:#268bd2">lps</span> = <span style="color:#268bd2">computeLPSArray</span>(<span style="color:#268bd2">pattern</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">let</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#93a1a1;font-style:italic">// index for text
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">let</span> <span style="color:#268bd2">j</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#93a1a1;font-style:italic">// index for pattern
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">const</span> <span style="color:#268bd2">results</span> = [];
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">while</span> (<span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">n</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">pattern</span>[<span style="color:#268bd2">j</span>] === <span style="color:#268bd2">text</span>[<span style="color:#268bd2">i</span>]) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">i</span>++;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">j</span>++;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">j</span> === <span style="color:#268bd2">m</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">results</span>.<span style="color:#268bd2">push</span>(<span style="color:#268bd2">i</span> - <span style="color:#268bd2">j</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">j</span> = <span style="color:#268bd2">lps</span>[<span style="color:#268bd2">j</span> - <span style="color:#2aa198;font-weight:bold">1</span>];
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> <span style="color:#859900">if</span> (<span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">n</span> &amp;&amp; <span style="color:#268bd2">pattern</span>[<span style="color:#268bd2">j</span>] !== <span style="color:#268bd2">text</span>[<span style="color:#268bd2">i</span>]) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">j</span> !== <span style="color:#2aa198;font-weight:bold">0</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">j</span> = <span style="color:#268bd2">lps</span>[<span style="color:#268bd2">j</span> - <span style="color:#2aa198;font-weight:bold">1</span>];
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">i</span>++;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">results</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const text = &#34;ABABDABACDABABCABAB&#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const pattern = &#34;ABABCABAB&#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(kmpSearch(text, pattern)); // [10]
+</span></span></span></code></pre></div><h3 id="typescript">Typescript</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-typescript" data-lang="typescript"><span style="display:flex;"><span><span style="color:#859900">function</span> <span style="color:#268bd2">computeLPSArrayTS</span>(<span style="color:#268bd2">pattern</span>: <span style="color:#859900;font-weight:bold">string</span>): <span style="color:#859900;font-weight:bold">number</span>[] {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">const</span> <span style="color:#268bd2">m</span> = <span style="color:#268bd2">pattern</span>.<span style="color:#268bd2">length</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">const</span> <span style="color:#268bd2">lps</span>: <span style="color:#859900;font-weight:bold">number</span>[] = <span style="color:#859900">new</span> <span style="color:#cb4b16">Array</span>(<span style="color:#268bd2">m</span>).<span style="color:#268bd2">fill</span>(<span style="color:#2aa198;font-weight:bold">0</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">let</span> <span style="color:#268bd2">length</span> = <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">let</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">1</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">while</span> (<span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">m</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">pattern</span>[<span style="color:#268bd2">i</span>] === <span style="color:#268bd2">pattern</span>[<span style="color:#268bd2">length</span>]) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">length</span>++;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">lps</span>[<span style="color:#268bd2">i</span>] = <span style="color:#268bd2">length</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">i</span>++;
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">length</span> !== <span style="color:#2aa198;font-weight:bold">0</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">length</span> = <span style="color:#268bd2">lps</span>[<span style="color:#268bd2">length</span> - <span style="color:#2aa198;font-weight:bold">1</span>];
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">lps</span>[<span style="color:#268bd2">i</span>] = <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">i</span>++;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">lps</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">function</span> <span style="color:#268bd2">kmpSearchTS</span>(<span style="color:#268bd2">text</span>: <span style="color:#859900;font-weight:bold">string</span>, <span style="color:#268bd2">pattern</span>: <span style="color:#859900;font-weight:bold">string</span>): <span style="color:#859900;font-weight:bold">number</span>[] {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">const</span> <span style="color:#268bd2">n</span> = <span style="color:#268bd2">text</span>.<span style="color:#268bd2">length</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">const</span> <span style="color:#268bd2">m</span> = <span style="color:#268bd2">pattern</span>.<span style="color:#268bd2">length</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">m</span> === <span style="color:#2aa198;font-weight:bold">0</span>) <span style="color:#859900">return</span> [];
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">const</span> <span style="color:#268bd2">lps</span> = <span style="color:#268bd2">computeLPSArrayTS</span>(<span style="color:#268bd2">pattern</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">let</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#93a1a1;font-style:italic">// index for text
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">let</span> <span style="color:#268bd2">j</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#93a1a1;font-style:italic">// index for pattern
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">const</span> <span style="color:#268bd2">results</span>: <span style="color:#859900;font-weight:bold">number</span>[] = [];
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">while</span> (<span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">n</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">pattern</span>[<span style="color:#268bd2">j</span>] === <span style="color:#268bd2">text</span>[<span style="color:#268bd2">i</span>]) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">i</span>++;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">j</span>++;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">j</span> === <span style="color:#268bd2">m</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">results</span>.<span style="color:#268bd2">push</span>(<span style="color:#268bd2">i</span> - <span style="color:#268bd2">j</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">j</span> = <span style="color:#268bd2">lps</span>[<span style="color:#268bd2">j</span> - <span style="color:#2aa198;font-weight:bold">1</span>];
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> <span style="color:#859900">if</span> (<span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">n</span> &amp;&amp; <span style="color:#268bd2">pattern</span>[<span style="color:#268bd2">j</span>] !== <span style="color:#268bd2">text</span>[<span style="color:#268bd2">i</span>]) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">j</span> !== <span style="color:#2aa198;font-weight:bold">0</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">j</span> = <span style="color:#268bd2">lps</span>[<span style="color:#268bd2">j</span> - <span style="color:#2aa198;font-weight:bold">1</span>];
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">i</span>++;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">results</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const textTS = &#34;ABABDABACDABABCABAB&#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const patternTS = &#34;ABABCABAB&#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(kmpSearchTS(textTS, patternTS)); // [10]
+</span></span></span></code></pre></div><h3 id="cpp">Cpp</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;vector&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;string&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;iostream&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt; <span style="color:#268bd2">computeLPSArray</span>(<span style="color:#859900">const</span> <span style="color:#268bd2">std</span>::<span style="color:#268bd2">string</span>&amp; <span style="color:#268bd2">pattern</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">m</span> = <span style="color:#268bd2">pattern</span>.<span style="color:#268bd2">length</span>();
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt; <span style="color:#268bd2">lps</span>(<span style="color:#268bd2">m</span>, <span style="color:#2aa198;font-weight:bold">0</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">length</span> = <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">1</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">while</span> (<span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">m</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">pattern</span>[<span style="color:#268bd2">i</span>] == <span style="color:#268bd2">pattern</span>[<span style="color:#268bd2">length</span>]) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">length</span>++;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">lps</span>[<span style="color:#268bd2">i</span>] = <span style="color:#268bd2">length</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">i</span>++;
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">length</span> != <span style="color:#2aa198;font-weight:bold">0</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">length</span> = <span style="color:#268bd2">lps</span>[<span style="color:#268bd2">length</span> - <span style="color:#2aa198;font-weight:bold">1</span>];
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">lps</span>[<span style="color:#268bd2">i</span>] = <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">i</span>++;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">lps</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt; <span style="color:#268bd2">kmpSearch</span>(<span style="color:#859900">const</span> <span style="color:#268bd2">std</span>::<span style="color:#268bd2">string</span>&amp; <span style="color:#268bd2">text</span>, <span style="color:#859900">const</span> <span style="color:#268bd2">std</span>::<span style="color:#268bd2">string</span>&amp; <span style="color:#268bd2">pattern</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">n</span> = <span style="color:#268bd2">text</span>.<span style="color:#268bd2">length</span>();
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">m</span> = <span style="color:#268bd2">pattern</span>.<span style="color:#268bd2">length</span>();
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">m</span> == <span style="color:#2aa198;font-weight:bold">0</span>) <span style="color:#859900">return</span> {};
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt; <span style="color:#268bd2">lps</span> = <span style="color:#268bd2">computeLPSArray</span>(<span style="color:#268bd2">pattern</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#93a1a1;font-style:italic">// index for text
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">j</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#93a1a1;font-style:italic">// index for pattern
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt; <span style="color:#268bd2">results</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">while</span> (<span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">n</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">pattern</span>[<span style="color:#268bd2">j</span>] == <span style="color:#268bd2">text</span>[<span style="color:#268bd2">i</span>]) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">i</span>++;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">j</span>++;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">j</span> == <span style="color:#268bd2">m</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">results</span>.<span style="color:#268bd2">push_back</span>(<span style="color:#268bd2">i</span> - <span style="color:#268bd2">j</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">j</span> = <span style="color:#268bd2">lps</span>[<span style="color:#268bd2">j</span> - <span style="color:#2aa198;font-weight:bold">1</span>];
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> <span style="color:#268bd2">if</span> (<span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">n</span> &amp;&amp; <span style="color:#268bd2">pattern</span>[<span style="color:#268bd2">j</span>] != <span style="color:#268bd2">text</span>[<span style="color:#268bd2">i</span>]) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">j</span> != <span style="color:#2aa198;font-weight:bold">0</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">j</span> = <span style="color:#268bd2">lps</span>[<span style="color:#268bd2">j</span> - <span style="color:#2aa198;font-weight:bold">1</span>];
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">i</span>++;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">results</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// int main() {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::string text = &#34;ABABDABACDABABCABAB&#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::string pattern = &#34;ABABCABAB&#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::vector&lt;int&gt; result = kmpSearch(text, pattern);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     for(int pos : result) {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         std::cout &lt;&lt; &#34;Pattern found at index &#34; &lt;&lt; pos &lt;&lt; std::endl; // 10
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     }
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span></code></pre></div><h3 id="go">Go</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">package</span> <span style="color:#268bd2">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#2aa198">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> <span style="color:#268bd2">computeLPSArray</span>(<span style="color:#268bd2">pattern</span> <span style="color:#859900;font-weight:bold">string</span>) []<span style="color:#859900;font-weight:bold">int</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">m</span> := <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">pattern</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">lps</span> := <span style="color:#cb4b16">make</span>([]<span style="color:#859900;font-weight:bold">int</span>, <span style="color:#268bd2">m</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">length</span> := <span style="color:#2aa198;font-weight:bold">0</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">i</span> := <span style="color:#2aa198;font-weight:bold">1</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">m</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">pattern</span>[<span style="color:#268bd2">i</span>] == <span style="color:#268bd2">pattern</span>[<span style="color:#268bd2">length</span>] {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">length</span>++
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">lps</span>[<span style="color:#268bd2">i</span>] = <span style="color:#268bd2">length</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">i</span>++
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> <span style="color:#268bd2">length</span> != <span style="color:#2aa198;font-weight:bold">0</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">length</span> = <span style="color:#268bd2">lps</span>[<span style="color:#268bd2">length</span>-<span style="color:#2aa198;font-weight:bold">1</span>]
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">lps</span>[<span style="color:#268bd2">i</span>] = <span style="color:#2aa198;font-weight:bold">0</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">i</span>++
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">lps</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> <span style="color:#268bd2">kmpSearch</span>(<span style="color:#268bd2">text</span>, <span style="color:#268bd2">pattern</span> <span style="color:#859900;font-weight:bold">string</span>) []<span style="color:#859900;font-weight:bold">int</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">n</span> := <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">text</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">m</span> := <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">pattern</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#268bd2">m</span> == <span style="color:#2aa198;font-weight:bold">0</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#859900;font-weight:bold">nil</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">lps</span> := <span style="color:#268bd2">computeLPSArray</span>(<span style="color:#268bd2">pattern</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">i</span> := <span style="color:#2aa198;font-weight:bold">0</span> <span style="color:#93a1a1;font-style:italic">// index for text</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">j</span> := <span style="color:#2aa198;font-weight:bold">0</span> <span style="color:#93a1a1;font-style:italic">// index for pattern</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">results</span> := []<span style="color:#859900;font-weight:bold">int</span>{}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">n</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">pattern</span>[<span style="color:#268bd2">j</span>] == <span style="color:#268bd2">text</span>[<span style="color:#268bd2">i</span>] {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">i</span>++
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">j</span>++
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">j</span> == <span style="color:#268bd2">m</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">results</span> = <span style="color:#cb4b16">append</span>(<span style="color:#268bd2">results</span>, <span style="color:#268bd2">i</span>-<span style="color:#268bd2">j</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">j</span> = <span style="color:#268bd2">lps</span>[<span style="color:#268bd2">j</span>-<span style="color:#2aa198;font-weight:bold">1</span>]
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> <span style="color:#859900">if</span> <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">n</span> &amp;&amp; <span style="color:#268bd2">pattern</span>[<span style="color:#268bd2">j</span>] != <span style="color:#268bd2">text</span>[<span style="color:#268bd2">i</span>] {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> <span style="color:#268bd2">j</span> != <span style="color:#2aa198;font-weight:bold">0</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">j</span> = <span style="color:#268bd2">lps</span>[<span style="color:#268bd2">j</span>-<span style="color:#2aa198;font-weight:bold">1</span>]
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">i</span>++
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">results</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// func main() {</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     text := &#34;ABABDABACDABABCABAB&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     pattern := &#34;ABABCABAB&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     fmt.Println(kmpSearch(text, pattern)) // [10]</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }</span>
+</span></span></code></pre></div><h3 id="d">D</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-d" data-lang="d"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.stdio</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.array</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900;font-weight:bold">int</span>[] <span style="color:#268bd2">computeLPSArray</span>(<span style="color:#cb4b16">string</span> <span style="color:#268bd2">pattern</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">auto</span> <span style="color:#268bd2">m</span> = <span style="color:#268bd2">pattern</span>.<span style="color:#268bd2">length</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">auto</span> <span style="color:#268bd2">lps</span> = <span style="color:#859900">new</span> <span style="color:#859900;font-weight:bold">int</span>[<span style="color:#268bd2">m</span>];
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">length</span> = <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">1</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">while</span> (<span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">m</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">pattern</span>[<span style="color:#268bd2">i</span>] == <span style="color:#268bd2">pattern</span>[<span style="color:#268bd2">length</span>]) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">length</span>++;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">lps</span>[<span style="color:#268bd2">i</span>] = <span style="color:#268bd2">length</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">i</span>++;
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">length</span> != <span style="color:#2aa198;font-weight:bold">0</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">length</span> = <span style="color:#268bd2">lps</span>[<span style="color:#268bd2">length</span> - <span style="color:#2aa198;font-weight:bold">1</span>];
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">lps</span>[<span style="color:#268bd2">i</span>] = <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">i</span>++;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">lps</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900;font-weight:bold">int</span>[] <span style="color:#268bd2">kmpSearch</span>(<span style="color:#cb4b16">string</span> <span style="color:#268bd2">text</span>, <span style="color:#cb4b16">string</span> <span style="color:#268bd2">pattern</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">auto</span> <span style="color:#268bd2">n</span> = <span style="color:#268bd2">text</span>.<span style="color:#268bd2">length</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">auto</span> <span style="color:#268bd2">m</span> = <span style="color:#268bd2">pattern</span>.<span style="color:#268bd2">length</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">m</span> == <span style="color:#2aa198;font-weight:bold">0</span>) <span style="color:#859900">return</span> [];
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">auto</span> <span style="color:#268bd2">lps</span> = <span style="color:#268bd2">computeLPSArray</span>(<span style="color:#268bd2">pattern</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#93a1a1;font-style:italic">// index for text
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">j</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#93a1a1;font-style:italic">// index for pattern
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900;font-weight:bold">int</span>[] <span style="color:#268bd2">results</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">while</span> (<span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">n</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">pattern</span>[<span style="color:#268bd2">j</span>] == <span style="color:#268bd2">text</span>[<span style="color:#268bd2">i</span>]) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">i</span>++;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">j</span>++;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">j</span> == <span style="color:#268bd2">m</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">results</span> ~= (<span style="color:#268bd2">i</span> - <span style="color:#268bd2">j</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">j</span> = <span style="color:#268bd2">lps</span>[<span style="color:#268bd2">j</span> - <span style="color:#2aa198;font-weight:bold">1</span>];
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> <span style="color:#859900">if</span> (<span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">n</span> &amp;&amp; <span style="color:#268bd2">pattern</span>[<span style="color:#268bd2">j</span>] != <span style="color:#268bd2">text</span>[<span style="color:#268bd2">i</span>]) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">j</span> != <span style="color:#2aa198;font-weight:bold">0</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">j</span> = <span style="color:#268bd2">lps</span>[<span style="color:#268bd2">j</span> - <span style="color:#2aa198;font-weight:bold">1</span>];
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">i</span>++;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">results</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// void main() {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     string text = &#34;ABABDABACDABABCABAB&#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     string pattern = &#34;ABABCABAB&#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     writeln(kmpSearch(text, pattern)); // [10]
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span></code></pre></div><h2 id="code-walkthrough">Code Walkthrough</h2>
+<h3 id="code-walkthrough-1">Code Walkthrough</h3>
+<p>The KMP algorithm is a two-stage process: preprocessing the pattern and then searching the text.</p>
+<hr>
+<p><strong><code>computeLPSArray(pattern)</code> Function:</strong></p>
+<pre><code>- Creates an `LPS` array, `lps`, filled with zeros.
+
+- Uses two pointers: `length` (tracks the length of the current longest prefix-suffix) and `i` (iterates through the pattern).
+
+- If `pattern[i]` and `pattern[length]` match, it means we've extended the current prefix-suffix. We increment `length`, store it in `lps[i]`, and move to the next character `i`.
+
+- If they don't match:
+
+        - If `length` is not zero, we &quot;fall back&quot; by looking at the LPS value of the previous character (`length = lps[length - 1]`). This effectively tries a shorter prefix-suffix.
+
+        - If `length` is zero, it means there's no proper prefix-suffix to fall back on, so `lps[i]` is 0, and we move to the next character `i`.
+
+&lt;/li&gt;
+</code></pre>
+<p><strong><code>kmpSearch(text, pattern)</code> Function:</strong></p>
+<pre><code>- Uses two pointers: `i` for the `text` and `j` for the `pattern`.
+
+- If `text[i]` and `pattern[j]` match, increment both pointers.
+
+- If `j` reaches the end of the pattern (`j == m`), a full match is found. We record the starting index (`i - j`) and then update `j` using the `LPS` array (`j = lps[j-1]`) to continue searching for the next possible match.
+
+- If there's a mismatch:
+
+        - If `j` is not at the start of the pattern, we consult `lps[j-1]` to find the length of the prefix we can skip. We update `j` to this value without incrementing `i`. This is the &quot;magic shift&quot; of KMP.
+
+        - If `j` is already at the start, we can't shift the pattern further, so we just move to the next character in the `text` by incrementing `i`.
+
+&lt;/li&gt;
+</code></pre>
+<h2 id="applications">Applications</h2>
+<h3 id="application">Application</h3>
+<p>The KMP algorithm is a fundamental string-searching algorithm used in various applications where efficiency is critical.</p>
+<pre><code>    - **Text Editors:** Used in &quot;find and replace&quot; functionality.
+
+    - **Bioinformatics:** Searching for specific gene sequences within a larger DNA strand.
+
+    - **Data Loss Prevention (DLP):** Scanning documents or network traffic for sensitive data patterns (like credit card numbers or social security numbers).
+
+    - **Intrusion Detection Systems (IDS):** Searching for known malicious patterns or signatures in network packets.
+
+    - **Plagiarism Detection:** Finding instances of a smaller document (the &quot;pattern&quot;) within a larger corpus of documents (the &quot;text&quot;).
+</code></pre>
+
+    </div>
+</article>
+
+<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
+    
+    <a href="//localhost:1313/dsa-42_/algorithms/string_searching/rabin_karp/" class="nav-btn">← Previous</a>
+    
+    
+    <a href="//localhost:1313/dsa-42_/algorithms/string_searching/" class="nav-btn">Up</a>
+
+    
+    <a href="//localhost:1313/dsa-42_/algorithms/string_searching/boyer_moore/" class="nav-btn">Next →</a>
+    
+</div>
+
+    </main>
+
+    <footer class="footer">
+        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
+    </footer>
+
+    <script>
+        const body = document.getElementById('theme-body');
+        const btn = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme');
+
+        
+        function updateButtonText() {
+            if (body.classList.contains('theme-terminal')) {
+                btn.textContent = "Light Mode";
+            } else {
+                btn.textContent = "Dark Mode";
+            }
+        }
+
+        if (currentTheme === 'terminal') {
+            body.classList.add('theme-terminal');
+        }
+        
+        
+        updateButtonText();
+
+        btn.addEventListener('click', () => {
+            body.classList.toggle('theme-terminal');
+            updateButtonText();
+            
+            let theme = 'natural';
+            if (body.classList.contains('theme-terminal')) {
+                theme = 'terminal';
+            }
+            localStorage.setItem('theme', theme);
+        });
+    </script>
+</body>
+</html>

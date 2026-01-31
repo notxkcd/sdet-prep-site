@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Knapsack Problem (0/1 Knapsack) | SDET Interview Preparation Kit</title>
+    <link rel="stylesheet" href="//localhost:1313/css/style.css">
+    <link rel="stylesheet" href="//localhost:1313/css/terminal.css">
+    
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    
+    <link rel="stylesheet" href="//localhost:1313/lib/katex/katex.min.css">
+    <script defer src="//localhost:1313/lib/katex/katex.min.js"></script>
+    <script defer src="//localhost:1313/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</head>
+<body id="theme-body">
+    <button id="theme-toggle">Switch Theme</button>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="//localhost:1313/">Index</a></li>
+                
+            </ul>
+        </nav>
+        <div class="site-breadcrumb">
+            <a href="//localhost:1313/">Home</a>
+            
+                
+                    <span>/</span> <a href="//localhost:1313/">SDET Interview Dashboard</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/dsa-42/">42 Algorithms &amp; 42 Data Structures</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/dsa-42/algorithms/">Algorithms</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/dsa-42/algorithms/dynamic_programming/">Dynamic Programming</a>
+                
+            
+            
+                <span>/</span> Knapsack Problem (0/1 Knapsack)
+            
+        </div>
+    </header>
+
+    <main>
+        
+<article>
+    <div class="category-title" style="margin-bottom: 0.5rem;">Dynamic Programming</div>
+    <h1>Knapsack Problem (0/1 Knapsack)</h1>
+    <div class="content-body" style="margin-top: 2rem;">
+        <p>The <code>Knapsack Problem</code> is a classic optimization problem, particularly in the realm of <code>dynamic programming</code>. Given a set of <code>items</code>, each with a specific <code>weight</code> and <code>value</code>, and a <code>knapsack</code> with a maximum <code>weight capacity</code>, the goal is to choose a subset of <code>items</code> to put into the <code>knapsack</code> such that the total <code>value</code> is maximized, and the total <code>weight</code> does not exceed the <code>capacity</code>.</p>
+<p>The &ldquo;<code>0/1</code>&rdquo; in <code>0/1 Knapsack</code> refers to the constraint that for each <code>item</code>, you must either take the whole <code>item</code> (1) or leave it entirely (0); you cannot take a fraction of an <code>item</code>.</p>
+<h2 id="how-it-works">How it Works</h2>
+<h3 id="how-it-works-expanded">How it Works (Expanded)</h3>
+<p>The <code>0/1 Knapsack Problem</code> is typically solved using <code>dynamic programming</code> due to its optimal substructure and overlapping subproblems properties. We build a 2D <code>DP table</code> (matrix) where <code>dp[i][w]</code> represents the maximum <code>value</code> that can be obtained from the first <code>i</code> items with a <code>knapsack capacity</code> of <code>w</code>.</p>
+<hr>
+<p>Example: Items = {(W=1, V=1), (W=3, V=4), (W=4, V=5), (W=5, V=7)}, Capacity = 7</p>
+<p>Initialize dp[i][w] table (items x capacity) with zeros.</p>
+<p>For each item <code>i</code> and each capacity <code>w</code>:</p>
+<ul>
+<li>If current item&rsquo;s weight &gt; <code>w</code>: dp[i][w] = dp[i-1][w] (cannot take item)</li>
+<li>Else: dp[i][w] = max(dp[i-1][w], // Don&rsquo;t take item
+dp[i-1][w - current_item_weight] + current_item_value) // Take item</li>
+</ul>
+<p>The final dp[num_items][capacity] will be the max value.</p>
+<p><a href="#code-walkthrough">Jump to Code Walkthrough</a></p>
+<h2 id="implementation">Implementation</h2>
+<h3 id="python">Python</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#859900">def</span> <span style="color:#268bd2">knapsack_01</span>(<span style="color:#268bd2">weights</span>, <span style="color:#268bd2">values</span>, <span style="color:#268bd2">capacity</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">num_items</span> = <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">weights</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># dp[i][w] stores the maximum value for first i items with capacity w</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">dp</span> = [[<span style="color:#2aa198;font-weight:bold">0</span> <span style="color:#859900">for</span> <span style="color:#268bd2">_</span> <span style="color:#859900">in</span> <span style="color:#cb4b16">range</span>(<span style="color:#268bd2">capacity</span> + <span style="color:#2aa198;font-weight:bold">1</span>)] <span style="color:#859900">for</span> <span style="color:#268bd2">_</span> <span style="color:#859900">in</span> <span style="color:#cb4b16">range</span>(<span style="color:#268bd2">num_items</span> + <span style="color:#2aa198;font-weight:bold">1</span>)]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># Fill dp table</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> <span style="color:#859900">in</span> <span style="color:#cb4b16">range</span>(<span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">num_items</span> + <span style="color:#2aa198;font-weight:bold">1</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> <span style="color:#268bd2">w</span> <span style="color:#859900">in</span> <span style="color:#cb4b16">range</span>(<span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">capacity</span> + <span style="color:#2aa198;font-weight:bold">1</span>):
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">current_item_weight</span> = <span style="color:#268bd2">weights</span>[<span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>]
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">current_item_value</span> = <span style="color:#268bd2">values</span>[<span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> <span style="color:#268bd2">current_item_weight</span> &gt; <span style="color:#268bd2">w</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#93a1a1;font-style:italic"># Cannot include current item, take value from above</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">w</span>] = <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">w</span>]
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">else</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#93a1a1;font-style:italic"># Max of (don&#39;t include, include)</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">w</span>] = <span style="color:#cb4b16">max</span>(<span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">w</span>],                          <span style="color:#93a1a1;font-style:italic"># Don&#39;t include item i</span>
+</span></span><span style="display:flex;"><span>                               <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">w</span> - <span style="color:#268bd2">current_item_weight</span>] + <span style="color:#268bd2">current_item_value</span>) <span style="color:#93a1a1;font-style:italic"># Include item i</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">num_items</span>][<span style="color:#268bd2">capacity</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># Example</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># weights = [1, 3, 4, 5]</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># values = [1, 4, 5, 7]</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># capacity = 7</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(knapsack_01(weights, values, capacity)) # Expected: 9 (items with weights 3 and 4, values 4 and 5)</span>
+</span></span></code></pre></div><h3 id="javascript">Javascript</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#859900">function</span> <span style="color:#268bd2">knapsack01</span>(<span style="color:#268bd2">weights</span>, <span style="color:#268bd2">values</span>, <span style="color:#268bd2">capacity</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">const</span> <span style="color:#268bd2">numItems</span> = <span style="color:#268bd2">weights</span>.<span style="color:#268bd2">length</span>;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// dp[i][w] stores the maximum value for first i items with capacity w
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">const</span> <span style="color:#268bd2">dp</span> = <span style="color:#cb4b16">Array</span>(<span style="color:#268bd2">numItems</span> + <span style="color:#2aa198;font-weight:bold">1</span>).<span style="color:#268bd2">fill</span>(<span style="color:#2aa198;font-weight:bold">0</span>).<span style="color:#268bd2">map</span>(() =&gt; <span style="color:#cb4b16">Array</span>(<span style="color:#268bd2">capacity</span> + <span style="color:#2aa198;font-weight:bold">1</span>).<span style="color:#268bd2">fill</span>(<span style="color:#2aa198;font-weight:bold">0</span>));
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Fill dp table
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#268bd2">i</span> &lt;= <span style="color:#268bd2">numItems</span>; <span style="color:#268bd2">i</span>++) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">w</span> = <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#268bd2">w</span> &lt;= <span style="color:#268bd2">capacity</span>; <span style="color:#268bd2">w</span>++) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">const</span> <span style="color:#268bd2">currentItemWeight</span> = <span style="color:#268bd2">weights</span>[<span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>];
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">const</span> <span style="color:#268bd2">currentItemValue</span> = <span style="color:#268bd2">values</span>[<span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>];
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">currentItemWeight</span> &gt; <span style="color:#268bd2">w</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#93a1a1;font-style:italic">// Cannot include current item, take value from above
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">w</span>] = <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">w</span>];
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#93a1a1;font-style:italic">// Max of (don&#39;t include, include)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">w</span>] = <span style="color:#cb4b16">Math</span>.<span style="color:#268bd2">max</span>(<span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">w</span>],                          <span style="color:#93a1a1;font-style:italic">// Don&#39;t include item i
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                                    <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">w</span> - <span style="color:#268bd2">currentItemWeight</span>] + <span style="color:#268bd2">currentItemValue</span>); <span style="color:#93a1a1;font-style:italic">// Include item i
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">numItems</span>][<span style="color:#268bd2">capacity</span>];
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const weights = [1, 3, 4, 5];
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const values = [1, 4, 5, 7];
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const capacity = 7;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(knapsack01(weights, values, capacity)); // Expected: 9
+</span></span></span></code></pre></div><h3 id="typescript">Typescript</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-typescript" data-lang="typescript"><span style="display:flex;"><span><span style="color:#859900">function</span> <span style="color:#268bd2">knapsack01TS</span>(<span style="color:#268bd2">weights</span>: <span style="color:#859900;font-weight:bold">number</span>[], <span style="color:#268bd2">values</span>: <span style="color:#859900;font-weight:bold">number</span>[], <span style="color:#268bd2">capacity</span>: <span style="color:#859900;font-weight:bold">number</span>): <span style="color:#859900;font-weight:bold">number</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">const</span> <span style="color:#268bd2">numItems</span> = <span style="color:#268bd2">weights</span>.<span style="color:#268bd2">length</span>;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// dp[i][w] stores the maximum value for first i items with capacity w
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">const</span> <span style="color:#268bd2">dp</span>: <span style="color:#859900;font-weight:bold">number</span>[][] = <span style="color:#cb4b16">Array</span>(<span style="color:#268bd2">numItems</span> + <span style="color:#2aa198;font-weight:bold">1</span>).<span style="color:#268bd2">fill</span>(<span style="color:#2aa198;font-weight:bold">0</span>).<span style="color:#268bd2">map</span>(() =&gt; <span style="color:#cb4b16">Array</span>(<span style="color:#268bd2">capacity</span> + <span style="color:#2aa198;font-weight:bold">1</span>).<span style="color:#268bd2">fill</span>(<span style="color:#2aa198;font-weight:bold">0</span>));
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Fill dp table
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#268bd2">i</span> &lt;= <span style="color:#268bd2">numItems</span>; <span style="color:#268bd2">i</span>++) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">w</span> = <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#268bd2">w</span> &lt;= <span style="color:#268bd2">capacity</span>; <span style="color:#268bd2">w</span>++) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">const</span> <span style="color:#268bd2">currentItemWeight</span> = <span style="color:#268bd2">weights</span>[<span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>];
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">const</span> <span style="color:#268bd2">currentItemValue</span> = <span style="color:#268bd2">values</span>[<span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>];
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">currentItemWeight</span> &gt; <span style="color:#268bd2">w</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#93a1a1;font-style:italic">// Cannot include current item, take value from above
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">w</span>] = <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">w</span>];
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#93a1a1;font-style:italic">// Max of (don&#39;t include, include)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">w</span>] = <span style="color:#cb4b16">Math</span>.<span style="color:#268bd2">max</span>(<span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">w</span>],                          <span style="color:#93a1a1;font-style:italic">// Don&#39;t include item i
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                                    <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">w</span> - <span style="color:#268bd2">currentItemWeight</span>] + <span style="color:#268bd2">currentItemValue</span>); <span style="color:#93a1a1;font-style:italic">// Include item i
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">numItems</span>][<span style="color:#268bd2">capacity</span>];
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const weightsTS = [1, 3, 4, 5];
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const valuesTS = [1, 4, 5, 7];
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const capacityTS = 7;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(knapsack01TS(weightsTS, valuesTS, capacityTS)); // Expected: 9
+</span></span></span></code></pre></div><h3 id="cpp">Cpp</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;vector&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;iostream&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;algorithm&gt;</span><span style="color:#93a1a1;font-style:italic"> </span><span style="color:#93a1a1;font-style:italic">// For std::max
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">knapsack01</span>(<span style="color:#859900">const</span> <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt;&amp; <span style="color:#268bd2">weights</span>, <span style="color:#859900">const</span> <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt;&amp; <span style="color:#268bd2">values</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">capacity</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">num_items</span> = <span style="color:#268bd2">weights</span>.<span style="color:#268bd2">size</span>();
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// dp[i][w] stores the maximum value for first i items with capacity w
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt;&gt; <span style="color:#268bd2">dp</span>(<span style="color:#268bd2">num_items</span> + <span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt;(<span style="color:#268bd2">capacity</span> + <span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#2aa198;font-weight:bold">0</span>));
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Fill dp table
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#268bd2">i</span> &lt;= <span style="color:#268bd2">num_items</span>; <span style="color:#268bd2">i</span>++) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">w</span> = <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#268bd2">w</span> &lt;= <span style="color:#268bd2">capacity</span>; <span style="color:#268bd2">w</span>++) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">current_item_weight</span> = <span style="color:#268bd2">weights</span>[<span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>];
+</span></span><span style="display:flex;"><span>            <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">current_item_value</span> = <span style="color:#268bd2">values</span>[<span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>];
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">current_item_weight</span> &gt; <span style="color:#268bd2">w</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#93a1a1;font-style:italic">// Cannot include current item, take value from above
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">w</span>] = <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">w</span>];
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#93a1a1;font-style:italic">// Max of (don&#39;t include, include)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">w</span>] = <span style="color:#268bd2">std</span>::<span style="color:#268bd2">max</span>(<span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">w</span>],                          <span style="color:#93a1a1;font-style:italic">// Don&#39;t include item i
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                                    <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">w</span> - <span style="color:#268bd2">current_item_weight</span>] + <span style="color:#268bd2">current_item_value</span>); <span style="color:#93a1a1;font-style:italic">// Include item i
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">num_items</span>][<span style="color:#268bd2">capacity</span>];
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// int main() {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::vector&lt;int&gt; weights = {1, 3, 4, 5};
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::vector&lt;int&gt; values = {1, 4, 5, 7};
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     int capacity = 7;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; &#34;Max value: &#34; &lt;&lt; knapsack01(weights, values, capacity) &lt;&lt; std::endl; // 9
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     return 0;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span></code></pre></div><h3 id="go">Go</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">package</span> <span style="color:#268bd2">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#2aa198">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> <span style="color:#268bd2">knapsack01</span>(<span style="color:#268bd2">weights</span>, <span style="color:#268bd2">values</span> []<span style="color:#859900;font-weight:bold">int</span>, <span style="color:#268bd2">capacity</span> <span style="color:#859900;font-weight:bold">int</span>) <span style="color:#859900;font-weight:bold">int</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">numItems</span> := <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">weights</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// dp[i][w] stores the maximum value for first i items with capacity w</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">dp</span> := <span style="color:#cb4b16">make</span>([][]<span style="color:#859900;font-weight:bold">int</span>, <span style="color:#268bd2">numItems</span>+<span style="color:#2aa198;font-weight:bold">1</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> := <span style="color:#859900">range</span> <span style="color:#268bd2">dp</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>] = <span style="color:#cb4b16">make</span>([]<span style="color:#859900;font-weight:bold">int</span>, <span style="color:#268bd2">capacity</span>+<span style="color:#2aa198;font-weight:bold">1</span>)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Fill dp table</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> := <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#268bd2">i</span> &lt;= <span style="color:#268bd2">numItems</span>; <span style="color:#268bd2">i</span>++ {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> <span style="color:#268bd2">w</span> := <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#268bd2">w</span> &lt;= <span style="color:#268bd2">capacity</span>; <span style="color:#268bd2">w</span>++ {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">currentItemWeight</span> := <span style="color:#268bd2">weights</span>[<span style="color:#268bd2">i</span>-<span style="color:#2aa198;font-weight:bold">1</span>]
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">currentItemValue</span> := <span style="color:#268bd2">values</span>[<span style="color:#268bd2">i</span>-<span style="color:#2aa198;font-weight:bold">1</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> <span style="color:#268bd2">currentItemWeight</span> &gt; <span style="color:#268bd2">w</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#93a1a1;font-style:italic">// Cannot include current item, take value from above</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">w</span>] = <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>-<span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">w</span>]
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#93a1a1;font-style:italic">// Max of (don&#39;t include, include)</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">w</span>] = <span style="color:#cb4b16">max</span>(<span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>-<span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">w</span>],                          <span style="color:#93a1a1;font-style:italic">// Don&#39;t include item i</span>
+</span></span><span style="display:flex;"><span>                               <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>-<span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">w</span>-<span style="color:#268bd2">currentItemWeight</span>] + <span style="color:#268bd2">currentItemValue</span>) <span style="color:#93a1a1;font-style:italic">// Include item i</span>
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">numItems</span>][<span style="color:#268bd2">capacity</span>]
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> <span style="color:#cb4b16">max</span>(<span style="color:#268bd2">a</span>, <span style="color:#268bd2">b</span> <span style="color:#859900;font-weight:bold">int</span>) <span style="color:#859900;font-weight:bold">int</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#268bd2">a</span> &gt; <span style="color:#268bd2">b</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">a</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">b</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// func main() {</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     weights := []int{1, 3, 4, 5}</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     values := []int{1, 4, 5, 7}</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     capacity := 7</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     fmt.Println(&#34;Max value:&#34;, knapsack01(weights, values, capacity)) // 9</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }</span>
+</span></span></code></pre></div><h3 id="d">D</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-d" data-lang="d"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.stdio</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.array</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.algorithm</span>; <span style="color:#93a1a1;font-style:italic">// For std.algorithm.max
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">knapsack01</span>(<span style="color:#859900;font-weight:bold">int</span>[] <span style="color:#268bd2">weights</span>, <span style="color:#859900;font-weight:bold">int</span>[] <span style="color:#268bd2">values</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">capacity</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">auto</span> <span style="color:#268bd2">numItems</span> = <span style="color:#268bd2">weights</span>.<span style="color:#268bd2">length</span>;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// dp[i][w] stores the maximum value for first i items with capacity w
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">auto</span> <span style="color:#268bd2">dp</span> = <span style="color:#859900">new</span> <span style="color:#859900;font-weight:bold">int</span>[<span style="color:#268bd2">numItems</span> + <span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">capacity</span> + <span style="color:#2aa198;font-weight:bold">1</span>];
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Fill dp table
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">foreach</span> (<span style="color:#268bd2">i</span>; <span style="color:#2aa198;font-weight:bold">1</span> .. <span style="color:#268bd2">numItems</span> + <span style="color:#2aa198;font-weight:bold">1</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">foreach</span> (<span style="color:#268bd2">w</span>; <span style="color:#2aa198;font-weight:bold">1</span> .. <span style="color:#268bd2">capacity</span> + <span style="color:#2aa198;font-weight:bold">1</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">auto</span> <span style="color:#268bd2">currentItemWeight</span> = <span style="color:#268bd2">weights</span>[<span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>];
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">auto</span> <span style="color:#268bd2">currentItemValue</span> = <span style="color:#268bd2">values</span>[<span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>];
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">currentItemWeight</span> &gt; <span style="color:#268bd2">w</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#93a1a1;font-style:italic">// Cannot include current item, take value from above
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">w</span>] = <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">w</span>];
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#93a1a1;font-style:italic">// Max of (don&#39;t include, include)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">w</span>] = <span style="color:#268bd2">max</span>(<span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">w</span>],                          <span style="color:#93a1a1;font-style:italic">// Don&#39;t include item i
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                               <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">w</span> - <span style="color:#268bd2">currentItemWeight</span>] + <span style="color:#268bd2">currentItemValue</span>); <span style="color:#93a1a1;font-style:italic">// Include item i
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">numItems</span>][<span style="color:#268bd2">capacity</span>];
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// void main() {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     auto weights = [1, 3, 4, 5];
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     auto values = [1, 4, 5, 7];
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     int capacity = 7;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     writeln(&#34;Max value: &#34;, knapsack01(weights, values, capacity)); // 9
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span></code></pre></div><h2 id="code-walkthrough">Code Walkthrough</h2>
+<p><a href="#implementation">Back to Implementation</a></p>
+<h3 id="code-walkthrough-1">Code Walkthrough</h3>
+<p>The <code>0/1 Knapsack Problem</code> is solved using a <code>dynamic programming</code> approach, building a 2D table to store optimal solutions for subproblems.</p>
+<hr>
+<p><strong>Initialization:</strong></p>
+<ul>
+<li>
+<p><code>num_items</code>: The total number of items available.</p>
+</li>
+<li>
+<p><code>capacity</code>: The maximum weight the knapsack can hold.</p>
+</li>
+<li>
+<p>A 2D <code>dp</code> table (<code>num_items+1</code> rows, <code>capacity+1</code> columns) is created and initialized with zeros.</p>
+</li>
+<li>
+<p><code>dp[i][w]</code> will store the maximum <code>value</code> achievable using the first <code>i</code> items with a <code>knapsack capacity</code> of <code>w</code>.</p>
+</li>
+<li>
+<p><code>dp[0][w]</code> and <code>dp[i][0]</code> are naturally 0 (no items or no capacity means no value).</p>
+  </li>
+</li>
+</ul>
+<p><strong>Filling the DP Table:</strong></p>
+<ul>
+<li>
+<p>The <code>dp</code> table is filled iteratively, considering each <code>item</code> (<code>i</code>) and each possible <code>capacity</code> (<code>w</code>).</p>
+</li>
+<li>
+<p>For each cell <code>dp[i][w]</code>:</p>
+</li>
+<li>
+<p>Get the <code>weight</code> and <code>value</code> of the <code>current item</code> (which is <code>item i-1</code> in the 0-indexed <code>weights</code> and <code>values</code> arrays).</p>
+</li>
+<li>
+<p><strong>Case 1: <code>current_item_weight &gt; w</code></strong></p>
+</li>
+<li>
+<p>If the <code>current item</code>&rsquo;s <code>weight</code> exceeds the <code>current capacity w</code>, it cannot be included in the <code>knapsack</code>.</p>
+</li>
+<li>
+<p>Therefore, the maximum <code>value</code> <code>dp[i][w]</code> is the same as the maximum <code>value</code> without the <code>current item</code> (<code>dp[i-1][w]</code>).</p>
+<pre><code>      &lt;/li&gt;
+</code></pre>
+</li>
+<li>
+<p><strong>Case 2: <code>current_item_weight &lt;= w</code></strong></p>
+</li>
+<li>
+<p>The <code>current item</code> can potentially be included. We need to decide whether including it or not yields a better total <code>value</code>.</p>
+</li>
+<li>
+<p><code>dp[i][w]</code> is the maximum of two options:</p>
+</li>
+<li>
+<p><strong>Option A (Don&rsquo;t include <code>item i</code>):</strong> The <code>value</code> is <code>dp[i-1][w]</code> (the max value using the first <code>i-1</code> items with the same <code>capacity</code>).</p>
+</li>
+<li>
+<p><strong>Option B (Include <code>item i</code>):</strong> The <code>value</code> is <code>current_item_value</code> plus the maximum <code>value</code> obtained from the first <code>i-1</code> items with the <code>remaining capacity</code> (<code>w - current_item_weight</code>).</p>
+<pre><code>              &lt;/li&gt;
+
+      &lt;/li&gt;
+</code></pre>
+  </li>
+</li>
+</ul>
+<p><strong>Result:</strong></p>
+<ul>
+<li>The final answer, the maximum <code>value</code> that can be put into the <code>knapsack</code>, is found at <code>dp[num_items][capacity]</code>.</li>
+</ul>
+<p><a href="#implementation">Back to Implementation</a></p>
+<h2 id="applications">Applications</h2>
+<h3 id="application">Application</h3>
+<p>The <code>0/1 Knapsack Problem</code> is a foundational problem in combinatorial optimization with numerous real-world applications:</p>
+<ul>
+<li><strong>Resource Allocation:</strong> Deciding which projects or tasks to undertake given limited resources (e.g., budget, time, personnel), where each project has a cost (weight) and a benefit (value).</li>
+<li><strong>Cargo Loading:</strong> Loading a ship or truck with items to maximize the total value of cargo without exceeding the weight limit.</li>
+<li><strong>Investment Decisions:</strong> Selecting investments to maximize return while staying within a budget.</li>
+<li><strong>Cuttin Stock:</strong> Optimizing the cutting of materials (e.g., wood, fabric) from larger pieces to minimize waste and maximize yield.</li>
+<li><strong>Cryptography:</strong> Some cryptographic schemes (like the Merkle-Hellman knapsack cryptosystem, though broken) are based on variations of the knapsack problem.</li>
+</ul>
+
+    </div>
+</article>
+
+<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
+    
+    <a href="//localhost:1313/dsa-42/algorithms/dynamic_programming/lis/" class="nav-btn">← Previous</a>
+    
+    
+    <a href="//localhost:1313/dsa-42/algorithms/dynamic_programming/" class="nav-btn">Up</a>
+
+    
+    <a href="//localhost:1313/dsa-42/algorithms/dynamic_programming/edit_distance/" class="nav-btn">Next →</a>
+    
+</div>
+
+    </main>
+
+    <footer class="footer">
+        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
+    </footer>
+
+    <script>
+        const body = document.getElementById('theme-body');
+        const btn = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme');
+
+        
+        function updateButtonText() {
+            if (body.classList.contains('theme-terminal')) {
+                btn.textContent = "Light Mode";
+            } else {
+                btn.textContent = "Dark Mode";
+            }
+        }
+
+        if (currentTheme === 'terminal') {
+            body.classList.add('theme-terminal');
+        }
+        
+        
+        updateButtonText();
+
+        btn.addEventListener('click', () => {
+            body.classList.toggle('theme-terminal');
+            updateButtonText();
+            
+            let theme = 'natural';
+            if (body.classList.contains('theme-terminal')) {
+                theme = 'terminal';
+            }
+            localStorage.setItem('theme', theme);
+        });
+    </script>
+</body>
+</html>

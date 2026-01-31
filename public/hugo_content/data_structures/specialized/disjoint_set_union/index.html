@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disjoint Set Union | SDET Interview Preparation Kit</title>
+    <link rel="stylesheet" href="//localhost:1313/css/style.css">
+    <link rel="stylesheet" href="//localhost:1313/css/terminal.css">
+    
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    
+    <link rel="stylesheet" href="//localhost:1313/lib/katex/katex.min.css">
+    <script defer src="//localhost:1313/lib/katex/katex.min.js"></script>
+    <script defer src="//localhost:1313/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</head>
+<body id="theme-body">
+    <button id="theme-toggle">Switch Theme</button>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="//localhost:1313/">Index</a></li>
+                
+            </ul>
+        </nav>
+        <div class="site-breadcrumb">
+            <a href="//localhost:1313/">Home</a>
+            
+                
+                    <span>/</span> <a href="//localhost:1313/">SDET Interview Dashboard</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/hugo_content/">42 Algorithms &amp; 42 Data Structures</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/hugo_content/data_structures/">Data Structures</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/hugo_content/data_structures/specialized/">Specialized</a>
+                
+            
+            
+                <span>/</span> Disjoint Set Union
+            
+        </div>
+    </header>
+
+    <main>
+        
+<article>
+    <div class="category-title" style="margin-bottom: 0.5rem;">Specialized</div>
+    <h1>Disjoint Set Union</h1>
+    <div class="content-body" style="margin-top: 2rem;">
+        <p>A <code>Disjoint Set Union (DSU)</code> data structure, also known as <code>Union-Find</code>, is a data structure that keeps track of a set of <code>elements</code> partitioned into a number of disjoint (non-overlapping) subsets. It performs two primary operations:</p>
+<pre><code>    - **`Find`:** Determines which subset a particular `element` is in. It returns a &quot;representative&quot; (or &quot;`root`&quot;) of that subset.
+
+    - **`Union`:** Merges two subsets into a single subset.
+</code></pre>
+<p><code>DSU</code> is widely used in algorithms that involve grouping <code>elements</code>, such as finding <code>connected components</code> in a <code>graph</code>, <code>Kruskal's algorithm</code> for <code>Minimum Spanning Tree (MST)</code>, and solving various grouping or connectivity problems.</p>
+<h2 id="how-it-works">How it Works</h2>
+<h3 id="how-it-works-expanded">How it Works (Expanded)</h3>
+<p>The <code>DSU data structure</code> is typically implemented using <code>arrays</code> to represent the <code>parent</code> of each <code>element</code>. Initially, each <code>element</code> is in its own <code>set</code>, meaning it is its own <code>parent</code>.</p>
+<hr>
+<p>Key Ideas:</p>
+<ol>
+<li>
+<p><strong>Representation:</strong> Each element has a &lsquo;parent&rsquo; pointer. If an element&rsquo;s parent is itself, it&rsquo;s the root (representative) of its set.
+Array <code>parent</code>: [0, 1, 2, 3, 4, 5]  (Initially, each element is its own parent)
+Indices:       0  1  2  3  4  5</p>
+</li>
+<li>
+<p><strong>Find Operation:</strong> To find the representative of an element, follow its parent pointers until a root is reached.
+(Example: <code>Find(3)</code> where <code>parent[3]=1</code>, <code>parent[1]=root(0)</code> -&gt; returns 0)</p>
+</li>
+<li>
+<p><strong>Union Operation:</strong> To <code>union</code> two sets (represented by elements <code>A</code> and <code>B</code>), find the <code>roots</code> of <code>A</code> and <code>B</code>. If they are different, make one <code>root</code> the <code>parent</code> of the other.
+(Example: <code>Union(2,3)</code> where <code>root(2)=2</code>, <code>root(3)=0</code>. Make 0 parent of 2. <code>parent[2]=0</code>)</p>
+</li>
+</ol>
+<h2 id="implementation">Implementation</h2>
+<h3 id="python">Python</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#cb4b16">DisjointSetUnion</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">__init__</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">n</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">parent</span> = <span style="color:#cb4b16">list</span>(<span style="color:#cb4b16">range</span>(<span style="color:#268bd2">n</span>)) <span style="color:#93a1a1;font-style:italic"># Each element is initially its own parent</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">rank</span> = [<span style="color:#2aa198;font-weight:bold">0</span>] * <span style="color:#268bd2">n</span>          <span style="color:#93a1a1;font-style:italic"># Used for union by rank optimization</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">find</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">i</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># Path compression</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">parent</span>[<span style="color:#268bd2">i</span>] == <span style="color:#268bd2">i</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#268bd2">i</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">parent</span>[<span style="color:#268bd2">i</span>] = <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">find</span>(<span style="color:#cb4b16">self</span>.<span style="color:#268bd2">parent</span>[<span style="color:#268bd2">i</span>])
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">parent</span>[<span style="color:#268bd2">i</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">union</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">i</span>, <span style="color:#268bd2">j</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># Union by rank</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">i_root</span> = <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">find</span>(<span style="color:#268bd2">i</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">j_root</span> = <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">find</span>(<span style="color:#268bd2">j</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">i_root</span> != <span style="color:#268bd2">j_root</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">rank</span>[<span style="color:#268bd2">i_root</span>] &lt; <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">rank</span>[<span style="color:#268bd2">j_root</span>]:
+</span></span><span style="display:flex;"><span>                <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">parent</span>[<span style="color:#268bd2">i_root</span>] = <span style="color:#268bd2">j_root</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">elif</span> <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">rank</span>[<span style="color:#268bd2">i_root</span>] &gt; <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">rank</span>[<span style="color:#268bd2">j_root</span>]:
+</span></span><span style="display:flex;"><span>                <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">parent</span>[<span style="color:#268bd2">j_root</span>] = <span style="color:#268bd2">i_root</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">else</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">parent</span>[<span style="color:#268bd2">j_root</span>] = <span style="color:#268bd2">i_root</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">rank</span>[<span style="color:#268bd2">i_root</span>] += <span style="color:#2aa198;font-weight:bold">1</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#859900;font-weight:bold">True</span> <span style="color:#93a1a1;font-style:italic"># Successfully merged</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#859900;font-weight:bold">False</span> <span style="color:#93a1a1;font-style:italic"># Already in the same set</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># Example Usage:</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># dsu = DisjointSetUnion(5) # Elements 0, 1, 2, 3, 4</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># dsu.union(0, 1) # Merge set of 0 and set of 1</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># dsu.union(2, 3) # Merge set of 2 and set of 3</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># dsu.union(0, 2) # Merge set containing {0,1} and set containing {2,3}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(&#34;Parent array:&#34;, dsu.parent) # Example output: [0, 0, 0, 0, 4] (after path compression)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(&#34;Find(3):&#34;, dsu.find(3))     # Expected: 0</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(&#34;Find(4):&#34;, dsu.find(4))     # Expected: 4</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(&#34;Are 1 and 3 connected?&#34;, dsu.find(1) == dsu.find(3)) # True</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(&#34;Are 1 and 4 connected?&#34;, dsu.find(1) == dsu.find(4)) # False</span>
+</span></span></code></pre></div><h3 id="javascript">Javascript</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#268bd2">DisjointSetUnion</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">constructor</span>(<span style="color:#268bd2">n</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">parent</span> = <span style="color:#cb4b16">Array</span>.<span style="color:#268bd2">from</span>({ <span style="color:#268bd2">length</span>: <span style="color:#268bd2">n</span> }, (<span style="color:#268bd2">_</span>, <span style="color:#268bd2">i</span>) =&gt; <span style="color:#268bd2">i</span>); <span style="color:#93a1a1;font-style:italic">// Each element is initially its own parent
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">rank</span> = <span style="color:#859900">new</span> <span style="color:#cb4b16">Array</span>(<span style="color:#268bd2">n</span>).<span style="color:#268bd2">fill</span>(<span style="color:#2aa198;font-weight:bold">0</span>); <span style="color:#93a1a1;font-style:italic">// Used for union by rank optimization
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">find</span>(<span style="color:#268bd2">i</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Path compression
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">if</span> (<span style="color:#859900">this</span>.<span style="color:#268bd2">parent</span>[<span style="color:#268bd2">i</span>] === <span style="color:#268bd2">i</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#268bd2">i</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">parent</span>[<span style="color:#268bd2">i</span>] = <span style="color:#859900">this</span>.<span style="color:#268bd2">find</span>(<span style="color:#859900">this</span>.<span style="color:#268bd2">parent</span>[<span style="color:#268bd2">i</span>]);
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#859900">this</span>.<span style="color:#268bd2">parent</span>[<span style="color:#268bd2">i</span>];
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">union</span>(<span style="color:#268bd2">i</span>, <span style="color:#268bd2">j</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Union by rank
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">let</span> <span style="color:#268bd2">iRoot</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">find</span>(<span style="color:#268bd2">i</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">let</span> <span style="color:#268bd2">jRoot</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">find</span>(<span style="color:#268bd2">j</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">iRoot</span> !== <span style="color:#268bd2">jRoot</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#859900">this</span>.<span style="color:#268bd2">rank</span>[<span style="color:#268bd2">iRoot</span>] &lt; <span style="color:#859900">this</span>.<span style="color:#268bd2">rank</span>[<span style="color:#268bd2">jRoot</span>]) {
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">this</span>.<span style="color:#268bd2">parent</span>[<span style="color:#268bd2">iRoot</span>] = <span style="color:#268bd2">jRoot</span>;
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> <span style="color:#859900">if</span> (<span style="color:#859900">this</span>.<span style="color:#268bd2">rank</span>[<span style="color:#268bd2">iRoot</span>] &gt; <span style="color:#859900">this</span>.<span style="color:#268bd2">rank</span>[<span style="color:#268bd2">jRoot</span>]) {
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">this</span>.<span style="color:#268bd2">parent</span>[<span style="color:#268bd2">jRoot</span>] = <span style="color:#268bd2">iRoot</span>;
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">this</span>.<span style="color:#268bd2">parent</span>[<span style="color:#268bd2">jRoot</span>] = <span style="color:#268bd2">iRoot</span>;
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">this</span>.<span style="color:#268bd2">rank</span>[<span style="color:#268bd2">iRoot</span>]++;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#859900;font-weight:bold">true</span>; <span style="color:#93a1a1;font-style:italic">// Successfully merged
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#859900;font-weight:bold">false</span>; <span style="color:#93a1a1;font-style:italic">// Already in the same set
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Example Usage:
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const dsu = new DisjointSetUnion(5); // Elements 0, 1, 2, 3, 4
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// dsu.union(0, 1); // Merge set of 0 and set of 1
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// dsu.union(2, 3); // Merge set of 2 and set of 3
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// dsu.union(0, 2); // Merge set containing {0,1} and set containing {2,3}
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Parent array:&#34;, dsu.parent); // Example output: [0, 0, 0, 0, 4] (after path compression)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Find(3):&#34;, dsu.find(3));     // Expected: 0
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Find(4):&#34;, dsu.find(4));     // Expected: 4
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Are 1 and 3 connected?&#34;, dsu.find(1) === dsu.find(3)); // true
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Are 1 and 4 connected?&#34;, dsu.find(1) === dsu.find(4)); // false
+</span></span></span></code></pre></div><h3 id="cpp">Cpp</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;vector&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;numeric&gt;</span><span style="color:#93a1a1;font-style:italic"> </span><span style="color:#93a1a1;font-style:italic">// For std::iota
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;iostream&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#cb4b16">DisjointSetUnion</span> {
+</span></span><span style="display:flex;"><span><span style="color:#859900">private</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt; <span style="color:#268bd2">parent</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt; <span style="color:#268bd2">rank</span>; <span style="color:#93a1a1;font-style:italic">// Used for union by rank optimization
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">num_sets</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">DisjointSetUnion</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">n</span>) : <span style="color:#268bd2">num_sets</span>(<span style="color:#268bd2">n</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">parent</span>.<span style="color:#268bd2">resize</span>(<span style="color:#268bd2">n</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">std</span>::<span style="color:#268bd2">iota</span>(<span style="color:#268bd2">parent</span>.<span style="color:#268bd2">begin</span>(), <span style="color:#268bd2">parent</span>.<span style="color:#268bd2">end</span>(), <span style="color:#2aa198;font-weight:bold">0</span>); <span style="color:#93a1a1;font-style:italic">// Each element is initially its own parent
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">rank</span>.<span style="color:#268bd2">assign</span>(<span style="color:#268bd2">n</span>, <span style="color:#2aa198;font-weight:bold">0</span>); <span style="color:#93a1a1;font-style:italic">// Initialize ranks to 0
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">find</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Path compression
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">parent</span>[<span style="color:#268bd2">i</span>] == <span style="color:#268bd2">i</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#268bd2">i</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">parent</span>[<span style="color:#268bd2">i</span>] = <span style="color:#268bd2">find</span>(<span style="color:#268bd2">parent</span>[<span style="color:#268bd2">i</span>]);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">bool</span> <span style="color:#268bd2">unite</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">j</span>) { <span style="color:#93a1a1;font-style:italic">// Using &#39;unite&#39; to avoid conflict with &#39;union&#39; keyword
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#93a1a1;font-style:italic">// Union by rank
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i_root</span> = <span style="color:#268bd2">find</span>(<span style="color:#268bd2">i</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">j_root</span> = <span style="color:#268bd2">find</span>(<span style="color:#268bd2">j</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">i_root</span> != <span style="color:#268bd2">j_root</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">rank</span>[<span style="color:#268bd2">i_root</span>] &lt; <span style="color:#268bd2">rank</span>[<span style="color:#268bd2">j_root</span>]) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">parent</span>[<span style="color:#268bd2">i_root</span>] = <span style="color:#268bd2">j_root</span>;
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> <span style="color:#859900">if</span> (<span style="color:#268bd2">rank</span>[<span style="color:#268bd2">i_root</span>] &gt; <span style="color:#268bd2">rank</span>[<span style="color:#268bd2">j_root</span>]) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">parent</span>[<span style="color:#268bd2">j_root</span>] = <span style="color:#268bd2">i_root</span>;
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">parent</span>[<span style="color:#268bd2">j_root</span>] = <span style="color:#268bd2">i_root</span>;
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">rank</span>[<span style="color:#268bd2">i_root</span>]++;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">num_sets</span>--;
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#cb4b16">true</span>; <span style="color:#93a1a1;font-style:italic">// Successfully merged
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#cb4b16">false</span>; <span style="color:#93a1a1;font-style:italic">// Already in the same set
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">getNumSets</span>() <span style="color:#859900">const</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">num_sets</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Example Usage:
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// int main() {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     DisjointSetUnion dsu(5); // Elements 0, 1, 2, 3, 4
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     dsu.unite(0, 1); // Merge set of 0 and set of 1
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     dsu.unite(2, 3); // Merge set of 2 and set of 3
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     dsu.unite(0, 2); // Merge set containing {0,1} and set containing {2,3}
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; &#34;Find(3): &#34; &lt;&lt; dsu.find(3) &lt;&lt; std::endl; // Expected: 0
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; &#34;Find(4): &#34; &lt;&lt; dsu.find(4) &lt;&lt; std::endl; // Expected: 4
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; &#34;Are 1 and 3 connected? &#34; &lt;&lt; (dsu.find(1) == dsu.find(3) ? &#34;True&#34; : &#34;False&#34;) &lt;&lt; std::endl; // True
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; &#34;Are 1 and 4 connected? &#34; &lt;&lt; (dsu.find(1) == dsu.find(4) ? &#34;True&#34; : &#34;False&#34;) &lt;&lt; std::endl; // False
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; &#34;Number of sets: &#34; &lt;&lt; dsu.getNumSets() &lt;&lt; std::endl; // Expected: 2
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     return 0;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span></code></pre></div><h2 id="code-walkthrough">Code Walkthrough</h2>
+<h3 id="code-walkthrough-1">Code Walkthrough</h3>
+<p>A <code>Disjoint Set Union</code> implementation primarily consists of the <code>parent array</code> and optimized <code>Find</code> and <code>Union</code> operations.</p>
+<hr>
+<p><strong><code>DisjointSetUnion</code> Class:</strong></p>
+<pre><code>- `parent`: An `array` where `parent[i]` stores the `parent` of `element i`. If `parent[i] == i`, then `i` is the `root` of its `set`.
+
+- `rank` (or `size`): An `array` used for the `union by rank` (or `size`) optimization. It stores the `rank` (or `size`) of the `tree` rooted at each `element`.
+
+- `num_sets`: Keeps track of the total number of disjoint sets.
+
+- **`find(i)`:**
+
+        - If `element i` is its own `parent`, it is the `root`, so return `i`.
+
+        - Otherwise, recursively call `find` on its `parent`, and during the return path, update `parent[i]` to point directly to the `root` (`path compression`).
+
+&lt;/li&gt;
+- **`union(i, j)` (or `unite` in C++):**
+
+        - Find the `roots` of `element i` and `element j` using the `find` operation.
+
+        - If the `roots` are different, merge the two `sets`. This is done by making the `root` of the `tree` with smaller `rank` (or `size`) a child of the `root` of the `tree` with larger `rank` (or `size`). If `ranks` are equal, one `root` becomes the `parent` of the other, and its `rank` is incremented.
+
+        - Decrement `num_sets`.
+
+&lt;/li&gt;
+</code></pre>
+<h2 id="applications">Applications</h2>
+<h3 id="application">Application</h3>
+<p>The Disjoint Set Union (DSU) data structure is fundamental in graph theory and computational geometry. Its most classic application is in <strong>Kruskal&rsquo;s algorithm</strong> for finding a Minimum Spanning Tree (MST), where it&rsquo;s used to keep track of the sets of vertices connected by the edges selected so far. It is also used for efficiently <strong>detecting cycles in an undirected graph</strong>. In computer networks, it can be used to determine if two computers are on the same network. In image processing, it can be used for image segmentation by grouping neighboring pixels with similar properties into disjoint sets.</p>
+
+    </div>
+</article>
+
+<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
+    
+    <a href="//localhost:1313/hugo_content/data_structures/specialized/fenwick_tree/" class="nav-btn">← Previous</a>
+    
+    
+    <a href="//localhost:1313/hugo_content/data_structures/specialized/" class="nav-btn">Up</a>
+
+    
+    <a href="//localhost:1313/hugo_content/data_structures/specialized/dancing_links/" class="nav-btn">Next →</a>
+    
+</div>
+
+    </main>
+
+    <footer class="footer">
+        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
+    </footer>
+
+    <script>
+        const body = document.getElementById('theme-body');
+        const btn = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme');
+
+        
+        function updateButtonText() {
+            if (body.classList.contains('theme-terminal')) {
+                btn.textContent = "Light Mode";
+            } else {
+                btn.textContent = "Dark Mode";
+            }
+        }
+
+        if (currentTheme === 'terminal') {
+            body.classList.add('theme-terminal');
+        }
+        
+        
+        updateButtonText();
+
+        btn.addEventListener('click', () => {
+            body.classList.toggle('theme-terminal');
+            updateButtonText();
+            
+            let theme = 'natural';
+            if (body.classList.contains('theme-terminal')) {
+                theme = 'terminal';
+            }
+            localStorage.setItem('theme', theme);
+        });
+    </script>
+</body>
+</html>

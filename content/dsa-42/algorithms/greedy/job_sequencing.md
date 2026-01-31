@@ -1,0 +1,484 @@
+---
+title: "Job Sequencing Problem with Deadlines"
+---
+
+The `Job Sequencing Problem with Deadlines` is a classic optimization problem that can be solved using a `greedy approach`. Given a set of `jobs`, where each `job` has an associated `deadline` and `profit`, the goal is to select a subset of `jobs` to perform, such that each `job` is completed by its `deadline`, only one `job` can be processed at a time, and the total `profit` is maximized.
+
+This problem assumes that each `job` takes a single unit of time to complete.
+
+## How it Works
+
+### How it Works (Expanded)
+
+The `greedy choice` in the `Job Sequencing Problem` is to prioritize `jobs` with the highest `profit`. When considering `jobs` in decreasing order of `profit`, we try to schedule each `job` as late as possible (to keep earlier slots open for other high-profit jobs) but still by its `deadline`. This ensures that we maximize the chances of accommodating other profitable `jobs`.
+
+---
+
+Example: Jobs = [(J1, D=2, P=100), (J2, D=1, P=19), (J3, D=2, P=27), (J4, D=1, P=25), (J5, D=3, P=15)]
+
+1. Sort jobs by profit (descending):
+   [(J1, D=2, P=100), (J3, D=2, P=27), (J4, D=1, P=25), (J2, D=1, P=19), (J5, D=3, P=15)]
+
+2. Max deadline = 3. Slots available: [_, _, _] for time 1, 2, 3.
+
+3. Process sorted jobs:
+- J1 (D=2, P=100): Try slot 2 (deadline). Available. Schedule. Slots: [_, J1, _]. Max Profit = 100.
+- J3 (D=2, P=27): Try slot 2 (deadline). Occupied. Try slot 1. Available. Schedule. Slots: [J3, J1, _]. Max Profit = 100 + 27 = 127.
+- J4 (D=1, P=25): Try slot 1. Occupied. Cannot schedule.
+- J2 (D=1, P=19): Try slot 1. Occupied. Cannot schedule.
+- J5 (D=3, P=15): Try slot 3. Available. Schedule. Slots: [J3, J1, J5]. Max Profit = 127 + 15 = 142.
+
+Selected Jobs: J3, J1, J5. Max Profit = 142.
+
+[Jump to Code Walkthrough](#code-walkthrough)
+
+## Implementation {#implementation}
+
+### Python
+
+```python
+def job_sequencing(jobs):
+    """
+    Solves the Job Sequencing Problem with Deadlines.
+    <code>jobs</code>: a list of tuples, where each tuple is (job_id, deadline, profit).
+    """
+    if not jobs:
+        return 0, []
+
+    # 1. Sort jobs by profit in decreasing order
+    jobs.sort(key=lambda x: x[2], reverse=True)
+
+    # Find maximum deadline to determine number of time slots
+    max_deadline = 0
+    for job_id, deadline, profit in jobs:
+        max_deadline = max(max_deadline, deadline)
+    
+    # time_slots array to keep track of occupied slots. 0 for empty, job_id for occupied.
+    # We use 1-based indexing for slots for easier understanding (slot 1 to max_deadline)
+    time_slots = [0] <em> (max_deadline + 1)
+    
+    selected_jobs = []
+    total_profit = 0
+
+    # 2. Iterate through sorted jobs
+    for job_id, deadline, profit in jobs:
+        # Try to schedule the job as late as possible, up to its deadline
+        for t in range(deadline, 0, -1):
+            if time_slots[t] == 0: # If slot t is free
+                time_slots[t] = job_id # Schedule job
+                selected_jobs.append(job_id)
+                total_profit += profit
+                break # Job scheduled, move to next job
+                
+    # Sort selected jobs by their assigned slot (optional, for consistent output)
+    # This requires knowing which slot each job took, which is in time_slots
+    # For now, just return as is or sort by ID
+    selected_jobs.sort() # Sort by ID for consistent output
+            
+    return total_profit, selected_jobs
+
+# Example
+# jobs = [('J1', 2, 100), ('J2', 1, 19), ('J3', 2, 27), ('J4', 1, 25), ('J5', 3, 15)]
+# # Expected: Total Profit: 142, Selected Jobs: ['J1', 'J3', 'J5'] (order might vary)
+# profit, selected = job_sequencing(jobs)
+# print("Total Profit:", profit)
+# print("Selected Jobs:", selected)
+```
+
+### Javascript
+
+```javascript
+function jobSequencing(jobs) {
+    /</em><em>
+     </em> Solves the Job Sequencing Problem with Deadlines.
+     <em> <code>jobs</code>: an array of objects, where each object is { id: string, deadline: number, profit: number }.
+     </em>/
+    if (jobs.length === 0) {
+        return { totalProfit: 0, selectedJobs: [] };
+    }
+
+    // 1. Sort jobs by profit in decreasing order
+    jobs.sort((a, b) => b.profit - a.profit);
+
+    // Find maximum deadline to determine number of time slots
+    let maxDeadline = 0;
+    for (const job of jobs) {
+        if (job.deadline > maxDeadline) {
+            maxDeadline = job.deadline;
+        }
+    }
+    
+    // timeSlots array to keep track of occupied slots. 0 for empty, job_id for occupied.
+    // We use 1-based indexing for slots (slot 1 to maxDeadline)
+    const timeSlots = new Array(maxDeadline + 1).fill(0);
+    
+    const selectedJobs = [];
+    let totalProfit = 0;
+
+    // 2. Iterate through sorted jobs
+    for (const job of jobs) {
+        // Try to schedule the job as late as possible, up to its deadline
+        for (let t = job.deadline; t > 0; t--) {
+            if (timeSlots[t] === 0) { // If slot t is free
+                timeSlots[t] = job.id; // Schedule job
+                selectedJobs.push(job.id);
+                totalProfit += job.profit;
+                break; // Job scheduled, move to next job
+            }
+        }
+    }
+            
+    // Sort selected jobs by their ID for consistent output (optional)
+    selectedJobs.sort();
+            
+    return { totalProfit, selectedJobs };
+}
+
+// const jobs = [
+//     { id: 'J1', deadline: 2, profit: 100 },
+//     { id: 'J2', deadline: 1, profit: 19 },
+//     { id: 'J3', deadline: 2, profit: 27 },
+//     { id: 'J4', deadline: 1, profit: 25 },
+//     { id: 'J5', deadline: 3, profit: 15 }
+// ];
+// const { totalProfit, selectedJobs } = jobSequencing(jobs);
+// console.log("Total Profit:", totalProfit); // 142
+// console.log("Selected Jobs:", selectedJobs); // ['J1', 'J3', 'J5'] (sorted)
+```
+
+### Typescript
+
+```typescript
+interface Job {
+    id: string;
+    deadline: number;
+    profit: number;
+}
+
+function jobSequencingTS(jobs: Job[]): { totalProfit: number; selectedJobs: string[] } {
+    if (jobs.length === 0) {
+        return { totalProfit: 0, selectedJobs: [] };
+    }
+
+    // 1. Sort jobs by profit in decreasing order
+    jobs.sort((a, b) => b.profit - a.profit);
+
+    // Find maximum deadline to determine number of time slots
+    let maxDeadline = 0;
+    for (const job of jobs) {
+        if (job.deadline > maxDeadline) {
+            maxDeadline = job.deadline;
+        }
+    }
+    
+    // timeSlots array to keep track of occupied slots. 0 for empty, job_id for occupied.
+    // We use 1-based indexing for slots (slot 1 to maxDeadline)
+    const timeSlots: (string | number)[] = new Array(maxDeadline + 1).fill(0); // 0 means empty
+    
+    const selectedJobs: string[] = [];
+    let totalProfit = 0;
+
+    // 2. Iterate through sorted jobs
+    for (const job of jobs) {
+        // Try to schedule the job as late as possible, up to its deadline
+        for (let t = job.deadline; t > 0; t--) {
+            if (timeSlots[t] === 0) { // If slot t is free
+                timeSlots[t] = job.id; // Schedule job
+                selectedJobs.push(job.id);
+                totalProfit += job.profit;
+                break; // Job scheduled, move to next job
+            }
+        }
+    }
+            
+    // Sort selected jobs by their ID for consistent output (optional)
+    selectedJobs.sort();
+            
+    return { totalProfit, selectedJobs };
+}
+
+// const jobsTS: Job[] = [
+//     { id: 'J1', deadline: 2, profit: 100 },
+//     { id: 'J2', deadline: 1, profit: 19 },
+//     { id: 'J3', deadline: 2, profit: 27 },
+//     { id: 'J4', deadline: 1, profit: 25 },
+//     { id: 'J5', deadline: 3, profit: 15 }
+// ];
+// const resultTS = jobSequencingTS(jobsTS);
+// console.log("Total Profit:", resultTS.totalProfit); // 142
+// console.log("Selected Jobs:", resultTS.selectedJobs); // ['J1', 'J3', 'J5'] (sorted)
+```
+
+### Cpp
+
+```cpp
+#include <vector>
+#include <iostream>
+#include <algorithm> // For std::sort, std::max
+#include <string>
+#include <numeric> // For std::iota
+
+// Struct to represent a job
+struct Job {
+    char id;
+    int deadline;
+    int profit;
+
+    // Custom comparator for sorting by profit in descending order
+    bool operator<(const Job& other) const {
+        return profit > other.profit; // Sort in decreasing order of profit
+    }
+};
+
+std::pair<int, std::vector<char>> jobSequencing(std::vector<Job> jobs) {
+    if (jobs.empty()) {
+        return {0, {}};
+    }
+
+    // 1. Sort jobs by profit in decreasing order
+    std::sort(jobs.begin(), jobs.end());
+
+    // Find maximum deadline to determine number of time slots
+    int max_deadline = 0;
+    for (const auto& job : jobs) {
+        max_deadline = std::max(max_deadline, job.deadline);
+    }
+    
+    // time_slots array to keep track of occupied slots. '\0' for empty, job_id for occupied.
+    // We use 1-based indexing for slots (slot 1 to max_deadline)
+    std::vector<char> time_slots(max_deadline + 1, '\0'); // '\0' means empty
+    
+    std::vector<char> selected_jobs;
+    int total_profit = 0;
+
+    // 2. Iterate through sorted jobs
+    for (const auto& job : jobs) {
+        // Try to schedule the job as late as possible, up to its deadline
+        for (int t = job.deadline; t > 0; t--) {
+            if (time_slots[t] == '\0') { // If slot t is free
+                time_slots[t] = job.id; // Schedule job
+                selected_jobs.push_back(job.id);
+                total_profit += job.profit;
+                break; // Job scheduled, move to next job
+            }
+        }
+    }
+            
+    // Sort selected jobs by their ID for consistent output (optional)
+    std::sort(selected_jobs.begin(), selected_jobs.end());
+            
+    return {total_profit, selected_jobs};
+}
+
+// int main() {
+//     std::vector<Job> jobs = {
+//         {'J1', 2, 100}, {'J2', 1, 19}, {'J3', 2, 27}, {'J4', 1, 25}, {'J5', 3, 15}
+//     };
+//     auto result = jobSequencing(jobs);
+//     std::cout << "Total Profit: " << result.first << std::endl; // 142
+//     std::cout << "Selected Jobs: ";
+//     for (char id : result.second) {
+//         std::cout << id << " "; // J1 J3 J5
+//     }
+//     std::cout << std::endl;
+//     return 0;
+// }
+```
+
+### Go
+
+```go
+package main
+
+import (
+    "fmt"
+    "sort"
+)
+
+type Job struct {
+    ID       string
+    Deadline int
+    Profit   int
+}
+
+// Implement sort.Interface for []Job
+type ByProfit []Job
+
+func (a ByProfit) Len() int           { return len(a) }
+func (a ByProfit) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a ByProfit) Less(i, j int) bool { return a[i].Profit > a[j].Profit } // Descending order
+
+func jobSequencing(jobs []Job) (int, []string) {
+    if len(jobs) == 0 {
+        return 0, []string{}
+    }
+
+    // 1. Sort jobs by profit in decreasing order
+    sort.Sort(ByProfit(jobs))
+
+    // Find maximum deadline to determine number of time slots
+    maxDeadline := 0
+    for _, job := range jobs {
+        if job.Deadline > maxDeadline {
+            maxDeadline = job.Deadline
+        }
+    }
+    
+    // timeSlots array to keep track of occupied slots. "" for empty, job_id for occupied.
+    // We use 1-based indexing for slots (slot 1 to maxDeadline)
+    timeSlots := make([]string, maxDeadline+1) // Initialized with empty strings ("")
+    
+    selectedJobs := []string{}
+    totalProfit := 0
+
+    // 2. Iterate through sorted jobs
+    for _, job := range jobs {
+        // Try to schedule the job as late as possible, up to its deadline
+        for t := job.Deadline; t > 0; t-- {
+            if timeSlots[t] == "" { // If slot t is free
+                timeSlots[t] = job.ID // Schedule job
+                selectedJobs = append(selectedJobs, job.ID)
+                totalProfit += job.Profit
+                break // Job scheduled, move to next job
+            }
+        }
+    }
+            
+    // Sort selected jobs by their ID for consistent output (optional)
+    sort.Strings(selectedJobs)
+            
+    return totalProfit, selectedJobs
+}
+
+// func main() {
+//     jobs := []Job{
+//         {"J1", 2, 100}, {"J2", 1, 19}, {"J3", 2, 27}, {"J4", 1, 25}, {"J5", 3, 15},
+//     }
+//     profit, selected := jobSequencing(jobs)
+//     fmt.Println("Total Profit:", profit)     // 142
+//     fmt.Println("Selected Jobs:", selected) // [J1 J3 J5] (sorted)
+// }
+```
+
+### D
+
+```d
+import std.stdio;
+import std.array;
+import std.algorithm; // For std.algorithm.sort, std.algorithm.max
+import std.string; // For std.string.joiner
+
+// Struct to represent a job
+struct Job {
+    string id;
+    int deadline;
+    int profit;
+
+    // Custom comparator for sorting by profit in descending order
+    int opCmp(const Job other) const {
+        return other.profit.cmp(this.profit); // Sort in decreasing order of profit
+    }
+}
+
+Tuple!(int, string[]) jobSequencing(Job[] jobs) {
+    if (jobs.empty) {
+        return typeof(return)(0, []);
+    }
+
+    // 1. Sort jobs by profit in decreasing order
+    jobs.sort!((a, b) => a.profit > b.profit);
+
+    // Find maximum deadline to determine number of time slots
+    int maxDeadline = 0;
+    foreach (job; jobs) {
+        maxDeadline = max(maxDeadline, job.deadline);
+    }
+    
+    // timeSlots array to keep track of occupied slots. "" for empty, job_id for occupied.
+    // We use 1-based indexing for slots (slot 1 to maxDeadline)
+    string[] timeSlots = new string[maxDeadline + 1].replicate("").array; // Initialize with empty strings
+    
+    string[] selectedJobs;
+    int totalProfit = 0;
+
+    // 2. Iterate through sorted jobs
+    foreach (job; jobs) {
+        // Try to schedule the job as late as possible, up to its deadline
+        for (int t = job.deadline; t > 0; t--) {
+            if (timeSlots[t] == "") { // If slot t is free
+                timeSlots[t] = job.id; // Schedule job
+                selectedJobs ~= job.id;
+                totalProfit += job.profit;
+                break; // Job scheduled, move to next job
+            }
+        }
+    }
+            
+    // Sort selected jobs by their ID for consistent output (optional)
+    selectedJobs.sort();
+            
+    return typeof(return)(totalProfit, selectedJobs);
+}
+
+// void main() {
+//     Job[] jobs = [
+//         Job("J1", 2, 100), Job("J2", 1, 19), Job("J3", 2, 27),
+//         Job("J4", 1, 25), Job("J5", 3, 15)
+//     ];
+//     auto result = jobSequencing(jobs);
+//     writeln("Total Profit: ", result.totalProfit); // 142
+//     writeln("Selected Jobs: ", result.selectedJobs); // [J1, J3, J5] (sorted)
+// }
+```
+
+## Code Walkthrough {#code-walkthrough}
+
+[Back to Implementation](#implementation)
+
+### Code Walkthrough
+
+The `Job Sequencing Problem with Deadlines` is solved using a `greedy strategy` combined with careful scheduling of `jobs`.
+
+---
+
+**`Job` Structure:**
+- Each `job` is represented by an `id`, a `deadline`, and a `profit`.
+
+**`job_sequencing(jobs)` Function:**
+- `jobs`: A list of `job` objects/tuples.
+
+**Algorithm Steps:**
+- **Sort by Profit:** The `jobs` are sorted in decreasing order of their `profit`. This is the crucial greedy choice: always consider the most profitable `job` first.
+- **Determine `max_deadline`:** Find the maximum `deadline` among all `jobs`. This helps in determining the size of the `time_slots` array.
+- **Initialize `time_slots`:** A `time_slots` array (1-indexed for convenience) of size `max_deadline + 1` is created. Each element is initialized to indicate an empty slot (e.g., 0 or an empty string).
+- **Initialize Results:**
+- `selected_jobs`: An empty list to store the IDs of the selected `jobs`.
+- `total_profit`: Initialized to 0.
+
+    </li>
+- **Schedule Jobs Greedily:** Iterate through the `jobs` in their profit-sorted order:
+- For each `job`:
+- The algorithm attempts to schedule this `job` as late as possible but before or on its `deadline`. It iterates backward from the `job's deadline` down to 1.
+- If a `time_slot t` is found to be empty (`time_slots[t] == 0`), the `job` is scheduled in that `slot`. Its `profit` is added to `total_profit`, and its `id` is added to `selected_jobs`. The inner loop breaks, and the algorithm moves to the next profitable `job`.
+- If no free slot is found up to `deadline 1`, the `job` cannot be scheduled.
+
+            </li>
+
+    </li>
+
+**Result:**
+- The function returns the `total_profit` and the list of `selected_jobs` (sorted by ID for consistent output).
+
+[Back to Implementation](#implementation)
+
+## Applications
+
+### Application
+
+The `Job Sequencing Problem with Deadlines` is a classic model for scheduling problems that occur in various real-world scenarios:
+- **Task Scheduling in Operating Systems:** Optimizing the execution of tasks on a single processor, where tasks have different priorities (profits) and completion deadlines.
+- **Project Management:** Selecting a subset of tasks within a project to maximize overall benefit, given limited time and resources.
+- **Manufacturing and Production:** Scheduling production orders on a single machine to maximize profit while respecting delivery deadlines.
+- **Resource Allocation:** Deciding which short-duration projects or activities to undertake when a resource has a limited availability window for each project.
+- **Airline Scheduling:** Optimizing the assignment of aircraft to flights or crew to duties, where each assignment has a profit and a time constraint.
+

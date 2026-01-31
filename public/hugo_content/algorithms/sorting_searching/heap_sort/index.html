@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heap Sort | SDET Interview Preparation Kit</title>
+    <link rel="stylesheet" href="//localhost:1313/css/style.css">
+    <link rel="stylesheet" href="//localhost:1313/css/terminal.css">
+    
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    
+    <link rel="stylesheet" href="//localhost:1313/lib/katex/katex.min.css">
+    <script defer src="//localhost:1313/lib/katex/katex.min.js"></script>
+    <script defer src="//localhost:1313/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</head>
+<body id="theme-body">
+    <button id="theme-toggle">Switch Theme</button>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="//localhost:1313/">Index</a></li>
+                
+            </ul>
+        </nav>
+        <div class="site-breadcrumb">
+            <a href="//localhost:1313/">Home</a>
+            
+                
+                    <span>/</span> <a href="//localhost:1313/">SDET Interview Dashboard</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/hugo_content/">42 Algorithms &amp; 42 Data Structures</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/hugo_content/algorithms/">Algorithms</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/hugo_content/algorithms/sorting_searching/">Sorting Searching</a>
+                
+            
+            
+                <span>/</span> Heap Sort
+            
+        </div>
+    </header>
+
+    <main>
+        
+<article>
+    <div class="category-title" style="margin-bottom: 0.5rem;">Sorting Searching</div>
+    <h1>Heap Sort</h1>
+    <div class="content-body" style="margin-top: 2rem;">
+        <p><code>Heap Sort</code> is a comparison-based sorting algorithm that uses a <code>binary heap</code> data structure. It can be thought of as an improved version of <code>selection sort</code>, where instead of linearly scanning the unsorted part to find the maximum element, it uses a <code>heap</code> to find the maximum in <code>O(log N)</code> time.</p>
+<p>It has an <code>O(N log N)</code> time complexity in all cases (best, average, and worst) and is an in-place sorting algorithm, meaning it requires only a constant amount of extra memory space.</p>
+<h2 id="how-it-works">How it Works</h2>
+<h3 id="how-it-works-expanded">How it Works (Expanded)</h3>
+<p>The <code>Heap Sort</code> algorithm works in two main phases:</p>
+<pre><code>    - **Build a Max-Heap:** The first step is to build a `max-heap` from the input array. A `max-heap` is a `binary tree` where the value of each `parent node` is greater than or equal to the value of its children. This ensures that the root of the `heap` is always the largest element in the array.
+
+    - **Repeatedly Extract Maximum:** The algorithm then repeatedly extracts the maximum element from the `heap` (which is always at the root) and moves it to the end of the array. The heap is then rebuilt with the remaining elements, and the process is repeated until the entire array is sorted.
+</code></pre>
+<hr>
+<p>Example: Sort [4, 10, 3, 5, 1]</p>
+<ol>
+<li>
+<p>Build Max-Heap:</p>
+<ul>
+<li>Rearrange array into a max-heap: [10, 5, 3, 4, 1]</li>
+</ul>
+</li>
+<li>
+<p>Extract-Max Phase:</p>
+<ul>
+<li>Swap root (10) with last element (1): [1, 5, 3, 4, 10]</li>
+<li>Heapify the reduced heap [1, 5, 3, 4]. New heap: [5, 4, 3, 1]. Array: [5, 4, 3, 1, 10]</li>
+<li>Swap root (5) with last element (1): [1, 4, 3, 5, 10]</li>
+<li>Heapify the reduced heap [1, 4, 3]. New heap: [4, 1, 3]. Array: [4, 1, 3, 5, 10]
+&hellip;and so on, until the array is fully sorted.</li>
+</ul>
+</li>
+</ol>
+<h2 id="implementation">Implementation</h2>
+<h3 id="python">Python</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#859900">def</span> <span style="color:#268bd2">heapify</span>(<span style="color:#268bd2">arr</span>, <span style="color:#268bd2">n</span>, <span style="color:#268bd2">i</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">largest</span> = <span style="color:#268bd2">i</span>  <span style="color:#93a1a1;font-style:italic"># Initialize largest as root</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">left</span> = <span style="color:#2aa198;font-weight:bold">2</span> &lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">i</span> + <span style="color:#2aa198;font-weight:bold">1</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">right</span> = <span style="color:#2aa198;font-weight:bold">2</span> &lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">i</span> + <span style="color:#2aa198;font-weight:bold">2</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># See if left child of root exists and is greater than root</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#268bd2">left</span> &lt; <span style="color:#268bd2">n</span> <span style="color:#859900">and</span> <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">i</span>] &lt; <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">left</span>]:
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">largest</span> = <span style="color:#268bd2">left</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># See if right child of root exists and is greater than root</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#268bd2">right</span> &lt; <span style="color:#268bd2">n</span> <span style="color:#859900">and</span> <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">largest</span>] &lt; <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">right</span>]:
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">largest</span> = <span style="color:#268bd2">right</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># Change root, if needed</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#268bd2">largest</span> != <span style="color:#268bd2">i</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">i</span>], <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">largest</span>] = <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">largest</span>], <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">i</span>]  <span style="color:#93a1a1;font-style:italic"># swap</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># Heapify the root.</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">heapify</span>(<span style="color:#268bd2">arr</span>, <span style="color:#268bd2">n</span>, <span style="color:#268bd2">largest</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">def</span> <span style="color:#268bd2">heap_sort</span>(<span style="color:#268bd2">arr</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">n</span> = <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">arr</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># Build a max-heap.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># Since last parent will be at ((n//2)-1) we can start at that location.</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> <span style="color:#859900">in</span> <span style="color:#cb4b16">range</span>(<span style="color:#268bd2">n</span> // <span style="color:#2aa198;font-weight:bold">2</span> - <span style="color:#2aa198;font-weight:bold">1</span>, -<span style="color:#2aa198;font-weight:bold">1</span>, -<span style="color:#2aa198;font-weight:bold">1</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">heapify</span>(<span style="color:#268bd2">arr</span>, <span style="color:#268bd2">n</span>, <span style="color:#268bd2">i</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># One by one extract elements</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> <span style="color:#859900">in</span> <span style="color:#cb4b16">range</span>(<span style="color:#268bd2">n</span> - <span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#2aa198;font-weight:bold">0</span>, -<span style="color:#2aa198;font-weight:bold">1</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">i</span>], <span style="color:#268bd2">arr</span>[<span style="color:#2aa198;font-weight:bold">0</span>] = <span style="color:#268bd2">arr</span>[<span style="color:#2aa198;font-weight:bold">0</span>], <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">i</span>]  <span style="color:#93a1a1;font-style:italic"># swap</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">heapify</span>(<span style="color:#268bd2">arr</span>, <span style="color:#268bd2">i</span>, <span style="color:#2aa198;font-weight:bold">0</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">arr</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># Example</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># my_arr = [38, 27, 43, 3, 9, 82, 10]</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(heap_sort(my_arr)) # [3, 9, 10, 27, 38, 43, 82]</span>
+</span></span></code></pre></div><h3 id="javascript">Javascript</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#859900">function</span> <span style="color:#268bd2">heapSort</span>(<span style="color:#268bd2">arr</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">let</span> <span style="color:#268bd2">n</span> = <span style="color:#268bd2">arr</span>.<span style="color:#268bd2">length</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Build a max-heap (rearrange array)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">i</span> = <span style="color:#cb4b16">Math</span>.<span style="color:#268bd2">floor</span>(<span style="color:#268bd2">n</span> / <span style="color:#2aa198;font-weight:bold">2</span>) - <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#268bd2">i</span> &gt;= <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span>--) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">heapify</span>(<span style="color:#268bd2">arr</span>, <span style="color:#268bd2">n</span>, <span style="color:#268bd2">i</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// One by one extract an element from heap
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">i</span> = <span style="color:#268bd2">n</span> - <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#268bd2">i</span> &gt; <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span>--) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Move current root to end
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        [<span style="color:#268bd2">arr</span>[<span style="color:#2aa198;font-weight:bold">0</span>], <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">i</span>]] = [<span style="color:#268bd2">arr</span>[<span style="color:#268bd2">i</span>], <span style="color:#268bd2">arr</span>[<span style="color:#2aa198;font-weight:bold">0</span>]];
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// call max heapify on the reduced heap
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">heapify</span>(<span style="color:#268bd2">arr</span>, <span style="color:#268bd2">i</span>, <span style="color:#2aa198;font-weight:bold">0</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">arr</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">function</span> <span style="color:#268bd2">heapify</span>(<span style="color:#268bd2">arr</span>, <span style="color:#268bd2">n</span>, <span style="color:#268bd2">i</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">let</span> <span style="color:#268bd2">largest</span> = <span style="color:#268bd2">i</span>; <span style="color:#93a1a1;font-style:italic">// Initialize largest as root
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">let</span> <span style="color:#268bd2">left</span> = <span style="color:#2aa198;font-weight:bold">2</span> &lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">i</span> + <span style="color:#2aa198;font-weight:bold">1</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">let</span> <span style="color:#268bd2">right</span> = <span style="color:#2aa198;font-weight:bold">2</span> &lt;/em&gt; i + 2;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// If left child is larger than root
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">left</span> &lt; <span style="color:#268bd2">n</span> &amp;&amp; <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">left</span>] &gt; <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">largest</span>]) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">largest</span> = <span style="color:#268bd2">left</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// If right child is larger than largest so far
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">right</span> &lt; <span style="color:#268bd2">n</span> &amp;&amp; <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">right</span>] &gt; <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">largest</span>]) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">largest</span> = <span style="color:#268bd2">right</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// If largest is not root
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">largest</span> !== <span style="color:#268bd2">i</span>) {
+</span></span><span style="display:flex;"><span>        [<span style="color:#268bd2">arr</span>[<span style="color:#268bd2">i</span>], <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">largest</span>]] = [<span style="color:#268bd2">arr</span>[<span style="color:#268bd2">largest</span>], <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">i</span>]]; <span style="color:#93a1a1;font-style:italic">// swap
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Recursively heapify the affected sub-tree
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">heapify</span>(<span style="color:#268bd2">arr</span>, <span style="color:#268bd2">n</span>, <span style="color:#268bd2">largest</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const myArr = [38, 27, 43, 3, 9, 82, 10];
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(heapSort(myArr)); // [3, 9, 10, 27, 38, 43, 82]
+</span></span></span></code></pre></div><h3 id="typescript">Typescript</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-typescript" data-lang="typescript"><span style="display:flex;"><span><span style="color:#859900">function</span> <span style="color:#268bd2">heapSortTS</span>(<span style="color:#268bd2">arr</span>: <span style="color:#859900;font-weight:bold">number</span>[]): <span style="color:#859900;font-weight:bold">number</span>[] {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">let</span> <span style="color:#268bd2">n</span> = <span style="color:#268bd2">arr</span>.<span style="color:#268bd2">length</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Build a max-heap (rearrange array)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">i</span> = <span style="color:#cb4b16">Math</span>.<span style="color:#268bd2">floor</span>(<span style="color:#268bd2">n</span> / <span style="color:#2aa198;font-weight:bold">2</span>) - <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#268bd2">i</span> &gt;= <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span>--) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">heapifyTS</span>(<span style="color:#268bd2">arr</span>, <span style="color:#268bd2">n</span>, <span style="color:#268bd2">i</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// One by one extract an element from heap
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">i</span> = <span style="color:#268bd2">n</span> - <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#268bd2">i</span> &gt; <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span>--) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Move current root to end
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        [<span style="color:#268bd2">arr</span>[<span style="color:#2aa198;font-weight:bold">0</span>], <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">i</span>]] = [<span style="color:#268bd2">arr</span>[<span style="color:#268bd2">i</span>], <span style="color:#268bd2">arr</span>[<span style="color:#2aa198;font-weight:bold">0</span>]];
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// call max heapify on the reduced heap
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">heapifyTS</span>(<span style="color:#268bd2">arr</span>, <span style="color:#268bd2">i</span>, <span style="color:#2aa198;font-weight:bold">0</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">arr</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">function</span> <span style="color:#268bd2">heapifyTS</span>(<span style="color:#268bd2">arr</span>: <span style="color:#859900;font-weight:bold">number</span>[], <span style="color:#268bd2">n</span>: <span style="color:#859900;font-weight:bold">number</span>, <span style="color:#268bd2">i</span>: <span style="color:#859900;font-weight:bold">number</span>): <span style="color:#859900">void</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">let</span> <span style="color:#268bd2">largest</span> = <span style="color:#268bd2">i</span>; <span style="color:#93a1a1;font-style:italic">// Initialize largest as root
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">let</span> <span style="color:#268bd2">left</span> = <span style="color:#2aa198;font-weight:bold">2</span> &lt;<span style="color:#268bd2;font-weight:bold">em</span>&gt; <span style="color:#268bd2">i</span> + <span style="color:#2aa198;font-weight:bold">1</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">let</span> <span style="color:#268bd2">right</span> = <span style="color:#2aa198;font-weight:bold">2</span> &lt;/<span style="color:#268bd2;font-weight:bold">em</span>&gt; <span style="color:#268bd2">i</span> + <span style="color:#2aa198;font-weight:bold">2</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// If left child is larger than root
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">left</span> &lt; <span style="color:#268bd2">n</span> &amp;&amp; <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">left</span>] &gt; <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">largest</span>]) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">largest</span> = <span style="color:#268bd2">left</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// If right child is larger than largest so far
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">right</span> &lt; <span style="color:#268bd2">n</span> &amp;&amp; <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">right</span>] &gt; <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">largest</span>]) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">largest</span> = <span style="color:#268bd2">right</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// If largest is not root
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">largest</span> !== <span style="color:#268bd2">i</span>) {
+</span></span><span style="display:flex;"><span>        [<span style="color:#268bd2">arr</span>[<span style="color:#268bd2">i</span>], <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">largest</span>]] = [<span style="color:#268bd2">arr</span>[<span style="color:#268bd2">largest</span>], <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">i</span>]]; <span style="color:#93a1a1;font-style:italic">// swap
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Recursively heapify the affected sub-tree
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">heapifyTS</span>(<span style="color:#268bd2">arr</span>, <span style="color:#268bd2">n</span>, <span style="color:#268bd2">largest</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const myArrTS: number[] = [38, 27, 43, 3, 9, 82, 10];
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(heapSortTS(myArrTS)); // [3, 9, 10, 27, 38, 43, 82]
+</span></span></span></code></pre></div><h3 id="cpp">Cpp</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;vector&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;utility&gt;</span><span style="color:#93a1a1;font-style:italic"> </span><span style="color:#93a1a1;font-style:italic">// For std::swap
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;iostream&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">heapify</span>(<span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt;&amp; <span style="color:#268bd2">arr</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">n</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">largest</span> = <span style="color:#268bd2">i</span>; <span style="color:#93a1a1;font-style:italic">// Initialize largest as root
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">left</span> = <span style="color:#2aa198;font-weight:bold">2</span> &lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">i</span> + <span style="color:#2aa198;font-weight:bold">1</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">right</span> = <span style="color:#2aa198;font-weight:bold">2</span> &lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">i</span> + <span style="color:#2aa198;font-weight:bold">2</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// If left child is larger than root
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">left</span> &lt; <span style="color:#268bd2">n</span> &amp;&amp; <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">left</span>] &gt; <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">largest</span>]) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">largest</span> = <span style="color:#268bd2">left</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// If right child is larger than largest so far
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">right</span> &lt; <span style="color:#268bd2">n</span> &amp;&amp; <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">right</span>] &gt; <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">largest</span>]) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">largest</span> = <span style="color:#268bd2">right</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// If largest is not root
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">largest</span> != <span style="color:#268bd2">i</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">std</span>::<span style="color:#268bd2">swap</span>(<span style="color:#268bd2">arr</span>[<span style="color:#268bd2">i</span>], <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">largest</span>]);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Recursively heapify the affected sub-tree
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">heapify</span>(<span style="color:#268bd2">arr</span>, <span style="color:#268bd2">n</span>, <span style="color:#268bd2">largest</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">heapSort</span>(<span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt;&amp; <span style="color:#268bd2">arr</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">n</span> = <span style="color:#268bd2">arr</span>.<span style="color:#268bd2">size</span>();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Build a max-heap (rearrange array)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i</span> = <span style="color:#268bd2">n</span> / <span style="color:#2aa198;font-weight:bold">2</span> - <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#268bd2">i</span> &gt;= <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span>--) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">heapify</span>(<span style="color:#268bd2">arr</span>, <span style="color:#268bd2">n</span>, <span style="color:#268bd2">i</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// One by one extract an element from heap
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i</span> = <span style="color:#268bd2">n</span> - <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#268bd2">i</span> &gt; <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span>--) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Move current root to end
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">std</span>::<span style="color:#268bd2">swap</span>(<span style="color:#268bd2">arr</span>[<span style="color:#2aa198;font-weight:bold">0</span>], <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">i</span>]);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// call max heapify on the reduced heap
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">heapify</span>(<span style="color:#268bd2">arr</span>, <span style="color:#268bd2">i</span>, <span style="color:#2aa198;font-weight:bold">0</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// int main() {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::vector&lt;int&gt; myArr = {38, 27, 43, 3, 9, 82, 10};
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     heapSort(myArr);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     for(int val : myArr) {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         std::cout &lt;&lt; val &lt;&lt; &#34; &#34;; // 3 9 10 27 38 43 82
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     }
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; std::endl;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span></code></pre></div><h3 id="go">Go</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">package</span> <span style="color:#268bd2">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#2aa198">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> <span style="color:#268bd2">heapify</span>(<span style="color:#268bd2">arr</span> []<span style="color:#859900;font-weight:bold">int</span>, <span style="color:#268bd2">n</span>, <span style="color:#268bd2">i</span> <span style="color:#859900;font-weight:bold">int</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">largest</span> := <span style="color:#268bd2">i</span> <span style="color:#93a1a1;font-style:italic">// Initialize largest as root</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">left</span> := <span style="color:#2aa198;font-weight:bold">2</span>&lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">i</span> + <span style="color:#2aa198;font-weight:bold">1</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">right</span> := <span style="color:#2aa198;font-weight:bold">2</span>&lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">i</span> + <span style="color:#2aa198;font-weight:bold">2</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// If left child is larger than root</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#268bd2">left</span> &lt; <span style="color:#268bd2">n</span> &amp;&amp; <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">left</span>] &gt; <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">largest</span>] {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">largest</span> = <span style="color:#268bd2">left</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// If right child is larger than largest so far</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#268bd2">right</span> &lt; <span style="color:#268bd2">n</span> &amp;&amp; <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">right</span>] &gt; <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">largest</span>] {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">largest</span> = <span style="color:#268bd2">right</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// If largest is not root</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#268bd2">largest</span> != <span style="color:#268bd2">i</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">i</span>], <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">largest</span>] = <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">largest</span>], <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">i</span>] <span style="color:#93a1a1;font-style:italic">// swap</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Recursively heapify the affected sub-tree</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">heapify</span>(<span style="color:#268bd2">arr</span>, <span style="color:#268bd2">n</span>, <span style="color:#268bd2">largest</span>)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> <span style="color:#268bd2">heapSort</span>(<span style="color:#268bd2">arr</span> []<span style="color:#859900;font-weight:bold">int</span>) []<span style="color:#859900;font-weight:bold">int</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">n</span> := <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">arr</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Build a max-heap (rearrange array)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> := <span style="color:#268bd2">n</span>/<span style="color:#2aa198;font-weight:bold">2</span> - <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#268bd2">i</span> &gt;= <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span>-- {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">heapify</span>(<span style="color:#268bd2">arr</span>, <span style="color:#268bd2">n</span>, <span style="color:#268bd2">i</span>)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// One by one extract an element from heap</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> := <span style="color:#268bd2">n</span> - <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#268bd2">i</span> &gt; <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span>-- {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Move current root to end</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">arr</span>[<span style="color:#2aa198;font-weight:bold">0</span>], <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">i</span>] = <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">i</span>], <span style="color:#268bd2">arr</span>[<span style="color:#2aa198;font-weight:bold">0</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// call max heapify on the reduced heap</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">heapify</span>(<span style="color:#268bd2">arr</span>, <span style="color:#268bd2">i</span>, <span style="color:#2aa198;font-weight:bold">0</span>)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">arr</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// func main() {</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     myArr := []int{38, 27, 43, 3, 9, 82, 10}</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     fmt.Println(heapSort(myArr)) // [3 9 10 27 38 43 82]</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }</span>
+</span></span></code></pre></div><h3 id="d">D</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-d" data-lang="d"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.algorithm</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.stdio</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">heapify</span>(<span style="color:#859900;font-weight:bold">int</span>[] <span style="color:#268bd2">arr</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">n</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">largest</span> = <span style="color:#268bd2">i</span>; <span style="color:#93a1a1;font-style:italic">// Initialize largest as root
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">left</span> = <span style="color:#2aa198;font-weight:bold">2</span> &lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">i</span> + <span style="color:#2aa198;font-weight:bold">1</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">right</span> = <span style="color:#2aa198;font-weight:bold">2</span> &lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">i</span> + <span style="color:#2aa198;font-weight:bold">2</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// If left child is larger than root
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">left</span> &lt; <span style="color:#268bd2">n</span> &amp;&amp; <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">left</span>] &gt; <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">largest</span>]) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">largest</span> = <span style="color:#268bd2">left</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// If right child is larger than largest so far
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">right</span> &lt; <span style="color:#268bd2">n</span> &amp;&amp; <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">right</span>] &gt; <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">largest</span>]) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">largest</span> = <span style="color:#268bd2">right</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// If largest is not root
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">largest</span> != <span style="color:#268bd2">i</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">swap</span>(<span style="color:#268bd2">arr</span>[<span style="color:#268bd2">i</span>], <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">largest</span>]);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Recursively heapify the affected sub-tree
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">heapify</span>(<span style="color:#268bd2">arr</span>, <span style="color:#268bd2">n</span>, <span style="color:#268bd2">largest</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">heapSort</span>(<span style="color:#859900;font-weight:bold">int</span>[] <span style="color:#268bd2">arr</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">n</span> = <span style="color:#859900">cast</span>(<span style="color:#859900;font-weight:bold">int</span>)<span style="color:#268bd2">arr</span>.<span style="color:#268bd2">length</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Build a max-heap (rearrange array)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i</span> = <span style="color:#268bd2">n</span> / <span style="color:#2aa198;font-weight:bold">2</span> - <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#268bd2">i</span> &gt;= <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span>--) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">heapify</span>(<span style="color:#268bd2">arr</span>, <span style="color:#268bd2">n</span>, <span style="color:#268bd2">i</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// One by one extract an element from heap
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i</span> = <span style="color:#268bd2">n</span> - <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#268bd2">i</span> &gt; <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span>--) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Move current root to end
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">swap</span>(<span style="color:#268bd2">arr</span>[<span style="color:#2aa198;font-weight:bold">0</span>], <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">i</span>]);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// call max heapify on the reduced heap
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">heapify</span>(<span style="color:#268bd2">arr</span>, <span style="color:#268bd2">i</span>, <span style="color:#2aa198;font-weight:bold">0</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// void main() {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     auto myArr = [38, 27, 43, 3, 9, 82, 10];
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     heapSort(myArr);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     writeln(myArr); // [3, 9, 10, 27, 38, 43, 82]
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span></code></pre></div><h2 id="code-walkthrough">Code Walkthrough</h2>
+<h3 id="code-walkthrough-1">Code Walkthrough</h3>
+<p><code>Heap Sort</code> uses a helper function, <code>heapify</code>, to maintain the <code>heap property</code> within a subtree of the <code>array</code>. The main function orchestrates the two main phases: building the <code>heap</code> and extracting <code>elements</code>.</p>
+<hr>
+<p><strong><code>heapify(arr, n, i)</code> Function:</strong></p>
+<pre><code>- Assumes the subtrees rooted at the children of `index i` are already valid `max-heaps`.
+
+- Compares `arr[i]` with its `left` and `right children` to find the largest of the three.
+
+- If the `largest` element is not the current `root` `i`, it swaps them.
+
+- After the swap, the `heap property` might be violated in the subtree where the swap occurred. Therefore, it makes a recursive call to `heapify` on that subtree to fix it.
+</code></pre>
+<p><strong><code>heapSort(arr)</code> Function:</strong></p>
+<pre><code>- **Build Max-Heap:** It iterates backwards from the last non-leaf `node` (`n/2 - 1`) to the `root` (0), calling `heapify` on each one. This ensures that the entire `array` is structured as a `max-heap`.
+
+- **Extract Elements:** It then iterates backwards from the end of the `array` to the beginning.
+
+        - In each iteration, it swaps the current `root` (`arr[0]`, which is the largest remaining `element`) with the element at the end of the unsorted portion (`arr[i]`).
+
+        - This moves the largest `element` into its final sorted position.
+
+        - It then calls `heapify` on the reduced `heap` (of size `i`) to restore the `max-heap property` for the remaining `elements`.
+
+&lt;/li&gt;
+</code></pre>
+<h2 id="applications">Applications</h2>
+<h3 id="application">Application</h3>
+<p><code>Heap Sort</code> is a reliable, in-place sorting algorithm with guaranteed <code>O(N log N)</code> performance.</p>
+<pre><code>    - **Priority Queues:** It is the algorithm used to implement `Heaps`, which are themselves used to implement `Priority Queues`.
+
+    - **Selection Algorithms:** It is efficient for finding the &quot;k-th&quot; smallest or largest element in an array, as you only need to `extract` from the `heap` `k` times.
+
+    - **Embedded Systems:** Its `O(1)` space complexity makes it suitable for memory-constrained environments where out-of-place algorithms like `Merge Sort` might not be feasible.
+
+    - **Robust Sorting:** When a guaranteed worst-case `O(N log N)` performance is needed (unlike `Quick Sort`, which can degrade to `O(N^2)`), `Heap Sort` is a good choice.
+</code></pre>
+
+    </div>
+</article>
+
+<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
+    
+    <a href="//localhost:1313/hugo_content/algorithms/sorting_searching/insertion_sort/" class="nav-btn">← Previous</a>
+    
+    
+    <a href="//localhost:1313/hugo_content/algorithms/sorting_searching/" class="nav-btn">Up</a>
+
+    
+    <a href="//localhost:1313/hugo_content/algorithms/sorting_searching/bubble_sort/" class="nav-btn">Next →</a>
+    
+</div>
+
+    </main>
+
+    <footer class="footer">
+        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
+    </footer>
+
+    <script>
+        const body = document.getElementById('theme-body');
+        const btn = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme');
+
+        
+        function updateButtonText() {
+            if (body.classList.contains('theme-terminal')) {
+                btn.textContent = "Light Mode";
+            } else {
+                btn.textContent = "Dark Mode";
+            }
+        }
+
+        if (currentTheme === 'terminal') {
+            body.classList.add('theme-terminal');
+        }
+        
+        
+        updateButtonText();
+
+        btn.addEventListener('click', () => {
+            body.classList.toggle('theme-terminal');
+            updateButtonText();
+            
+            let theme = 'natural';
+            if (body.classList.contains('theme-terminal')) {
+                theme = 'terminal';
+            }
+            localStorage.setItem('theme', theme);
+        });
+    </script>
+</body>
+</html>

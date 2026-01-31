@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Splay Tree | SDET Interview Preparation Kit</title>
+    <link rel="stylesheet" href="//localhost:1313/css/style.css">
+    <link rel="stylesheet" href="//localhost:1313/css/terminal.css">
+    
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    
+    <link rel="stylesheet" href="//localhost:1313/lib/katex/katex.min.css">
+    <script defer src="//localhost:1313/lib/katex/katex.min.js"></script>
+    <script defer src="//localhost:1313/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</head>
+<body id="theme-body">
+    <button id="theme-toggle">Switch Theme</button>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="//localhost:1313/">Index</a></li>
+                
+            </ul>
+        </nav>
+        <div class="site-breadcrumb">
+            <a href="//localhost:1313/">Home</a>
+            
+                
+                    <span>/</span> <a href="//localhost:1313/">SDET Interview Dashboard</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/dsa-42_/">42 Algorithms &amp; 42 Data Structures</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/dsa-42_/data_structures/">Data Structures</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/dsa-42_/data_structures/specialized/">Specialized</a>
+                
+            
+            
+                <span>/</span> Splay Tree
+            
+        </div>
+    </header>
+
+    <main>
+        
+<article>
+    <div class="category-title" style="margin-bottom: 0.5rem;">Specialized</div>
+    <h1>Splay Tree</h1>
+    <div class="content-body" style="margin-top: 2rem;">
+        <p>A <code>Splay Tree</code> is a self-balancing <code>binary search tree</code> (<code>BST</code>) with an additional property: recently accessed <code>nodes</code> are moved to the <code>root</code> of the <code>tree</code> through a series of rotations (splay operations). This &ldquo;self-organizing&rdquo; behavior means that frequently accessed <code>elements</code> can be found quickly, as they tend to stay near the <code>root</code>.</p>
+<p>While worst-case operations can be <code>O(N)</code>, the amortized time complexity for most operations (<code>insertion</code>, <code>search</code>, <code>deletion</code>) is <code>O(log N)</code>. <code>Splay Trees</code> are often simpler to implement than other self-balancing <code>BSTs</code> like <code>AVL trees</code> or <code>Red-Black trees</code>, and can perform better in practice for certain access patterns (e.g., when some <code>elements</code> are accessed much more frequently than others).</p>
+<h2 id="how-it-works">How it Works</h2>
+<h3 id="how-it-works-expanded">How it Works (Expanded)</h3>
+<p>The core idea of a <code>Splay Tree</code> is that every time a <code>node</code> is accessed (read, inserted, or deleted), that <code>node</code> is &ldquo;splayed&rdquo; to the <code>root</code> of the <code>tree</code>. This splay operation involves a sequence of <code>tree rotations</code>: <code>zig</code>, <code>zig-zig</code>, and <code>zig-zag</code>.</p>
+<hr>
+<p>Splay Operations (moving X to the root):</p>
+<ol>
+<li>
+<p><strong>Zig Rotation:</strong> If X is a child of the root, rotate X with the root.
+(Simple case: X is child of P, P is root)
+P          X
+/ \        / <br>
+X   C  -&gt;  A   P
+/ \            / <br>
+A   B          B   C</p>
+</li>
+<li>
+<p><strong>Zig-Zig Rotation:</strong> If X and its parent P are both left children (or both right children).
+(Case: X is left child of P, P is left child of G)
+G                 X
+/ <br>
+P   D             A   P
+/ \        -&gt;         / <br>
+X   C                 B   G
+/ \                       / <br>
+A   B                     C   D</p>
+</li>
+<li>
+<p><strong>Zig-Zag Rotation:</strong> If X is a left child and its parent P is a right child (or vice-versa).
+(Case: X is left child of P, P is right child of G)
+G                X
+/ <br>
+A   P     -&gt;     P   G
+/ \          / \ / <br>
+B   X        A  B C  D
+/ <br>
+C   D</p>
+</li>
+</ol>
+<h2 id="implementation">Implementation</h2>
+<h3 id="python">Python</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># Conceptual Splay Tree implementation (Simplified for clarity)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># A full implementation involves precise handling of pointers during rotations.</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#cb4b16">SplayTreeNode</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">__init__</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">key</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">key</span> = <span style="color:#268bd2">key</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">left</span> = <span style="color:#859900;font-weight:bold">None</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">right</span> = <span style="color:#859900;font-weight:bold">None</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">parent</span> = <span style="color:#859900;font-weight:bold">None</span> <span style="color:#93a1a1;font-style:italic"># Parent pointer simplifies rotations</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#cb4b16">SplayTree</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">__init__</span>(<span style="color:#cb4b16">self</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">root</span> = <span style="color:#859900;font-weight:bold">None</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">_rotate_left</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">x</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">y</span> = <span style="color:#268bd2">x</span>.<span style="color:#268bd2">right</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">x</span>.<span style="color:#268bd2">right</span> = <span style="color:#268bd2">y</span>.<span style="color:#268bd2">left</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">y</span>.<span style="color:#268bd2">left</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">y</span>.<span style="color:#268bd2">left</span>.<span style="color:#268bd2">parent</span> = <span style="color:#268bd2">x</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">y</span>.<span style="color:#268bd2">parent</span> = <span style="color:#268bd2">x</span>.<span style="color:#268bd2">parent</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#859900">not</span> <span style="color:#268bd2">x</span>.<span style="color:#268bd2">parent</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">root</span> = <span style="color:#268bd2">y</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">elif</span> <span style="color:#268bd2">x</span> == <span style="color:#268bd2">x</span>.<span style="color:#268bd2">parent</span>.<span style="color:#268bd2">left</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">x</span>.<span style="color:#268bd2">parent</span>.<span style="color:#268bd2">left</span> = <span style="color:#268bd2">y</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">else</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">x</span>.<span style="color:#268bd2">parent</span>.<span style="color:#268bd2">right</span> = <span style="color:#268bd2">y</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">y</span>.<span style="color:#268bd2">left</span> = <span style="color:#268bd2">x</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">x</span>.<span style="color:#268bd2">parent</span> = <span style="color:#268bd2">y</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">_rotate_right</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">x</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">y</span> = <span style="color:#268bd2">x</span>.<span style="color:#268bd2">left</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">x</span>.<span style="color:#268bd2">left</span> = <span style="color:#268bd2">y</span>.<span style="color:#268bd2">right</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">y</span>.<span style="color:#268bd2">right</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">y</span>.<span style="color:#268bd2">right</span>.<span style="color:#268bd2">parent</span> = <span style="color:#268bd2">x</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">y</span>.<span style="color:#268bd2">parent</span> = <span style="color:#268bd2">x</span>.<span style="color:#268bd2">parent</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#859900">not</span> <span style="color:#268bd2">x</span>.<span style="color:#268bd2">parent</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">root</span> = <span style="color:#268bd2">y</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">elif</span> <span style="color:#268bd2">x</span> == <span style="color:#268bd2">x</span>.<span style="color:#268bd2">parent</span>.<span style="color:#268bd2">right</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">x</span>.<span style="color:#268bd2">parent</span>.<span style="color:#268bd2">right</span> = <span style="color:#268bd2">y</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">else</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">x</span>.<span style="color:#268bd2">parent</span>.<span style="color:#268bd2">left</span> = <span style="color:#268bd2">y</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">y</span>.<span style="color:#268bd2">right</span> = <span style="color:#268bd2">x</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">x</span>.<span style="color:#268bd2">parent</span> = <span style="color:#268bd2">y</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">_splay</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">node</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">while</span> <span style="color:#268bd2">node</span>.<span style="color:#268bd2">parent</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">parent</span> = <span style="color:#268bd2">node</span>.<span style="color:#268bd2">parent</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">grandparent</span> = <span style="color:#268bd2">parent</span>.<span style="color:#268bd2">parent</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> <span style="color:#859900">not</span> <span style="color:#268bd2">grandparent</span>: <span style="color:#93a1a1;font-style:italic"># Zig rotation</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">if</span> <span style="color:#268bd2">node</span> == <span style="color:#268bd2">parent</span>.<span style="color:#268bd2">left</span>:
+</span></span><span style="display:flex;"><span>                    <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">_rotate_right</span>(<span style="color:#268bd2">parent</span>)
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">else</span>:
+</span></span><span style="display:flex;"><span>                    <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">_rotate_left</span>(<span style="color:#268bd2">parent</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">elif</span> (<span style="color:#268bd2">node</span> == <span style="color:#268bd2">parent</span>.<span style="color:#268bd2">left</span> <span style="color:#859900">and</span> <span style="color:#268bd2">parent</span> == <span style="color:#268bd2">grandparent</span>.<span style="color:#268bd2">left</span>): <span style="color:#93a1a1;font-style:italic"># Zig-zig left</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">_rotate_right</span>(<span style="color:#268bd2">grandparent</span>)
+</span></span><span style="display:flex;"><span>                <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">_rotate_right</span>(<span style="color:#268bd2">parent</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">elif</span> (<span style="color:#268bd2">node</span> == <span style="color:#268bd2">parent</span>.<span style="color:#268bd2">right</span> <span style="color:#859900">and</span> <span style="color:#268bd2">parent</span> == <span style="color:#268bd2">grandparent</span>.<span style="color:#268bd2">right</span>): <span style="color:#93a1a1;font-style:italic"># Zig-zig right</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">_rotate_left</span>(<span style="color:#268bd2">grandparent</span>)
+</span></span><span style="display:flex;"><span>                <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">_rotate_left</span>(<span style="color:#268bd2">parent</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">elif</span> (<span style="color:#268bd2">node</span> == <span style="color:#268bd2">parent</span>.<span style="color:#268bd2">left</span> <span style="color:#859900">and</span> <span style="color:#268bd2">parent</span> == <span style="color:#268bd2">grandparent</span>.<span style="color:#268bd2">right</span>): <span style="color:#93a1a1;font-style:italic"># Zig-zag left-right</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">_rotate_right</span>(<span style="color:#268bd2">parent</span>)
+</span></span><span style="display:flex;"><span>                <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">_rotate_left</span>(<span style="color:#268bd2">grandparent</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">else</span>: <span style="color:#93a1a1;font-style:italic"># Zig-zag right-left</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">_rotate_left</span>(<span style="color:#268bd2">parent</span>)
+</span></span><span style="display:flex;"><span>                <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">_rotate_right</span>(<span style="color:#268bd2">grandparent</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">insert</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">key</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#859900">not</span> <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">root</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">root</span> = <span style="color:#268bd2">SplayTreeNode</span>(<span style="color:#268bd2">key</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">current</span> = <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">root</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">parent</span> = <span style="color:#859900;font-weight:bold">None</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">while</span> <span style="color:#268bd2">current</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">parent</span> = <span style="color:#268bd2">current</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> <span style="color:#268bd2">key</span> &lt; <span style="color:#268bd2">current</span>.<span style="color:#268bd2">key</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">current</span> = <span style="color:#268bd2">current</span>.<span style="color:#268bd2">left</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">elif</span> <span style="color:#268bd2">key</span> &gt; <span style="color:#268bd2">current</span>.<span style="color:#268bd2">key</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">current</span> = <span style="color:#268bd2">current</span>.<span style="color:#268bd2">right</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">else</span>: <span style="color:#93a1a1;font-style:italic"># Key already exists</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">_splay</span>(<span style="color:#268bd2">current</span>)
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">return</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">new_node</span> = <span style="color:#268bd2">SplayTreeNode</span>(<span style="color:#268bd2">key</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">new_node</span>.<span style="color:#268bd2">parent</span> = <span style="color:#268bd2">parent</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">key</span> &lt; <span style="color:#268bd2">parent</span>.<span style="color:#268bd2">key</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">parent</span>.<span style="color:#268bd2">left</span> = <span style="color:#268bd2">new_node</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">else</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">parent</span>.<span style="color:#268bd2">right</span> = <span style="color:#268bd2">new_node</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">_splay</span>(<span style="color:#268bd2">new_node</span>) <span style="color:#93a1a1;font-style:italic"># Splay the newly inserted node to root</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">search</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">key</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">current</span> = <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">root</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">last_visited</span> = <span style="color:#859900;font-weight:bold">None</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">while</span> <span style="color:#268bd2">current</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">last_visited</span> = <span style="color:#268bd2">current</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> <span style="color:#268bd2">key</span> &lt; <span style="color:#268bd2">current</span>.<span style="color:#268bd2">key</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">current</span> = <span style="color:#268bd2">current</span>.<span style="color:#268bd2">left</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">elif</span> <span style="color:#268bd2">key</span> &gt; <span style="color:#268bd2">current</span>.<span style="color:#268bd2">key</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">current</span> = <span style="color:#268bd2">current</span>.<span style="color:#268bd2">right</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">else</span>: <span style="color:#93a1a1;font-style:italic"># Found</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">_splay</span>(<span style="color:#268bd2">current</span>)
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">return</span> <span style="color:#268bd2">current</span>
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">last_visited</span>: <span style="color:#93a1a1;font-style:italic"># Splay the last node visited if key not found</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">_splay</span>(<span style="color:#268bd2">last_visited</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#859900;font-weight:bold">None</span> <span style="color:#93a1a1;font-style:italic"># Not found</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># Example Usage (simplified, deletion is even more complex):</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># splay_tree = SplayTree()</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># keys = [10, 20, 5, 30, 15, 25]</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># for key in keys:</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#     splay_tree.insert(key)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(&#34;Search for 25:&#34;)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># node_25 = splay_tree.search(25) # 25 should be root</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(f&#34;Root after searching 25: {splay_tree.root.key if splay_tree.root else None}&#34;) # Expected: 25</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(&#34;Search for 5:&#34;)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># node_5 = splay_tree.search(5) # 5 should be root</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(f&#34;Root after searching 5: {splay_tree.root.key if splay_tree.root else None}&#34;) # Expected: 5</span>
+</span></span></code></pre></div><h3 id="javascript">Javascript</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Conceptual Splay Tree implementation in JavaScript (Simplified)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#268bd2">SplayTreeNode</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">constructor</span>(<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">key</span> = <span style="color:#268bd2">key</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">left</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">right</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">parent</span> = <span style="color:#859900;font-weight:bold">null</span>; <span style="color:#93a1a1;font-style:italic">// Parent pointer simplifies rotations
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#268bd2">SplayTree</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">constructor</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">root</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">_rotateLeft</span>(<span style="color:#268bd2">x</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">let</span> <span style="color:#268bd2">y</span> = <span style="color:#268bd2">x</span>.<span style="color:#268bd2">right</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">x</span>.<span style="color:#268bd2">right</span> = <span style="color:#268bd2">y</span>.<span style="color:#268bd2">left</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">y</span>.<span style="color:#268bd2">left</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">y</span>.<span style="color:#268bd2">left</span>.<span style="color:#268bd2">parent</span> = <span style="color:#268bd2">x</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">y</span>.<span style="color:#268bd2">parent</span> = <span style="color:#268bd2">x</span>.<span style="color:#268bd2">parent</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (!<span style="color:#268bd2">x</span>.<span style="color:#268bd2">parent</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">this</span>.<span style="color:#268bd2">root</span> = <span style="color:#268bd2">y</span>;
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> <span style="color:#859900">if</span> (<span style="color:#268bd2">x</span> === <span style="color:#268bd2">x</span>.<span style="color:#268bd2">parent</span>.<span style="color:#268bd2">left</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">x</span>.<span style="color:#268bd2">parent</span>.<span style="color:#268bd2">left</span> = <span style="color:#268bd2">y</span>;
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">x</span>.<span style="color:#268bd2">parent</span>.<span style="color:#268bd2">right</span> = <span style="color:#268bd2">y</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">y</span>.<span style="color:#268bd2">left</span> = <span style="color:#268bd2">x</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">x</span>.<span style="color:#268bd2">parent</span> = <span style="color:#268bd2">y</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">_rotateRight</span>(<span style="color:#268bd2">x</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">let</span> <span style="color:#268bd2">y</span> = <span style="color:#268bd2">x</span>.<span style="color:#268bd2">left</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">x</span>.<span style="color:#268bd2">left</span> = <span style="color:#268bd2">y</span>.<span style="color:#268bd2">right</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">y</span>.<span style="color:#268bd2">right</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">y</span>.<span style="color:#268bd2">right</span>.<span style="color:#268bd2">parent</span> = <span style="color:#268bd2">x</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">y</span>.<span style="color:#268bd2">parent</span> = <span style="color:#268bd2">x</span>.<span style="color:#268bd2">parent</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (!<span style="color:#268bd2">x</span>.<span style="color:#268bd2">parent</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">this</span>.<span style="color:#268bd2">root</span> = <span style="color:#268bd2">y</span>;
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> <span style="color:#859900">if</span> (<span style="color:#268bd2">x</span> === <span style="color:#268bd2">x</span>.<span style="color:#268bd2">parent</span>.<span style="color:#268bd2">right</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">x</span>.<span style="color:#268bd2">parent</span>.<span style="color:#268bd2">right</span> = <span style="color:#268bd2">y</span>;
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">x</span>.<span style="color:#268bd2">parent</span>.<span style="color:#268bd2">left</span> = <span style="color:#268bd2">y</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">y</span>.<span style="color:#268bd2">right</span> = <span style="color:#268bd2">x</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">x</span>.<span style="color:#268bd2">parent</span> = <span style="color:#268bd2">y</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">_splay</span>(<span style="color:#268bd2">node</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">while</span> (<span style="color:#268bd2">node</span>.<span style="color:#268bd2">parent</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">let</span> <span style="color:#268bd2">parent</span> = <span style="color:#268bd2">node</span>.<span style="color:#268bd2">parent</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">let</span> <span style="color:#268bd2">grandparent</span> = <span style="color:#268bd2">parent</span>.<span style="color:#268bd2">parent</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (!<span style="color:#268bd2">grandparent</span>) { <span style="color:#93a1a1;font-style:italic">// Zig rotation
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#859900">if</span> (<span style="color:#268bd2">node</span> === <span style="color:#268bd2">parent</span>.<span style="color:#268bd2">left</span>) {
+</span></span><span style="display:flex;"><span>                    <span style="color:#859900">this</span>.<span style="color:#268bd2">_rotateRight</span>(<span style="color:#268bd2">parent</span>);
+</span></span><span style="display:flex;"><span>                } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>                    <span style="color:#859900">this</span>.<span style="color:#268bd2">_rotateLeft</span>(<span style="color:#268bd2">parent</span>);
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> <span style="color:#859900">if</span> (
+</span></span><span style="display:flex;"><span>                (<span style="color:#268bd2">node</span> === <span style="color:#268bd2">parent</span>.<span style="color:#268bd2">left</span> &amp;&amp; <span style="color:#268bd2">parent</span> === <span style="color:#268bd2">grandparent</span>.<span style="color:#268bd2">left</span>) || <span style="color:#93a1a1;font-style:italic">// Zig-zig left
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                (<span style="color:#268bd2">node</span> === <span style="color:#268bd2">parent</span>.<span style="color:#268bd2">right</span> &amp;&amp; <span style="color:#268bd2">parent</span> === <span style="color:#268bd2">grandparent</span>.<span style="color:#268bd2">right</span>)    <span style="color:#93a1a1;font-style:italic">// Zig-zig right
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            ) {
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">if</span> (<span style="color:#268bd2">node</span> === <span style="color:#268bd2">parent</span>.<span style="color:#268bd2">left</span>) { <span style="color:#93a1a1;font-style:italic">// Zig-zig left
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                    <span style="color:#859900">this</span>.<span style="color:#268bd2">_rotateRight</span>(<span style="color:#268bd2">grandparent</span>);
+</span></span><span style="display:flex;"><span>                    <span style="color:#859900">this</span>.<span style="color:#268bd2">_rotateRight</span>(<span style="color:#268bd2">parent</span>);
+</span></span><span style="display:flex;"><span>                } <span style="color:#859900">else</span> { <span style="color:#93a1a1;font-style:italic">// Zig-zig right
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                    <span style="color:#859900">this</span>.<span style="color:#268bd2">_rotateLeft</span>(<span style="color:#268bd2">grandparent</span>);
+</span></span><span style="display:flex;"><span>                    <span style="color:#859900">this</span>.<span style="color:#268bd2">_rotateLeft</span>(<span style="color:#268bd2">parent</span>);
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> { <span style="color:#93a1a1;font-style:italic">// Zig-zag
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#859900">if</span> (<span style="color:#268bd2">node</span> === <span style="color:#268bd2">parent</span>.<span style="color:#268bd2">left</span>) { <span style="color:#93a1a1;font-style:italic">// Zig-zag left-right
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                    <span style="color:#859900">this</span>.<span style="color:#268bd2">_rotateRight</span>(<span style="color:#268bd2">parent</span>);
+</span></span><span style="display:flex;"><span>                    <span style="color:#859900">this</span>.<span style="color:#268bd2">_rotateLeft</span>(<span style="color:#268bd2">grandparent</span>);
+</span></span><span style="display:flex;"><span>                } <span style="color:#859900">else</span> { <span style="color:#93a1a1;font-style:italic">// Zig-zag right-left
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                    <span style="color:#859900">this</span>.<span style="color:#268bd2">_rotateLeft</span>(<span style="color:#268bd2">parent</span>);
+</span></span><span style="display:flex;"><span>                    <span style="color:#859900">this</span>.<span style="color:#268bd2">_rotateRight</span>(<span style="color:#268bd2">grandparent</span>);
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">insert</span>(<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (!<span style="color:#859900">this</span>.<span style="color:#268bd2">root</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">this</span>.<span style="color:#268bd2">root</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">SplayTreeNode</span>(<span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">let</span> <span style="color:#268bd2">current</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">root</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">let</span> <span style="color:#268bd2">parent</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">while</span> (<span style="color:#268bd2">current</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">parent</span> = <span style="color:#268bd2">current</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">key</span> &lt; <span style="color:#268bd2">current</span>.<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">current</span> = <span style="color:#268bd2">current</span>.<span style="color:#268bd2">left</span>;
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> <span style="color:#859900">if</span> (<span style="color:#268bd2">key</span> &gt; <span style="color:#268bd2">current</span>.<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">current</span> = <span style="color:#268bd2">current</span>.<span style="color:#268bd2">right</span>;
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> { <span style="color:#93a1a1;font-style:italic">// Key already exists
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#859900">this</span>.<span style="color:#268bd2">_splay</span>(<span style="color:#268bd2">current</span>);
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">return</span>;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">const</span> <span style="color:#268bd2">newNode</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">SplayTreeNode</span>(<span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">newNode</span>.<span style="color:#268bd2">parent</span> = <span style="color:#268bd2">parent</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">key</span> &lt; <span style="color:#268bd2">parent</span>.<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">parent</span>.<span style="color:#268bd2">left</span> = <span style="color:#268bd2">newNode</span>;
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">parent</span>.<span style="color:#268bd2">right</span> = <span style="color:#268bd2">newNode</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">_splay</span>(<span style="color:#268bd2">newNode</span>); <span style="color:#93a1a1;font-style:italic">// Splay the newly inserted node to root
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">search</span>(<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">let</span> <span style="color:#268bd2">current</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">root</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">let</span> <span style="color:#268bd2">lastVisited</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">while</span> (<span style="color:#268bd2">current</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">lastVisited</span> = <span style="color:#268bd2">current</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">key</span> &lt; <span style="color:#268bd2">current</span>.<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">current</span> = <span style="color:#268bd2">current</span>.<span style="color:#268bd2">left</span>;
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> <span style="color:#859900">if</span> (<span style="color:#268bd2">key</span> &gt; <span style="color:#268bd2">current</span>.<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">current</span> = <span style="color:#268bd2">current</span>.<span style="color:#268bd2">right</span>;
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> { <span style="color:#93a1a1;font-style:italic">// Found
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#859900">this</span>.<span style="color:#268bd2">_splay</span>(<span style="color:#268bd2">current</span>);
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">return</span> <span style="color:#268bd2">current</span>;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">lastVisited</span>) { <span style="color:#93a1a1;font-style:italic">// Splay the last node visited if key not found
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">this</span>.<span style="color:#268bd2">_splay</span>(<span style="color:#268bd2">lastVisited</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#859900;font-weight:bold">null</span>; <span style="color:#93a1a1;font-style:italic">// Not found
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Example Usage (simplified, deletion is even more complex):
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const splayTree = new SplayTree();
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const keys = [10, 20, 5, 30, 15, 25];
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// for (const key of keys) {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     splayTree.insert(key);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Search for 25:&#34;);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// let node25 = splayTree.search(25); // 25 should be root
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&lt;code&gt;Root after searching 25: ${splayTree.root ? splayTree.root.key : null}&lt;/code&gt;); // Expected: 25
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Search for 5:&#34;);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// let node5 = splayTree.search(5); // 5 should be root
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&lt;code&gt;Root after searching 5: ${splayTree.root ? splayTree.root.key : null}&lt;/code&gt;); // Expected: 5
+</span></span></span></code></pre></div><h3 id="cpp">Cpp</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;iostream&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;string&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;vector&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;algorithm&gt;</span><span style="color:#93a1a1;font-style:italic"> </span><span style="color:#93a1a1;font-style:italic">// For std::max
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// A SplayTreeNode represents a single node in the Splay tree
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#859900">class</span> <span style="color:#cb4b16">SplayTreeNode</span> {
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">key</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">SplayTreeNode</span> &lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">left</span>, &lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">right</span>, &lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">parent</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">SplayTreeNode</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">k</span>) : <span style="color:#268bd2">key</span>(<span style="color:#268bd2">k</span>), <span style="color:#268bd2">left</span>(<span style="color:#859900">nullptr</span>), <span style="color:#268bd2">right</span>(<span style="color:#859900">nullptr</span>), <span style="color:#268bd2">parent</span>(<span style="color:#859900">nullptr</span>) {}
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// A SplayTree
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#859900">class</span> <span style="color:#cb4b16">SplayTree</span> {
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">SplayTreeNode</span>&lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">root</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">SplayTree</span>() : <span style="color:#268bd2">root</span>(<span style="color:#859900">nullptr</span>) {}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    ~<span style="color:#268bd2">SplayTree</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Implement a proper tree destructor for production code
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#93a1a1;font-style:italic">// For this conceptual example, a simple approach is omitted
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#93a1a1;font-style:italic">// as recursive deletion can be tricky with parent pointers.
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">private</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">_rotate_left</span>(<span style="color:#268bd2">SplayTreeNode</span>&lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">x</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">SplayTreeNode</span>&lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">y</span> = <span style="color:#268bd2">x</span>-&gt;<span style="color:#268bd2">right</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">x</span>-&gt;<span style="color:#268bd2">right</span> = <span style="color:#268bd2">y</span>-&gt;<span style="color:#268bd2">left</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">y</span>-&gt;<span style="color:#268bd2">left</span> != <span style="color:#859900">nullptr</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">y</span>-&gt;<span style="color:#268bd2">left</span>-&gt;<span style="color:#268bd2">parent</span> = <span style="color:#268bd2">x</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">y</span>-&gt;<span style="color:#268bd2">parent</span> = <span style="color:#268bd2">x</span>-&gt;<span style="color:#268bd2">parent</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">x</span>-&gt;<span style="color:#268bd2">parent</span> == <span style="color:#859900">nullptr</span>) { <span style="color:#93a1a1;font-style:italic">// x was root
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#268bd2">root</span> = <span style="color:#268bd2">y</span>;
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> <span style="color:#268bd2">if</span> (<span style="color:#268bd2">x</span> == <span style="color:#268bd2">x</span>-&gt;<span style="color:#268bd2">parent</span>-&gt;<span style="color:#268bd2">left</span>) { <span style="color:#93a1a1;font-style:italic">// x was left child
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#268bd2">x</span>-&gt;<span style="color:#268bd2">parent</span>-&gt;<span style="color:#268bd2">left</span> = <span style="color:#268bd2">y</span>;
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> { <span style="color:#93a1a1;font-style:italic">// x was right child
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#268bd2">x</span>-&gt;<span style="color:#268bd2">parent</span>-&gt;<span style="color:#268bd2">right</span> = <span style="color:#268bd2">y</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">y</span>-&gt;<span style="color:#268bd2">left</span> = <span style="color:#268bd2">x</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">x</span>-&gt;<span style="color:#268bd2">parent</span> = <span style="color:#268bd2">y</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">_rotate_right</span>(<span style="color:#268bd2">SplayTreeNode</span>&lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">x</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">SplayTreeNode</span>&lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">y</span> = <span style="color:#268bd2">x</span>-&gt;<span style="color:#268bd2">left</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">x</span>-&gt;<span style="color:#268bd2">left</span> = <span style="color:#268bd2">y</span>-&gt;<span style="color:#268bd2">right</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">y</span>-&gt;<span style="color:#268bd2">right</span> != <span style="color:#859900">nullptr</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">y</span>-&gt;<span style="color:#268bd2">right</span>-&gt;<span style="color:#268bd2">parent</span> = <span style="color:#268bd2">x</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">y</span>-&gt;<span style="color:#268bd2">parent</span> = <span style="color:#268bd2">x</span>-&gt;<span style="color:#268bd2">parent</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">x</span>-&gt;<span style="color:#268bd2">parent</span> == <span style="color:#859900">nullptr</span>) { <span style="color:#93a1a1;font-style:italic">// x was root
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#268bd2">root</span> = <span style="color:#268bd2">y</span>;
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> <span style="color:#859900">if</span> (<span style="color:#268bd2">x</span> == <span style="color:#268bd2">x</span>-&gt;<span style="color:#268bd2">parent</span>-&gt;<span style="color:#268bd2">right</span>) { <span style="color:#93a1a1;font-style:italic">// x was right child
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#268bd2">x</span>-&gt;<span style="color:#268bd2">parent</span>-&gt;<span style="color:#268bd2">right</span> = <span style="color:#268bd2">y</span>;
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> { <span style="color:#93a1a1;font-style:italic">// x was left child
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#268bd2">x</span>-&gt;<span style="color:#268bd2">parent</span>-&gt;<span style="color:#268bd2">left</span> = <span style="color:#268bd2">y</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">y</span>-&gt;<span style="color:#268bd2">right</span> = <span style="color:#268bd2">x</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">x</span>-&gt;<span style="color:#268bd2">parent</span> = <span style="color:#268bd2">y</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">_splay</span>(<span style="color:#268bd2">SplayTreeNode</span>&lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">node</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">while</span> (<span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">parent</span> != <span style="color:#859900">nullptr</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">SplayTreeNode</span>&lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">parent</span> = <span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">parent</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">SplayTreeNode</span>&lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">grandparent</span> = <span style="color:#268bd2">parent</span>-&gt;<span style="color:#268bd2">parent</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">grandparent</span> == <span style="color:#859900">nullptr</span>) { <span style="color:#93a1a1;font-style:italic">// Zig rotation
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#859900">if</span> (<span style="color:#268bd2">node</span> == <span style="color:#268bd2">parent</span>-&gt;<span style="color:#268bd2">left</span>) {
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">_rotate_right</span>(<span style="color:#268bd2">parent</span>);
+</span></span><span style="display:flex;"><span>                } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">_rotate_left</span>(<span style="color:#268bd2">parent</span>);
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> <span style="color:#859900">if</span> ((<span style="color:#268bd2">node</span> == <span style="color:#268bd2">parent</span>-&gt;<span style="color:#268bd2">left</span> &amp;&amp; <span style="color:#268bd2">parent</span> == <span style="color:#268bd2">grandparent</span>-&gt;<span style="color:#268bd2">left</span>) || <span style="color:#93a1a1;font-style:italic">// Zig-zig left
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                       (<span style="color:#268bd2">node</span> == <span style="color:#268bd2">parent</span>-&gt;<span style="color:#268bd2">right</span> &amp;&amp; <span style="color:#268bd2">parent</span> == <span style="color:#268bd2">grandparent</span>-&gt;<span style="color:#268bd2">right</span>)) { <span style="color:#93a1a1;font-style:italic">// Zig-zig right
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#859900">if</span> (<span style="color:#268bd2">node</span> == <span style="color:#268bd2">parent</span>-&gt;<span style="color:#268bd2">left</span>) { <span style="color:#93a1a1;font-style:italic">// Zig-zig left
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                    <span style="color:#268bd2">_rotate_right</span>(<span style="color:#268bd2">grandparent</span>);
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">_rotate_right</span>(<span style="color:#268bd2">parent</span>);
+</span></span><span style="display:flex;"><span>                } <span style="color:#859900">else</span> { <span style="color:#93a1a1;font-style:italic">// Zig-zig right
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                    <span style="color:#268bd2">_rotate_left</span>(<span style="color:#268bd2">grandparent</span>);
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">_rotate_left</span>(<span style="color:#268bd2">parent</span>);
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> { <span style="color:#93a1a1;font-style:italic">// Zig-zag
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#859900">if</span> (<span style="color:#268bd2">node</span> == <span style="color:#268bd2">parent</span>-&gt;<span style="color:#268bd2">left</span>) { <span style="color:#93a1a1;font-style:italic">// Zig-zag left-right
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                    <span style="color:#268bd2">_rotate_right</span>(<span style="color:#268bd2">parent</span>);
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">_rotate_left</span>(<span style="color:#268bd2">grandparent</span>);
+</span></span><span style="display:flex;"><span>                } <span style="color:#859900">else</span> { <span style="color:#93a1a1;font-style:italic">// Zig-zag right-left
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                    <span style="color:#268bd2">_rotate_left</span>(<span style="color:#268bd2">parent</span>);
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">_rotate_right</span>(<span style="color:#268bd2">grandparent</span>);
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">insert</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">SplayTreeNode</span>&lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">new_node</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">SplayTreeNode</span>(<span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">root</span> == <span style="color:#859900">nullptr</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">root</span> = <span style="color:#268bd2">new_node</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">SplayTreeNode</span>&lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">current</span> = <span style="color:#268bd2">root</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">SplayTreeNode</span>&lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">parent</span> = <span style="color:#859900">nullptr</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">while</span> (<span style="color:#268bd2">current</span> != <span style="color:#859900">nullptr</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">parent</span> = <span style="color:#268bd2">current</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">key</span> &lt; <span style="color:#268bd2">current</span>-&gt;<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">current</span> = <span style="color:#268bd2">current</span>-&gt;<span style="color:#268bd2">left</span>;
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> <span style="color:#268bd2">if</span> (<span style="color:#268bd2">key</span> &gt; <span style="color:#268bd2">current</span>-&gt;<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">current</span> = <span style="color:#268bd2">current</span>-&gt;<span style="color:#268bd2">right</span>;
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> { <span style="color:#93a1a1;font-style:italic">// Key already exists
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#268bd2">_splay</span>(<span style="color:#268bd2">current</span>);
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">delete</span> <span style="color:#268bd2">new_node</span>; <span style="color:#93a1a1;font-style:italic">// Avoid memory leak
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#859900">return</span>;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">new_node</span>-&gt;<span style="color:#268bd2">parent</span> = <span style="color:#268bd2">parent</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">key</span> &lt; <span style="color:#268bd2">parent</span>-&gt;<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">parent</span>-&gt;<span style="color:#268bd2">left</span> = <span style="color:#268bd2">new_node</span>;
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">parent</span>-&gt;<span style="color:#268bd2">right</span> = <span style="color:#268bd2">new_node</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">_splay</span>(<span style="color:#268bd2">new_node</span>); <span style="color:#93a1a1;font-style:italic">// Splay the newly inserted node to root
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">SplayTreeNode</span>&lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">search</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">SplayTreeNode</span>&lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">current</span> = <span style="color:#268bd2">root</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">SplayTreeNode</span>&lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">last_visited</span> = <span style="color:#859900">nullptr</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">while</span> (<span style="color:#268bd2">current</span> != <span style="color:#859900">nullptr</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">last_visited</span> = <span style="color:#268bd2">current</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">key</span> &lt; <span style="color:#268bd2">current</span>-&gt;<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">current</span> = <span style="color:#268bd2">current</span>-&gt;<span style="color:#268bd2">left</span>;
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> <span style="color:#268bd2">if</span> (<span style="color:#268bd2">key</span> &gt; <span style="color:#268bd2">current</span>-&gt;<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">current</span> = <span style="color:#268bd2">current</span>-&gt;<span style="color:#268bd2">right</span>;
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> { <span style="color:#93a1a1;font-style:italic">// Found
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#268bd2">_splay</span>(<span style="color:#268bd2">current</span>);
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">return</span> <span style="color:#268bd2">current</span>;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">last_visited</span> != <span style="color:#859900">nullptr</span>) { <span style="color:#93a1a1;font-style:italic">// Splay the last node visited if key not found
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#268bd2">_splay</span>(<span style="color:#268bd2">last_visited</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#859900">nullptr</span>; <span style="color:#93a1a1;font-style:italic">// Not found
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Deletion is complex in Splay trees, simplified for this conceptual example.
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#93a1a1;font-style:italic">// Generally, splay the node to delete to the root, remove it, and then
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#93a1a1;font-style:italic">// merge the two resulting subtrees (left and right).
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Example Usage:
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// int main() {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     SplayTree splay_tree;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::vector&lt;int&gt; keys = {10, 20, 5, 30, 15, 25};
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     for (int key : keys) {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         splay_tree.insert(key);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     }
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; &#34;Search for 25:&#34; &lt;&lt; std::endl;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     SplayTreeNode&lt;/em&gt; node_25 = splay_tree.search(25); // 25 should be root
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     if (splay_tree.root) {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         std::cout &lt;&lt; &#34;Root after searching 25: &#34; &lt;&lt; splay_tree.root-&gt;key &lt;&lt; std::endl; // Expected: 25
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     }
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; &#34;Search for 5:&#34; &lt;&lt; std::endl;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     SplayTreeNode* node_5 = splay_tree.search(5); // 5 should be root
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     if (splay_tree.root) {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         std::cout &lt;&lt; &#34;Root after searching 5: &#34; &lt;&lt; splay_tree.root-&gt;key &lt;&lt; std::endl; // Expected: 5
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     }
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     return 0;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span></code></pre></div><h2 id="code-walkthrough">Code Walkthrough</h2>
+<h3 id="code-walkthrough-1">Code Walkthrough</h3>
+<p>A <code>Splay Tree</code>&rsquo;s implementation revolves around its <code>node</code> structure and the specialized <code>splay</code> operation, which involves <code>tree rotations</code>.</p>
+<hr>
+<p><strong><code>SplayTreeNode</code> Class:</strong></p>
+<pre><code>- `key`: The value stored in the `node`.
+
+- `left`, `right`: Pointers to child `nodes`.
+
+- `parent`: A crucial pointer to the parent `node`, which simplifies rotations significantly.
+</code></pre>
+<p><strong><code>SplayTree</code> Class:</strong></p>
+<pre><code>- `root`: A pointer to the `root SplayTreeNode`.
+
+- **`_rotate_left(x)` and `_rotate_right(x)`:** Standard `binary search tree rotation` operations. These functions take a `node x` and rotate it with its `right` or `left child` respectively. They update all necessary `parent` and child `pointers` to maintain `tree integrity`.
+
+- **`_splay(node)`:** The core of the `Splay Tree`. This function moves the given `node` to the `root` of the `tree` through a series of `zig`, `zig-zig`, and `zig-zag rotations`. The specific rotation pattern depends on the `node`'s position relative to its `parent` and `grandparent`.
+
+- **`insert(key)`:**
+
+        - Inserts the new `key` as in a regular `BST`, creating a new `SplayTreeNode`.
+
+        - After insertion, calls `_splay()` on the newly inserted `node` to move it to the `root`.
+
+&lt;/li&gt;
+- **`search(key)`:**
+
+        - Searches for the `key` as in a regular `BST`.
+
+        - If the `key` is found, `_splay()` is called on the found `node` to bring it to the `root`.
+
+        - If the `key` is not found, `_splay()` is called on the last `node` visited during the unsuccessful search, bringing that `node` to the `root`.
+
+&lt;/li&gt;
+</code></pre>
+<h2 id="applications">Applications</h2>
+<h3 id="application">Application</h3>
+<p>Splay Trees are particularly effective in applications where there is a high locality of reference, meaning that a small set of elements is accessed much more frequently than others. They are used in <strong>cache implementations</strong> (where recently accessed data should be quick to find again), <strong>network routers</strong> for routing tables, and in memory allocators and <strong>garbage collectors</strong> to manage memory blocks. Their self-organizing property makes them adaptive to changing access patterns without the strict balancing rules of AVL or Red-Black trees.</p>
+
+    </div>
+</article>
+
+<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
+    
+    <a href="//localhost:1313/dsa-42_/data_structures/specialized/suffix_array/" class="nav-btn">← Previous</a>
+    
+    
+    <a href="//localhost:1313/dsa-42_/data_structures/specialized/" class="nav-btn">Up</a>
+
+    
+    <a href="//localhost:1313/dsa-42_/data_structures/specialized/skip_list/" class="nav-btn">Next →</a>
+    
+</div>
+
+    </main>
+
+    <footer class="footer">
+        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
+    </footer>
+
+    <script>
+        const body = document.getElementById('theme-body');
+        const btn = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme');
+
+        
+        function updateButtonText() {
+            if (body.classList.contains('theme-terminal')) {
+                btn.textContent = "Light Mode";
+            } else {
+                btn.textContent = "Dark Mode";
+            }
+        }
+
+        if (currentTheme === 'terminal') {
+            body.classList.add('theme-terminal');
+        }
+        
+        
+        updateButtonText();
+
+        btn.addEventListener('click', () => {
+            body.classList.toggle('theme-terminal');
+            updateButtonText();
+            
+            let theme = 'natural';
+            if (body.classList.contains('theme-terminal')) {
+                theme = 'terminal';
+            }
+            localStorage.setItem('theme', theme);
+        });
+    </script>
+</body>
+</html>

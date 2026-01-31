@@ -1,0 +1,511 @@
+---
+title: "HyperLogLog"
+---
+
+A `HyperLogLog` is a highly efficient, probabilistic algorithm used for cardinality estimation. In simpler terms, it's used to count the number of unique `elements` (the "cardinality") in a very large dataset while using an incredibly small and constant amount of memory.
+
+The "amazing" part is its trade-off: it sacrifices perfect accuracy for massive space savings. For example, it can estimate cardinalities well into the billions with an error rate of about 2% using only around 1.5 kilobytes of memory.
+
+## How it Works
+
+### How it Works (Expanded)
+
+The core idea behind `HyperLogLog` is based on the observation that if you have a set of uniformly distributed random numbers, the probability of seeing a number that starts with a long run of leading zeros is very low. The length of the longest run of leading zeros can give you a rough estimate of how many unique numbers you've seen.
+
+---
+
+Key Idea:
+1. Hash every element in the input set to get a uniform random distribution.
+2. For each hashed value, count the number of leading zeros in its binary representation.
+3. Keep track of the maximum number of leading zeros seen so far (`max_zeros`).
+4. The estimated cardinality is roughly 2^(max_zeros).
+
+Example:
+- hash("apple")  -> 00101... (2 leading zeros) -> max_zeros = 2
+- hash("banana") -> 11010... (0 leading zeros) -> max_zeros = 2
+- hash("cherry") -> 00011... (3 leading zeros) -> max_zeros = 3
+- Estimate: 2^3 = 8. (A rough estimate, but gets better with more data).
+
+## Implementation {#implementation}
+
+### Python
+
+```python
+import hashlib
+
+class HyperLogLog:
+    def __init__(self, p=14):
+        # p defines precision, m = 2^p registers
+        if not (4 <= p <= 16):
+            raise ValueError("Precision p must be between 4 and 16.")
+        self.p = p
+        self.m = 1 << p  # Number of registers
+        self.registers = [0] <em> self.m
+        
+        # Correction constant
+        if self.m == 16: self.alpha = 0.673
+        elif self.m == 32: self.alpha = 0.697
+        elif self.m == 64: self.alpha = 0.709
+        else: self.alpha = 0.7213 / (1 + 1.079 / self.m)
+
+    def _hash(self, value):
+        # Use SHA-256 for a good 64-bit hash
+        hasher = hashlib.sha256()
+        hasher.update(str(value).encode('utf-8'))
+        return int(hasher.hexdigest(), 16)
+
+    def add(self, value):
+        h = self._hash(value)
+        
+        # Use first p bits to select register
+        register_index = h & (self.m - 1)
+        
+        # Use remaining bits to count leading zeros (simplified)
+        bits = h >> self.p
+        leading_zeros = 0
+        if bits > 0:
+            leading_zeros = bits.bit_length() # A proxy for finding first set bit
+            # A more accurate way is to count leading zeros in a fixed size integer
+            # e.g., for a 64-bit hash: 64 - bits.bit_length()
+        
+        # Update register with max leading zeros count
+        self.registers[register_index] = max(self.registers[register_index], leading_zeros + 1)
+
+    def estimate(self):
+        # Harmonic mean of register values
+        raw_estimate = self.alpha </em> self.m<strong>2 / sum(2</strong>-reg for reg in self.registers)
+        
+        # Small range correction
+        if raw_estimate <= 2.5 <em> self.m:
+            zeros = self.registers.count(0)
+            if zeros > 0:
+                return self.m </em> ( - self.m / zeros).__float__().log() # math.log(self.m / zeros)
+        return raw_estimate
+
+# Example Usage
+# hll = HyperLogLog(p=10) # 2^10 = 1024 registers
+# for i in range(100000):
+#     hll.add(f"user_{i}")
+# hll.add("user_1") # Duplicate, should not increase estimate significantly
+# print(f"Estimated cardinality: {hll.estimate():.2f}") # Should be close to 100000
+```
+
+### Javascript
+
+```javascript
+// Simplified HyperLogLog in JS. A proper implementation would use a better hash function.
+
+class HyperLogLog {
+    constructor(p = 14) {
+        if (p < 4 || p > 16) {
+            throw new Error("Precision p must be between 4 and 16.");
+        }
+        this.p = p;
+        this.m = 1 << p; // Number of registers
+        this.registers = new Array(this.m).fill(0);
+        this.alpha = this._getAlpha(this.m);
+    }
+
+    _getAlpha(m) {
+        if (m === 16) return 0.673;
+        if (m === 32) return 0.697;
+        if (m === 64) return 0.709;
+        return 0.7213 / (1 + 1.079 / m);
+    }
+    
+    // Simple non-crypto hash function. For real use, import a robust one like MurmurHash.
+    _hash(value) {
+        const str = String(value);
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+            const char = str.charCodeAt(i);
+            hash = ((hash << 5) - hash) + char;
+            hash |= 0; // Convert to 32bit integer
+        }
+        return Math.abs(hash);
+    }
+
+    add(value) {
+        const h = this._hash(value);
+        const registerIndex = h & (this.m - 1);
+        
+        const bits = h >>> this.p;
+        let leadingZeros = 0;
+        if (bits > 0) {
+            // Count leading zeros for a 32-bit integer
+            leadingZeros = 32 - Math.floor(Math.log2(bits)) - 1;
+        } else {
+            leadingZeros = 32;
+        }
+
+        this.registers[registerIndex] = Math.max(this.registers[registerIndex], leadingZeros + 1);
+    }
+
+    estimate() {
+        const sum = this.registers.reduce((acc, val) => acc + Math.pow(2, -val), 0);
+        const rawEstimate = this.alpha <em> this.m </em> this.m / sum;
+
+        const zeros = this.registers.filter(val => val === 0).length;
+        if (rawEstimate <= 2.5 <em> this.m && zeros > 0) {
+            return Math.round(this.m </em> Math.log(this.m / zeros));
+        }
+        return Math.round(rawEstimate);
+    }
+}
+
+// Example Usage:
+// const hll = new HyperLogLog(10); // 1024 registers
+// for (let i = 0; i < 100000; i++) {
+//     hll.add(<code>user_${i}</code>);
+// }
+// hll.add("user_1"); // Duplicate
+// console.log(<code>Estimated cardinality: ${hll.estimate()}</code>); // Should be close to 100000
+```
+
+### Typescript
+
+```typescript
+// Simplified HyperLogLog in TypeScript.
+
+class HyperLogLogTS {
+    private readonly p: number;
+    private readonly m: number;
+    private registers: number[];
+    private readonly alpha: number;
+
+    constructor(p: number = 14) {
+        if (p < 4 || p > 16) {
+            throw new Error("Precision p must be between 4 and 16.");
+        }
+        this.p = p;
+        this.m = 1 << p; // Number of registers
+        this.registers = new Array(this.m).fill(0);
+        this.alpha = this._getAlpha(this.m);
+    }
+
+    private _getAlpha(m: number): number {
+        if (m === 16) return 0.673;
+        if (m === 32) return 0.697;
+        if (m === 64) return 0.709;
+        return 0.7213 / (1 + 1.079 / m);
+    }
+    
+    private _hash(value: any): number {
+        const str = String(value);
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+            const char = str.charCodeAt(i);
+            hash = ((hash << 5) - hash) + char;
+            hash |= 0; // Convert to 32bit integer
+        }
+        return Math.abs(hash);
+    }
+
+    public add(value: any): void {
+        const h = this._hash(value);
+        const registerIndex = h & (this.m - 1);
+        
+        const bits = h >>> this.p;
+        let leadingZeros = 0;
+        if (bits > 0) {
+            leadingZeros = 32 - Math.floor(Math.log2(bits)) - 1;
+        } else {
+            leadingZeros = 32;
+        }
+
+        this.registers[registerIndex] = Math.max(this.registers[registerIndex], leadingZeros + 1);
+    }
+
+    public estimate(): number {
+        const sum = this.registers.reduce((acc, val) => acc + Math.pow(2, -val), 0);
+        const rawEstimate = this.alpha <em> this.m </em> this.m / sum;
+
+        const zeros = this.registers.filter(val => val === 0).length;
+        if (rawEstimate <= 2.5 <em> this.m && zeros > 0) {
+            return Math.round(this.m </em> Math.log(this.m / zeros));
+        }
+        return Math.round(rawEstimate);
+    }
+}
+
+// Example Usage:
+// const hllTS = new HyperLogLogTS(10); // 1024 registers
+// for (let i = 0; i < 100000; i++) {
+//     hllTS.add(<code>user_${i}</code>);
+// }
+// hllTS.add("user_1"); // Duplicate
+// console.log(<code>Estimated cardinality: ${hllTS.estimate()}</code>); // Should be close to 100000
+```
+
+### Cpp
+
+```cpp
+// Simplified HyperLogLog in C++. Requires a good hash function like MurmurHash for real use.
+#include <iostream>
+#include <vector>
+#include <string>
+#include <cmath>
+#include <numeric>
+#include <functional> // For std::hash
+
+class HyperLogLog {
+private:
+    int p;
+    int m;
+    std::vector<int> registers;
+    double alpha;
+
+    // Simple string hash. Not robust enough for production.
+    uint64_t hash(const std::string& value) {
+        std::hash<std::string> hasher;
+        return hasher(value);
+    }
+
+    double getAlpha(int m_val) {
+        if (m_val == 16) return 0.673;
+        if (m_val == 32) return 0.697;
+        if (m_val == 64) return 0.709;
+        return 0.7213 / (1 + 1.079 / m_val);
+    }
+
+public:
+    HyperLogLog(int precision = 14) : p(precision) {
+        if (p < 4 || p > 16) {
+            throw std::invalid_argument("Precision p must be between 4 and 16.");
+        }
+        m = 1 << p;
+        registers.resize(m, 0);
+        alpha = getAlpha(m);
+    }
+
+    void add(const std::string& value) {
+        uint64_t h = hash(value);
+        int register_index = h & (m - 1);
+        
+        uint64_t bits = h >> p;
+        int leading_zeros = 0;
+        if (bits > 0) {
+            leading_zeros = __builtin_clzll(bits); // Count leading zeros for 64-bit int
+        } else {
+            leading_zeros = 64;
+        }
+        
+        registers[register_index] = std::max(registers[register_index], leading_zeros + 1);
+    }
+
+    double estimate() {
+        double sum = 0.0;
+        for (int reg_val : registers) {
+            sum += std::pow(2.0, -reg_val);
+        }
+        
+        double raw_estimate = alpha <em> m </em> m / sum;
+        
+        int zeros = 0;
+        for (int reg_val : registers) {
+            if (reg_val == 0) {
+                zeros++;
+            }
+        }
+        
+        if (raw_estimate <= 2.5 <em> m && zeros > 0) {
+            return m </em> std::log(static_cast<double>(m) / zeros);
+        }
+        return raw_estimate;
+    }
+};
+// int main() {
+//     HyperLogLog hll(10); // 1024 registers
+//     for (int i = 0; i < 100000; ++i) {
+//         hll.add("user_" + std::to_string(i));
+//     }
+//     hll.add("user_1"); // Duplicate
+//     std::cout << "Estimated cardinality: " << hll.estimate() << std::endl;
+//     return 0;
+// }
+```
+
+### Go
+
+```go
+package main
+
+import (
+    "fmt"
+    "hash/fnv"
+    "math"
+)
+
+type HyperLogLog struct {
+    p         uint8
+    m         uint32
+    registers []uint8
+    alpha     float64
+}
+
+func getAlpha(m uint32) float64 {
+    if m == 16 { return 0.673 }
+    if m == 32 { return 0.697 }
+    if m == 64 { return 0.709 }
+    return 0.7213 / (1 + 1.079/float64(m))
+}
+
+func NewHyperLogLog(p uint8) (<em>HyperLogLog, error) {
+    if p < 4 || p > 16 {
+        return nil, fmt.Errorf("precision p must be between 4 and 16")
+    }
+    m := uint32(1) << p
+    return &HyperLogLog{
+        p:         p,
+        m:         m,
+        registers: make([]uint8, m),
+        alpha:     getAlpha(m),
+    }, nil
+}
+
+func (hll </em>HyperLogLog) hash(value string) uint64 {
+    hasher := fnv.New64a()
+    hasher.Write([]byte(value))
+    return hasher.Sum64()
+}
+
+func (hll <em>HyperLogLog) Add(value string) {
+    h := hll.hash(value)
+    registerIndex := h & (uint64(hll.m) - 1)
+    
+    bits := h >> hll.p
+    leadingZeros := uint8(0)
+    if bits > 0 {
+        // A way to count leading zeros in Go
+        leadingZeros = uint8(64 - len(fmt.Sprintf("%b", bits)))
+    } else {
+        leadingZeros = 64
+    }
+
+    if leadingZeros+1 > hll.registers[registerIndex] {
+        hll.registers[registerIndex] = leadingZeros + 1
+    }
+}
+
+func (hll </em>HyperLogLog) Estimate() float64 {
+    sum := 0.0
+    for _, val := range hll.registers {
+        sum += math.Pow(2.0, -float64(val))
+    }
+
+    rawEstimate := hll.alpha <em> float64(hll.m</em>hll.m) / sum
+
+    zeros := 0
+    for _, val := range hll.registers {
+        if val == 0 {
+            zeros++
+        }
+    }
+
+    if rawEstimate <= 2.5<em>float64(hll.m) && zeros > 0 {
+        return float64(hll.m) </em> math.Log(float64(hll.m)/float64(zeros))
+    }
+    return rawEstimate
+}
+
+// func main() {
+//     hll, _ := NewHyperLogLog(10) // 1024 registers
+//     for i := 0; i < 100000; i++ {
+//         hll.Add(fmt.Sprintf("user_%d", i))
+//     }
+//     hll.Add("user_1") // Duplicate
+//     fmt.Printf("Estimated cardinality: %.2f\n", hll.Estimate())
+// }
+```
+
+### D
+
+```d
+import std.stdio;
+import std.math;
+import std.digest.crc;
+
+class HyperLogLog {
+    private uint p;
+    private uint m;
+    private ubyte[] registers;
+    private double alpha;
+
+    this(uint precision = 14) {
+        if (precision < 4 || precision > 16) {
+            throw new Exception("Precision p must be between 4 and 16.");
+        }
+        this.p = precision;
+        this.m = 1 << p;
+        this.registers = new ubyte[this.m];
+        this.alpha = getAlpha(this.m);
+    }
+
+    private double getAlpha(uint m_val) {
+        if (m_val == 16) return 0.673;
+        if (m_val == 32) return 0.697;
+        if (m_val == 64) return 0.709;
+        return 0.7213 / (1 + 1.079 / m_val);
+    }
+
+    private ulong hash(string value) {
+        // Use CRC32 as a simple hash function
+        return crc32Of(value);
+    }
+
+    void add(string value) {
+        auto h = hash(value);
+        auto registerIndex = h & (this.m - 1);
+        
+        auto bits = h >> this.p;
+        ubyte leadingZeros = 0;
+        if (bits > 0) {
+            // A way to count leading zeros in D
+            leadingZeros = cast(ubyte)(__builtin_clzll(bits));
+        } else {
+            leadingZeros = 64;
+        }
+
+        if (leadingZeros + 1 > this.registers[registerIndex]) {
+            this.registers[registerIndex] = leadingZeros + 1;
+        }
+    }
+
+    double estimate() {
+        double sum = 0.0;
+        foreach (val; this.registers) {
+            sum += 2.0^^(-val);
+        }
+
+        double rawEstimate = this.alpha <em> this.m </em> this.m / sum;
+
+        uint zeros = 0;
+        foreach (val; this.registers) {
+            if (val == 0) {
+                zeros++;
+            }
+        }
+
+        if (rawEstimate <= 2.5 <em> this.m && zeros > 0) {
+            return this.m </em> log(cast(double)this.m / zeros);
+        }
+        return rawEstimate;
+    }
+}
+
+// void main() {
+//     auto hll = new HyperLogLog(10); // 1024 registers
+//     foreach (i; 0..100_000) {
+//         hll.add("user_" ~ to!string(i));
+//     }
+//     hll.add("user_1"); // Duplicate
+//     writefln("Estimated cardinality: %.2f", hll.estimate());
+// }
+```
+
+## Applications
+
+### Application
+
+HyperLogLog is used in large-scale data systems to count unique items without consuming large amounts of memory. For example, **Google BigQuery** and **Amazon Redshift** use HyperLogLog to provide fast, approximate `COUNT(DISTINCT ...)` operations. Online advertising platforms use it to count the number of unique users who have seen an ad. Network monitoring tools use it to count the number of unique IP addresses, and databases like **Redis** provide it as a built-in data structure for cardinality estimation.
+

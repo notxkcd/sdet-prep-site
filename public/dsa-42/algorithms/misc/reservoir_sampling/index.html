@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reservoir Sampling | SDET Interview Preparation Kit</title>
+    <link rel="stylesheet" href="//localhost:1313/css/style.css">
+    <link rel="stylesheet" href="//localhost:1313/css/terminal.css">
+    
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    
+    <link rel="stylesheet" href="//localhost:1313/lib/katex/katex.min.css">
+    <script defer src="//localhost:1313/lib/katex/katex.min.js"></script>
+    <script defer src="//localhost:1313/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</head>
+<body id="theme-body">
+    <button id="theme-toggle">Switch Theme</button>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="//localhost:1313/">Index</a></li>
+                
+            </ul>
+        </nav>
+        <div class="site-breadcrumb">
+            <a href="//localhost:1313/">Home</a>
+            
+                
+                    <span>/</span> <a href="//localhost:1313/">SDET Interview Dashboard</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/dsa-42/">42 Algorithms &amp; 42 Data Structures</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/dsa-42/algorithms/">Algorithms</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/dsa-42/algorithms/misc/">Misc</a>
+                
+            
+            
+                <span>/</span> Reservoir Sampling
+            
+        </div>
+    </header>
+
+    <main>
+        
+<article>
+    <div class="category-title" style="margin-bottom: 0.5rem;">Misc</div>
+    <h1>Reservoir Sampling</h1>
+    <div class="content-body" style="margin-top: 2rem;">
+        <p><code>Reservoir Sampling</code> is a family of algorithms for selecting a simple random sample of <code>k</code> items from a <code>population</code> of <code>unknown size</code> <code>n</code>. This is particularly useful when the data comes in a stream and its total size is not known beforehand. It allows you to maintain a <code>sample</code> of <code>k</code> items such that at any point, the <code>sample</code> is a <code>uniform random sample</code> of the items seen so far.</p>
+<p>The most common version, <code>Algorithm R</code> by Alan Waterman, is simple to implement and requires only <code>O(k)</code> space.</p>
+<h2 id="how-it-works">How it Works</h2>
+<h3 id="how-it-works-expanded">How it Works (Expanded)</h3>
+<p>The <code>Reservoir Sampling (Algorithm R)</code> algorithm works by maintaining a &ldquo;reservoir&rdquo; <code>array</code> of size <code>k</code>. It processes the stream of items one by one. The first <code>k</code> items are placed directly into the reservoir. For each subsequent <code>item i</code> (where <code>i &gt; k</code>), the algorithm generates a random number <code>j</code> between 0 and <code>i</code> (inclusive). If <code>j &lt; k</code>, the <code>item</code> at <code>reservoir[j]</code> is replaced with <code>item i</code>.</p>
+<hr>
+<p>Example: Select k=3 items from a stream [1, 2, 3, 4, 5, 6, 7, 8, &hellip;]</p>
+<ol>
+<li>Initialize reservoir:</li>
+</ol>
+<ul>
+<li>Reservoir = [1, 2, 3]</li>
+</ul>
+<ol start="2">
+<li>Process item i=4 (index 3):</li>
+</ol>
+<ul>
+<li>Generate random j from 0 to 3. Say j=1.</li>
+<li>j &lt; k? (1 &lt; 3) Yes.</li>
+<li>Reservoir[1] = 4. Reservoir becomes [1, 4, 3].</li>
+</ul>
+<ol start="3">
+<li>Process item i=5 (index 4):</li>
+</ol>
+<ul>
+<li>Generate random j from 0 to 4. Say j=4.</li>
+<li>j &lt; k? (4 &lt; 3) No.</li>
+<li>Reservoir remains [1, 4, 3].</li>
+</ul>
+<ol start="4">
+<li>Process item i=6 (index 5):</li>
+</ol>
+<ul>
+<li>Generate random j from 0 to 5. Say j=0.</li>
+<li>j &lt; k? (0 &lt; 3) Yes.</li>
+<li>Reservoir[0] = 6. Reservoir becomes [6, 4, 3].</li>
+</ul>
+<p>&hellip; and so on. At any point, the reservoir holds a uniform random sample of size 3 from the items processed so far.</p>
+<p><a href="#code-walkthrough">Jump to Code Walkthrough</a></p>
+<h2 id="implementation">Implementation</h2>
+<h3 id="python">Python</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">random</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">def</span> <span style="color:#268bd2">reservoir_sampling</span>(<span style="color:#268bd2">stream</span>, <span style="color:#268bd2">k</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#2aa198">&#34;&#34;&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#2aa198">    Selects k items from a stream of unknown size using Reservoir Sampling (Algorithm R).
+</span></span></span><span style="display:flex;"><span><span style="color:#2aa198">    &lt;code&gt;stream&lt;/code&gt;: an iterable of items.
+</span></span></span><span style="display:flex;"><span><span style="color:#2aa198">    &lt;code&gt;k&lt;/code&gt;: the size of the sample.
+</span></span></span><span style="display:flex;"><span><span style="color:#2aa198">    &#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#268bd2">k</span> &lt;= <span style="color:#2aa198;font-weight:bold">0</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> []
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">reservoir</span> = []
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># Fill the reservoir with the first k items</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">i</span>, <span style="color:#268bd2">item</span> <span style="color:#859900">in</span> <span style="color:#cb4b16">enumerate</span>(<span style="color:#268bd2">stream</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">k</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">reservoir</span>.<span style="color:#268bd2">append</span>(<span style="color:#268bd2">item</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">else</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic"># Generate a random index j from 0 to i</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">j</span> = <span style="color:#268bd2">random</span>.<span style="color:#268bd2">randint</span>(<span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#268bd2">i</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic"># If j is within the reservoir size, replace the element</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> <span style="color:#268bd2">j</span> &lt; <span style="color:#268bd2">k</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">reservoir</span>[<span style="color:#268bd2">j</span>] = <span style="color:#268bd2">item</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">reservoir</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># Example</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># data_stream = [i for i in range(1, 101)] # Stream of numbers 1-100</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># sample_size = 10</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># sample = reservoir_sampling(data_stream, sample_size)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(f&#34;Sample of size {sample_size}:&#34;, sample)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(f&#34;Length of sample: {len(sample)}&#34;) # Expected: 10</span>
+</span></span></code></pre></div><h3 id="javascript">Javascript</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#859900">function</span> <span style="color:#268bd2">reservoirSampling</span>(<span style="color:#268bd2">stream</span>, <span style="color:#268bd2">k</span>) {
+</span></span><span style="display:flex;"><span>    /*&lt;em&gt;
+</span></span><span style="display:flex;"><span>     &lt;/em&gt; Selects k items from a stream of unknown size using Reservoir Sampling.
+</span></span><span style="display:flex;"><span>     &lt;<span style="color:#268bd2">em</span>&gt; &lt;<span style="color:#268bd2">code</span>&gt;<span style="color:#268bd2">stream</span>&lt;/code&gt;: an array representing the data stream.
+</span></span><span style="display:flex;"><span>     &lt;/em&gt; &lt;code&gt;k&lt;/code&gt;: the size of the sample.
+</span></span><span style="display:flex;"><span>     &lt;<span style="color:#268bd2">em</span>&gt;/
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">k</span> &lt;= <span style="color:#2aa198;font-weight:bold">0</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> [];
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">const</span> <span style="color:#268bd2">reservoir</span> = [];
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">stream</span>.<span style="color:#268bd2">forEach</span>((<span style="color:#268bd2">item</span>, <span style="color:#268bd2">i</span>) =&gt; {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">k</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">reservoir</span>.<span style="color:#268bd2">push</span>(<span style="color:#268bd2">item</span>);
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Generate a random index j from 0 to i
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">const</span> <span style="color:#268bd2">j</span> = <span style="color:#cb4b16">Math</span>.<span style="color:#268bd2">floor</span>(<span style="color:#cb4b16">Math</span>.<span style="color:#268bd2">random</span>() &lt;/em&gt; (i + 1));
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// If j is within the reservoir size, replace the element
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">j</span> &lt; <span style="color:#268bd2">k</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">reservoir</span>[<span style="color:#268bd2">j</span>] = <span style="color:#268bd2">item</span>;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    });
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">reservoir</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const dataStream = Array.from({length: 100}, (_, i) =&gt; i + 1); // Stream of numbers 1-100
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const sampleSize = 10;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const sample = reservoirSampling(dataStream, sampleSize);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&lt;code&gt;Sample of size ${sampleSize}:&lt;/code&gt;, sample);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&lt;code&gt;Length of sample: ${sample.length}&lt;/code&gt;); // Expected: 10
+</span></span></span></code></pre></div><h3 id="typescript">Typescript</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-typescript" data-lang="typescript"><span style="display:flex;"><span><span style="color:#859900">function</span> <span style="color:#268bd2">reservoirSamplingTS</span>&lt;<span style="color:#268bd2;font-weight:bold">T</span>&gt;(<span style="color:#268bd2">stream</span>: <span style="color:#859900;font-weight:bold">T</span>[], <span style="color:#268bd2">k</span>: <span style="color:#859900;font-weight:bold">number</span>): <span style="color:#268bd2">T</span>[] {
+</span></span><span style="display:flex;"><span>    /*&lt;em&gt;
+</span></span><span style="display:flex;"><span>     &lt;/<span style="color:#268bd2;font-weight:bold">em</span>&gt; <span style="color:#268bd2">Selects</span> <span style="color:#268bd2">k</span> <span style="color:#268bd2">items</span> <span style="color:#859900">from</span> <span style="color:#268bd2">a</span> <span style="color:#268bd2">stream</span> <span style="color:#859900">of</span> <span style="color:#859900;font-weight:bold">unknown</span> <span style="color:#268bd2">size</span> <span style="color:#268bd2">using</span> <span style="color:#268bd2">Reservoir</span> <span style="color:#268bd2">Sampling</span>.
+</span></span><span style="display:flex;"><span>     &lt;<span style="color:#268bd2;font-weight:bold">em</span>&gt; &lt;<span style="color:#268bd2;font-weight:bold">code</span>&gt;<span style="color:#268bd2">stream</span>&lt;/<span style="color:#268bd2;font-weight:bold">code</span>&gt;: <span style="color:#268bd2">an</span> <span style="color:#268bd2">array</span> <span style="color:#268bd2">representing</span> <span style="color:#268bd2">the</span> <span style="color:#268bd2">data</span> <span style="color:#268bd2">stream</span>.
+</span></span><span style="display:flex;"><span>     &lt;/<span style="color:#268bd2;font-weight:bold">em</span>&gt; &lt;<span style="color:#268bd2;font-weight:bold">code</span>&gt;<span style="color:#268bd2">k</span>&lt;/<span style="color:#268bd2;font-weight:bold">code</span>&gt;: <span style="color:#268bd2">the</span> <span style="color:#268bd2">size</span> <span style="color:#859900">of</span> <span style="color:#268bd2">the</span> <span style="color:#268bd2">sample</span>.
+</span></span><span style="display:flex;"><span>     &lt;<span style="color:#268bd2;font-weight:bold">em</span>&gt;/
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">k</span> &lt;= <span style="color:#2aa198;font-weight:bold">0</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> [];
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">const</span> <span style="color:#268bd2">reservoir</span>: <span style="color:#859900;font-weight:bold">T</span>[] = [];
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">stream</span>.<span style="color:#268bd2">forEach</span>((<span style="color:#268bd2">item</span>, <span style="color:#268bd2">i</span>) =&gt; {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">k</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">reservoir</span>.<span style="color:#268bd2">push</span>(<span style="color:#268bd2">item</span>);
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Generate a random index j from 0 to i
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">const</span> <span style="color:#268bd2">j</span> = <span style="color:#cb4b16">Math</span>.<span style="color:#268bd2">floor</span>(<span style="color:#cb4b16">Math</span>.<span style="color:#268bd2">random</span>() &lt;/<span style="color:#268bd2;font-weight:bold">em</span>&gt; (<span style="color:#268bd2">i</span> + <span style="color:#2aa198;font-weight:bold">1</span>));
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// If j is within the reservoir size, replace the element
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">j</span> &lt; <span style="color:#268bd2">k</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">reservoir</span>[<span style="color:#268bd2">j</span>] = <span style="color:#268bd2">item</span>;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    });
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">reservoir</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const dataStreamTS: number[] = Array.from({length: 100}, (_, i) =&gt; i + 1);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const sampleSizeTS = 10;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const sampleTS = reservoirSamplingTS(dataStreamTS, sampleSizeTS);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&lt;code&gt;Sample of size ${sampleSizeTS}:&lt;/code&gt;, sampleTS);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&lt;code&gt;Length of sample: ${sampleTS.length}&lt;/code&gt;); // Expected: 10
+</span></span></span></code></pre></div><h3 id="cpp">Cpp</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;vector&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;iostream&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;random&gt;</span><span style="color:#93a1a1;font-style:italic">    </span><span style="color:#93a1a1;font-style:italic">// For std::mt19937 and std::uniform_int_distribution
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt; <span style="color:#268bd2">reservoirSampling</span>(<span style="color:#859900">const</span> <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt;&amp; <span style="color:#268bd2">stream</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">k</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">k</span> &lt;= <span style="color:#2aa198;font-weight:bold">0</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> {};
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt; <span style="color:#268bd2">reservoir</span>;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Create a random number generator
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">random_device</span> <span style="color:#268bd2">rd</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">mt19937</span> <span style="color:#268bd2">g</span>(<span style="color:#268bd2">rd</span>());
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">stream</span>.<span style="color:#268bd2">size</span>(); ++<span style="color:#268bd2">i</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">k</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">reservoir</span>.<span style="color:#268bd2">push_back</span>(<span style="color:#268bd2">stream</span>[<span style="color:#268bd2">i</span>]);
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Generate a random index j from 0 to i
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#268bd2">std</span>::<span style="color:#268bd2">uniform_int_distribution</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt; <span style="color:#268bd2">dist</span>(<span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#268bd2">i</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">j</span> = <span style="color:#268bd2">dist</span>(<span style="color:#268bd2">g</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// If j is within the reservoir size, replace the element
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">j</span> &lt; <span style="color:#268bd2">k</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">reservoir</span>[<span style="color:#268bd2">j</span>] = <span style="color:#268bd2">stream</span>[<span style="color:#268bd2">i</span>];
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">reservoir</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// int main() {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::vector&lt;int&gt; data_stream;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     for(int i = 1; i &lt;= 100; ++i) data_stream.push_back(i);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     int sample_size = 10;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::vector&lt;int&gt; sample = reservoirSampling(data_stream, sample_size);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; &#34;Sample of size &#34; &lt;&lt; sample_size &lt;&lt; &#34;: &#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     for(int val : sample) {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         std::cout &lt;&lt; val &lt;&lt; &#34; &#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     }
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; std::endl;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; &#34;Length of sample: &#34; &lt;&lt; sample.size() &lt;&lt; std::endl; // 10
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     return 0;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span></code></pre></div><h3 id="go">Go</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">package</span> <span style="color:#268bd2">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> (
+</span></span><span style="display:flex;"><span>    <span style="color:#2aa198">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#2aa198">&#34;math/rand&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#2aa198">&#34;time&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> <span style="color:#268bd2">reservoirSampling</span>(<span style="color:#268bd2">stream</span> []<span style="color:#859900">interface</span>{}, <span style="color:#268bd2">k</span> <span style="color:#859900;font-weight:bold">int</span>) []<span style="color:#859900">interface</span>{} {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#268bd2">k</span> &lt;= <span style="color:#2aa198;font-weight:bold">0</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#859900;font-weight:bold">nil</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">reservoir</span> := <span style="color:#cb4b16">make</span>([]<span style="color:#859900">interface</span>{}, <span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#268bd2">k</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">rand</span>.<span style="color:#268bd2">Seed</span>(<span style="color:#268bd2">time</span>.<span style="color:#268bd2">Now</span>().<span style="color:#268bd2">UnixNano</span>())
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">i</span>, <span style="color:#268bd2">item</span> := <span style="color:#859900">range</span> <span style="color:#268bd2">stream</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">k</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">reservoir</span> = <span style="color:#cb4b16">append</span>(<span style="color:#268bd2">reservoir</span>, <span style="color:#268bd2">item</span>)
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Generate a random index j from 0 to i</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">j</span> := <span style="color:#268bd2">rand</span>.<span style="color:#268bd2">Intn</span>(<span style="color:#268bd2">i</span> + <span style="color:#2aa198;font-weight:bold">1</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// If j is within the reservoir size, replace the element</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> <span style="color:#268bd2">j</span> &lt; <span style="color:#268bd2">k</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">reservoir</span>[<span style="color:#268bd2">j</span>] = <span style="color:#268bd2">item</span>
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">reservoir</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// func main() {</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     dataStream := make([]interface{}, 100)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     for i := 0; i &lt; 100; i++ {</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         dataStream[i] = i + 1</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     }</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     sampleSize := 10</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     sample := reservoirSampling(dataStream, sampleSize)</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     fmt.Printf(&#34;Sample of size %d: %v\n&#34;, sampleSize, sample)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     fmt.Printf(&#34;Length of sample: %d\n&#34;, len(sample)) // 10</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }</span>
+</span></span></code></pre></div><h3 id="d">D</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-d" data-lang="d"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.stdio</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.random</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.array</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">T</span>[] <span style="color:#268bd2">reservoirSampling</span>(<span style="color:#268bd2">T</span>)(<span style="color:#268bd2">T</span>[] <span style="color:#268bd2">stream</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">k</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">k</span> &lt;= <span style="color:#2aa198;font-weight:bold">0</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> [];
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">T</span>[] <span style="color:#268bd2">reservoir</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">reservoir</span>.<span style="color:#268bd2">reserve</span>(<span style="color:#268bd2">k</span>); <span style="color:#93a1a1;font-style:italic">// Pre-allocate capacity
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">auto</span> <span style="color:#268bd2">rnd</span> = <span style="color:#268bd2">Random</span>(<span style="color:#268bd2">unpredictableSeed</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">foreach</span> (<span style="color:#268bd2">i</span>, <span style="color:#268bd2">item</span>; <span style="color:#268bd2">stream</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">k</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">reservoir</span> ~= <span style="color:#268bd2">item</span>;
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Generate a random index j from 0 to i
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">auto</span> <span style="color:#268bd2">j</span> = <span style="color:#268bd2">uniform</span>(<span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#268bd2">i</span> + <span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">rnd</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// If j is within the reservoir size, replace the element
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">j</span> &lt; <span style="color:#268bd2">k</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">reservoir</span>[<span style="color:#268bd2">j</span>] = <span style="color:#268bd2">item</span>;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">reservoir</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// void main() {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     int[] dataStream;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     foreach (i; 1 .. 101) {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         dataStream ~= i;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     }
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     int sampleSize = 10;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     auto sample = reservoirSampling(dataStream, sampleSize);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     writefln(&#34;Sample of size %s: %s&#34;, sampleSize, sample);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     writeln(&#34;Length of sample: &#34;, sample.length); // 10
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span></code></pre></div><h2 id="code-walkthrough">Code Walkthrough</h2>
+<p><a href="#implementation">Back to Implementation</a></p>
+<h3 id="code-walkthrough-1">Code Walkthrough</h3>
+<p><code>Reservoir Sampling (Algorithm R)</code> is an elegant algorithm for selecting a random sample of <code>k</code> items from a data stream of unknown size <code>N</code>.</p>
+<hr>
+<p><strong><code>reservoir_sampling(stream, k)</code> Function:</strong></p>
+<ul>
+<li><code>stream</code>: An iterable source of data.</li>
+<li><code>k</code>: The desired size of the random sample.</li>
+</ul>
+<p><strong>Algorithm Steps:</strong></p>
+<ul>
+<li>
+<p><strong>Initialization:</strong> An empty <code>reservoir</code> array is created.</p>
+</li>
+<li>
+<p><strong>Iterate Through Stream:</strong> The algorithm iterates through the <code>stream</code>, keeping track of the current <code>index i</code>.</p>
+</li>
+<li>
+<p><strong>Fill Initial Reservoir:</strong> For the first <code>k</code> items (<code>i &lt; k</code>), they are directly added to the <code>reservoir</code>.</p>
+</li>
+<li>
+<p><strong>Process Subsequent Items:</strong> For each <code>item i</code> from <code>k+1</code> onwards:</p>
+</li>
+<li>
+<p>A random integer <code>j</code> is generated between 0 and <code>i</code> (inclusive).</p>
+</li>
+<li>
+<p><strong>Replacement Logic:</strong> If <code>j</code> is less than <code>k</code> (the size of the reservoir), the <code>item</code> at <code>reservoir[j]</code> is replaced with the current <code>item</code> from the stream.</p>
+</li>
+<li>
+<p>The probability of this replacement for any <code>item i</code> is <code>k / (i+1)</code>. This ensures that at any point <code>i</code>, any <code>item</code> from the beginning up to <code>i</code> has an equal probability (<code>k / (i+1)</code>) of being in the reservoir.</p>
+<pre><code>      &lt;/li&gt;
+</code></pre>
+  </li>
+</li>
+</ul>
+<p><strong>Result:</strong></p>
+<ul>
+<li>After the entire <code>stream</code> has been processed, the <code>reservoir</code> contains a simple random sample of <code>k</code> items from the whole stream.</li>
+</ul>
+<p><a href="#implementation">Back to Implementation</a></p>
+<h2 id="applications">Applications</h2>
+<h3 id="application">Application</h3>
+<p><code>Reservoir Sampling</code> is crucial in scenarios where data is too large to fit into memory or is arriving in a continuous stream, and a representative random sample is needed:</p>
+<ul>
+<li><strong>Big Data Analytics:</strong> Sampling a small subset of a massive dataset (e.g., from a log file, a database query, or a sensor stream) for statistical analysis, machine learning model training, or data exploration.</li>
+<li><strong>Online Advertising:</strong> Randomly selecting an ad to display from a large pool of eligible ads for a given user impression, where the pool size is unknown.</li>
+<li><strong>Network Traffic Monitoring:</strong> Capturing a random sample of network packets for analysis without storing the entire traffic stream.</li>
+<li><strong>Streaming Algorithms:</strong> As a fundamental building block in various streaming algorithms that need to maintain a random sample of the data seen so far.</li>
+<li><strong>Database Query Optimization:</strong> Estimating query result sizes or data distributions by sampling from large tables.</li>
+</ul>
+
+    </div>
+</article>
+
+<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
+    
+    <span></span>
+    
+    
+    <a href="//localhost:1313/dsa-42/algorithms/misc/" class="nav-btn">Up</a>
+
+    
+    <a href="//localhost:1313/dsa-42/algorithms/misc/fisher_yates_shuffle/" class="nav-btn">Next →</a>
+    
+</div>
+
+    </main>
+
+    <footer class="footer">
+        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
+    </footer>
+
+    <script>
+        const body = document.getElementById('theme-body');
+        const btn = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme');
+
+        
+        function updateButtonText() {
+            if (body.classList.contains('theme-terminal')) {
+                btn.textContent = "Light Mode";
+            } else {
+                btn.textContent = "Dark Mode";
+            }
+        }
+
+        if (currentTheme === 'terminal') {
+            body.classList.add('theme-terminal');
+        }
+        
+        
+        updateButtonText();
+
+        btn.addEventListener('click', () => {
+            body.classList.toggle('theme-terminal');
+            updateButtonText();
+            
+            let theme = 'natural';
+            if (body.classList.contains('theme-terminal')) {
+                theme = 'terminal';
+            }
+            localStorage.setItem('theme', theme);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edmonds-Karp Algorithm | SDET Interview Preparation Kit</title>
+    <link rel="stylesheet" href="//localhost:1313/css/style.css">
+    <link rel="stylesheet" href="//localhost:1313/css/terminal.css">
+    
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    
+    <link rel="stylesheet" href="//localhost:1313/lib/katex/katex.min.css">
+    <script defer src="//localhost:1313/lib/katex/katex.min.js"></script>
+    <script defer src="//localhost:1313/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</head>
+<body id="theme-body">
+    <button id="theme-toggle">Switch Theme</button>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="//localhost:1313/">Index</a></li>
+                
+            </ul>
+        </nav>
+        <div class="site-breadcrumb">
+            <a href="//localhost:1313/">Home</a>
+            
+                
+                    <span>/</span> <a href="//localhost:1313/">SDET Interview Dashboard</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/hugo_content/">42 Algorithms &amp; 42 Data Structures</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/hugo_content/algorithms/">Algorithms</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/hugo_content/algorithms/graph_flow/">Graph Flow</a>
+                
+            
+            
+                <span>/</span> Edmonds-Karp Algorithm
+            
+        </div>
+    </header>
+
+    <main>
+        
+<article>
+    <div class="category-title" style="margin-bottom: 0.5rem;">Graph Flow</div>
+    <h1>Edmonds-Karp Algorithm</h1>
+    <div class="content-body" style="margin-top: 2rem;">
+        <p>The <code>Edmonds-Karp Algorithm</code> is a specific implementation of the more general <code>Ford-Fulkerson Method</code> for computing the maximum flow in a flow network. It distinguishes itself by using <code>Breadth-First Search (BFS)</code> to find <code>augmenting paths</code> in the <code>residual graph</code>. This particular choice of path-finding guarantees that the algorithm terminates in polynomial time, making it a robust and widely used approach for maximum flow problems.</p>
+<p>By always choosing the shortest augmenting path (in terms of number of edges), <code>Edmonds-Karp</code> ensures that the total number of augmentations is bounded, leading to its polynomial time complexity.</p>
+<h2 id="how-it-works">How it Works</h2>
+<h3 id="how-it-works-expanded">How it Works (Expanded)</h3>
+<p>The core concepts of <code>flow networks</code>, <code>residual graphs</code>, and <code>augmenting paths</code> are shared with the <code>Ford-Fulkerson Method</code>. The crucial distinction of <code>Edmonds-Karp</code> lies in how it finds these <code>augmenting paths</code>.</p>
+<hr>
+<p>Key Concepts (shared with Ford-Fulkerson):</p>
+<ol>
+<li><strong>Flow Network:</strong> Directed graph with capacities.</li>
+<li><strong>Flow:</strong> Function respecting capacity and conservation.</li>
+<li><strong>Residual Graph:</strong> Graph showing how much more flow can be sent.</li>
+<li><strong>Augmenting Path:</strong> Path in residual graph from source to sink.</li>
+</ol>
+<p>Edmonds-Karp Specific:</p>
+<ul>
+<li><strong>BFS to find augmenting paths:</strong> Always finds a path with the minimum number of edges. This is why it is called the Edmonds-Karp algorithm (named after Jack Edmonds and Richard Karp).</li>
+</ul>
+<h2 id="implementation">Implementation</h2>
+<h3 id="python">Python</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">from</span> <span style="color:#268bd2">collections</span> <span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">deque</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">def</span> <span style="color:#268bd2">edmonds_karp</span>(<span style="color:#268bd2">graph</span>, <span style="color:#268bd2">source</span>, <span style="color:#268bd2">sink</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#2aa198">&#34;&#34;&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#2aa198">    Finds the maximum flow from source to sink in a flow network
+</span></span></span><span style="display:flex;"><span><span style="color:#2aa198">    using the Edmonds-Karp algorithm (Ford-Fulkerson with BFS).
+</span></span></span><span style="display:flex;"><span><span style="color:#2aa198">    &lt;code&gt;graph&lt;/code&gt; is an adjacency matrix representation of the capacities.
+</span></span></span><span style="display:flex;"><span><span style="color:#2aa198">    &#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">n</span> = <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">graph</span>) <span style="color:#93a1a1;font-style:italic"># Number of vertices</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># Initialize residual graph (initially same as original graph capacities)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">residual_graph</span> = [<span style="color:#268bd2">row</span>[:] <span style="color:#859900">for</span> <span style="color:#268bd2">row</span> <span style="color:#859900">in</span> <span style="color:#268bd2">graph</span>]
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">max_flow</span> = <span style="color:#2aa198;font-weight:bold">0</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">while</span> <span style="color:#859900;font-weight:bold">True</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># parent array to store path found by BFS for path reconstruction</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">parent</span> = [-<span style="color:#2aa198;font-weight:bold">1</span>] &lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">n</span>
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># BFS to find an augmenting path</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">queue</span> = <span style="color:#268bd2">deque</span>()
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">queue</span>.<span style="color:#268bd2">append</span>(<span style="color:#268bd2">source</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">visited</span> = [<span style="color:#859900;font-weight:bold">False</span>] * <span style="color:#268bd2">n</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">visited</span>[<span style="color:#268bd2">source</span>] = <span style="color:#859900;font-weight:bold">True</span>
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">while</span> <span style="color:#268bd2">queue</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">u</span> = <span style="color:#268bd2">queue</span>.<span style="color:#268bd2">popleft</span>()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">for</span> <span style="color:#268bd2">v</span> <span style="color:#859900">in</span> <span style="color:#cb4b16">range</span>(<span style="color:#268bd2">n</span>):
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">if</span> <span style="color:#859900">not</span> <span style="color:#268bd2">visited</span>[<span style="color:#268bd2">v</span>] <span style="color:#859900">and</span> <span style="color:#268bd2">residual_graph</span>[<span style="color:#268bd2">u</span>][<span style="color:#268bd2">v</span>] &gt; <span style="color:#2aa198;font-weight:bold">0</span>:
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">queue</span>.<span style="color:#268bd2">append</span>(<span style="color:#268bd2">v</span>)
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">visited</span>[<span style="color:#268bd2">v</span>] = <span style="color:#859900;font-weight:bold">True</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">parent</span>[<span style="color:#268bd2">v</span>] = <span style="color:#268bd2">u</span>
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># If sink is not reachable, no more augmenting paths</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#859900">not</span> <span style="color:#268bd2">visited</span>[<span style="color:#268bd2">sink</span>]:
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">break</span>
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># Find the bottleneck capacity of the path found by BFS</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">path_flow</span> = <span style="color:#cb4b16">float</span>(<span style="color:#2aa198">&#39;inf&#39;</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">s</span> = <span style="color:#268bd2">sink</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">while</span> <span style="color:#268bd2">s</span> != <span style="color:#268bd2">source</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">path_flow</span> = <span style="color:#cb4b16">min</span>(<span style="color:#268bd2">path_flow</span>, <span style="color:#268bd2">residual_graph</span>[<span style="color:#268bd2">parent</span>[<span style="color:#268bd2">s</span>]][<span style="color:#268bd2">s</span>])
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">s</span> = <span style="color:#268bd2">parent</span>[<span style="color:#268bd2">s</span>]
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># Add path flow to overall flow</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">max_flow</span> += <span style="color:#268bd2">path_flow</span>
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># Update residual capacities along the path</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">v</span> = <span style="color:#268bd2">sink</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">while</span> <span style="color:#268bd2">v</span> != <span style="color:#268bd2">source</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">u</span> = <span style="color:#268bd2">parent</span>[<span style="color:#268bd2">v</span>]
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">residual_graph</span>[<span style="color:#268bd2">u</span>][<span style="color:#268bd2">v</span>] -= <span style="color:#268bd2">path_flow</span> <span style="color:#93a1a1;font-style:italic"># Decrease capacity of forward edge</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">residual_graph</span>[<span style="color:#268bd2">v</span>][<span style="color:#268bd2">u</span>] += <span style="color:#268bd2">path_flow</span> <span style="color:#93a1a1;font-style:italic"># Increase capacity of backward edge</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">v</span> = <span style="color:#268bd2">parent</span>[<span style="color:#268bd2">v</span>]
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">max_flow</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># Example: (from CLRS, Figure 26.1)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># 0: source, 5: sink</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># graph = [</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#     [0, 16, 13, 0, 0, 0],  # 0-&gt;1(16), 0-&gt;2(13)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#     [0, 0, 10, 12, 0, 0],  # 1-&gt;2(10), 1-&gt;3(12)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#     [0, 4, 0, 0, 14, 0],   # 2-&gt;1(4), 2-&gt;4(14)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#     [0, 0, 9, 0, 0, 20],   # 3-&gt;2(9), 3-&gt;5(20)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#     [0, 0, 0, 7, 0, 4],    # 4-&gt;3(7), 4-&gt;5(4)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#     [0, 0, 0, 0, 0, 0]     # 5: sink</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># ]</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># source = 0</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># sink = 5</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(edmonds_karp(graph, source, sink)) # Expected: 23</span>
+</span></span></code></pre></div><h3 id="javascript">Javascript</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#859900">function</span> <span style="color:#268bd2">edmondsKarp</span>(<span style="color:#268bd2">graph</span>, <span style="color:#268bd2">source</span>, <span style="color:#268bd2">sink</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">const</span> <span style="color:#268bd2">n</span> = <span style="color:#268bd2">graph</span>.<span style="color:#268bd2">length</span>; <span style="color:#93a1a1;font-style:italic">// Number of vertices
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Initialize residual graph (initially same as original graph capacities)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">const</span> <span style="color:#268bd2">residualGraph</span> = <span style="color:#268bd2">graph</span>.<span style="color:#268bd2">map</span>(<span style="color:#268bd2">row</span> =&gt; [...<span style="color:#268bd2">row</span>]);
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">let</span> <span style="color:#268bd2">maxFlow</span> = <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">while</span> (<span style="color:#859900;font-weight:bold">true</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// parent array to store path found by BFS for path reconstruction
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">const</span> <span style="color:#268bd2">parent</span> = <span style="color:#859900">new</span> <span style="color:#cb4b16">Array</span>(<span style="color:#268bd2">n</span>).<span style="color:#268bd2">fill</span>(-<span style="color:#2aa198;font-weight:bold">1</span>);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// BFS to find an augmenting path
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">const</span> <span style="color:#268bd2">queue</span> = [];
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">queue</span>.<span style="color:#268bd2">push</span>(<span style="color:#268bd2">source</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">const</span> <span style="color:#268bd2">visited</span> = <span style="color:#859900">new</span> <span style="color:#cb4b16">Array</span>(<span style="color:#268bd2">n</span>).<span style="color:#268bd2">fill</span>(<span style="color:#859900;font-weight:bold">false</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">visited</span>[<span style="color:#268bd2">source</span>] = <span style="color:#859900;font-weight:bold">true</span>;
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">while</span> (<span style="color:#268bd2">queue</span>.<span style="color:#268bd2">length</span> &gt; <span style="color:#2aa198;font-weight:bold">0</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">const</span> <span style="color:#268bd2">u</span> = <span style="color:#268bd2">queue</span>.<span style="color:#268bd2">shift</span>();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">v</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">v</span> &lt; <span style="color:#268bd2">n</span>; <span style="color:#268bd2">v</span>++) {
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">if</span> (!<span style="color:#268bd2">visited</span>[<span style="color:#268bd2">v</span>] &amp;&amp; <span style="color:#268bd2">residualGraph</span>[<span style="color:#268bd2">u</span>][<span style="color:#268bd2">v</span>] &gt; <span style="color:#2aa198;font-weight:bold">0</span>) {
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">queue</span>.<span style="color:#268bd2">push</span>(<span style="color:#268bd2">v</span>);
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">visited</span>[<span style="color:#268bd2">v</span>] = <span style="color:#859900;font-weight:bold">true</span>;
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">parent</span>[<span style="color:#268bd2">v</span>] = <span style="color:#268bd2">u</span>;
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// If sink is not reachable, no more augmenting paths
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">if</span> (!<span style="color:#268bd2">visited</span>[<span style="color:#268bd2">sink</span>]) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">break</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Find the bottleneck capacity of the path found by BFS
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">let</span> <span style="color:#268bd2">pathFlow</span> = <span style="color:#859900;font-weight:bold">Infinity</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">let</span> <span style="color:#268bd2">s</span> = <span style="color:#268bd2">sink</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">while</span> (<span style="color:#268bd2">s</span> !== <span style="color:#268bd2">source</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">pathFlow</span> = <span style="color:#cb4b16">Math</span>.<span style="color:#268bd2">min</span>(<span style="color:#268bd2">pathFlow</span>, <span style="color:#268bd2">residualGraph</span>[<span style="color:#268bd2">parent</span>[<span style="color:#268bd2">s</span>]][<span style="color:#268bd2">s</span>]);
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">s</span> = <span style="color:#268bd2">parent</span>[<span style="color:#268bd2">s</span>];
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Add path flow to overall flow
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">maxFlow</span> += <span style="color:#268bd2">pathFlow</span>;
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Update residual capacities along the path
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">let</span> <span style="color:#268bd2">v</span> = <span style="color:#268bd2">sink</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">while</span> (<span style="color:#268bd2">v</span> !== <span style="color:#268bd2">source</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">const</span> <span style="color:#268bd2">u</span> = <span style="color:#268bd2">parent</span>[<span style="color:#268bd2">v</span>];
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">residualGraph</span>[<span style="color:#268bd2">u</span>][<span style="color:#268bd2">v</span>] -= <span style="color:#268bd2">pathFlow</span>; <span style="color:#93a1a1;font-style:italic">// Decrease capacity of forward edge
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#268bd2">residualGraph</span>[<span style="color:#268bd2">v</span>][<span style="color:#268bd2">u</span>] += <span style="color:#268bd2">pathFlow</span>; <span style="color:#93a1a1;font-style:italic">// Increase capacity of backward edge
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#268bd2">v</span> = <span style="color:#268bd2">parent</span>[<span style="color:#268bd2">v</span>];
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">maxFlow</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const graph = [
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     [0, 16, 13, 0, 0, 0],
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     [0, 0, 10, 12, 0, 0],
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     [0, 4, 0, 0, 14, 0],
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     [0, 0, 9, 0, 0, 20],
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     [0, 0, 0, 7, 0, 4],
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     [0, 0, 0, 0, 0, 0]
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// ];
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const source = 0;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const sink = 5;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(edmondsKarp(graph, source, sink)); // Expected: 23
+</span></span></span></code></pre></div><h3 id="typescript">Typescript</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-typescript" data-lang="typescript"><span style="display:flex;"><span><span style="color:#859900">function</span> <span style="color:#268bd2">edmondsKarpTS</span>(<span style="color:#268bd2">graph</span>: <span style="color:#859900;font-weight:bold">number</span>[][], <span style="color:#268bd2">source</span>: <span style="color:#859900;font-weight:bold">number</span>, <span style="color:#268bd2">sink</span>: <span style="color:#859900;font-weight:bold">number</span>): <span style="color:#859900;font-weight:bold">number</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">const</span> <span style="color:#268bd2">n</span> = <span style="color:#268bd2">graph</span>.<span style="color:#268bd2">length</span>; <span style="color:#93a1a1;font-style:italic">// Number of vertices
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Initialize residual graph (initially same as original graph capacities)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">const</span> <span style="color:#268bd2">residualGraph</span>: <span style="color:#859900;font-weight:bold">number</span>[][] = <span style="color:#268bd2">graph</span>.<span style="color:#268bd2">map</span>(<span style="color:#268bd2">row</span> =&gt; [...<span style="color:#268bd2">row</span>]);
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">let</span> <span style="color:#268bd2">maxFlow</span> = <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">while</span> (<span style="color:#859900;font-weight:bold">true</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// parent array to store path found by BFS for path reconstruction
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">const</span> <span style="color:#268bd2">parent</span>: <span style="color:#859900;font-weight:bold">number</span>[] = <span style="color:#859900">new</span> <span style="color:#cb4b16">Array</span>(<span style="color:#268bd2">n</span>).<span style="color:#268bd2">fill</span>(-<span style="color:#2aa198;font-weight:bold">1</span>);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// BFS to find an augmenting path
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">const</span> <span style="color:#268bd2">queue</span>: <span style="color:#859900;font-weight:bold">number</span>[] = [];
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">queue</span>.<span style="color:#268bd2">push</span>(<span style="color:#268bd2">source</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">const</span> <span style="color:#268bd2">visited</span>: <span style="color:#859900;font-weight:bold">boolean</span>[] = <span style="color:#859900">new</span> <span style="color:#cb4b16">Array</span>(<span style="color:#268bd2">n</span>).<span style="color:#268bd2">fill</span>(<span style="color:#859900;font-weight:bold">false</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">visited</span>[<span style="color:#268bd2">source</span>] = <span style="color:#859900;font-weight:bold">true</span>;
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">while</span> (<span style="color:#268bd2">queue</span>.<span style="color:#268bd2">length</span> &gt; <span style="color:#2aa198;font-weight:bold">0</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">const</span> <span style="color:#268bd2">u</span> = <span style="color:#268bd2">queue</span>.<span style="color:#268bd2">shift</span>()!;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">v</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">v</span> &lt; <span style="color:#268bd2">n</span>; <span style="color:#268bd2">v</span>++) {
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">if</span> (!<span style="color:#268bd2">visited</span>[<span style="color:#268bd2">v</span>] &amp;&amp; <span style="color:#268bd2">residualGraph</span>[<span style="color:#268bd2">u</span>][<span style="color:#268bd2">v</span>] &gt; <span style="color:#2aa198;font-weight:bold">0</span>) {
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">queue</span>.<span style="color:#268bd2">push</span>(<span style="color:#268bd2">v</span>);
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">visited</span>[<span style="color:#268bd2">v</span>] = <span style="color:#859900;font-weight:bold">true</span>;
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">parent</span>[<span style="color:#268bd2">v</span>] = <span style="color:#268bd2">u</span>;
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// If sink is not reachable, no more augmenting paths
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">if</span> (!<span style="color:#268bd2">visited</span>[<span style="color:#268bd2">sink</span>]) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">break</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Find the bottleneck capacity of the path found by BFS
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">let</span> <span style="color:#268bd2">pathFlow</span> = <span style="color:#859900;font-weight:bold">Infinity</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">let</span> <span style="color:#268bd2">s</span> = <span style="color:#268bd2">sink</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">while</span> (<span style="color:#268bd2">s</span> !== <span style="color:#268bd2">source</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">pathFlow</span> = <span style="color:#cb4b16">Math</span>.<span style="color:#268bd2">min</span>(<span style="color:#268bd2">pathFlow</span>, <span style="color:#268bd2">residualGraph</span>[<span style="color:#268bd2">parent</span>[<span style="color:#268bd2">s</span>]][<span style="color:#268bd2">s</span>]);
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">s</span> = <span style="color:#268bd2">parent</span>[<span style="color:#268bd2">s</span>];
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Add path flow to overall flow
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">maxFlow</span> += <span style="color:#268bd2">pathFlow</span>;
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Update residual capacities along the path
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">let</span> <span style="color:#268bd2">v</span> = <span style="color:#268bd2">sink</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">while</span> (<span style="color:#268bd2">v</span> !== <span style="color:#268bd2">source</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">const</span> <span style="color:#268bd2">u</span> = <span style="color:#268bd2">parent</span>[<span style="color:#268bd2">v</span>];
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">residualGraph</span>[<span style="color:#268bd2">u</span>][<span style="color:#268bd2">v</span>] -= <span style="color:#268bd2">pathFlow</span>; <span style="color:#93a1a1;font-style:italic">// Decrease capacity of forward edge
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#268bd2">residualGraph</span>[<span style="color:#268bd2">v</span>][<span style="color:#268bd2">u</span>] += <span style="color:#268bd2">pathFlow</span>; <span style="color:#93a1a1;font-style:italic">// Increase capacity of backward edge
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#268bd2">v</span> = <span style="color:#268bd2">parent</span>[<span style="color:#268bd2">v</span>];
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">maxFlow</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const graphTS = [
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     [0, 16, 13, 0, 0, 0],
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     [0, 0, 10, 12, 0, 0],
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     [0, 4, 0, 0, 14, 0],
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     [0, 0, 9, 0, 0, 20],
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     [0, 0, 0, 7, 0, 4],
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     [0, 0, 0, 0, 0, 0]
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// ];
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const sourceTS = 0;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const sinkTS = 5;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(edmondsKarpTS(graphTS, sourceTS, sinkTS)); // Expected: 23
+</span></span></span></code></pre></div><h3 id="cpp">Cpp</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;vector&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;queue&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;iostream&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;algorithm&gt;</span><span style="color:#93a1a1;font-style:italic"> </span><span style="color:#93a1a1;font-style:italic">// For std::min
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;limits&gt;</span><span style="color:#93a1a1;font-style:italic">    </span><span style="color:#93a1a1;font-style:italic">// For std::numeric_limits
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#859900;font-weight:bold">bool</span> <span style="color:#268bd2">bfsFindAugmentingPath</span>(<span style="color:#859900">const</span> <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt;&gt;&amp; <span style="color:#268bd2">residual_graph</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">source</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">sink</span>, <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt;&amp; <span style="color:#268bd2">parent</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">n</span> = <span style="color:#268bd2">residual_graph</span>.<span style="color:#268bd2">size</span>();
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#859900;font-weight:bold">bool</span>&gt; <span style="color:#268bd2">visited</span>(<span style="color:#268bd2">n</span>, <span style="color:#cb4b16">false</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">queue</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt; <span style="color:#268bd2">q</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">q</span>.<span style="color:#268bd2">push</span>(<span style="color:#268bd2">source</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">visited</span>[<span style="color:#268bd2">source</span>] = <span style="color:#cb4b16">true</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">parent</span>[<span style="color:#268bd2">source</span>] = -<span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#93a1a1;font-style:italic">// Source has no parent
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">while</span> (!<span style="color:#268bd2">q</span>.<span style="color:#268bd2">empty</span>()) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">u</span> = <span style="color:#268bd2">q</span>.<span style="color:#268bd2">front</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">q</span>.<span style="color:#268bd2">pop</span>();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">v</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">v</span> &lt; <span style="color:#268bd2">n</span>; <span style="color:#268bd2">v</span>++) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (!<span style="color:#268bd2">visited</span>[<span style="color:#268bd2">v</span>] &amp;&amp; <span style="color:#268bd2">residual_graph</span>[<span style="color:#268bd2">u</span>][<span style="color:#268bd2">v</span>] &gt; <span style="color:#2aa198;font-weight:bold">0</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">q</span>.<span style="color:#268bd2">push</span>(<span style="color:#268bd2">v</span>);
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">visited</span>[<span style="color:#268bd2">v</span>] = <span style="color:#cb4b16">true</span>;
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">parent</span>[<span style="color:#268bd2">v</span>] = <span style="color:#268bd2">u</span>;
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">if</span> (<span style="color:#268bd2">v</span> == <span style="color:#268bd2">sink</span>) { <span style="color:#93a1a1;font-style:italic">// Found path to sink
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                    <span style="color:#859900">return</span> <span style="color:#cb4b16">true</span>;
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#cb4b16">false</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">edmondsKarp</span>(<span style="color:#859900">const</span> <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt;&gt;&amp; <span style="color:#268bd2">graph</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">source</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">sink</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">n</span> = <span style="color:#268bd2">graph</span>.<span style="color:#268bd2">size</span>(); <span style="color:#93a1a1;font-style:italic">// Number of vertices
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Initialize residual graph (initially same as original graph capacities)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt;&gt; <span style="color:#268bd2">residual_graph</span> = <span style="color:#268bd2">graph</span>;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">max_flow</span> = <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">while</span> (<span style="color:#cb4b16">true</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// parent array to store path found by BFS
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt; <span style="color:#268bd2">parent</span>(<span style="color:#268bd2">n</span>, -<span style="color:#2aa198;font-weight:bold">1</span>); <span style="color:#93a1a1;font-style:italic">// Reset parent array for each BFS
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// BFS to find an augmenting path
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">if</span> (!<span style="color:#268bd2">bfsFindAugmentingPath</span>(<span style="color:#268bd2">residual_graph</span>, <span style="color:#268bd2">source</span>, <span style="color:#268bd2">sink</span>, <span style="color:#268bd2">parent</span>)) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">break</span>; <span style="color:#93a1a1;font-style:italic">// No more augmenting paths
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        }
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Find the bottleneck capacity of the path found by BFS
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">path_flow</span> = <span style="color:#268bd2">std</span>::<span style="color:#268bd2">numeric_limits</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt;::<span style="color:#268bd2">max</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">s</span> = <span style="color:#268bd2">sink</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">while</span> (<span style="color:#268bd2">s</span> != <span style="color:#268bd2">source</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">path_flow</span> = <span style="color:#268bd2">std</span>::<span style="color:#268bd2">min</span>(<span style="color:#268bd2">path_flow</span>, <span style="color:#268bd2">residual_graph</span>[<span style="color:#268bd2">parent</span>[<span style="color:#268bd2">s</span>]][<span style="color:#268bd2">s</span>]);
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">s</span> = <span style="color:#268bd2">parent</span>[<span style="color:#268bd2">s</span>];
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Add path flow to overall flow
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">max_flow</span> += <span style="color:#268bd2">path_flow</span>;
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Update residual capacities along the path
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">v</span> = <span style="color:#268bd2">sink</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">while</span> (<span style="color:#268bd2">v</span> != <span style="color:#268bd2">source</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">u</span> = <span style="color:#268bd2">parent</span>[<span style="color:#268bd2">v</span>];
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">residual_graph</span>[<span style="color:#268bd2">u</span>][<span style="color:#268bd2">v</span>] -= <span style="color:#268bd2">path_flow</span>; <span style="color:#93a1a1;font-style:italic">// Decrease capacity of forward edge
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#268bd2">residual_graph</span>[<span style="color:#268bd2">v</span>][<span style="color:#268bd2">u</span>] += <span style="color:#268bd2">path_flow</span>; <span style="color:#93a1a1;font-style:italic">// Increase capacity of backward edge (for residual graph)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#268bd2">v</span> = <span style="color:#268bd2">parent</span>[<span style="color:#268bd2">v</span>];
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">max_flow</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// int main() {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     // Example: (from CLRS, Figure 26.1)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     // 0: source, 5: sink
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::vector&lt;std::vector&lt;int&gt;&gt; graph = {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         {0, 16, 13, 0, 0, 0},
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         {0, 0, 10, 12, 0, 0},
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         {0, 4, 0, 0, 14, 0},
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         {0, 0, 9, 0, 0, 20},
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         {0, 0, 0, 7, 0, 4},
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         {0, 0, 0, 0, 0, 0}
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     };
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     int source = 0;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     int sink = 5;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; &#34;Max flow: &#34; &lt;&lt; edmondsKarp(graph, source, sink) &lt;&lt; std::endl; // 23
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     return 0;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span></code></pre></div><h3 id="go">Go</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">package</span> <span style="color:#268bd2">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> (
+</span></span><span style="display:flex;"><span>    <span style="color:#2aa198">&#34;container/list&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#2aa198">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#2aa198">&#34;math&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> <span style="color:#268bd2">bfsFindAugmentingPath</span>(<span style="color:#268bd2">residualGraph</span> [][]<span style="color:#859900;font-weight:bold">int</span>, <span style="color:#268bd2">source</span>, <span style="color:#268bd2">sink</span> <span style="color:#859900;font-weight:bold">int</span>, <span style="color:#268bd2">parent</span> []<span style="color:#859900;font-weight:bold">int</span>) <span style="color:#859900;font-weight:bold">bool</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">n</span> := <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">residualGraph</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">visited</span> := <span style="color:#cb4b16">make</span>([]<span style="color:#859900;font-weight:bold">bool</span>, <span style="color:#268bd2">n</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">queue</span> := <span style="color:#268bd2">list</span>.<span style="color:#268bd2">New</span>()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">queue</span>.<span style="color:#268bd2">PushBack</span>(<span style="color:#268bd2">source</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">visited</span>[<span style="color:#268bd2">source</span>] = <span style="color:#859900;font-weight:bold">true</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">parent</span>[<span style="color:#268bd2">source</span>] = -<span style="color:#2aa198;font-weight:bold">1</span> <span style="color:#93a1a1;font-style:italic">// Source has no parent</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">queue</span>.<span style="color:#268bd2">Len</span>() &gt; <span style="color:#2aa198;font-weight:bold">0</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">u</span> := <span style="color:#268bd2">queue</span>.<span style="color:#268bd2">Remove</span>(<span style="color:#268bd2">queue</span>.<span style="color:#268bd2">Front</span>()).(<span style="color:#859900;font-weight:bold">int</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> <span style="color:#268bd2">v</span> := <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">v</span> &lt; <span style="color:#268bd2">n</span>; <span style="color:#268bd2">v</span>++ {
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// If v is not visited and there is residual capacity from u to v</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> !<span style="color:#268bd2">visited</span>[<span style="color:#268bd2">v</span>] &amp;&amp; <span style="color:#268bd2">residualGraph</span>[<span style="color:#268bd2">u</span>][<span style="color:#268bd2">v</span>] &gt; <span style="color:#2aa198;font-weight:bold">0</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">queue</span>.<span style="color:#268bd2">PushBack</span>(<span style="color:#268bd2">v</span>)
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">visited</span>[<span style="color:#268bd2">v</span>] = <span style="color:#859900;font-weight:bold">true</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">parent</span>[<span style="color:#268bd2">v</span>] = <span style="color:#268bd2">u</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">if</span> <span style="color:#268bd2">v</span> == <span style="color:#268bd2">sink</span> { <span style="color:#93a1a1;font-style:italic">// Found path to sink</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#859900">return</span> <span style="color:#859900;font-weight:bold">true</span>
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#859900;font-weight:bold">false</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> <span style="color:#268bd2">edmondsKarp</span>(<span style="color:#268bd2">graph</span> [][]<span style="color:#859900;font-weight:bold">int</span>, <span style="color:#268bd2">source</span>, <span style="color:#268bd2">sink</span> <span style="color:#859900;font-weight:bold">int</span>) <span style="color:#859900;font-weight:bold">int</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">n</span> := <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">graph</span>) <span style="color:#93a1a1;font-style:italic">// Number of vertices</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Initialize residual graph (initially same as original graph capacities)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">residualGraph</span> := <span style="color:#cb4b16">make</span>([][]<span style="color:#859900;font-weight:bold">int</span>, <span style="color:#268bd2">n</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> := <span style="color:#859900">range</span> <span style="color:#268bd2">residualGraph</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">residualGraph</span>[<span style="color:#268bd2">i</span>] = <span style="color:#cb4b16">make</span>([]<span style="color:#859900;font-weight:bold">int</span>, <span style="color:#268bd2">n</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">copy</span>(<span style="color:#268bd2">residualGraph</span>[<span style="color:#268bd2">i</span>], <span style="color:#268bd2">graph</span>[<span style="color:#268bd2">i</span>])
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">maxFlow</span> := <span style="color:#2aa198;font-weight:bold">0</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// While there is an augmenting path from source to sink</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// parent array to store path found by BFS</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">parent</span> := <span style="color:#cb4b16">make</span>([]<span style="color:#859900;font-weight:bold">int</span>, <span style="color:#268bd2">n</span>) <span style="color:#93a1a1;font-style:italic">// Reset parent array for each BFS</span>
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// BFS to find an augmenting path</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> !<span style="color:#268bd2">bfsFindAugmentingPath</span>(<span style="color:#268bd2">residualGraph</span>, <span style="color:#268bd2">source</span>, <span style="color:#268bd2">sink</span>, <span style="color:#268bd2">parent</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">break</span> <span style="color:#93a1a1;font-style:italic">// No more augmenting paths</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Find the bottleneck capacity of the path found by BFS</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">pathFlow</span> := <span style="color:#268bd2">math</span>.<span style="color:#268bd2">MaxInt32</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">s</span> := <span style="color:#268bd2">sink</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> <span style="color:#268bd2">s</span> != <span style="color:#268bd2">source</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">pathFlow</span> = <span style="color:#cb4b16">min</span>(<span style="color:#268bd2">pathFlow</span>, <span style="color:#268bd2">residualGraph</span>[<span style="color:#268bd2">parent</span>[<span style="color:#268bd2">s</span>]][<span style="color:#268bd2">s</span>])
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">s</span> = <span style="color:#268bd2">parent</span>[<span style="color:#268bd2">s</span>]
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Add path flow to overall flow</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">maxFlow</span> += <span style="color:#268bd2">pathFlow</span>
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Update residual capacities along the path</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">v</span> := <span style="color:#268bd2">sink</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> <span style="color:#268bd2">v</span> != <span style="color:#268bd2">source</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">u</span> := <span style="color:#268bd2">parent</span>[<span style="color:#268bd2">v</span>]
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">residualGraph</span>[<span style="color:#268bd2">u</span>][<span style="color:#268bd2">v</span>] -= <span style="color:#268bd2">pathFlow</span> <span style="color:#93a1a1;font-style:italic">// Decrease capacity of forward edge</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">residualGraph</span>[<span style="color:#268bd2">v</span>][<span style="color:#268bd2">u</span>] += <span style="color:#268bd2">pathFlow</span> <span style="color:#93a1a1;font-style:italic">// Increase capacity of backward edge</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">v</span> = <span style="color:#268bd2">parent</span>[<span style="color:#268bd2">v</span>]
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">maxFlow</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> <span style="color:#cb4b16">min</span>(<span style="color:#268bd2">a</span>, <span style="color:#268bd2">b</span> <span style="color:#859900;font-weight:bold">int</span>) <span style="color:#859900;font-weight:bold">int</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#268bd2">a</span> &lt; <span style="color:#268bd2">b</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">a</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">b</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// func main() {</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     graph := [][]int{</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         {0, 16, 13, 0, 0, 0},</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         {0, 0, 10, 12, 0, 0},</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         {0, 4, 0, 0, 14, 0},</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         {0, 0, 9, 0, 0, 20},</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         {0, 0, 0, 7, 0, 4},</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         {0, 0, 0, 0, 0, 0},</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     }</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     source := 0</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     sink := 5</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     fmt.Println(&#34;Max flow:&#34;, edmondsKarp(graph, source, sink)) // 23</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }</span>
+</span></span></code></pre></div><h3 id="d">D</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-d" data-lang="d"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.stdio</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.array</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.algorithm</span>; <span style="color:#93a1a1;font-style:italic">// For std.algorithm.min
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.container.array</span>; <span style="color:#93a1a1;font-style:italic">// For Array (queue)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#859900;font-weight:bold">bool</span> <span style="color:#268bd2">bfsFindAugmentingPath</span>(<span style="color:#859900;font-weight:bold">int</span>[][] <span style="color:#268bd2">residualGraph</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">source</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">sink</span>, <span style="color:#859900">ref</span> <span style="color:#859900;font-weight:bold">int</span>[] <span style="color:#268bd2">parent</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">auto</span> <span style="color:#268bd2">n</span> = <span style="color:#268bd2">residualGraph</span>.<span style="color:#268bd2">length</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">auto</span> <span style="color:#268bd2">visited</span> = <span style="color:#859900">new</span> <span style="color:#859900;font-weight:bold">bool</span>[<span style="color:#268bd2">n</span>]; <span style="color:#93a1a1;font-style:italic">// Initialize with false
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">auto</span> <span style="color:#268bd2">queue</span> = <span style="color:#268bd2">Array</span>!<span style="color:#859900;font-weight:bold">int</span>();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">queue</span>.<span style="color:#268bd2">insertBack</span>(<span style="color:#268bd2">source</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">visited</span>[<span style="color:#268bd2">source</span>] = <span style="color:#859900;font-weight:bold">true</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">parent</span>[<span style="color:#268bd2">source</span>] = -<span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#93a1a1;font-style:italic">// Source has no parent
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">while</span> (!<span style="color:#268bd2">queue</span>.<span style="color:#268bd2">empty</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">auto</span> <span style="color:#268bd2">u</span> = <span style="color:#268bd2">queue</span>.<span style="color:#268bd2">removeFront</span>();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">foreach</span> (<span style="color:#268bd2">v</span>; <span style="color:#2aa198;font-weight:bold">0</span> .. <span style="color:#268bd2">n</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (!<span style="color:#268bd2">visited</span>[<span style="color:#268bd2">v</span>] &amp;&amp; <span style="color:#268bd2">residualGraph</span>[<span style="color:#268bd2">u</span>][<span style="color:#268bd2">v</span>] &gt; <span style="color:#2aa198;font-weight:bold">0</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">queue</span>.<span style="color:#268bd2">insertBack</span>(<span style="color:#268bd2">v</span>);
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">visited</span>[<span style="color:#268bd2">v</span>] = <span style="color:#859900;font-weight:bold">true</span>;
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">parent</span>[<span style="color:#268bd2">v</span>] = <span style="color:#268bd2">u</span>;
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">if</span> (<span style="color:#268bd2">v</span> == <span style="color:#268bd2">sink</span>) { <span style="color:#93a1a1;font-style:italic">// Found path to sink
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                    <span style="color:#859900">return</span> <span style="color:#859900;font-weight:bold">true</span>;
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#859900;font-weight:bold">false</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">edmondsKarp</span>(<span style="color:#859900;font-weight:bold">int</span>[][] <span style="color:#268bd2">graph</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">source</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">sink</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">auto</span> <span style="color:#268bd2">n</span> = <span style="color:#268bd2">graph</span>.<span style="color:#268bd2">length</span>; <span style="color:#93a1a1;font-style:italic">// Number of vertices
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Initialize residual graph (initially same as original graph capacities)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">auto</span> <span style="color:#268bd2">residualGraph</span> = <span style="color:#268bd2">graph</span>.<span style="color:#268bd2">dup</span>; <span style="color:#93a1a1;font-style:italic">// Create a deep copy
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">maxFlow</span> = <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// While there is an augmenting path from source to sink
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (;;) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// parent array to store path found by BFS
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">auto</span> <span style="color:#268bd2">parent</span> = <span style="color:#859900">new</span> <span style="color:#859900;font-weight:bold">int</span>[<span style="color:#268bd2">n</span>]; <span style="color:#93a1a1;font-style:italic">// Reset parent array for each BFS
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">parent</span>[] = -<span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#93a1a1;font-style:italic">// Fill with -1 for safety
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// BFS to find an augmenting path
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">if</span> (!<span style="color:#268bd2">bfsFindAugmentingPath</span>(<span style="color:#268bd2">residualGraph</span>, <span style="color:#268bd2">source</span>, <span style="color:#268bd2">sink</span>, <span style="color:#268bd2">parent</span>)) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">break</span>; <span style="color:#93a1a1;font-style:italic">// No more augmenting paths
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        }
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Find the bottleneck capacity of the path found by BFS
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">pathFlow</span> = <span style="color:#859900;font-weight:bold">int</span>.<span style="color:#268bd2">max</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">s</span> = <span style="color:#268bd2">sink</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">while</span> (<span style="color:#268bd2">s</span> != <span style="color:#268bd2">source</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">pathFlow</span> = <span style="color:#268bd2">min</span>(<span style="color:#268bd2">pathFlow</span>, <span style="color:#268bd2">residualGraph</span>[<span style="color:#268bd2">parent</span>[<span style="color:#268bd2">s</span>]][<span style="color:#268bd2">s</span>]);
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">s</span> = <span style="color:#268bd2">parent</span>[<span style="color:#268bd2">s</span>];
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Add path flow to overall flow
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">maxFlow</span> += <span style="color:#268bd2">pathFlow</span>;
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Update residual capacities along the path
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">v</span> = <span style="color:#268bd2">sink</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">while</span> (<span style="color:#268bd2">v</span> != <span style="color:#268bd2">source</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">u</span> = <span style="color:#268bd2">parent</span>[<span style="color:#268bd2">v</span>];
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">residualGraph</span>[<span style="color:#268bd2">u</span>][<span style="color:#268bd2">v</span>] -= <span style="color:#268bd2">pathFlow</span>; <span style="color:#93a1a1;font-style:italic">// Decrease capacity of forward edge
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#268bd2">residualGraph</span>[<span style="color:#268bd2">v</span>][<span style="color:#268bd2">u</span>] += <span style="color:#268bd2">pathFlow</span>; <span style="color:#93a1a1;font-style:italic">// Increase capacity of backward edge
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#268bd2">v</span> = <span style="color:#268bd2">parent</span>[<span style="color:#268bd2">v</span>];
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">maxFlow</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// void main() {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     auto graph = [
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         [0, 16, 13, 0, 0, 0],
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         [0, 0, 10, 12, 0, 0],
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         [0, 4, 0, 0, 14, 0],
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         [0, 0, 9, 0, 0, 20],
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         [0, 0, 0, 7, 0, 4],
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         [0, 0, 0, 0, 0, 0]
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     ];
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     int source = 0;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     int sink = 5;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     writeln(&#34;Max flow: &#34;, edmondsKarp(graph, source, sink)); // 23
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span></code></pre></div><h2 id="code-walkthrough">Code Walkthrough</h2>
+<h3 id="code-walkthrough-1">Code Walkthrough</h3>
+<p>The <code>Edmonds-Karp Algorithm</code> is a concrete implementation of the <code>Ford-Fulkerson Method</code>, specifically using <code>BFS</code> to find augmenting paths. This ensures polynomial time complexity.</p>
+<hr>
+<p><strong><code>bfsFindAugmentingPath(residual_graph, source, sink, parent)</code> Function:</strong></p>
+<pre><code>- This is a standard `BFS` implementation adapted for the `residual_graph`.
+
+- It attempts to find any path from `source` to `sink` where `residual_graph[u][v] &gt; 0` (meaning there's available capacity).
+
+- The `parent` array is crucial: `parent[v] = u` means `v` was reached from `u`. This allows the path to be reconstructed.
+
+- It returns `True` if a path is found, `False` otherwise.
+</code></pre>
+<p><strong><code>edmondsKarp(graph, source, sink)</code> Function:</strong></p>
+<pre><code>- `n`: Number of `vertices`.
+
+- `residual_graph`: A mutable copy of the original graph's `capacities`. This graph is updated as `flow` is pushed.
+
+- `max_flow`: The total `flow` accumulated.
+</code></pre>
+<p><strong>Main Loop (<code>while true</code>):</strong></p>
+<pre><code>- **Find Augmenting Path:** In each iteration, `bfsFindAugmentingPath` is called. If no path is found (`visited[sink]` is `False` in JS/TS/Python, or `bfsFindAugmentingPath` returns `False`), the algorithm terminates.
+
+- **Find Bottleneck Capacity:** If a path is found, the `path_flow` is determined. This is the minimum `residual capacity` of any `edge` along the path from `source` to `sink`. This `path_flow` represents how much more `flow` can be pushed through this specific path.
+
+- **Update `max_flow`:** `path_flow` is added to `max_flow`.
+
+- **Update Residual Capacities:**
+
+        - The algorithm then traverses the `augmenting path` from `sink` back to `source` using the `parent` array.
+
+        - For every `edge (u, v)` on the path:
+
+                - The `residual capacity` of the forward `edge (u, v)` is decreased by `path_flow`.
+
+                - The `residual capacity` of the backward `edge (v, u)` is increased by `path_flow`. This is vital for `Ford-Fulkerson` to work, as it allows the algorithm to &quot;undo&quot; or reroute `flow` if a better path is found later.
+
+        &lt;/li&gt;
+
+&lt;/li&gt;
+</code></pre>
+<h2 id="applications">Applications</h2>
+<h3 id="application">Application</h3>
+<p>The <code>Edmonds-Karp Algorithm</code> is a fundamental solution for maximum flow problems, and due to its polynomial time complexity guarantee, it&rsquo;s widely used where the general <code>Ford-Fulkerson Method</code> might struggle.</p>
+<pre><code>    - **Network Optimization:** Maximizing the throughput in communication networks, traffic networks, or supply chains.
+
+    - **Bipartite Matching:** Solving maximum bipartite matching problems (e.g., job assignment, resource allocation) can be efficiently reduced to a maximum flow problem solved by `Edmonds-Karp`.
+
+    - **Image Segmentation:** In computer vision, it's used to partition an image into segments (e.g., foreground/background) by modeling pixel connections as a flow network.
+
+    - **Airline Scheduling:** Optimizing flight schedules, crew assignments, and aircraft utilization.
+
+    - **Project Management:** Resource allocation and task scheduling where dependencies and resource limits can be modeled as flow capacities.
+
+    - **Minimum Cut Problems:** Directly used to find the minimum cut in a network, which has applications in network reliability and vulnerability analysis.
+</code></pre>
+
+    </div>
+</article>
+
+<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
+    
+    <a href="//localhost:1313/hugo_content/algorithms/graph_flow/ford_fulkerson/" class="nav-btn">← Previous</a>
+    
+    
+    <a href="//localhost:1313/hugo_content/algorithms/graph_flow/" class="nav-btn">Up</a>
+
+    
+    <span></span>
+    
+</div>
+
+    </main>
+
+    <footer class="footer">
+        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
+    </footer>
+
+    <script>
+        const body = document.getElementById('theme-body');
+        const btn = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme');
+
+        
+        function updateButtonText() {
+            if (body.classList.contains('theme-terminal')) {
+                btn.textContent = "Light Mode";
+            } else {
+                btn.textContent = "Dark Mode";
+            }
+        }
+
+        if (currentTheme === 'terminal') {
+            body.classList.add('theme-terminal');
+        }
+        
+        
+        updateButtonText();
+
+        btn.addEventListener('click', () => {
+            body.classList.toggle('theme-terminal');
+            updateButtonText();
+            
+            let theme = 'natural';
+            if (body.classList.contains('theme-terminal')) {
+                theme = 'terminal';
+            }
+            localStorage.setItem('theme', theme);
+        });
+    </script>
+</body>
+</html>

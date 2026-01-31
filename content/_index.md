@@ -32,6 +32,7 @@ A comprehensive repository of Java interview questions and coding tasks, meticul
 
 1. **[Java Question Bank](java-questions-bank/)**
 2. **[Company Based Questions](12_company_based_questions/)**
+3. **[API from First Principles](api-from-first-principle/)** — *A step-by-step guide to building and understanding APIs from the ground up.*
 
 
 {{% center %}}
@@ -62,3 +63,14 @@ A comprehensive repository of Java interview questions and coding tasks, meticul
 A structured repository of interview question dumps, mastery guides, and deep-dive learning archives for QA Engineers.
 
 [👉 Enter the Interview Vault](qa-vault)
+
+
+---
+
+### 🎨 Past Projects Showcase
+
+| Project | Description |
+| :--- | :--- |
+| **[DSA-42](/projects/DSA-42/)** | **42 Algorithms & 42 Data Structures** |
+| **[Voxel JSONPath](/projects/json-path/)** | **Interactive JSONPath Explorer** |
+| **[Voxel JSON](/projects/voxel-json/)** | **Voxel-themed JSON Editor** |

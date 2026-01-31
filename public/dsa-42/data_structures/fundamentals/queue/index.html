@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Queue | SDET Interview Preparation Kit</title>
+    <link rel="stylesheet" href="//localhost:1313/css/style.css">
+    <link rel="stylesheet" href="//localhost:1313/css/terminal.css">
+    
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    
+    <link rel="stylesheet" href="//localhost:1313/lib/katex/katex.min.css">
+    <script defer src="//localhost:1313/lib/katex/katex.min.js"></script>
+    <script defer src="//localhost:1313/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</head>
+<body id="theme-body">
+    <button id="theme-toggle">Switch Theme</button>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="//localhost:1313/">Index</a></li>
+                
+            </ul>
+        </nav>
+        <div class="site-breadcrumb">
+            <a href="//localhost:1313/">Home</a>
+            
+                
+                    <span>/</span> <a href="//localhost:1313/">SDET Interview Dashboard</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/dsa-42/">42 Algorithms &amp; 42 Data Structures</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/dsa-42/data_structures/">Data Structures</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/dsa-42/data_structures/fundamentals/">Fundamentals</a>
+                
+            
+            
+                <span>/</span> Queue
+            
+        </div>
+    </header>
+
+    <main>
+        
+<article>
+    <div class="category-title" style="margin-bottom: 0.5rem;">Fundamentals</div>
+    <h1>Queue</h1>
+    <div class="content-body" style="margin-top: 2rem;">
+        <p>Imagine a line at a ticket counter. The first person to get in line is the first person to get served. A Queue data structure works exactly like this, following the <code>FIFO</code> (<code>First-In, First-Out</code>) principle.</p>
+<p>It&rsquo;s used for any situation where you need to process things in the order they were received, like a print queue or a server handling requests.</p>
+<h2 id="how-it-works">How it Works</h2>
+<h3 id="how-it-works-expanded">How it Works (Expanded)</h3>
+<p>A Queue is an abstract data type (ADT) that maintains a collection of elements. It has two primary operations:</p>
+<ul>
+<li><strong><code>Enqueue</code>:</strong> Adds an element to the back (or &lsquo;<code>tail</code>&rsquo;) of the queue.</li>
+<li><strong><code>Dequeue</code>:</strong> Removes and returns the element from the front (or &lsquo;<code>head</code>&rsquo;) of the queue.</li>
+</ul>
+<p>The <code>FIFO</code> principle means the first element added is always the first one to be removed.</p>
+<hr>
+<p>FRONT                                      BACK
+|                                          |
+v                                          v
+[ A ] -&gt; [ B ] -&gt; [ C ] -&gt; [ D ]</p>
+<p><a href="#code-walkthrough">Jump to Code Walkthrough</a></p>
+<h2 id="implementation">Implementation</h2>
+<h3 id="python">Python</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">from</span> <span style="color:#268bd2">collections</span> <span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">deque</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># Python&#39;s deque is an efficient double-ended queue.</span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">my_queue</span> = <span style="color:#268bd2">deque</span>()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># Enqueue (O(1))</span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">my_queue</span>.<span style="color:#268bd2">append</span>(<span style="color:#2aa198">&#39;A&#39;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">my_queue</span>.<span style="color:#268bd2">append</span>(<span style="color:#2aa198">&#39;B&#39;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">my_queue</span>.<span style="color:#268bd2">append</span>(<span style="color:#2aa198">&#39;C&#39;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#cb4b16">print</span>(<span style="color:#2aa198">&#34;Queue after enqueues:&#34;</span>, <span style="color:#268bd2">my_queue</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># Dequeue (O(1))</span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">front_item</span> = <span style="color:#268bd2">my_queue</span>.<span style="color:#268bd2">popleft</span>()
+</span></span><span style="display:flex;"><span><span style="color:#cb4b16">print</span>(<span style="color:#2aa198">&#34;Dequeued item:&#34;</span>, <span style="color:#268bd2">front_item</span>)
+</span></span><span style="display:flex;"><span><span style="color:#cb4b16">print</span>(<span style="color:#2aa198">&#34;Queue after dequeue:&#34;</span>, <span style="color:#268bd2">my_queue</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># Peek (O(1))</span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">if</span> <span style="color:#268bd2">my_queue</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#cb4b16">print</span>(<span style="color:#2aa198">&#34;Front item (peek):&#34;</span>, <span style="color:#268bd2">my_queue</span>[<span style="color:#2aa198;font-weight:bold">0</span>])
+</span></span></code></pre></div><h3 id="javascript">Javascript</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// JavaScript&#39;s Array can be used as a queue, but shift() can be O(n).
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// For high-performance queues, a linked list is better.
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#859900">let</span> <span style="color:#268bd2">myQueue</span> = [];
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Enqueue (O(1))
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#268bd2">myQueue</span>.<span style="color:#268bd2">push</span>(<span style="color:#2aa198">&#39;A&#39;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">myQueue</span>.<span style="color:#268bd2">push</span>(<span style="color:#2aa198">&#39;B&#39;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">myQueue</span>.<span style="color:#268bd2">push</span>(<span style="color:#2aa198">&#39;C&#39;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">console</span>.<span style="color:#268bd2">log</span>(<span style="color:#2aa198">&#34;Queue after enqueues:&#34;</span>, <span style="color:#268bd2">myQueue</span>); <span style="color:#93a1a1;font-style:italic">// Output: [&#34;A&#34;, &#34;B&#34;, &#34;C&#34;]
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Dequeue (O(n) for Array, O(1) for Linked List)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#859900">let</span> <span style="color:#268bd2">frontItem</span> = <span style="color:#268bd2">myQueue</span>.<span style="color:#268bd2">shift</span>();
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">console</span>.<span style="color:#268bd2">log</span>(<span style="color:#2aa198">&#34;Dequeued item:&#34;</span>, <span style="color:#268bd2">frontItem</span>); <span style="color:#93a1a1;font-style:italic">// Output: A
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#268bd2">console</span>.<span style="color:#268bd2">log</span>(<span style="color:#2aa198">&#34;Queue after dequeue:&#34;</span>, <span style="color:#268bd2">myQueue</span>); <span style="color:#93a1a1;font-style:italic">// Output: [&#34;B&#34;, &#34;C&#34;]
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Peek (O(1))
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#859900">if</span> (<span style="color:#268bd2">myQueue</span>.<span style="color:#268bd2">length</span> &gt; <span style="color:#2aa198;font-weight:bold">0</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">console</span>.<span style="color:#268bd2">log</span>(<span style="color:#2aa198">&#34;Front item (peek):&#34;</span>, <span style="color:#268bd2">myQueue</span>[<span style="color:#2aa198;font-weight:bold">0</span>]); <span style="color:#93a1a1;font-style:italic">// Output: B
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>}
+</span></span></code></pre></div><h3 id="cpp">Cpp</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;iostream&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;queue&gt;</span><span style="color:#93a1a1;font-style:italic"> </span><span style="color:#93a1a1;font-style:italic">// Standard Library Queue
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">main</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">queue</span>&lt;<span style="color:#859900;font-weight:bold">char</span>&gt; <span style="color:#268bd2">myQueue</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Enqueue (O(1))
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">myQueue</span>.<span style="color:#268bd2">push</span>(<span style="color:#2aa198">&#39;A&#39;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">myQueue</span>.<span style="color:#268bd2">push</span>(<span style="color:#2aa198">&#39;B&#39;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">myQueue</span>.<span style="color:#268bd2">push</span>(<span style="color:#2aa198">&#39;C&#39;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">cout</span> &lt;&lt; <span style="color:#2aa198">&#34;Queue size after enqueues: &#34;</span> &lt;&lt; <span style="color:#268bd2">myQueue</span>.<span style="color:#268bd2">size</span>() &lt;&lt; <span style="color:#268bd2">std</span>::<span style="color:#268bd2">endl</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Dequeue (O(1))
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900;font-weight:bold">char</span> <span style="color:#268bd2">frontItem</span> = <span style="color:#268bd2">myQueue</span>.<span style="color:#268bd2">front</span>(); <span style="color:#93a1a1;font-style:italic">// Get front element
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">myQueue</span>.<span style="color:#268bd2">pop</span>();                 <span style="color:#93a1a1;font-style:italic">// Remove front element
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">cout</span> &lt;&lt; <span style="color:#2aa198">&#34;Dequeued item: &#34;</span> &lt;&lt; <span style="color:#268bd2">frontItem</span> &lt;&lt; <span style="color:#268bd2">std</span>::<span style="color:#268bd2">endl</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">cout</span> &lt;&lt; <span style="color:#2aa198">&#34;Queue size after dequeue: &#34;</span> &lt;&lt; <span style="color:#268bd2">myQueue</span>.<span style="color:#268bd2">size</span>() &lt;&lt; <span style="color:#268bd2">std</span>::<span style="color:#268bd2">endl</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Peek (O(1))
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">if</span> (!<span style="color:#268bd2">myQueue</span>.<span style="color:#268bd2">empty</span>()) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">std</span>::<span style="color:#268bd2">cout</span> &lt;&lt; <span style="color:#2aa198">&#34;Front item (peek): &#34;</span> &lt;&lt; <span style="color:#268bd2">myQueue</span>.<span style="color:#268bd2">front</span>() &lt;&lt; <span style="color:#268bd2">std</span>::<span style="color:#268bd2">endl</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="code-walkthrough">Code Walkthrough</h2>
+<p><a href="#implementation">Back to Implementation</a></p>
+<h3 id="code-walkthrough-1">Code Walkthrough</h3>
+<p>Implementing a queue efficiently requires care. A standard array/list is okay for <code>enqueue</code>, but removing from the start is often slow.</p>
+<hr>
+<p><strong>Python:</strong> Uses <code>collections.deque</code>, a double-ended queue optimized for fast <code>appends</code> and <code>pops</code> from both ends. <code>append()</code> <code>enqueues</code> and <code>popleft()</code> <code>dequeues</code>, both in <code>O(1)</code> time.</p>
+<p><strong>JavaScript:</strong> Using <code>push()</code> to <code>enqueue</code> is <code>O(1)</code>, but using <code>shift()</code> to <code>dequeue</code> is an <code>O(n)</code> operation because all other elements must be shifted. For performance-critical applications, a custom linked-list based queue is preferred.</p>
+<p><strong>C++:</strong> The STL <code>std::queue</code> is an adapter that uses a <code>std::deque</code> by default. <code>push()</code> <code>enqueues</code>, <code>pop()</code> <code>dequeues</code>, and <code>front()</code> peeks at the first item. All are <code>O(1)</code> operations.</p>
+<p><a href="#implementation">Back to Implementation</a></p>
+
+    </div>
+</article>
+
+<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
+    
+    <a href="//localhost:1313/dsa-42/data_structures/fundamentals/set/" class="nav-btn">← Previous</a>
+    
+    
+    <a href="//localhost:1313/dsa-42/data_structures/fundamentals/" class="nav-btn">Up</a>
+
+    
+    <a href="//localhost:1313/dsa-42/data_structures/fundamentals/linked_list/" class="nav-btn">Next →</a>
+    
+</div>
+
+    </main>
+
+    <footer class="footer">
+        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
+    </footer>
+
+    <script>
+        const body = document.getElementById('theme-body');
+        const btn = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme');
+
+        
+        function updateButtonText() {
+            if (body.classList.contains('theme-terminal')) {
+                btn.textContent = "Light Mode";
+            } else {
+                btn.textContent = "Dark Mode";
+            }
+        }
+
+        if (currentTheme === 'terminal') {
+            body.classList.add('theme-terminal');
+        }
+        
+        
+        updateButtonText();
+
+        btn.addEventListener('click', () => {
+            body.classList.toggle('theme-terminal');
+            updateButtonText();
+            
+            let theme = 'natural';
+            if (body.classList.contains('theme-terminal')) {
+                theme = 'terminal';
+            }
+            localStorage.setItem('theme', theme);
+        });
+    </script>
+</body>
+</html>

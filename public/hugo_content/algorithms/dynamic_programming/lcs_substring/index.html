@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Longest Common Substring | SDET Interview Preparation Kit</title>
+    <link rel="stylesheet" href="//localhost:1313/css/style.css">
+    <link rel="stylesheet" href="//localhost:1313/css/terminal.css">
+    
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    
+    <link rel="stylesheet" href="//localhost:1313/lib/katex/katex.min.css">
+    <script defer src="//localhost:1313/lib/katex/katex.min.js"></script>
+    <script defer src="//localhost:1313/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</head>
+<body id="theme-body">
+    <button id="theme-toggle">Switch Theme</button>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="//localhost:1313/">Index</a></li>
+                
+            </ul>
+        </nav>
+        <div class="site-breadcrumb">
+            <a href="//localhost:1313/">Home</a>
+            
+                
+                    <span>/</span> <a href="//localhost:1313/">SDET Interview Dashboard</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/hugo_content/">42 Algorithms &amp; 42 Data Structures</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/hugo_content/algorithms/">Algorithms</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/hugo_content/algorithms/dynamic_programming/">Dynamic Programming</a>
+                
+            
+            
+                <span>/</span> Longest Common Substring
+            
+        </div>
+    </header>
+
+    <main>
+        
+<article>
+    <div class="category-title" style="margin-bottom: 0.5rem;">Dynamic Programming</div>
+    <h1>Longest Common Substring</h1>
+    <div class="content-body" style="margin-top: 2rem;">
+        <p>The <code>Longest Common Substring (LCSUB)</code> problem is another classic problem in <code>dynamic programming</code>, closely related to the <code>Longest Common Subsequence (LCS)</code> problem. Given two strings, <code>string1</code> and <code>string2</code>, the goal is to find the longest string that is a <code>substring</code> of both. A <code>substring</code>, unlike a <code>subsequence</code>, requires consecutive characters.</p>
+<p>For example, given <code>string1 = &quot;ABABC&quot;</code> and <code>string2 = &quot;BABCA&quot;</code>, the <code>Longest Common Substring</code>s are <code>&quot;BABC&quot;</code> (length 4) and <code>&quot;ABA&quot;</code> (length 3). The longest is <code>&quot;BABC&quot;</code>. It is important to distinguish this from the <code>LCS</code> problem, where &ldquo;ABC&rdquo; would be a common subsequence, but not a common substring, as its characters are not consecutive in <code>string2</code>.</p>
+<h2 id="how-it-works">How it Works</h2>
+<h3 id="how-it-works-expanded">How it Works (Expanded)</h3>
+<p>The <code>LCSUB problem</code> can be solved using <code>dynamic programming</code> by building a 2D table (matrix) <code>dp</code> where <code>dp[i][j]</code> stores the length of the <code>longest common suffix</code> of <code>string1[0...i-1]</code> and <code>string2[0...j-1]</code>. The maximum value in the entire <code>dp</code> table will be the length of the <code>Longest Common Substring</code>.</p>
+<hr>
+<p>Example: LCSUB of string1 = &ldquo;ABABC&rdquo; and string2 = &ldquo;BABCA&rdquo;</p>
+<p>Initialize a DP table (matrix) of size (m+1) x (n+1) with zeros.</p>
+<p>For dp[i][j]:</p>
+<ul>
+<li>If string1[i-1] == string2[j-1]: dp[i][j] = 1 + dp[i-1][j-1]
+(Characters match, extend the common suffix)</li>
+<li>Else: dp[i][j] = 0
+(Characters don&rsquo;t match, common suffix breaks, reset to 0)</li>
+</ul>
+<p>The maximum value in the entire DP table is the length of LCSUB.</p>
+<h2 id="implementation">Implementation</h2>
+<h3 id="python">Python</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#859900">def</span> <span style="color:#268bd2">longest_common_substring</span>(<span style="color:#268bd2">str1</span>, <span style="color:#268bd2">str2</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">m</span> = <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">str1</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">n</span> = <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">str2</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># dp[i][j] stores the length of the longest common suffix of</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># str1[0..i-1] and str2[0..j-1]</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">dp</span> = [[<span style="color:#2aa198;font-weight:bold">0</span> <span style="color:#859900">for</span> <span style="color:#268bd2">_</span> <span style="color:#859900">in</span> <span style="color:#cb4b16">range</span>(<span style="color:#268bd2">n</span> + <span style="color:#2aa198;font-weight:bold">1</span>)] <span style="color:#859900">for</span> <span style="color:#268bd2">_</span> <span style="color:#859900">in</span> <span style="color:#cb4b16">range</span>(<span style="color:#268bd2">m</span> + <span style="color:#2aa198;font-weight:bold">1</span>)]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">max_length</span> = <span style="color:#2aa198;font-weight:bold">0</span>      <span style="color:#93a1a1;font-style:italic"># Stores the length of the longest common substring</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">end_index</span> = <span style="color:#2aa198;font-weight:bold">0</span>       <span style="color:#93a1a1;font-style:italic"># Stores the ending index of the LCSUB in str1</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># Fill dp table</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> <span style="color:#859900">in</span> <span style="color:#cb4b16">range</span>(<span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">m</span> + <span style="color:#2aa198;font-weight:bold">1</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> <span style="color:#268bd2">j</span> <span style="color:#859900">in</span> <span style="color:#cb4b16">range</span>(<span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">n</span> + <span style="color:#2aa198;font-weight:bold">1</span>):
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> <span style="color:#268bd2">str1</span>[<span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>] == <span style="color:#268bd2">str2</span>[<span style="color:#268bd2">j</span> - <span style="color:#2aa198;font-weight:bold">1</span>]:
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#2aa198;font-weight:bold">1</span> + <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">j</span> - <span style="color:#2aa198;font-weight:bold">1</span>]
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">if</span> <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] &gt; <span style="color:#268bd2">max_length</span>:
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">max_length</span> = <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>]
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">end_index</span> = <span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span> <span style="color:#93a1a1;font-style:italic"># or j - 1, since it&#39;s a common substring</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">else</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#2aa198;font-weight:bold">0</span> <span style="color:#93a1a1;font-style:italic"># Mismatch, common suffix breaks</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># Reconstruct the LCSUB</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#268bd2">max_length</span> == <span style="color:#2aa198;font-weight:bold">0</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#2aa198">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">str1</span>[<span style="color:#268bd2">end_index</span> - <span style="color:#268bd2">max_length</span> + <span style="color:#2aa198;font-weight:bold">1</span> : <span style="color:#268bd2">end_index</span> + <span style="color:#2aa198;font-weight:bold">1</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># Example</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># str1 = &#34;ABABC&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># str2 = &#34;BABCA&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(longest_common_substring(str1, str2)) # BABC</span>
+</span></span></code></pre></div><h3 id="javascript">Javascript</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#859900">function</span> <span style="color:#268bd2">longestCommonSubstring</span>(<span style="color:#268bd2">str1</span>, <span style="color:#268bd2">str2</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">const</span> <span style="color:#268bd2">m</span> = <span style="color:#268bd2">str1</span>.<span style="color:#268bd2">length</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">const</span> <span style="color:#268bd2">n</span> = <span style="color:#268bd2">str2</span>.<span style="color:#268bd2">length</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// dp[i][j] stores the length of the longest common suffix of
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#93a1a1;font-style:italic">// str1[0..i-1] and str2[0..j-1]
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">const</span> <span style="color:#268bd2">dp</span> = <span style="color:#cb4b16">Array</span>(<span style="color:#268bd2">m</span> + <span style="color:#2aa198;font-weight:bold">1</span>).<span style="color:#268bd2">fill</span>(<span style="color:#2aa198;font-weight:bold">0</span>).<span style="color:#268bd2">map</span>(() =&gt; <span style="color:#cb4b16">Array</span>(<span style="color:#268bd2">n</span> + <span style="color:#2aa198;font-weight:bold">1</span>).<span style="color:#268bd2">fill</span>(<span style="color:#2aa198;font-weight:bold">0</span>));
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">let</span> <span style="color:#268bd2">maxLength</span> = <span style="color:#2aa198;font-weight:bold">0</span>;      <span style="color:#93a1a1;font-style:italic">// Stores the length of the longest common substring
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">let</span> <span style="color:#268bd2">endIndex</span> = <span style="color:#2aa198;font-weight:bold">0</span>;       <span style="color:#93a1a1;font-style:italic">// Stores the ending index of the LCSUB in str1
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Fill dp table
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#268bd2">i</span> &lt;= <span style="color:#268bd2">m</span>; <span style="color:#268bd2">i</span>++) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">j</span> = <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#268bd2">j</span> &lt;= <span style="color:#268bd2">n</span>; <span style="color:#268bd2">j</span>++) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">str1</span>[<span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>] === <span style="color:#268bd2">str2</span>[<span style="color:#268bd2">j</span> - <span style="color:#2aa198;font-weight:bold">1</span>]) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#2aa198;font-weight:bold">1</span> + <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">j</span> - <span style="color:#2aa198;font-weight:bold">1</span>];
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">if</span> (<span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] &gt; <span style="color:#268bd2">maxLength</span>) {
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">maxLength</span> = <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>];
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">endIndex</span> = <span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#93a1a1;font-style:italic">// or j - 1
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                }
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#93a1a1;font-style:italic">// Mismatch, common suffix breaks
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Reconstruct the LCSUB
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">maxLength</span> === <span style="color:#2aa198;font-weight:bold">0</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#2aa198">&#34;&#34;</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">str1</span>.<span style="color:#268bd2">substring</span>(<span style="color:#268bd2">endIndex</span> - <span style="color:#268bd2">maxLength</span> + <span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">endIndex</span> + <span style="color:#2aa198;font-weight:bold">1</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const str1 = &#34;ABABC&#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const str2 = &#34;BABCA&#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(longestCommonSubstring(str1, str2)); // BABC
+</span></span></span></code></pre></div><h3 id="typescript">Typescript</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-typescript" data-lang="typescript"><span style="display:flex;"><span><span style="color:#859900">function</span> <span style="color:#268bd2">longestCommonSubstringTS</span>(<span style="color:#268bd2">str1</span>: <span style="color:#859900;font-weight:bold">string</span>, <span style="color:#268bd2">str2</span>: <span style="color:#859900;font-weight:bold">string</span>): <span style="color:#859900;font-weight:bold">string</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">const</span> <span style="color:#268bd2">m</span> = <span style="color:#268bd2">str1</span>.<span style="color:#268bd2">length</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">const</span> <span style="color:#268bd2">n</span> = <span style="color:#268bd2">str2</span>.<span style="color:#268bd2">length</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// dp[i][j] stores the length of the longest common suffix of
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#93a1a1;font-style:italic">// str1[0..i-1] and str2[0..j-1]
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">const</span> <span style="color:#268bd2">dp</span>: <span style="color:#859900;font-weight:bold">number</span>[][] = <span style="color:#cb4b16">Array</span>(<span style="color:#268bd2">m</span> + <span style="color:#2aa198;font-weight:bold">1</span>).<span style="color:#268bd2">fill</span>(<span style="color:#2aa198;font-weight:bold">0</span>).<span style="color:#268bd2">map</span>(() =&gt; <span style="color:#cb4b16">Array</span>(<span style="color:#268bd2">n</span> + <span style="color:#2aa198;font-weight:bold">1</span>).<span style="color:#268bd2">fill</span>(<span style="color:#2aa198;font-weight:bold">0</span>));
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">let</span> <span style="color:#268bd2">maxLength</span> = <span style="color:#2aa198;font-weight:bold">0</span>;      <span style="color:#93a1a1;font-style:italic">// Stores the length of the longest common substring
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">let</span> <span style="color:#268bd2">endIndex</span> = <span style="color:#2aa198;font-weight:bold">0</span>;       <span style="color:#93a1a1;font-style:italic">// Stores the ending index of the LCSUB in str1
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Fill dp table
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#268bd2">i</span> &lt;= <span style="color:#268bd2">m</span>; <span style="color:#268bd2">i</span>++) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">j</span> = <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#268bd2">j</span> &lt;= <span style="color:#268bd2">n</span>; <span style="color:#268bd2">j</span>++) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">str1</span>[<span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>] === <span style="color:#268bd2">str2</span>[<span style="color:#268bd2">j</span> - <span style="color:#2aa198;font-weight:bold">1</span>]) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#2aa198;font-weight:bold">1</span> + <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">j</span> - <span style="color:#2aa198;font-weight:bold">1</span>];
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">if</span> (<span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] &gt; <span style="color:#268bd2">maxLength</span>) {
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">maxLength</span> = <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>];
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">endIndex</span> = <span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#93a1a1;font-style:italic">// or j - 1
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                }
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#93a1a1;font-style:italic">// Mismatch, common suffix breaks
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Reconstruct the LCSUB
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">maxLength</span> === <span style="color:#2aa198;font-weight:bold">0</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#2aa198">&#34;&#34;</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">str1</span>.<span style="color:#268bd2">substring</span>(<span style="color:#268bd2">endIndex</span> - <span style="color:#268bd2">maxLength</span> + <span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">endIndex</span> + <span style="color:#2aa198;font-weight:bold">1</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const str1TS = &#34;ABABC&#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const str2TS = &#34;BABCA&#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(longestCommonSubstringTS(str1TS, str2TS)); // BABC
+</span></span></span></code></pre></div><h3 id="cpp">Cpp</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;string&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;vector&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;iostream&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;algorithm&gt;</span><span style="color:#93a1a1;font-style:italic"> </span><span style="color:#93a1a1;font-style:italic">// For std::max
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">std</span>::<span style="color:#268bd2">string</span> <span style="color:#268bd2">longestCommonSubstring</span>(<span style="color:#859900">const</span> <span style="color:#268bd2">std</span>::<span style="color:#268bd2">string</span>&amp; <span style="color:#268bd2">str1</span>, <span style="color:#859900">const</span> <span style="color:#268bd2">std</span>::<span style="color:#268bd2">string</span>&amp; <span style="color:#268bd2">str2</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">m</span> = <span style="color:#268bd2">str1</span>.<span style="color:#268bd2">length</span>();
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">n</span> = <span style="color:#268bd2">str2</span>.<span style="color:#268bd2">length</span>();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// dp[i][j] stores the length of the longest common suffix of
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#93a1a1;font-style:italic">// str1[0..i-1] and str2[0..j-1]
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt;&gt; <span style="color:#268bd2">dp</span>(<span style="color:#268bd2">m</span> + <span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt;(<span style="color:#268bd2">n</span> + <span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#2aa198;font-weight:bold">0</span>));
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">max_length</span> = <span style="color:#2aa198;font-weight:bold">0</span>;      <span style="color:#93a1a1;font-style:italic">// Stores the length of the longest common substring
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">end_index</span> = <span style="color:#2aa198;font-weight:bold">0</span>;       <span style="color:#93a1a1;font-style:italic">// Stores the ending index of the LCSUB in str1
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Fill dp table
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#268bd2">i</span> &lt;= <span style="color:#268bd2">m</span>; <span style="color:#268bd2">i</span>++) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">j</span> = <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#268bd2">j</span> &lt;= <span style="color:#268bd2">n</span>; <span style="color:#268bd2">j</span>++) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">str1</span>[<span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>] == <span style="color:#268bd2">str2</span>[<span style="color:#268bd2">j</span> - <span style="color:#2aa198;font-weight:bold">1</span>]) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#2aa198;font-weight:bold">1</span> + <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">j</span> - <span style="color:#2aa198;font-weight:bold">1</span>];
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">if</span> (<span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] &gt; <span style="color:#268bd2">max_length</span>) {
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">max_length</span> = <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>];
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">end_index</span> = <span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#93a1a1;font-style:italic">// or j - 1
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                }
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#93a1a1;font-style:italic">// Mismatch, common suffix breaks
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Reconstruct the LCSUB
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">max_length</span> == <span style="color:#2aa198;font-weight:bold">0</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#2aa198">&#34;&#34;</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">str1</span>.<span style="color:#268bd2">substr</span>(<span style="color:#268bd2">end_index</span> - <span style="color:#268bd2">max_length</span> + <span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">max_length</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// int main() {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::string str1 = &#34;ABABC&#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::string str2 = &#34;BABCA&#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; &#34;Longest Common Substring: &#34; &lt;&lt; longestCommonSubstring(str1, str2) &lt;&lt; std::endl; // BABC
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     return 0;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span></code></pre></div><h3 id="go">Go</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">package</span> <span style="color:#268bd2">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#2aa198">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> <span style="color:#268bd2">longestCommonSubstring</span>(<span style="color:#268bd2">str1</span>, <span style="color:#268bd2">str2</span> <span style="color:#859900;font-weight:bold">string</span>) <span style="color:#859900;font-weight:bold">string</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">m</span> := <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">str1</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">n</span> := <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">str2</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// dp[i][j] stores the length of the longest common suffix of</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// str1[0..i-1] and str2[0..j-1]</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">dp</span> := <span style="color:#cb4b16">make</span>([][]<span style="color:#859900;font-weight:bold">int</span>, <span style="color:#268bd2">m</span>+<span style="color:#2aa198;font-weight:bold">1</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> := <span style="color:#859900">range</span> <span style="color:#268bd2">dp</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>] = <span style="color:#cb4b16">make</span>([]<span style="color:#859900;font-weight:bold">int</span>, <span style="color:#268bd2">n</span>+<span style="color:#2aa198;font-weight:bold">1</span>)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">maxLength</span> := <span style="color:#2aa198;font-weight:bold">0</span>      <span style="color:#93a1a1;font-style:italic">// Stores the length of the longest common substring</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">endIndex</span> := <span style="color:#2aa198;font-weight:bold">0</span>       <span style="color:#93a1a1;font-style:italic">// Stores the ending index of the LCSUB in str1</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Fill dp table</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> := <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#268bd2">i</span> &lt;= <span style="color:#268bd2">m</span>; <span style="color:#268bd2">i</span>++ {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> <span style="color:#268bd2">j</span> := <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#268bd2">j</span> &lt;= <span style="color:#268bd2">n</span>; <span style="color:#268bd2">j</span>++ {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> <span style="color:#268bd2">str1</span>[<span style="color:#268bd2">i</span>-<span style="color:#2aa198;font-weight:bold">1</span>] == <span style="color:#268bd2">str2</span>[<span style="color:#268bd2">j</span>-<span style="color:#2aa198;font-weight:bold">1</span>] {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#2aa198;font-weight:bold">1</span> + <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>-<span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">j</span>-<span style="color:#2aa198;font-weight:bold">1</span>]
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">if</span> <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] &gt; <span style="color:#268bd2">maxLength</span> {
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">maxLength</span> = <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>]
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">endIndex</span> = <span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span> <span style="color:#93a1a1;font-style:italic">// or j - 1</span>
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#2aa198;font-weight:bold">0</span> <span style="color:#93a1a1;font-style:italic">// Mismatch, common suffix breaks</span>
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Reconstruct the LCSUB</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#268bd2">maxLength</span> == <span style="color:#2aa198;font-weight:bold">0</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#2aa198">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">str1</span>[<span style="color:#268bd2">endIndex</span>-<span style="color:#268bd2">maxLength</span>+<span style="color:#2aa198;font-weight:bold">1</span> : <span style="color:#268bd2">endIndex</span>+<span style="color:#2aa198;font-weight:bold">1</span>]
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// func main() {</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     str1 := &#34;ABABC&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     str2 := &#34;BABCA&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     fmt.Println(&#34;Longest Common Substring:&#34;, longestCommonSubstring(str1, str2)) // BABC</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }</span>
+</span></span></code></pre></div><h3 id="d">D</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-d" data-lang="d"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.stdio</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.array</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.algorithm</span>; <span style="color:#93a1a1;font-style:italic">// For std.algorithm.max
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#cb4b16">string</span> <span style="color:#268bd2">longestCommonSubstring</span>(<span style="color:#cb4b16">string</span> <span style="color:#268bd2">str1</span>, <span style="color:#cb4b16">string</span> <span style="color:#268bd2">str2</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">auto</span> <span style="color:#268bd2">m</span> = <span style="color:#268bd2">str1</span>.<span style="color:#268bd2">length</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">auto</span> <span style="color:#268bd2">n</span> = <span style="color:#268bd2">str2</span>.<span style="color:#268bd2">length</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// dp[i][j] stores the length of the longest common suffix of
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#93a1a1;font-style:italic">// str1[0..i-1] and str2[0..j-1]
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">auto</span> <span style="color:#268bd2">dp</span> = <span style="color:#859900">new</span> <span style="color:#859900;font-weight:bold">int</span>[<span style="color:#268bd2">m</span> + <span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">n</span> + <span style="color:#2aa198;font-weight:bold">1</span>];
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">maxLength</span> = <span style="color:#2aa198;font-weight:bold">0</span>;      <span style="color:#93a1a1;font-style:italic">// Stores the length of the longest common substring
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">endIndex</span> = <span style="color:#2aa198;font-weight:bold">0</span>;       <span style="color:#93a1a1;font-style:italic">// Stores the ending index of the LCSUB in str1
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Fill dp table
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">foreach</span> (<span style="color:#268bd2">i</span>; <span style="color:#2aa198;font-weight:bold">1</span> .. <span style="color:#268bd2">m</span> + <span style="color:#2aa198;font-weight:bold">1</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">foreach</span> (<span style="color:#268bd2">j</span>; <span style="color:#2aa198;font-weight:bold">1</span> .. <span style="color:#268bd2">n</span> + <span style="color:#2aa198;font-weight:bold">1</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">str1</span>[<span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>] == <span style="color:#268bd2">str2</span>[<span style="color:#268bd2">j</span> - <span style="color:#2aa198;font-weight:bold">1</span>]) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#2aa198;font-weight:bold">1</span> + <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">j</span> - <span style="color:#2aa198;font-weight:bold">1</span>];
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">if</span> (<span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] &gt; <span style="color:#268bd2">maxLength</span>) {
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">maxLength</span> = <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>];
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">endIndex</span> = <span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#93a1a1;font-style:italic">// or j - 1
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                }
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#93a1a1;font-style:italic">// Mismatch, common suffix breaks
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Reconstruct the LCSUB
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">maxLength</span> == <span style="color:#2aa198;font-weight:bold">0</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#2aa198">&#34;&#34;</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">str1</span>[<span style="color:#268bd2">endIndex</span> - <span style="color:#268bd2">maxLength</span> + <span style="color:#2aa198;font-weight:bold">1</span> .. <span style="color:#268bd2">endIndex</span> + <span style="color:#2aa198;font-weight:bold">1</span>];
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// void main() {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     string str1 = &#34;ABABC&#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     string str2 = &#34;BABCA&#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     writeln(&#34;Longest Common Substring: &#34;, longestCommonSubstring(str1, str2)); // BABC
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span></code></pre></div><h2 id="code-walkthrough">Code Walkthrough</h2>
+<h3 id="code-walkthrough-1">Code Walkthrough</h3>
+<p>The <code>Longest Common Substring (LCSUB)</code> problem is solved using <code>dynamic programming</code> with a 2D table that tracks the length of common suffixes.</p>
+<hr>
+<p><strong>Initialization:</strong></p>
+<pre><code>- `m`, `n`: Lengths of `str1` and `str2`.
+
+- A 2D `dp` table (`m+1` rows, `n+1` columns) is created and initialized with zeros. `dp[i][j]` will store the length of the `longest common suffix` of `str1[0...i-1]` and `str2[0...j-1]`.
+
+- `maxLength`: Tracks the maximum length found in the `dp` table, which will be the length of the `LCSUB`.
+
+- `endIndex`: Tracks the ending `index` of the `LCSUB` in `str1` (or `str2`).
+</code></pre>
+<p><strong>Filling the DP Table:</strong></p>
+<pre><code>- The `dp` table is filled iteratively for `i` from 1 to `m` and `j` from 1 to `n`.
+
+- For each cell `dp[i][j]`:
+
+        - If `str1[i-1]` (the `i`-th character of `str1`) matches `str2[j-1]` (the `j`-th character of `str2`):
+
+                - The `longest common suffix` is extended by 1. So, `dp[i][j] = 1 + dp[i-1][j-1]`.
+
+                - If this `new length` `dp[i][j]` is greater than `maxLength`, update `maxLength` and `endIndex`.
+
+        &lt;/li&gt;
+        - If the characters do not match:
+
+                - The common suffix is broken. So, `dp[i][j]` is reset to 0.
+
+        &lt;/li&gt;
+
+&lt;/li&gt;
+</code></pre>
+<p><strong>Result:</strong></p>
+<pre><code>- After filling the entire `dp` table, `maxLength` will hold the length of the `Longest Common Substring`.
+
+- The `LCSUB` can be extracted from `str1` (or `str2`) using `endIndex` and `maxLength`. For example, `str1[endIndex - maxLength + 1 : endIndex + 1]`.
+</code></pre>
+<h2 id="applications">Applications</h2>
+<h3 id="application">Application</h3>
+<p>The <code>Longest Common Substring</code> problem has several practical applications, particularly in areas involving sequence comparison and pattern recognition:</p>
+<pre><code>    - **Plagiarism Detection:** Identifying verbatim copied segments of text between documents.
+
+    - **Bioinformatics:** Finding conserved regions or similar segments in DNA, RNA, or protein sequences.
+
+    - **File Comparison Utilities (`diff` tools):** While `diff` tools often use `LCS` (subsequence), `LCSUB` can be useful for finding contiguous blocks of identical text.
+
+    - **Version Control Systems:** Identifying common code blocks between different versions of a file.
+
+    - **Text Analysis:** Extracting repeated phrases or patterns in natural language texts.
+
+    - **Image Processing:** Pattern matching in images where contiguous blocks of pixels need to be similar.
+</code></pre>
+
+    </div>
+</article>
+
+<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
+    
+    <a href="//localhost:1313/hugo_content/algorithms/dynamic_programming/lps/" class="nav-btn">← Previous</a>
+    
+    
+    <a href="//localhost:1313/hugo_content/algorithms/dynamic_programming/" class="nav-btn">Up</a>
+
+    
+    <a href="//localhost:1313/hugo_content/algorithms/dynamic_programming/lcs/" class="nav-btn">Next →</a>
+    
+</div>
+
+    </main>
+
+    <footer class="footer">
+        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
+    </footer>
+
+    <script>
+        const body = document.getElementById('theme-body');
+        const btn = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme');
+
+        
+        function updateButtonText() {
+            if (body.classList.contains('theme-terminal')) {
+                btn.textContent = "Light Mode";
+            } else {
+                btn.textContent = "Dark Mode";
+            }
+        }
+
+        if (currentTheme === 'terminal') {
+            body.classList.add('theme-terminal');
+        }
+        
+        
+        updateButtonText();
+
+        btn.addEventListener('click', () => {
+            body.classList.toggle('theme-terminal');
+            updateButtonText();
+            
+            let theme = 'natural';
+            if (body.classList.contains('theme-terminal')) {
+                theme = 'terminal';
+            }
+            localStorage.setItem('theme', theme);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Segment Tree | SDET Interview Preparation Kit</title>
+    <link rel="stylesheet" href="//localhost:1313/css/style.css">
+    <link rel="stylesheet" href="//localhost:1313/css/terminal.css">
+    
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    
+    <link rel="stylesheet" href="//localhost:1313/lib/katex/katex.min.css">
+    <script defer src="//localhost:1313/lib/katex/katex.min.js"></script>
+    <script defer src="//localhost:1313/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</head>
+<body id="theme-body">
+    <button id="theme-toggle">Switch Theme</button>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="//localhost:1313/">Index</a></li>
+                
+            </ul>
+        </nav>
+        <div class="site-breadcrumb">
+            <a href="//localhost:1313/">Home</a>
+            
+                
+                    <span>/</span> <a href="//localhost:1313/">SDET Interview Dashboard</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/dsa-42_/">42 Algorithms &amp; 42 Data Structures</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/dsa-42_/data_structures/">Data Structures</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/dsa-42_/data_structures/specialized/">Specialized</a>
+                
+            
+            
+                <span>/</span> Segment Tree
+            
+        </div>
+    </header>
+
+    <main>
+        
+<article>
+    <div class="category-title" style="margin-bottom: 0.5rem;">Specialized</div>
+    <h1>Segment Tree</h1>
+    <div class="content-body" style="margin-top: 2rem;">
+        <p>A <code>Segment Tree</code> is a tree data structure used for storing information about intervals or segments. It allows for efficient querying of ranges (e.g., sum, minimum, maximum) and updating elements in an <code>array</code>. It&rsquo;s particularly useful when these operations need to be performed many times on the same <code>array</code>.</p>
+<p>Similar to a <code>Fenwick Tree</code>, it can handle both <code>range queries</code> and <code>point updates</code> (or even <code>range updates</code> with extensions) in <code>O(log N)</code> time, but often with more flexibility for different types of queries.</p>
+<h2 id="how-it-works">How it Works</h2>
+<h3 id="how-it-works-expanded">How it Works (Expanded)</h3>
+<p>A <code>Segment Tree</code> is typically a <code>binary tree</code> used to represent an <code>array</code>. Each <code>node</code> in the <code>Segment Tree</code> represents an <code>interval</code> (or segment) of the <code>array</code>. The <code>root node</code> represents the entire <code>array</code> <code>interval</code>. Each internal <code>node</code>&rsquo;s <code>interval</code> is the union of its children&rsquo;s <code>intervals</code>.</p>
+<hr>
+<p>Example: Build a Segment Tree for Array A = [1, 3, 5, 7, 9, 11] for range sum.</p>
+<p>Original Array (leaves of the tree):
+[1] [3] [5] [7] [9] [11]</p>
+<p>Level 1 (sums of two elements):
+[1,3]=4  [5,7]=12  [9,11]=20</p>
+<p>Level 2 (sums of four elements):
+[1,7]=16  [9,11]=20</p>
+<p>Level 3 (root, sum of all elements):
+[1,11]=36</p>
+<p>Tree Structure (conceptual):</p>
+<pre><code>               [1,11] (36)
+              /      \
+         [1,7](16)    [9,11](20)
+        /     \      /      \
+  [1,3](4)  [5,7](12) [9](9)  [11](11)
+  /   \   /    \
+[1](1)[3](3) [5](5) [7](7)
+</code></pre>
+<h2 id="implementation">Implementation</h2>
+<h3 id="python">Python</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#cb4b16">SegmentTree</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">__init__</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">arr</span>, <span style="color:#268bd2">func</span>=<span style="color:#cb4b16">sum</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">n</span> = <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">arr</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">tree</span> = [<span style="color:#2aa198;font-weight:bold">0</span>] &lt;<span style="color:#268bd2">em</span>&gt; (<span style="color:#2aa198;font-weight:bold">4</span> &lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">n</span>) <span style="color:#93a1a1;font-style:italic"># Tree size is approx 2&lt;em&gt;2&lt;/em&gt;n, or 4n for safety</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">arr</span> = <span style="color:#268bd2">arr</span> <span style="color:#93a1a1;font-style:italic"># Keep original array for initial build reference</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">func</span> = <span style="color:#268bd2">func</span> <span style="color:#93a1a1;font-style:italic"># Operation to perform (e.g., sum, min, max)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">_build</span>(<span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">n</span> - <span style="color:#2aa198;font-weight:bold">1</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">_build</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">tree_idx</span>, <span style="color:#268bd2">low</span>, <span style="color:#268bd2">high</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">low</span> == <span style="color:#268bd2">high</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">tree</span>[<span style="color:#268bd2">tree_idx</span>] = <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">arr</span>[<span style="color:#268bd2">low</span>]
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span>
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">mid</span> = (<span style="color:#268bd2">low</span> + <span style="color:#268bd2">high</span>) // <span style="color:#2aa198;font-weight:bold">2</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">_build</span>(<span style="color:#2aa198;font-weight:bold">2</span> &lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">tree_idx</span> + <span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">low</span>, <span style="color:#268bd2">mid</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">_build</span>(<span style="color:#2aa198;font-weight:bold">2</span> &lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">tree_idx</span> + <span style="color:#2aa198;font-weight:bold">2</span>, <span style="color:#268bd2">mid</span> + <span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">high</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">tree</span>[<span style="color:#268bd2">tree_idx</span>] = <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">func</span>([<span style="color:#cb4b16">self</span>.<span style="color:#268bd2">tree</span>[<span style="color:#2aa198;font-weight:bold">2</span> &lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">tree_idx</span> + <span style="color:#2aa198;font-weight:bold">1</span>], <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">tree</span>[<span style="color:#2aa198;font-weight:bold">2</span> &lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">tree_idx</span> + <span style="color:#2aa198;font-weight:bold">2</span>]])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">update</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">idx</span>, <span style="color:#268bd2">val</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">arr</span>[<span style="color:#268bd2">idx</span>] = <span style="color:#268bd2">val</span> <span style="color:#93a1a1;font-style:italic"># Update original array (optional, but good for consistency)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">_update_tree</span>(<span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">n</span> - <span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">idx</span>, <span style="color:#268bd2">val</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">_update_tree</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">tree_idx</span>, <span style="color:#268bd2">low</span>, <span style="color:#268bd2">high</span>, <span style="color:#268bd2">arr_idx</span>, <span style="color:#268bd2">val</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">low</span> == <span style="color:#268bd2">high</span>: <span style="color:#93a1a1;font-style:italic"># Leaf node</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">tree</span>[<span style="color:#268bd2">tree_idx</span>] = <span style="color:#268bd2">val</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span>
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">mid</span> = (<span style="color:#268bd2">low</span> + <span style="color:#268bd2">high</span>) // <span style="color:#2aa198;font-weight:bold">2</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">low</span> &lt;= <span style="color:#268bd2">arr_idx</span> &lt;= <span style="color:#268bd2">mid</span>: <span style="color:#93a1a1;font-style:italic"># Element is in left child&#39;s range</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">_update_tree</span>(<span style="color:#2aa198;font-weight:bold">2</span> &lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">tree_idx</span> + <span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">low</span>, <span style="color:#268bd2">mid</span>, <span style="color:#268bd2">arr_idx</span>, <span style="color:#268bd2">val</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">else</span>: <span style="color:#93a1a1;font-style:italic"># Element is in right child&#39;s range</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">_update_tree</span>(<span style="color:#2aa198;font-weight:bold">2</span> &lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">tree_idx</span> + <span style="color:#2aa198;font-weight:bold">2</span>, <span style="color:#268bd2">mid</span> + <span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">high</span>, <span style="color:#268bd2">arr_idx</span>, <span style="color:#268bd2">val</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">tree</span>[<span style="color:#268bd2">tree_idx</span>] = <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">func</span>([<span style="color:#cb4b16">self</span>.<span style="color:#268bd2">tree</span>[<span style="color:#2aa198;font-weight:bold">2</span> &lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">tree_idx</span> + <span style="color:#2aa198;font-weight:bold">1</span>], <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">tree</span>[<span style="color:#2aa198;font-weight:bold">2</span> &lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">tree_idx</span> + <span style="color:#2aa198;font-weight:bold">2</span>]])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">query</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">q_low</span>, <span style="color:#268bd2">q_high</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">_query_tree</span>(<span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">n</span> - <span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">q_low</span>, <span style="color:#268bd2">q_high</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">_query_tree</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">tree_idx</span>, <span style="color:#268bd2">low</span>, <span style="color:#268bd2">high</span>, <span style="color:#268bd2">q_low</span>, <span style="color:#268bd2">q_high</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># Case 1: Current segment is completely outside query range</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">q_low</span> &gt; <span style="color:#268bd2">high</span> <span style="color:#859900">or</span> <span style="color:#268bd2">q_high</span> &lt; <span style="color:#268bd2">low</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">func</span> == <span style="color:#cb4b16">sum</span>: <span style="color:#859900">return</span> <span style="color:#2aa198;font-weight:bold">0</span> <span style="color:#93a1a1;font-style:italic"># For sum, identity is 0</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">func</span> == <span style="color:#cb4b16">min</span>: <span style="color:#859900">return</span> <span style="color:#cb4b16">float</span>(<span style="color:#2aa198">&#39;inf&#39;</span>) <span style="color:#93a1a1;font-style:italic"># For min, identity is inf</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">func</span> == <span style="color:#cb4b16">max</span>: <span style="color:#859900">return</span> <span style="color:#cb4b16">float</span>(<span style="color:#2aa198">&#39;-inf&#39;</span>) <span style="color:#93a1a1;font-style:italic"># For max, identity is -inf</span>
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># Case 2: Current segment is completely inside query range</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">q_low</span> &lt;= <span style="color:#268bd2">low</span> <span style="color:#859900">and</span> <span style="color:#268bd2">high</span> &lt;= <span style="color:#268bd2">q_high</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">tree</span>[<span style="color:#268bd2">tree_idx</span>]
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># Case 3: Current segment partially overlaps query range</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">mid</span> = (<span style="color:#268bd2">low</span> + <span style="color:#268bd2">high</span>) // <span style="color:#2aa198;font-weight:bold">2</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">left_val</span> = <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">_query_tree</span>(<span style="color:#2aa198;font-weight:bold">2</span> &lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">tree_idx</span> + <span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">low</span>, <span style="color:#268bd2">mid</span>, <span style="color:#268bd2">q_low</span>, <span style="color:#268bd2">q_high</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">right_val</span> = <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">_query_tree</span>(<span style="color:#2aa198;font-weight:bold">2</span> &lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">tree_idx</span> + <span style="color:#2aa198;font-weight:bold">2</span>, <span style="color:#268bd2">mid</span> + <span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">high</span>, <span style="color:#268bd2">q_low</span>, <span style="color:#268bd2">q_high</span>)
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">func</span>([<span style="color:#268bd2">left_val</span>, <span style="color:#268bd2">right_val</span>])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># Example Usage (Sum Segment Tree)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># arr = [1, 3, 5, 7, 9, 11]</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># st = SegmentTree(arr, func=sum) # For sum queries</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(&#34;Sum of [0, 5]:&#34;, st.query(0, 5)) # Expected: 36</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(&#34;Sum of [1, 3]:&#34;, st.query(1, 3)) # Expected: 3 + 5 + 7 = 15</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># st.update(2, 10) # Change arr[2] from 5 to 10. arr is now [1, 3, 10, 7, 9, 11]</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(&#34;Sum of [0, 5] after update:&#34;, st.query(0, 5)) # Expected: 41</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(&#34;Sum of [1, 3] after update:&#34;, st.query(1, 3)) # Expected: 3 + 10 + 7 = 20</span>
+</span></span></code></pre></div><h3 id="javascript">Javascript</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#268bd2">SegmentTree</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">constructor</span>(<span style="color:#268bd2">arr</span>, <span style="color:#268bd2">func</span> = (<span style="color:#268bd2">a</span>, <span style="color:#268bd2">b</span>) =&gt; <span style="color:#268bd2">a</span> + <span style="color:#268bd2">b</span>) { <span style="color:#93a1a1;font-style:italic">// Default to sum
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">n</span> = <span style="color:#268bd2">arr</span>.<span style="color:#268bd2">length</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">tree</span> = <span style="color:#859900">new</span> <span style="color:#cb4b16">Array</span>(<span style="color:#2aa198;font-weight:bold">4</span> &lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#859900">this</span>.<span style="color:#268bd2">n</span>).<span style="color:#268bd2">fill</span>(<span style="color:#2aa198;font-weight:bold">0</span>); <span style="color:#93a1a1;font-style:italic">// Tree size approx 4n for safety
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">arr</span> = <span style="color:#268bd2">arr</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">func</span> = <span style="color:#268bd2">func</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">_build</span>(<span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#859900">this</span>.<span style="color:#268bd2">n</span> - <span style="color:#2aa198;font-weight:bold">1</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">_build</span>(<span style="color:#268bd2">treeIdx</span>, <span style="color:#268bd2">low</span>, <span style="color:#268bd2">high</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">low</span> === <span style="color:#268bd2">high</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">this</span>.<span style="color:#268bd2">tree</span>[<span style="color:#268bd2">treeIdx</span>] = <span style="color:#859900">this</span>.<span style="color:#268bd2">arr</span>[<span style="color:#268bd2">low</span>];
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">const</span> <span style="color:#268bd2">mid</span> = <span style="color:#cb4b16">Math</span>.<span style="color:#268bd2">floor</span>((<span style="color:#268bd2">low</span> + <span style="color:#268bd2">high</span>) / <span style="color:#2aa198;font-weight:bold">2</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">_build</span>(<span style="color:#2aa198;font-weight:bold">2</span> &lt;/em&gt; treeIdx + 1, low, mid);
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">_build</span>(<span style="color:#2aa198;font-weight:bold">2</span> &lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">treeIdx</span> + <span style="color:#2aa198;font-weight:bold">2</span>, <span style="color:#268bd2">mid</span> + <span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">high</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">tree</span>[<span style="color:#268bd2">treeIdx</span>] = <span style="color:#859900">this</span>.<span style="color:#268bd2">func</span>(<span style="color:#859900">this</span>.<span style="color:#268bd2">tree</span>[<span style="color:#2aa198;font-weight:bold">2</span> &lt;/em&gt; treeIdx + 1], this.tree[2 &lt;em&gt; treeIdx + 2]);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">update</span>(<span style="color:#268bd2">idx</span>, <span style="color:#268bd2">val</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">arr</span>[<span style="color:#268bd2">idx</span>] = <span style="color:#268bd2">val</span>; <span style="color:#93a1a1;font-style:italic">// Update original array
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">_updateTree</span>(<span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#859900">this</span>.<span style="color:#268bd2">n</span> - <span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">idx</span>, <span style="color:#268bd2">val</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">_updateTree</span>(<span style="color:#268bd2">treeIdx</span>, <span style="color:#268bd2">low</span>, <span style="color:#268bd2">high</span>, <span style="color:#268bd2">arrIdx</span>, <span style="color:#268bd2">val</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">low</span> === <span style="color:#268bd2">high</span>) { <span style="color:#93a1a1;font-style:italic">// Leaf node
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">this</span>.<span style="color:#268bd2">tree</span>[<span style="color:#268bd2">treeIdx</span>] = <span style="color:#268bd2">val</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">const</span> <span style="color:#268bd2">mid</span> = <span style="color:#cb4b16">Math</span>.<span style="color:#268bd2">floor</span>((<span style="color:#268bd2">low</span> + <span style="color:#268bd2">high</span>) / <span style="color:#2aa198;font-weight:bold">2</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">low</span> &lt;= <span style="color:#268bd2">arrIdx</span> &amp;&amp; <span style="color:#268bd2">arrIdx</span> &lt;= <span style="color:#268bd2">mid</span>) { <span style="color:#93a1a1;font-style:italic">// Element is in left child&#39;s range
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">this</span>.<span style="color:#268bd2">_updateTree</span>(<span style="color:#2aa198;font-weight:bold">2</span> &lt;/em&gt; treeIdx + 1, low, mid, arrIdx, val);
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> { <span style="color:#93a1a1;font-style:italic">// Element is in right child&#39;s range
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">this</span>.<span style="color:#268bd2">_updateTree</span>(<span style="color:#2aa198;font-weight:bold">2</span> &lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">treeIdx</span> + <span style="color:#2aa198;font-weight:bold">2</span>, <span style="color:#268bd2">mid</span> + <span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">high</span>, <span style="color:#268bd2">arrIdx</span>, <span style="color:#268bd2">val</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">tree</span>[<span style="color:#268bd2">treeIdx</span>] = <span style="color:#859900">this</span>.<span style="color:#268bd2">func</span>(<span style="color:#859900">this</span>.<span style="color:#268bd2">tree</span>[<span style="color:#2aa198;font-weight:bold">2</span> &lt;/em&gt; treeIdx + 1], this.tree[2 &lt;em&gt; treeIdx + 2]);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">query</span>(<span style="color:#268bd2">qLow</span>, <span style="color:#268bd2">qHigh</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#859900">this</span>.<span style="color:#268bd2">_queryTree</span>(<span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#859900">this</span>.<span style="color:#268bd2">n</span> - <span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">qLow</span>, <span style="color:#268bd2">qHigh</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">_queryTree</span>(<span style="color:#268bd2">treeIdx</span>, <span style="color:#268bd2">low</span>, <span style="color:#268bd2">high</span>, <span style="color:#268bd2">qLow</span>, <span style="color:#268bd2">qHigh</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Case 1: Current segment is completely outside query range
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">qLow</span> &gt; <span style="color:#268bd2">high</span> || <span style="color:#268bd2">qHigh</span> &lt; <span style="color:#268bd2">low</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#859900">this</span>.<span style="color:#268bd2">func</span> === ((<span style="color:#268bd2">a</span>, <span style="color:#268bd2">b</span>) =&gt; <span style="color:#268bd2">a</span> + <span style="color:#268bd2">b</span>)) <span style="color:#859900">return</span> <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#93a1a1;font-style:italic">// Identity for sum
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">if</span> (<span style="color:#859900">this</span>.<span style="color:#268bd2">func</span> === <span style="color:#cb4b16">Math</span>.<span style="color:#268bd2">min</span>) <span style="color:#859900">return</span> <span style="color:#859900;font-weight:bold">Infinity</span>; <span style="color:#93a1a1;font-style:italic">// Identity for min
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">if</span> (<span style="color:#859900">this</span>.<span style="color:#268bd2">func</span> === <span style="color:#cb4b16">Math</span>.<span style="color:#268bd2">max</span>) <span style="color:#859900">return</span> -<span style="color:#859900;font-weight:bold">Infinity</span>; <span style="color:#93a1a1;font-style:italic">// Identity for max
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Case 2: Current segment is completely inside query range
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">qLow</span> &lt;= <span style="color:#268bd2">low</span> &amp;&amp; <span style="color:#268bd2">high</span> &lt;= <span style="color:#268bd2">qHigh</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#859900">this</span>.<span style="color:#268bd2">tree</span>[<span style="color:#268bd2">treeIdx</span>];
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Case 3: Current segment partially overlaps query range
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">const</span> <span style="color:#268bd2">mid</span> = <span style="color:#cb4b16">Math</span>.<span style="color:#268bd2">floor</span>((<span style="color:#268bd2">low</span> + <span style="color:#268bd2">high</span>) / <span style="color:#2aa198;font-weight:bold">2</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">const</span> <span style="color:#268bd2">leftVal</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">_queryTree</span>(<span style="color:#2aa198;font-weight:bold">2</span> &lt;/em&gt; treeIdx + 1, low, mid, qLow, qHigh);
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">const</span> <span style="color:#268bd2">rightVal</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">_queryTree</span>(<span style="color:#2aa198;font-weight:bold">2</span> &lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">treeIdx</span> + <span style="color:#2aa198;font-weight:bold">2</span>, <span style="color:#268bd2">mid</span> + <span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">high</span>, <span style="color:#268bd2">qLow</span>, <span style="color:#268bd2">qHigh</span>);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#859900">this</span>.<span style="color:#268bd2">func</span>(<span style="color:#268bd2">leftVal</span>, <span style="color:#268bd2">rightVal</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Example Usage (Sum Segment Tree)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const arr = [1, 3, 5, 7, 9, 11];
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const st = new SegmentTree(arr); // For sum queries
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Sum of [0, 5]:&#34;, st.query(0, 5)); // Expected: 36
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Sum of [1, 3]:&#34;, st.query(1, 3)); // Expected: 3 + 5 + 7 = 15
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// st.update(2, 10); // Change arr[2] from 5 to 10. arr is now [1, 3, 10, 7, 9, 11]
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Sum of [0, 5] after update:&#34;, st.query(0, 5)); // Expected: 41
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Sum of [1, 3] after update:&#34;, st.query(1, 3)); // Expected: 3 + 10 + 7 = 20
+</span></span></span></code></pre></div><h3 id="typescript">Typescript</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-typescript" data-lang="typescript"><span style="display:flex;"><span><span style="color:#859900">type</span> <span style="color:#268bd2">AggregationFunction</span> = (<span style="color:#268bd2">a</span>: <span style="color:#859900;font-weight:bold">number</span>, <span style="color:#268bd2">b</span>: <span style="color:#859900;font-weight:bold">number</span>) =&gt; <span style="color:#859900;font-weight:bold">number</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#268bd2">SegmentTreeTS</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">private</span> <span style="color:#268bd2">n</span>: <span style="color:#859900;font-weight:bold">number</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">private</span> <span style="color:#268bd2">tree</span>: <span style="color:#859900;font-weight:bold">number</span>[];
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">private</span> <span style="color:#268bd2">arr</span>: <span style="color:#859900;font-weight:bold">number</span>[];
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">private</span> <span style="color:#268bd2">func</span>: <span style="color:#859900;font-weight:bold">AggregationFunction</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">constructor</span>(<span style="color:#268bd2">arr</span>: <span style="color:#859900;font-weight:bold">number</span>[], <span style="color:#268bd2">func</span>: <span style="color:#859900;font-weight:bold">AggregationFunction</span> = (<span style="color:#268bd2">a</span>, <span style="color:#268bd2">b</span>) =&gt; <span style="color:#268bd2">a</span> + <span style="color:#268bd2">b</span>) { <span style="color:#93a1a1;font-style:italic">// Default to sum
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">n</span> = <span style="color:#268bd2">arr</span>.<span style="color:#268bd2">length</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">tree</span> = <span style="color:#859900">new</span> <span style="color:#cb4b16">Array</span>(<span style="color:#2aa198;font-weight:bold">4</span> &lt;/<span style="color:#268bd2;font-weight:bold">em</span>&gt; <span style="color:#859900">this</span>.<span style="color:#268bd2">n</span>).<span style="color:#268bd2">fill</span>(<span style="color:#2aa198;font-weight:bold">0</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">arr</span> = <span style="color:#268bd2">arr</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">func</span> = <span style="color:#268bd2">func</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">_build</span>(<span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#859900">this</span>.<span style="color:#268bd2">n</span> - <span style="color:#2aa198;font-weight:bold">1</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">private</span> <span style="color:#268bd2">_build</span>(<span style="color:#268bd2">treeIdx</span>: <span style="color:#859900;font-weight:bold">number</span>, <span style="color:#268bd2">low</span>: <span style="color:#859900;font-weight:bold">number</span>, <span style="color:#268bd2">high</span>: <span style="color:#859900;font-weight:bold">number</span>): <span style="color:#859900">void</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">low</span> === <span style="color:#268bd2">high</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">this</span>.<span style="color:#268bd2">tree</span>[<span style="color:#268bd2">treeIdx</span>] = <span style="color:#859900">this</span>.<span style="color:#268bd2">arr</span>[<span style="color:#268bd2">low</span>];
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">const</span> <span style="color:#268bd2">mid</span> = <span style="color:#cb4b16">Math</span>.<span style="color:#268bd2">floor</span>((<span style="color:#268bd2">low</span> + <span style="color:#268bd2">high</span>) / <span style="color:#2aa198;font-weight:bold">2</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">_build</span>(<span style="color:#2aa198;font-weight:bold">2</span> &lt;<span style="color:#268bd2;font-weight:bold">em</span>&gt; <span style="color:#268bd2">treeIdx</span> + <span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">low</span>, <span style="color:#268bd2">mid</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">_build</span>(<span style="color:#2aa198;font-weight:bold">2</span> &lt;/<span style="color:#268bd2;font-weight:bold">em</span>&gt; <span style="color:#268bd2">treeIdx</span> + <span style="color:#2aa198;font-weight:bold">2</span>, <span style="color:#268bd2">mid</span> + <span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">high</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">tree</span>[<span style="color:#268bd2">treeIdx</span>] = <span style="color:#859900">this</span>.<span style="color:#268bd2">func</span>(<span style="color:#859900">this</span>.<span style="color:#268bd2">tree</span>[<span style="color:#2aa198;font-weight:bold">2</span> &lt;<span style="color:#268bd2;font-weight:bold">em</span>&gt; <span style="color:#268bd2">treeIdx</span> + <span style="color:#2aa198;font-weight:bold">1</span>], <span style="color:#859900">this</span>.<span style="color:#268bd2">tree</span>[<span style="color:#2aa198;font-weight:bold">2</span> &lt;/<span style="color:#268bd2;font-weight:bold">em</span>&gt; <span style="color:#268bd2">treeIdx</span> + <span style="color:#2aa198;font-weight:bold">2</span>]);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">update</span>(<span style="color:#268bd2">idx</span>: <span style="color:#859900;font-weight:bold">number</span>, <span style="color:#268bd2">val</span>: <span style="color:#859900;font-weight:bold">number</span>): <span style="color:#859900">void</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">arr</span>[<span style="color:#268bd2">idx</span>] = <span style="color:#268bd2">val</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">_updateTree</span>(<span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#859900">this</span>.<span style="color:#268bd2">n</span> - <span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">idx</span>, <span style="color:#268bd2">val</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">private</span> <span style="color:#268bd2">_updateTree</span>(<span style="color:#268bd2">treeIdx</span>: <span style="color:#859900;font-weight:bold">number</span>, <span style="color:#268bd2">low</span>: <span style="color:#859900;font-weight:bold">number</span>, <span style="color:#268bd2">high</span>: <span style="color:#859900;font-weight:bold">number</span>, <span style="color:#268bd2">arrIdx</span>: <span style="color:#859900;font-weight:bold">number</span>, <span style="color:#268bd2">val</span>: <span style="color:#859900;font-weight:bold">number</span>): <span style="color:#859900">void</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">low</span> === <span style="color:#268bd2">high</span>) { <span style="color:#93a1a1;font-style:italic">// Leaf node
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">this</span>.<span style="color:#268bd2">tree</span>[<span style="color:#268bd2">treeIdx</span>] = <span style="color:#268bd2">val</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">const</span> <span style="color:#268bd2">mid</span> = <span style="color:#cb4b16">Math</span>.<span style="color:#268bd2">floor</span>((<span style="color:#268bd2">low</span> + <span style="color:#268bd2">high</span>) / <span style="color:#2aa198;font-weight:bold">2</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">low</span> &lt;= <span style="color:#268bd2">arrIdx</span> &amp;&amp; <span style="color:#268bd2">arrIdx</span> &lt;= <span style="color:#268bd2">mid</span>) { <span style="color:#93a1a1;font-style:italic">// Element is in left child&#39;s range
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">this</span>.<span style="color:#268bd2">_updateTree</span>(<span style="color:#2aa198;font-weight:bold">2</span> &lt;<span style="color:#268bd2;font-weight:bold">em</span>&gt; <span style="color:#268bd2">treeIdx</span> + <span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">low</span>, <span style="color:#268bd2">mid</span>, <span style="color:#268bd2">arrIdx</span>, <span style="color:#268bd2">val</span>);
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> { <span style="color:#93a1a1;font-style:italic">// Element is in right child&#39;s range
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">this</span>.<span style="color:#268bd2">_updateTree</span>(<span style="color:#2aa198;font-weight:bold">2</span> &lt;/<span style="color:#268bd2;font-weight:bold">em</span>&gt; <span style="color:#268bd2">treeIdx</span> + <span style="color:#2aa198;font-weight:bold">2</span>, <span style="color:#268bd2">mid</span> + <span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">high</span>, <span style="color:#268bd2">arrIdx</span>, <span style="color:#268bd2">val</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">tree</span>[<span style="color:#268bd2">treeIdx</span>] = <span style="color:#859900">this</span>.<span style="color:#268bd2">func</span>(<span style="color:#859900">this</span>.<span style="color:#268bd2">tree</span>[<span style="color:#2aa198;font-weight:bold">2</span> &lt;<span style="color:#268bd2;font-weight:bold">em</span>&gt; <span style="color:#268bd2">treeIdx</span> + <span style="color:#2aa198;font-weight:bold">1</span>], <span style="color:#859900">this</span>.<span style="color:#268bd2">tree</span>[<span style="color:#2aa198;font-weight:bold">2</span> &lt;/<span style="color:#268bd2;font-weight:bold">em</span>&gt; <span style="color:#268bd2">treeIdx</span> + <span style="color:#2aa198;font-weight:bold">2</span>]);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">query</span>(<span style="color:#268bd2">qLow</span>: <span style="color:#859900;font-weight:bold">number</span>, <span style="color:#268bd2">qHigh</span>: <span style="color:#859900;font-weight:bold">number</span>): <span style="color:#859900;font-weight:bold">number</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#859900">this</span>.<span style="color:#268bd2">_queryTree</span>(<span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#859900">this</span>.<span style="color:#268bd2">n</span> - <span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">qLow</span>, <span style="color:#268bd2">qHigh</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">private</span> <span style="color:#268bd2">_queryTree</span>(<span style="color:#268bd2">treeIdx</span>: <span style="color:#859900;font-weight:bold">number</span>, <span style="color:#268bd2">low</span>: <span style="color:#859900;font-weight:bold">number</span>, <span style="color:#268bd2">high</span>: <span style="color:#859900;font-weight:bold">number</span>, <span style="color:#268bd2">qLow</span>: <span style="color:#859900;font-weight:bold">number</span>, <span style="color:#268bd2">qHigh</span>: <span style="color:#859900;font-weight:bold">number</span>): <span style="color:#859900;font-weight:bold">number</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Case 1: Current segment is completely outside query range
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">qLow</span> &gt; <span style="color:#268bd2">high</span> || <span style="color:#268bd2">qHigh</span> &lt; <span style="color:#268bd2">low</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Return identity element for the aggregation function
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">if</span> (<span style="color:#859900">this</span>.<span style="color:#268bd2">func</span> === ((<span style="color:#268bd2">a</span>, <span style="color:#268bd2">b</span>) =&gt; <span style="color:#268bd2">a</span> + <span style="color:#268bd2">b</span>)) <span style="color:#859900">return</span> <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#859900">this</span>.<span style="color:#268bd2">func</span> === <span style="color:#cb4b16">Math</span>.<span style="color:#268bd2">min</span>) <span style="color:#859900">return</span> <span style="color:#859900;font-weight:bold">Infinity</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#859900">this</span>.<span style="color:#268bd2">func</span> === <span style="color:#cb4b16">Math</span>.<span style="color:#268bd2">max</span>) <span style="color:#859900">return</span> -<span style="color:#859900;font-weight:bold">Infinity</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#93a1a1;font-style:italic">// Default for unknown functions
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Case 2: Current segment is completely inside query range
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">qLow</span> &lt;= <span style="color:#268bd2">low</span> &amp;&amp; <span style="color:#268bd2">high</span> &lt;= <span style="color:#268bd2">qHigh</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#859900">this</span>.<span style="color:#268bd2">tree</span>[<span style="color:#268bd2">treeIdx</span>];
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Case 3: Current segment partially overlaps query range
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">const</span> <span style="color:#268bd2">mid</span> = <span style="color:#cb4b16">Math</span>.<span style="color:#268bd2">floor</span>((<span style="color:#268bd2">low</span> + <span style="color:#268bd2">high</span>) / <span style="color:#2aa198;font-weight:bold">2</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">const</span> <span style="color:#268bd2">leftVal</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">_queryTree</span>(<span style="color:#2aa198;font-weight:bold">2</span> &lt;<span style="color:#268bd2;font-weight:bold">em</span>&gt; <span style="color:#268bd2">treeIdx</span> + <span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">low</span>, <span style="color:#268bd2">mid</span>, <span style="color:#268bd2">qLow</span>, <span style="color:#268bd2">qHigh</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">const</span> <span style="color:#268bd2">rightVal</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">_queryTree</span>(<span style="color:#2aa198;font-weight:bold">2</span> &lt;/<span style="color:#268bd2;font-weight:bold">em</span>&gt; <span style="color:#268bd2">treeIdx</span> + <span style="color:#2aa198;font-weight:bold">2</span>, <span style="color:#268bd2">mid</span> + <span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">high</span>, <span style="color:#268bd2">qLow</span>, <span style="color:#268bd2">qHigh</span>);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#859900">this</span>.<span style="color:#268bd2">func</span>(<span style="color:#268bd2">leftVal</span>, <span style="color:#268bd2">rightVal</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Example Usage (Sum Segment Tree)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const arrTS: number[] = [1, 3, 5, 7, 9, 11];
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const stTS = new SegmentTreeTS(arrTS); // For sum queries
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Sum of [0, 5]:&#34;, stTS.query(0, 5)); // Expected: 36
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Sum of [1, 3]:&#34;, stTS.query(1, 3)); // Expected: 3 + 5 + 7 = 15
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// stTS.update(2, 10); // Change arr[2] from 5 to 10. arr is now [1, 3, 10, 7, 9, 11]
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Sum of [0, 5] after update:&#34;, stTS.query(0, 5)); // Expected: 41
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Sum of [1, 3] after update:&#34;, stTS.query(1, 3)); // Expected: 3 + 10 + 7 = 20
+</span></span></span></code></pre></div><h3 id="cpp">Cpp</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;vector&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;functional&gt;</span><span style="color:#93a1a1;font-style:italic"> </span><span style="color:#93a1a1;font-style:italic">// For std::function
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;limits&gt;</span><span style="color:#93a1a1;font-style:italic">     </span><span style="color:#93a1a1;font-style:italic">// For std::numeric_limits
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;iostream&gt;</span><span style="color:#93a1a1;font-style:italic">   </span><span style="color:#93a1a1;font-style:italic">// For example usage
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Define identity elements for common aggregation functions
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#859900">const</span> <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">SUM_IDENTITY</span> = <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span><span style="color:#859900">const</span> <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">MIN_IDENTITY</span> = <span style="color:#268bd2">std</span>::<span style="color:#268bd2">numeric_limits</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt;::<span style="color:#268bd2">max</span>();
+</span></span><span style="display:flex;"><span><span style="color:#859900">const</span> <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">MAX_IDENTITY</span> = <span style="color:#268bd2">std</span>::<span style="color:#268bd2">numeric_limits</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt;::<span style="color:#268bd2">min</span>();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#cb4b16">SegmentTree</span> {
+</span></span><span style="display:flex;"><span><span style="color:#859900">private</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt; <span style="color:#268bd2">tree</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">const</span> <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt;&amp; <span style="color:#268bd2">original_arr</span>; <span style="color:#93a1a1;font-style:italic">// Reference to original array
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">n</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">function</span>&lt;<span style="color:#859900;font-weight:bold">int</span>(<span style="color:#859900;font-weight:bold">int</span>, <span style="color:#859900;font-weight:bold">int</span>)&gt; <span style="color:#268bd2">func</span>; <span style="color:#93a1a1;font-style:italic">// Aggregation function (e.g., sum, min, max)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">identity_element</span>; <span style="color:#93a1a1;font-style:italic">// Identity element for the aggregation function
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">_build</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">tree_idx</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">low</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">high</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">low</span> == <span style="color:#268bd2">high</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">tree</span>[<span style="color:#268bd2">tree_idx</span>] = <span style="color:#268bd2">original_arr</span>[<span style="color:#268bd2">low</span>];
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">mid</span> = <span style="color:#268bd2">low</span> + (<span style="color:#268bd2">high</span> - <span style="color:#268bd2">low</span>) / <span style="color:#2aa198;font-weight:bold">2</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">_build</span>(<span style="color:#2aa198;font-weight:bold">2</span> &lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">tree_idx</span> + <span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">low</span>, <span style="color:#268bd2">mid</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">_build</span>(<span style="color:#2aa198;font-weight:bold">2</span> &lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">tree_idx</span> + <span style="color:#2aa198;font-weight:bold">2</span>, <span style="color:#268bd2">mid</span> + <span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">high</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">tree</span>[<span style="color:#268bd2">tree_idx</span>] = <span style="color:#268bd2">func</span>(<span style="color:#268bd2">tree</span>[<span style="color:#2aa198;font-weight:bold">2</span> &lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">tree_idx</span> + <span style="color:#2aa198;font-weight:bold">1</span>], <span style="color:#268bd2">tree</span>[<span style="color:#2aa198;font-weight:bold">2</span> &lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">tree_idx</span> + <span style="color:#2aa198;font-weight:bold">2</span>]);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">_update_tree</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">tree_idx</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">low</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">high</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">arr_idx</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">val</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">low</span> == <span style="color:#268bd2">high</span>) { <span style="color:#93a1a1;font-style:italic">// Leaf node
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#268bd2">tree</span>[<span style="color:#268bd2">tree_idx</span>] = <span style="color:#268bd2">val</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">mid</span> = <span style="color:#268bd2">low</span> + (<span style="color:#268bd2">high</span> - <span style="color:#268bd2">low</span>) / <span style="color:#2aa198;font-weight:bold">2</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">low</span> &lt;= <span style="color:#268bd2">arr_idx</span> &amp;&amp; <span style="color:#268bd2">arr_idx</span> &lt;= <span style="color:#268bd2">mid</span>) { <span style="color:#93a1a1;font-style:italic">// Element is in left child&#39;s range
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#268bd2">_update_tree</span>(<span style="color:#2aa198;font-weight:bold">2</span> &lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">tree_idx</span> + <span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">low</span>, <span style="color:#268bd2">mid</span>, <span style="color:#268bd2">arr_idx</span>, <span style="color:#268bd2">val</span>);
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> { <span style="color:#93a1a1;font-style:italic">// Element is in right child&#39;s range
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#268bd2">_update_tree</span>(<span style="color:#2aa198;font-weight:bold">2</span> &lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">tree_idx</span> + <span style="color:#2aa198;font-weight:bold">2</span>, <span style="color:#268bd2">mid</span> + <span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">high</span>, <span style="color:#268bd2">arr_idx</span>, <span style="color:#268bd2">val</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">tree</span>[<span style="color:#268bd2">tree_idx</span>] = <span style="color:#268bd2">func</span>(<span style="color:#268bd2">tree</span>[<span style="color:#2aa198;font-weight:bold">2</span> &lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">tree_idx</span> + <span style="color:#2aa198;font-weight:bold">1</span>], <span style="color:#268bd2">tree</span>[<span style="color:#2aa198;font-weight:bold">2</span> &lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">tree_idx</span> + <span style="color:#2aa198;font-weight:bold">2</span>]);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">_query_tree</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">tree_idx</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">low</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">high</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">q_low</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">q_high</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Case 1: Current segment is completely outside query range
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">q_low</span> &gt; <span style="color:#268bd2">high</span> || <span style="color:#268bd2">q_high</span> &lt; <span style="color:#268bd2">low</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#268bd2">identity_element</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Case 2: Current segment is completely inside query range
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">q_low</span> &lt;= <span style="color:#268bd2">low</span> &amp;&amp; <span style="color:#268bd2">high</span> &lt;= <span style="color:#268bd2">q_high</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#268bd2">tree</span>[<span style="color:#268bd2">tree_idx</span>];
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Case 3: Current segment partially overlaps query range
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">mid</span> = <span style="color:#268bd2">low</span> + (<span style="color:#268bd2">high</span> - <span style="color:#268bd2">low</span>) / <span style="color:#2aa198;font-weight:bold">2</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">left_val</span> = <span style="color:#268bd2">_query_tree</span>(<span style="color:#2aa198;font-weight:bold">2</span> &lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">tree_idx</span> + <span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">low</span>, <span style="color:#268bd2">mid</span>, <span style="color:#268bd2">q_low</span>, <span style="color:#268bd2">q_high</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">right_val</span> = <span style="color:#268bd2">_query_tree</span>(<span style="color:#2aa198;font-weight:bold">2</span> &lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">tree_idx</span> + <span style="color:#2aa198;font-weight:bold">2</span>, <span style="color:#268bd2">mid</span> + <span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">high</span>, <span style="color:#268bd2">q_low</span>, <span style="color:#268bd2">q_high</span>);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">func</span>(<span style="color:#268bd2">left_val</span>, <span style="color:#268bd2">right_val</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">SegmentTree</span>(<span style="color:#859900">const</span> <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt;&amp; <span style="color:#268bd2">arr</span>, <span style="color:#268bd2">std</span>::<span style="color:#268bd2">function</span>&lt;<span style="color:#859900;font-weight:bold">int</span>(<span style="color:#859900;font-weight:bold">int</span>, <span style="color:#859900;font-weight:bold">int</span>)&gt; <span style="color:#268bd2">aggregation_func</span> = [](<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">a</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">b</span>){ <span style="color:#859900">return</span> <span style="color:#268bd2">a</span> + <span style="color:#268bd2">b</span>; }, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">id_element</span> = <span style="color:#268bd2">SUM_IDENTITY</span>)
+</span></span><span style="display:flex;"><span>        : <span style="color:#268bd2">original_arr</span>(<span style="color:#268bd2">arr</span>), <span style="color:#268bd2">n</span>(<span style="color:#268bd2">arr</span>.<span style="color:#268bd2">size</span>()), <span style="color:#268bd2">func</span>(<span style="color:#268bd2">aggregation_func</span>), <span style="color:#268bd2">identity_element</span>(<span style="color:#268bd2">id_element</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">tree</span>.<span style="color:#268bd2">resize</span>(<span style="color:#2aa198;font-weight:bold">4</span> &lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">n</span>); <span style="color:#93a1a1;font-style:italic">// Safe size
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">_build</span>(<span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#268bd2">n</span> - <span style="color:#2aa198;font-weight:bold">1</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">update</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">idx</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">val</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Note: original_arr is const here, so we only update the tree
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#93a1a1;font-style:italic">// For a mutable original_arr, you&#39;d update original_arr[idx] = val;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">_update_tree</span>(<span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#268bd2">n</span> - <span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">idx</span>, <span style="color:#268bd2">val</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">query</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">q_low</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">q_high</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">_query_tree</span>(<span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#268bd2">n</span> - <span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">q_low</span>, <span style="color:#268bd2">q_high</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// int main() {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::vector&lt;int&gt; arr = {1, 3, 5, 7, 9, 11};
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     // Sum Segment Tree
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     SegmentTree sum_st(arr, [](int a, int b){ return a + b; }, SUM_IDENTITY);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; &#34;Sum of [0, 5]: &#34; &lt;&lt; sum_st.query(0, 5) &lt;&lt; std::endl; // Expected: 36
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; &#34;Sum of [1, 3]: &#34; &lt;&lt; sum_st.query(1, 3) &lt;&lt; std::endl; // Expected: 15
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     sum_st.update(2, 10); // Change arr[2] from 5 to 10
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; &#34;Sum of [0, 5] after update: &#34; &lt;&lt; sum_st.query(0, 5) &lt;&lt; std::endl; // Expected: 41
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; &#34;Sum of [1, 3] after update: &#34; &lt;&lt; sum_st.query(1, 3) &lt;&lt; std::endl; // Expected: 20
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; &#34;------------------&#34; &lt;&lt; std::endl;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     // Min Segment Tree
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::vector&lt;int&gt; min_arr = {10, 1, 5, 8, 3};
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     SegmentTree min_st(min_arr, [](int a, int b){ return std::min(a, b); }, MIN_IDENTITY);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; &#34;Min of [0, 4]: &#34; &lt;&lt; min_st.query(0, 4) &lt;&lt; std::endl; // Expected: 1
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     min_st.update(0, 0); // Change min_arr[0] to 0
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; &#34;Min of [0, 4] after update: &#34; &lt;&lt; min_st.query(0, 4) &lt;&lt; std::endl; // Expected: 0
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     return 0;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span></code></pre></div><h3 id="go">Go</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">package</span> <span style="color:#268bd2">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> (
+</span></span><span style="display:flex;"><span>    <span style="color:#2aa198">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#2aa198">&#34;math&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Define aggregation function type</span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">type</span> <span style="color:#268bd2">AggregationFunc</span> <span style="color:#859900">func</span>(<span style="color:#859900;font-weight:bold">int</span>, <span style="color:#859900;font-weight:bold">int</span>) <span style="color:#859900;font-weight:bold">int</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Identity elements for common aggregation functions</span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">const</span> (
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">SumIdentity</span> = <span style="color:#2aa198;font-weight:bold">0</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">MinIdentity</span> = <span style="color:#268bd2">math</span>.<span style="color:#268bd2">MaxInt32</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">MaxIdentity</span> = <span style="color:#268bd2">math</span>.<span style="color:#268bd2">MinInt32</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">type</span> <span style="color:#268bd2">SegmentTree</span> <span style="color:#859900">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">tree</span>            []<span style="color:#859900;font-weight:bold">int</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">originalArr</span>     []<span style="color:#859900;font-weight:bold">int</span> <span style="color:#93a1a1;font-style:italic">// Copy of original array</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">n</span>               <span style="color:#859900;font-weight:bold">int</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">func</span>            <span style="color:#268bd2">AggregationFunc</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">identityElement</span> <span style="color:#859900;font-weight:bold">int</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> (<span style="color:#268bd2">st</span> &lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">SegmentTree</span>) <span style="color:#268bd2">build</span>(<span style="color:#268bd2">treeIdx</span>, <span style="color:#268bd2">low</span>, <span style="color:#268bd2">high</span> <span style="color:#859900;font-weight:bold">int</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#268bd2">low</span> == <span style="color:#268bd2">high</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">st</span>.<span style="color:#268bd2">tree</span>[<span style="color:#268bd2">treeIdx</span>] = <span style="color:#268bd2">st</span>.<span style="color:#268bd2">originalArr</span>[<span style="color:#268bd2">low</span>]
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">mid</span> := <span style="color:#268bd2">low</span> + (<span style="color:#268bd2">high</span>-<span style="color:#268bd2">low</span>)/<span style="color:#2aa198;font-weight:bold">2</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">st</span>.<span style="color:#268bd2">build</span>(<span style="color:#2aa198;font-weight:bold">2</span>&lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">treeIdx</span>+<span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">low</span>, <span style="color:#268bd2">mid</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">st</span>.<span style="color:#268bd2">build</span>(<span style="color:#2aa198;font-weight:bold">2</span>&lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">treeIdx</span>+<span style="color:#2aa198;font-weight:bold">2</span>, <span style="color:#268bd2">mid</span>+<span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">high</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">st</span>.<span style="color:#268bd2">tree</span>[<span style="color:#268bd2">treeIdx</span>] = <span style="color:#268bd2">st</span>.<span style="color:#859900">func</span>(<span style="color:#268bd2">st</span>.<span style="color:#268bd2">tree</span>[<span style="color:#2aa198;font-weight:bold">2</span>&lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">treeIdx</span>+<span style="color:#2aa198;font-weight:bold">1</span>], <span style="color:#268bd2">st</span>.<span style="color:#268bd2">tree</span>[<span style="color:#2aa198;font-weight:bold">2</span>&lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">treeIdx</span>+<span style="color:#2aa198;font-weight:bold">2</span>])
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> (<span style="color:#268bd2">st</span> &lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">SegmentTree</span>) <span style="color:#268bd2">updateTree</span>(<span style="color:#268bd2">treeIdx</span>, <span style="color:#268bd2">low</span>, <span style="color:#268bd2">high</span>, <span style="color:#268bd2">arrIdx</span>, <span style="color:#268bd2">val</span> <span style="color:#859900;font-weight:bold">int</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#268bd2">low</span> == <span style="color:#268bd2">high</span> { <span style="color:#93a1a1;font-style:italic">// Leaf node</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">st</span>.<span style="color:#268bd2">tree</span>[<span style="color:#268bd2">treeIdx</span>] = <span style="color:#268bd2">val</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">mid</span> := <span style="color:#268bd2">low</span> + (<span style="color:#268bd2">high</span>-<span style="color:#268bd2">low</span>)/<span style="color:#2aa198;font-weight:bold">2</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#268bd2">low</span> &lt;= <span style="color:#268bd2">arrIdx</span> &amp;&amp; <span style="color:#268bd2">arrIdx</span> &lt;= <span style="color:#268bd2">mid</span> { <span style="color:#93a1a1;font-style:italic">// Element is in left child&#39;s range</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">st</span>.<span style="color:#268bd2">updateTree</span>(<span style="color:#2aa198;font-weight:bold">2</span>&lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">treeIdx</span>+<span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">low</span>, <span style="color:#268bd2">mid</span>, <span style="color:#268bd2">arrIdx</span>, <span style="color:#268bd2">val</span>)
+</span></span><span style="display:flex;"><span>    } <span style="color:#859900">else</span> { <span style="color:#93a1a1;font-style:italic">// Element is in right child&#39;s range</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">st</span>.<span style="color:#268bd2">updateTree</span>(<span style="color:#2aa198;font-weight:bold">2</span>&lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">treeIdx</span>+<span style="color:#2aa198;font-weight:bold">2</span>, <span style="color:#268bd2">mid</span>+<span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">high</span>, <span style="color:#268bd2">arrIdx</span>, <span style="color:#268bd2">val</span>)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">st</span>.<span style="color:#268bd2">tree</span>[<span style="color:#268bd2">treeIdx</span>] = <span style="color:#268bd2">st</span>.<span style="color:#859900">func</span>(<span style="color:#268bd2">st</span>.<span style="color:#268bd2">tree</span>[<span style="color:#2aa198;font-weight:bold">2</span>&lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">treeIdx</span>+<span style="color:#2aa198;font-weight:bold">1</span>], <span style="color:#268bd2">st</span>.<span style="color:#268bd2">tree</span>[<span style="color:#2aa198;font-weight:bold">2</span>&lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">treeIdx</span>+<span style="color:#2aa198;font-weight:bold">2</span>])
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> (<span style="color:#268bd2">st</span> &lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">SegmentTree</span>) <span style="color:#268bd2">queryTree</span>(<span style="color:#268bd2">treeIdx</span>, <span style="color:#268bd2">low</span>, <span style="color:#268bd2">high</span>, <span style="color:#268bd2">qLow</span>, <span style="color:#268bd2">qHigh</span> <span style="color:#859900;font-weight:bold">int</span>) <span style="color:#859900;font-weight:bold">int</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Case 1: Current segment is completely outside query range</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#268bd2">qLow</span> &gt; <span style="color:#268bd2">high</span> || <span style="color:#268bd2">qHigh</span> &lt; <span style="color:#268bd2">low</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">st</span>.<span style="color:#268bd2">identityElement</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Case 2: Current segment is completely inside query range</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#268bd2">qLow</span> &lt;= <span style="color:#268bd2">low</span> &amp;&amp; <span style="color:#268bd2">high</span> &lt;= <span style="color:#268bd2">qHigh</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">st</span>.<span style="color:#268bd2">tree</span>[<span style="color:#268bd2">treeIdx</span>]
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Case 3: Current segment partially overlaps query range</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">mid</span> := <span style="color:#268bd2">low</span> + (<span style="color:#268bd2">high</span>-<span style="color:#268bd2">low</span>)/<span style="color:#2aa198;font-weight:bold">2</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">leftVal</span> := <span style="color:#268bd2">st</span>.<span style="color:#268bd2">queryTree</span>(<span style="color:#2aa198;font-weight:bold">2</span>&lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">treeIdx</span>+<span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">low</span>, <span style="color:#268bd2">mid</span>, <span style="color:#268bd2">qLow</span>, <span style="color:#268bd2">qHigh</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">rightVal</span> := <span style="color:#268bd2">st</span>.<span style="color:#268bd2">queryTree</span>(<span style="color:#2aa198;font-weight:bold">2</span>&lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">treeIdx</span>+<span style="color:#2aa198;font-weight:bold">2</span>, <span style="color:#268bd2">mid</span>+<span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">high</span>, <span style="color:#268bd2">qLow</span>, <span style="color:#268bd2">qHigh</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">st</span>.<span style="color:#859900">func</span>(<span style="color:#268bd2">leftVal</span>, <span style="color:#268bd2">rightVal</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> <span style="color:#268bd2">NewSegmentTree</span>(<span style="color:#268bd2">arr</span> []<span style="color:#859900;font-weight:bold">int</span>, <span style="color:#268bd2">aggregationFunc</span> <span style="color:#268bd2">AggregationFunc</span>, <span style="color:#268bd2">identityElement</span> <span style="color:#859900;font-weight:bold">int</span>) &lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">SegmentTree</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">st</span> := &amp;<span style="color:#268bd2">SegmentTree</span>{
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">originalArr</span>: <span style="color:#cb4b16">make</span>([]<span style="color:#859900;font-weight:bold">int</span>, <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">arr</span>)),
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">n</span>:           <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">arr</span>),
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">func</span>:        <span style="color:#268bd2">aggregationFunc</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">identityElement</span>: <span style="color:#268bd2">identityElement</span>,
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#cb4b16">copy</span>(<span style="color:#268bd2">st</span>.<span style="color:#268bd2">originalArr</span>, <span style="color:#268bd2">arr</span>) <span style="color:#93a1a1;font-style:italic">// Copy original array</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">st</span>.<span style="color:#268bd2">tree</span> = <span style="color:#cb4b16">make</span>([]<span style="color:#859900;font-weight:bold">int</span>, <span style="color:#2aa198;font-weight:bold">4</span>&lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">st</span>.<span style="color:#268bd2">n</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">st</span>.<span style="color:#268bd2">build</span>(<span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#268bd2">st</span>.<span style="color:#268bd2">n</span>-<span style="color:#2aa198;font-weight:bold">1</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">st</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> (<span style="color:#268bd2">st</span> &lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">SegmentTree</span>) <span style="color:#268bd2">Update</span>(<span style="color:#268bd2">idx</span>, <span style="color:#268bd2">val</span> <span style="color:#859900;font-weight:bold">int</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">st</span>.<span style="color:#268bd2">originalArr</span>[<span style="color:#268bd2">idx</span>] = <span style="color:#268bd2">val</span> <span style="color:#93a1a1;font-style:italic">// Update original array copy</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">st</span>.<span style="color:#268bd2">updateTree</span>(<span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#268bd2">st</span>.<span style="color:#268bd2">n</span>-<span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">idx</span>, <span style="color:#268bd2">val</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> (<span style="color:#268bd2">st</span> &lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">SegmentTree</span>) <span style="color:#268bd2">Query</span>(<span style="color:#268bd2">qLow</span>, <span style="color:#268bd2">qHigh</span> <span style="color:#859900;font-weight:bold">int</span>) <span style="color:#859900;font-weight:bold">int</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">st</span>.<span style="color:#268bd2">queryTree</span>(<span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#268bd2">st</span>.<span style="color:#268bd2">n</span>-<span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">qLow</span>, <span style="color:#268bd2">qHigh</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// func main() {</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     arr := []int{1, 3, 5, 7, 9, 11}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     // Sum Segment Tree</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     sumFunc := func(a, b int) int { return a + b }</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     sumST := NewSegmentTree(arr, sumFunc, SumIdentity)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     fmt.Printf(&#34;Sum of [0, 5]: %d\n&#34;, sumST.Query(0, 5)) // Expected: 36</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     fmt.Printf(&#34;Sum of [1, 3]: %d\n&#34;, sumST.Query(1, 3)) // Expected: 15</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     sumST.Update(2, 10)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     fmt.Printf(&#34;Sum of [0, 5] after update: %d\n&#34;, sumST.Query(0, 5)) // Expected: 41</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     fmt.Printf(&#34;Sum of [1, 3] after update: %d\n&#34;, sumST.Query(1, 3)) // Expected: 20</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     fmt.Println(&#34;------------------&#34;)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     // Min Segment Tree</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     minFunc := func(a, b int) int {</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         if a &lt; b {</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//             return a</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         }</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         return b</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     }</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     minArr := []int{10, 1, 5, 8, 3}</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     minST := NewSegmentTree(minArr, minFunc, MinIdentity)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     fmt.Printf(&#34;Min of [0, 4]: %d\n&#34;, minST.Query(0, 4)) // Expected: 1</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     minST.Update(0, 0)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     fmt.Printf(&#34;Min of [0, 4] after update: %d\n&#34;, minST.Query(0, 4)) // Expected: 0</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }</span>
+</span></span></code></pre></div><h3 id="d">D</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-d" data-lang="d"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.stdio</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.array</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.algorithm</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.math</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.traits</span>; <span style="color:#93a1a1;font-style:italic">// For isCallable
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Define identity elements for common aggregation functions
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#859900">enum</span> <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">SUM_IDENTITY</span> = <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span><span style="color:#859900">enum</span> <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">MIN_IDENTITY</span> = <span style="color:#859900;font-weight:bold">int</span>.<span style="color:#268bd2">max</span>;
+</span></span><span style="display:flex;"><span><span style="color:#859900">enum</span> <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">MAX_IDENTITY</span> = <span style="color:#859900;font-weight:bold">int</span>.<span style="color:#268bd2">min</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Define aggregation function type
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#859900">alias</span> <span style="color:#268bd2">AggregationFunc</span> = <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">delegate</span>(<span style="color:#859900;font-weight:bold">int</span>, <span style="color:#859900;font-weight:bold">int</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#cb4b16">SegmentTree</span> {
+</span></span><span style="display:flex;"><span><span style="color:#859900">private</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span>[] <span style="color:#268bd2">tree</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span>[] <span style="color:#268bd2">originalArr</span>; <span style="color:#93a1a1;font-style:italic">// Copy of original array
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">n</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">AggregationFunc</span> <span style="color:#268bd2">func</span>; <span style="color:#93a1a1;font-style:italic">// Aggregation function (e.g., sum, min, max)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">identityElement</span>; <span style="color:#93a1a1;font-style:italic">// Identity element for the aggregation function
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">_build</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">treeIdx</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">low</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">high</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">low</span> == <span style="color:#268bd2">high</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">tree</span>[<span style="color:#268bd2">treeIdx</span>] = <span style="color:#268bd2">originalArr</span>[<span style="color:#268bd2">low</span>];
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">mid</span> = <span style="color:#268bd2">low</span> + (<span style="color:#268bd2">high</span> - <span style="color:#268bd2">low</span>) / <span style="color:#2aa198;font-weight:bold">2</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">_build</span>(<span style="color:#2aa198;font-weight:bold">2</span> &lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">treeIdx</span> + <span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">low</span>, <span style="color:#268bd2">mid</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">_build</span>(<span style="color:#2aa198;font-weight:bold">2</span> &lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">treeIdx</span> + <span style="color:#2aa198;font-weight:bold">2</span>, <span style="color:#268bd2">mid</span> + <span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">high</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">tree</span>[<span style="color:#268bd2">treeIdx</span>] = <span style="color:#268bd2">func</span>(<span style="color:#268bd2">tree</span>[<span style="color:#2aa198;font-weight:bold">2</span> &lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">treeIdx</span> + <span style="color:#2aa198;font-weight:bold">1</span>], <span style="color:#268bd2">tree</span>[<span style="color:#2aa198;font-weight:bold">2</span> &lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">treeIdx</span> + <span style="color:#2aa198;font-weight:bold">2</span>]);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">_updateTree</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">treeIdx</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">low</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">high</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">arrIdx</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">val</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">low</span> == <span style="color:#268bd2">high</span>) { <span style="color:#93a1a1;font-style:italic">// Leaf node
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#268bd2">tree</span>[<span style="color:#268bd2">treeIdx</span>] = <span style="color:#268bd2">val</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">mid</span> = <span style="color:#268bd2">low</span> + (<span style="color:#268bd2">high</span> - <span style="color:#268bd2">low</span>) / <span style="color:#2aa198;font-weight:bold">2</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">low</span> &lt;= <span style="color:#268bd2">arrIdx</span> &amp;&amp; <span style="color:#268bd2">arrIdx</span> &lt;= <span style="color:#268bd2">mid</span>) { <span style="color:#93a1a1;font-style:italic">// Element is in left child&#39;s range
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#268bd2">_updateTree</span>(<span style="color:#2aa198;font-weight:bold">2</span> &lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">treeIdx</span> + <span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">low</span>, <span style="color:#268bd2">mid</span>, <span style="color:#268bd2">arrIdx</span>, <span style="color:#268bd2">val</span>);
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> { <span style="color:#93a1a1;font-style:italic">// Element is in right child&#39;s range
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#268bd2">_updateTree</span>(<span style="color:#2aa198;font-weight:bold">2</span> &lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">treeIdx</span> + <span style="color:#2aa198;font-weight:bold">2</span>, <span style="color:#268bd2">mid</span> + <span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">high</span>, <span style="color:#268bd2">arrIdx</span>, <span style="color:#268bd2">val</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">tree</span>[<span style="color:#268bd2">treeIdx</span>] = <span style="color:#268bd2">func</span>(<span style="color:#268bd2">tree</span>[<span style="color:#2aa198;font-weight:bold">2</span> &lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">treeIdx</span> + <span style="color:#2aa198;font-weight:bold">1</span>], <span style="color:#268bd2">tree</span>[<span style="color:#2aa198;font-weight:bold">2</span> &lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">treeIdx</span> + <span style="color:#2aa198;font-weight:bold">2</span>]);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">_queryTree</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">treeIdx</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">low</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">high</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">qLow</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">qHigh</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Case 1: Current segment is completely outside query range
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">qLow</span> &gt; <span style="color:#268bd2">high</span> || <span style="color:#268bd2">qHigh</span> &lt; <span style="color:#268bd2">low</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#268bd2">identityElement</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Case 2: Current segment is completely inside query range
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">qLow</span> &lt;= <span style="color:#268bd2">low</span> &amp;&amp; <span style="color:#268bd2">high</span> &lt;= <span style="color:#268bd2">qHigh</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#268bd2">tree</span>[<span style="color:#268bd2">treeIdx</span>];
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Case 3: Current segment partially overlaps query range
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">mid</span> = <span style="color:#268bd2">low</span> + (<span style="color:#268bd2">high</span> - <span style="color:#268bd2">low</span>) / <span style="color:#2aa198;font-weight:bold">2</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">leftVal</span> = <span style="color:#268bd2">_queryTree</span>(<span style="color:#2aa198;font-weight:bold">2</span> &lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">treeIdx</span> + <span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">low</span>, <span style="color:#268bd2">mid</span>, <span style="color:#268bd2">qLow</span>, <span style="color:#268bd2">qHigh</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">rightVal</span> = <span style="color:#268bd2">_queryTree</span>(<span style="color:#2aa198;font-weight:bold">2</span> &lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">treeIdx</span> + <span style="color:#2aa198;font-weight:bold">2</span>, <span style="color:#268bd2">mid</span> + <span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">high</span>, <span style="color:#268bd2">qLow</span>, <span style="color:#268bd2">qHigh</span>);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">func</span>(<span style="color:#268bd2">leftVal</span>, <span style="color:#268bd2">rightVal</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">
+</span></span></span><span style="display:flex;"><span><span style="color:#268bd2">public:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">this</span>(<span style="color:#859900;font-weight:bold">int</span>[] <span style="color:#268bd2">arr</span>, <span style="color:#268bd2">AggregationFunc</span> <span style="color:#268bd2">aggregationFunc</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">idElement</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">originalArr</span> = <span style="color:#268bd2">arr</span>.<span style="color:#268bd2">dup</span>; <span style="color:#93a1a1;font-style:italic">// Duplicate original array
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">n</span> = <span style="color:#268bd2">arr</span>.<span style="color:#268bd2">length</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">func</span> = <span style="color:#268bd2">aggregationFunc</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">identityElement</span> = <span style="color:#268bd2">idElement</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">tree</span> = <span style="color:#859900">new</span> <span style="color:#859900;font-weight:bold">int</span>[<span style="color:#2aa198;font-weight:bold">4</span> * <span style="color:#268bd2">n</span>]; <span style="color:#93a1a1;font-style:italic">// Safe size
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">_build</span>(<span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#268bd2">n</span> - <span style="color:#2aa198;font-weight:bold">1</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">update</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">idx</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">val</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">originalArr</span>[<span style="color:#268bd2">idx</span>] = <span style="color:#268bd2">val</span>; <span style="color:#93a1a1;font-style:italic">// Update original array copy
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">_updateTree</span>(<span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#268bd2">n</span> - <span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">idx</span>, <span style="color:#268bd2">val</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">query</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">qLow</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">qHigh</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">_queryTree</span>(<span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#268bd2">n</span> - <span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">qLow</span>, <span style="color:#268bd2">qHigh</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// void main() {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     int[] arr = [1, 3, 5, 7, 9, 11];
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     // Sum Segment Tree
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     AggregationFunc sumFunc = (a, b) =&gt; a + b;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     auto sumST = new SegmentTree(arr, sumFunc, SUM_IDENTITY);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     writefln(&#34;Sum of [0, 5]: %s&#34;, sumST.query(0, 5)); // Expected: 36
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     writefln(&#34;Sum of [1, 3]: %s&#34;, sumST.query(1, 3)); // Expected: 15
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     sumST.update(2, 10); // Change arr[2] from 5 to 10
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     writefln(&#34;Sum of [0, 5] after update: %s&#34;, sumST.query(0, 5)); // Expected: 41
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     writefln(&#34;Sum of [1, 3] after update: %s&#34;, sumST.query(1, 3)); // Expected: 20
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     writefln(&#34;------------------&#34;);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     // Min Segment Tree
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     AggregationFunc minFunc = (a, b) =&gt; min(a, b);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     int[] minArr = [10, 1, 5, 8, 3];
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     auto minST = new SegmentTree(minArr, minFunc, MIN_IDENTITY);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     writefln(&#34;Min of [0, 4]: %s&#34;, minST.query(0, 4)); // Expected: 1
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     minST.update(0, 0); // Change minArr[0] to 0
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     writefln(&#34;Min of [0, 4] after update: %s&#34;, minST.query(0, 4)); // Expected: 0
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span></code></pre></div><h2 id="applications">Applications</h2>
+<h3 id="application">Application</h3>
+<p>Segment Trees are highly versatile and widely used in competitive programming and applications requiring efficient range queries and updates. They are particularly useful for:</p>
+<pre><code>    - **Range Minimum/Maximum Query (RMQ):** Finding the minimum or maximum element within a given range.
+
+    - **Range Sum Query (RSQ):** Calculating the sum of elements within a given range.
+
+    - **Dynamic Range Queries:** When the values in the array can change frequently, and you still need fast range queries.
+
+    - **Game Development:** For collision detection in 1D space or managing game objects along an axis.
+
+    - **Data Visualization:** To quickly aggregate data points within a visible window.
+</code></pre>
+
+    </div>
+</article>
+
+<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
+    
+    <a href="//localhost:1313/dsa-42_/data_structures/specialized/segment_tree_lazy/" class="nav-btn">← Previous</a>
+    
+    
+    <a href="//localhost:1313/dsa-42_/data_structures/specialized/" class="nav-btn">Up</a>
+
+    
+    <a href="//localhost:1313/dsa-42_/data_structures/specialized/scapegoat_tree/" class="nav-btn">Next →</a>
+    
+</div>
+
+    </main>
+
+    <footer class="footer">
+        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
+    </footer>
+
+    <script>
+        const body = document.getElementById('theme-body');
+        const btn = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme');
+
+        
+        function updateButtonText() {
+            if (body.classList.contains('theme-terminal')) {
+                btn.textContent = "Light Mode";
+            } else {
+                btn.textContent = "Dark Mode";
+            }
+        }
+
+        if (currentTheme === 'terminal') {
+            body.classList.add('theme-terminal');
+        }
+        
+        
+        updateButtonText();
+
+        btn.addEventListener('click', () => {
+            body.classList.toggle('theme-terminal');
+            updateButtonText();
+            
+            let theme = 'natural';
+            if (body.classList.contains('theme-terminal')) {
+                theme = 'terminal';
+            }
+            localStorage.setItem('theme', theme);
+        });
+    </script>
+</body>
+</html>

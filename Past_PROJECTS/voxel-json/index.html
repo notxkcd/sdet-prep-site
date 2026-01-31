@@ -1,0 +1,170 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voxel JSON Lab | Pro Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@400;700&family=VT323&display=swap" rel="stylesheet">
+    <!-- Prism.js core -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+    <style>
+        :root {
+            --voxel-depth: 4px;
+            --voxel-scrollbar-width: 14px;
+            --voxel-cursor: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2 2V22L7 17H14L2 2Z' fill='white' stroke='black' stroke-width='2' stroke-linejoin='miter'/%3E%3C/svg%3E") 0 0, auto;
+        }
+        
+        * {
+            box-sizing: border-box;
+            cursor: var(--voxel-cursor);
+        }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            overflow-x: hidden;
+            transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 16px;
+            line-height: 1.5;
+            margin: 0;
+            padding: 0;
+        }
+
+        .voxel-font { font-family: 'VT323', monospace; }
+        .mono-font { font-family: 'JetBrains Mono', monospace; }
+
+        /* Voxel 3D Utility */
+        .voxel-3d {
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.1s ease-out;
+            margin-bottom: var(--voxel-depth);
+            margin-left: var(--voxel-depth);
+        }
+
+        .voxel-3d::after {
+            content: '';
+            position: absolute;
+            bottom: calc(-1 * var(--voxel-depth));
+            left: var(--voxel-depth);
+            width: 100%;
+            height: var(--voxel-depth);
+            background: var(--voxel-side-color);
+            transform: skewX(-45deg);
+            transform-origin: top;
+            border: 2px solid var(--voxel-border);
+            border-top: none;
+            pointer-events: none;
+        }
+
+        .voxel-3d::before {
+            content: '';
+            position: absolute;
+            left: calc(-1 * var(--voxel-depth));
+            top: var(--voxel-depth);
+            width: var(--voxel-depth);
+            height: 100%;
+            background: var(--voxel-side-color-dark);
+            transform: skewY(-45deg);
+            transform-origin: right;
+            border: 2px solid var(--voxel-border);
+            border-right: none;
+            pointer-events: none;
+        }
+
+        .voxel-btn:active {
+            transform: translate(calc(-1 * var(--voxel-depth)), var(--voxel-depth));
+        }
+
+        /* BLOCKY VOXEL SCROLLBARS */
+        ::-webkit-scrollbar { 
+            width: var(--voxel-scrollbar-width); 
+            height: var(--voxel-scrollbar-width); 
+        }
+        ::-webkit-scrollbar-track { 
+            background: var(--voxel-scrollbar-track, rgba(0,0,0,0.05)); 
+            border: 2px solid var(--voxel-border);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--voxel-scrollbar-thumb);
+            border: 2px solid var(--voxel-border);
+            box-shadow: 
+                inset -3px -3px 0px var(--voxel-scrollbar-shadow, rgba(0,0,0,0.3)),
+                inset 3px 3px 0px rgba(255,255,255,0.2);
+        }
+        ::-webkit-scrollbar-thumb:hover { background: var(--voxel-scrollbar-thumb-hover); }
+
+        .prism-editor {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        .prism-editor pre, .prism-editor textarea {
+            margin: 0 !important;
+            padding: 1.25rem !important;
+            width: 100% !important;
+            height: 100% !important;
+            font-family: 'JetBrains Mono', monospace !important;
+            font-size: 14px !important;
+            line-height: 1.6 !important;
+            position: absolute !important;
+            top: 0;
+            left: 0;
+            white-space: pre !important;
+            word-wrap: normal !important;
+            overflow: auto !important;
+            border: none !important;
+            box-sizing: border-box !important;
+        }
+        .prism-editor textarea {
+            color: transparent !important;
+            background: transparent !important;
+            caret-color: var(--voxel-text);
+            resize: none !important;
+            z-index: 10;
+            outline: none;
+        }
+        .prism-editor pre {
+            z-index: 5;
+            pointer-events: none;
+            background: transparent !important;
+            color: var(--voxel-text);
+        }
+        
+        .token.property { color: var(--prism-property); font-weight: 700; }
+        .token.string { color: var(--prism-string); }
+        .token.number { color: var(--prism-number); }
+        .token.boolean { color: var(--prism-boolean); }
+        .token.punctuation { color: var(--prism-punctuation); }
+        .token.operator { color: var(--prism-operator); }
+        .token.keyword { color: var(--prism-keyword); }
+        .token.comment { color: var(--prism-comment); font-style: italic; }
+
+        @media (max-width: 768px) {
+            :root { --voxel-depth: 3px; --voxel-scrollbar-width: 12px; }
+            body { font-size: 14px; }
+        }
+    </style>
+
+<link rel="stylesheet" href="/index.css">
+<script type="importmap">
+{
+  "imports": {
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "react": "https://esm.sh/react@^19.2.3",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "jsonpath-plus": "https://esm.sh/jsonpath-plus@10.2.0"
+  }
+}
+</script>
+  <script type="module" crossorigin src="/assets/index-D0yGaxjV.js"></script>
+</head>
+<body class="min-h-screen">
+    <div id="root"></div>
+</body>
+</html>

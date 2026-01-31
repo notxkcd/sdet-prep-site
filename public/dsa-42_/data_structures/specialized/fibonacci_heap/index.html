@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fibonacci Heap | SDET Interview Preparation Kit</title>
+    <link rel="stylesheet" href="//localhost:1313/css/style.css">
+    <link rel="stylesheet" href="//localhost:1313/css/terminal.css">
+    
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    
+    <link rel="stylesheet" href="//localhost:1313/lib/katex/katex.min.css">
+    <script defer src="//localhost:1313/lib/katex/katex.min.js"></script>
+    <script defer src="//localhost:1313/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</head>
+<body id="theme-body">
+    <button id="theme-toggle">Switch Theme</button>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="//localhost:1313/">Index</a></li>
+                
+            </ul>
+        </nav>
+        <div class="site-breadcrumb">
+            <a href="//localhost:1313/">Home</a>
+            
+                
+                    <span>/</span> <a href="//localhost:1313/">SDET Interview Dashboard</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/dsa-42_/">42 Algorithms &amp; 42 Data Structures</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/dsa-42_/data_structures/">Data Structures</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/dsa-42_/data_structures/specialized/">Specialized</a>
+                
+            
+            
+                <span>/</span> Fibonacci Heap
+            
+        </div>
+    </header>
+
+    <main>
+        
+<article>
+    <div class="category-title" style="margin-bottom: 0.5rem;">Specialized</div>
+    <h1>Fibonacci Heap</h1>
+    <div class="content-body" style="margin-top: 2rem;">
+        <p>A <code>Fibonacci Heap</code> is a collection of disjoint heaps (min-heap ordered trees). It is an advanced heap data structure that implements a <code>priority queue</code>, providing better amortized time complexity than a traditional <code>binary heap</code> for some operations, notably <code>decrease-key</code> and <code>merge</code>.</p>
+<p>It was developed by Michael <code>L. Fredman</code> and Robert <code>Tarjan</code> in 1987. While its constant factors are large, making it impractical for many applications, its theoretical efficiency makes it invaluable for proving the time complexity bounds of algorithms like <code>Dijkstra's shortest path algorithm</code> and <code>Prim's minimum spanning tree algorithm</code> when applied to dense graphs.</p>
+<h2 id="how-it-works">How it Works</h2>
+<h3 id="how-it-works-expanded">How it Works (Expanded)</h3>
+<p>A <code>Fibonacci Heap</code> is a forest of trees satisfying the <code>min-heap</code> property. Each <code>node</code> stores a <code>key</code>, pointers to its parent, children (via a child pointer and a circular doubly linked list of siblings), and a <code>mark</code> bit. The <code>root nodes</code> of all the trees are linked together in a circular doubly linked list.</p>
+<hr>
+<p>Conceptual structure of a Fibonacci Heap:</p>
+<pre><code>      (Min Node)
+        /
+</code></pre>
+<p>(Root List) - A &lt;-&gt; B &lt;-&gt; C - (Root List)
+|     |
+D     E
+|     |
+F     G
+&hellip;</p>
+<h2 id="implementation">Implementation</h2>
+<h3 id="python">Python</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># Conceptual / Pseudocode for Fibonacci Heap operations in Python.</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># A full implementation is very complex and typically not required for general purposes.</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># This code aims to illustrate the class structure and the spirit of operations.</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#cb4b16">FibonacciHeapNode</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">__init__</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">key</span>, <span style="color:#268bd2">value</span>=<span style="color:#859900;font-weight:bold">None</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">key</span> = <span style="color:#268bd2">key</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">value</span> = <span style="color:#268bd2">value</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">parent</span> = <span style="color:#859900;font-weight:bold">None</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">child</span> = <span style="color:#859900;font-weight:bold">None</span> <span style="color:#93a1a1;font-style:italic"># Pointer to any one of its children</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">left</span> = <span style="color:#cb4b16">self</span> <span style="color:#93a1a1;font-style:italic"># Pointers for circular doubly linked list of siblings</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">right</span> = <span style="color:#cb4b16">self</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">degree</span> = <span style="color:#2aa198;font-weight:bold">0</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">mark</span> = <span style="color:#859900;font-weight:bold">False</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#cb4b16">FibonacciHeap</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">__init__</span>(<span style="color:#cb4b16">self</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">min_node</span> = <span style="color:#859900;font-weight:bold">None</span> <span style="color:#93a1a1;font-style:italic"># Pointer to the node with the minimum key</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">n</span> = <span style="color:#2aa198;font-weight:bold">0</span> <span style="color:#93a1a1;font-style:italic"># Number of nodes in the heap</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">insert</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">key</span>, <span style="color:#268bd2">value</span>=<span style="color:#859900;font-weight:bold">None</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">node</span> = <span style="color:#268bd2">FibonacciHeapNode</span>(<span style="color:#268bd2">key</span>, <span style="color:#268bd2">value</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">min_node</span> <span style="color:#859900">is</span> <span style="color:#859900;font-weight:bold">None</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">min_node</span> = <span style="color:#268bd2">node</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">else</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">_add_to_root_list</span>(<span style="color:#268bd2">node</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> <span style="color:#268bd2">node</span>.<span style="color:#268bd2">key</span> &lt; <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">min_node</span>.<span style="color:#268bd2">key</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">min_node</span> = <span style="color:#268bd2">node</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">n</span> += <span style="color:#2aa198;font-weight:bold">1</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">node</span> <span style="color:#93a1a1;font-style:italic"># Return node for decrease_key reference</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">find_min</span>(<span style="color:#cb4b16">self</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">min_node</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">extract_min</span>(<span style="color:#cb4b16">self</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># Very complex operation, simplified for conceptual understanding.</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># Involves removing min_node, adding its children to root list,</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># and then consolidating the root list.</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">min_node</span> <span style="color:#859900">is</span> <span style="color:#859900;font-weight:bold">None</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#859900;font-weight:bold">None</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">z</span> = <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">min_node</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">z</span>.<span style="color:#268bd2">child</span> <span style="color:#859900">is</span> <span style="color:#859900">not</span> <span style="color:#859900;font-weight:bold">None</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">children_to_add</span> = []
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">curr_child</span> = <span style="color:#268bd2">z</span>.<span style="color:#268bd2">child</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">while</span> <span style="color:#859900;font-weight:bold">True</span>: <span style="color:#93a1a1;font-style:italic"># Iterate through z&#39;s children (circular list)</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">children_to_add</span>.<span style="color:#268bd2">append</span>(<span style="color:#268bd2">curr_child</span>)
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">curr_child</span>.<span style="color:#268bd2">parent</span> = <span style="color:#859900;font-weight:bold">None</span> <span style="color:#93a1a1;font-style:italic"># Remove parent link</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">curr_child</span> = <span style="color:#268bd2">curr_child</span>.<span style="color:#268bd2">right</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">if</span> <span style="color:#268bd2">curr_child</span> == <span style="color:#268bd2">z</span>.<span style="color:#268bd2">child</span>:
+</span></span><span style="display:flex;"><span>                    <span style="color:#859900">break</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">for</span> <span style="color:#268bd2">child</span> <span style="color:#859900">in</span> <span style="color:#268bd2">children_to_add</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">_add_to_root_list</span>(<span style="color:#268bd2">child</span>)
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># Remove z from root list</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">_remove_from_root_list</span>(<span style="color:#268bd2">z</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">n</span> -= <span style="color:#2aa198;font-weight:bold">1</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">n</span> == <span style="color:#2aa198;font-weight:bold">0</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">min_node</span> = <span style="color:#859900;font-weight:bold">None</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">else</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">min_node</span> = <span style="color:#268bd2">z</span>.<span style="color:#268bd2">right</span> <span style="color:#93a1a1;font-style:italic"># Pick an arbitrary new min_node</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic"># self._consolidate() # This is the most complex part, omitted for brevity</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">z</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">_add_to_root_list</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">node</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">min_node</span> <span style="color:#859900">is</span> <span style="color:#859900;font-weight:bold">None</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">min_node</span> = <span style="color:#268bd2">node</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">node</span>.<span style="color:#268bd2">left</span> = <span style="color:#268bd2">node</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">node</span>.<span style="color:#268bd2">right</span> = <span style="color:#268bd2">node</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">else</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic"># Insert node next to min_node in the circular list</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">node</span>.<span style="color:#268bd2">left</span> = <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">min_node</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">node</span>.<span style="color:#268bd2">right</span> = <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">min_node</span>.<span style="color:#268bd2">right</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">min_node</span>.<span style="color:#268bd2">right</span>.<span style="color:#268bd2">left</span> = <span style="color:#268bd2">node</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">min_node</span>.<span style="color:#268bd2">right</span> = <span style="color:#268bd2">node</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">_remove_from_root_list</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">node</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">node</span>.<span style="color:#268bd2">left</span>.<span style="color:#268bd2">right</span> = <span style="color:#268bd2">node</span>.<span style="color:#268bd2">right</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">node</span>.<span style="color:#268bd2">right</span>.<span style="color:#268bd2">left</span> = <span style="color:#268bd2">node</span>.<span style="color:#268bd2">left</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># Conceptual decrease_key (full implementation very involved)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">decrease_key</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">node</span>, <span style="color:#268bd2">new_key</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">new_key</span> &gt; <span style="color:#268bd2">node</span>.<span style="color:#268bd2">key</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">raise</span> <span style="color:#268bd2">ValueError</span>(<span style="color:#2aa198">&#34;New key is greater than current key&#34;</span>)
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">node</span>.<span style="color:#268bd2">key</span> = <span style="color:#268bd2">new_key</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">y</span> = <span style="color:#268bd2">node</span>.<span style="color:#268bd2">parent</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">y</span> <span style="color:#859900">is</span> <span style="color:#859900">not</span> <span style="color:#859900;font-weight:bold">None</span> <span style="color:#859900">and</span> <span style="color:#268bd2">node</span>.<span style="color:#268bd2">key</span> &lt; <span style="color:#268bd2">y</span>.<span style="color:#268bd2">key</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic"># Cut node from its parent</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic"># self._cut(node, y) # Complex operation, omitted</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic"># self._cascading_cut(y) # Complex operation, omitted</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">pass</span> <span style="color:#93a1a1;font-style:italic"># Placeholder for cut and cascading_cut</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">node</span>.<span style="color:#268bd2">key</span> &lt; <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">min_node</span>.<span style="color:#268bd2">key</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">min_node</span> = <span style="color:#268bd2">node</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">merge</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">other_heap</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># Simply concatenate root lists</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">min_node</span> <span style="color:#859900">is</span> <span style="color:#859900;font-weight:bold">None</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">min_node</span> = <span style="color:#268bd2">other_heap</span>.<span style="color:#268bd2">min_node</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">elif</span> <span style="color:#268bd2">other_heap</span>.<span style="color:#268bd2">min_node</span> <span style="color:#859900">is</span> <span style="color:#859900">not</span> <span style="color:#859900;font-weight:bold">None</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic"># Splice other_heap&#39;s root list into self.min_node&#39;s root list</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">min_node</span>.<span style="color:#268bd2">right</span>.<span style="color:#268bd2">left</span> = <span style="color:#268bd2">other_heap</span>.<span style="color:#268bd2">min_node</span>.<span style="color:#268bd2">left</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">other_heap</span>.<span style="color:#268bd2">min_node</span>.<span style="color:#268bd2">left</span>.<span style="color:#268bd2">right</span> = <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">min_node</span>.<span style="color:#268bd2">right</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">min_node</span>.<span style="color:#268bd2">right</span> = <span style="color:#268bd2">other_heap</span>.<span style="color:#268bd2">min_node</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">other_heap</span>.<span style="color:#268bd2">min_node</span>.<span style="color:#268bd2">left</span> = <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">min_node</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> <span style="color:#268bd2">other_heap</span>.<span style="color:#268bd2">min_node</span>.<span style="color:#268bd2">key</span> &lt; <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">min_node</span>.<span style="color:#268bd2">key</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">min_node</span> = <span style="color:#268bd2">other_heap</span>.<span style="color:#268bd2">min_node</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">n</span> += <span style="color:#268bd2">other_heap</span>.<span style="color:#268bd2">n</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># Example Usage (highly conceptual due to complexity of full implementation):</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># f_heap = FibonacciHeap()</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># node1 = f_heap.insert(10)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># node2 = f_heap.insert(3)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># f_heap.insert(15)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(&#34;Min node:&#34;, f_heap.find_min().key) # Expected: 3</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># f_heap.decrease_key(node1, 2)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(&#34;Min node after decrease_key:&#34;, f_heap.find_min().key) # Expected: 2 (if cut logic was full)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># extracted_min = f_heap.extract_min()</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(&#34;Extracted min:&#34;, extracted_min.key) # Expected: 2</span>
+</span></span></code></pre></div><h3 id="javascript">Javascript</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Conceptual / Pseudocode for Fibonacci Heap operations in JavaScript.
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// A full implementation is very complex and typically not required for general purposes.
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#268bd2">FibonacciHeapNode</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">constructor</span>(<span style="color:#268bd2">key</span>, <span style="color:#268bd2">value</span> = <span style="color:#859900;font-weight:bold">null</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">key</span> = <span style="color:#268bd2">key</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">value</span> = <span style="color:#268bd2">value</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">parent</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">child</span> = <span style="color:#859900;font-weight:bold">null</span>; <span style="color:#93a1a1;font-style:italic">// Pointer to any one of its children
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">left</span> = <span style="color:#859900">this</span>;  <span style="color:#93a1a1;font-style:italic">// Pointers for circular doubly linked list of siblings
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">right</span> = <span style="color:#859900">this</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">degree</span> = <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">mark</span> = <span style="color:#859900;font-weight:bold">false</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#268bd2">FibonacciHeap</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">constructor</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">minNode</span> = <span style="color:#859900;font-weight:bold">null</span>; <span style="color:#93a1a1;font-style:italic">// Pointer to the node with the minimum key
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">n</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#93a1a1;font-style:italic">// Number of nodes in the heap
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">insert</span>(<span style="color:#268bd2">key</span>, <span style="color:#268bd2">value</span> = <span style="color:#859900;font-weight:bold">null</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">const</span> <span style="color:#268bd2">node</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">FibonacciHeapNode</span>(<span style="color:#268bd2">key</span>, <span style="color:#268bd2">value</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#859900">this</span>.<span style="color:#268bd2">minNode</span> === <span style="color:#859900;font-weight:bold">null</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">this</span>.<span style="color:#268bd2">minNode</span> = <span style="color:#268bd2">node</span>;
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">this</span>.<span style="color:#268bd2">_addToRootList</span>(<span style="color:#268bd2">node</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">node</span>.<span style="color:#268bd2">key</span> &lt; <span style="color:#859900">this</span>.<span style="color:#268bd2">minNode</span>.<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">this</span>.<span style="color:#268bd2">minNode</span> = <span style="color:#268bd2">node</span>;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">n</span>++;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">node</span>; <span style="color:#93a1a1;font-style:italic">// Return node for decreaseKey reference
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">findMin</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#859900">this</span>.<span style="color:#268bd2">minNode</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">extractMin</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Very complex operation, simplified for conceptual understanding.
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#93a1a1;font-style:italic">// Involves removing minNode, adding its children to root list,
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#93a1a1;font-style:italic">// and then consolidating the root list.
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">if</span> (<span style="color:#859900">this</span>.<span style="color:#268bd2">minNode</span> === <span style="color:#859900;font-weight:bold">null</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">const</span> <span style="color:#268bd2">z</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">minNode</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">z</span>.<span style="color:#268bd2">child</span> !== <span style="color:#859900;font-weight:bold">null</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">let</span> <span style="color:#268bd2">childrenToAdd</span> = [];
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">let</span> <span style="color:#268bd2">currChild</span> = <span style="color:#268bd2">z</span>.<span style="color:#268bd2">child</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">do</span> { <span style="color:#93a1a1;font-style:italic">// Iterate through z&#39;s children (circular list)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#268bd2">childrenToAdd</span>.<span style="color:#268bd2">push</span>(<span style="color:#268bd2">currChild</span>);
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">currChild</span>.<span style="color:#268bd2">parent</span> = <span style="color:#859900;font-weight:bold">null</span>; <span style="color:#93a1a1;font-style:italic">// Remove parent link
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#268bd2">currChild</span> = <span style="color:#268bd2">currChild</span>.<span style="color:#268bd2">right</span>;
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">while</span> (<span style="color:#268bd2">currChild</span> !== <span style="color:#268bd2">z</span>.<span style="color:#268bd2">child</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">for</span> (<span style="color:#859900">const</span> <span style="color:#268bd2">child</span> <span style="color:#859900">of</span> <span style="color:#268bd2">childrenToAdd</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">this</span>.<span style="color:#268bd2">_addToRootList</span>(<span style="color:#268bd2">child</span>);
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Remove z from root list
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">_removeFromRootList</span>(<span style="color:#268bd2">z</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">n</span>--;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#859900">this</span>.<span style="color:#268bd2">n</span> === <span style="color:#2aa198;font-weight:bold">0</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">this</span>.<span style="color:#268bd2">minNode</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">this</span>.<span style="color:#268bd2">minNode</span> = <span style="color:#268bd2">z</span>.<span style="color:#268bd2">right</span>; <span style="color:#93a1a1;font-style:italic">// Pick an arbitrary new minNode
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#93a1a1;font-style:italic">// this._consolidate(); // This is the most complex part, omitted for brevity
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">z</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">_addToRootList</span>(<span style="color:#268bd2">node</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#859900">this</span>.<span style="color:#268bd2">minNode</span> === <span style="color:#859900;font-weight:bold">null</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">this</span>.<span style="color:#268bd2">minNode</span> = <span style="color:#268bd2">node</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">node</span>.<span style="color:#268bd2">left</span> = <span style="color:#268bd2">node</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">node</span>.<span style="color:#268bd2">right</span> = <span style="color:#268bd2">node</span>;
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Insert node next to minNode in the circular list
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#268bd2">node</span>.<span style="color:#268bd2">left</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">minNode</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">node</span>.<span style="color:#268bd2">right</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">minNode</span>.<span style="color:#268bd2">right</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">this</span>.<span style="color:#268bd2">minNode</span>.<span style="color:#268bd2">right</span>.<span style="color:#268bd2">left</span> = <span style="color:#268bd2">node</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">this</span>.<span style="color:#268bd2">minNode</span>.<span style="color:#268bd2">right</span> = <span style="color:#268bd2">node</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">_removeFromRootList</span>(<span style="color:#268bd2">node</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">node</span>.<span style="color:#268bd2">left</span>.<span style="color:#268bd2">right</span> = <span style="color:#268bd2">node</span>.<span style="color:#268bd2">right</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">node</span>.<span style="color:#268bd2">right</span>.<span style="color:#268bd2">left</span> = <span style="color:#268bd2">node</span>.<span style="color:#268bd2">left</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Conceptual decreaseKey (full implementation very involved)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">decreaseKey</span>(<span style="color:#268bd2">node</span>, <span style="color:#268bd2">newKey</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">newKey</span> &gt; <span style="color:#268bd2">node</span>.<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">throw</span> <span style="color:#859900">new</span> <span style="color:#cb4b16">Error</span>(<span style="color:#2aa198">&#34;New key is greater than current key&#34;</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">node</span>.<span style="color:#268bd2">key</span> = <span style="color:#268bd2">newKey</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">const</span> <span style="color:#268bd2">y</span> = <span style="color:#268bd2">node</span>.<span style="color:#268bd2">parent</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">y</span> !== <span style="color:#859900;font-weight:bold">null</span> &amp;&amp; <span style="color:#268bd2">node</span>.<span style="color:#268bd2">key</span> &lt; <span style="color:#268bd2">y</span>.<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Cut node from its parent
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#93a1a1;font-style:italic">// this._cut(node, y); // Complex operation, omitted
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#93a1a1;font-style:italic">// this._cascadingCut(y); // Complex operation, omitted
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">node</span>.<span style="color:#268bd2">key</span> &lt; <span style="color:#859900">this</span>.<span style="color:#268bd2">minNode</span>.<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">this</span>.<span style="color:#268bd2">minNode</span> = <span style="color:#268bd2">node</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">merge</span>(<span style="color:#268bd2">otherHeap</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Simply concatenate root lists
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">if</span> (<span style="color:#859900">this</span>.<span style="color:#268bd2">minNode</span> === <span style="color:#859900;font-weight:bold">null</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">this</span>.<span style="color:#268bd2">minNode</span> = <span style="color:#268bd2">otherHeap</span>.<span style="color:#268bd2">minNode</span>;
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> <span style="color:#859900">if</span> (<span style="color:#268bd2">otherHeap</span>.<span style="color:#268bd2">minNode</span> !== <span style="color:#859900;font-weight:bold">null</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Splice otherHeap&#39;s root list into self.minNode&#39;s root list
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">this</span>.<span style="color:#268bd2">minNode</span>.<span style="color:#268bd2">right</span>.<span style="color:#268bd2">left</span> = <span style="color:#268bd2">otherHeap</span>.<span style="color:#268bd2">minNode</span>.<span style="color:#268bd2">left</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">otherHeap</span>.<span style="color:#268bd2">minNode</span>.<span style="color:#268bd2">left</span>.<span style="color:#268bd2">right</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">minNode</span>.<span style="color:#268bd2">right</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">this</span>.<span style="color:#268bd2">minNode</span>.<span style="color:#268bd2">right</span> = <span style="color:#268bd2">otherHeap</span>.<span style="color:#268bd2">minNode</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">otherHeap</span>.<span style="color:#268bd2">minNode</span>.<span style="color:#268bd2">left</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">minNode</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">otherHeap</span>.<span style="color:#268bd2">minNode</span>.<span style="color:#268bd2">key</span> &lt; <span style="color:#859900">this</span>.<span style="color:#268bd2">minNode</span>.<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">this</span>.<span style="color:#268bd2">minNode</span> = <span style="color:#268bd2">otherHeap</span>.<span style="color:#268bd2">minNode</span>;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">n</span> += <span style="color:#268bd2">otherHeap</span>.<span style="color:#268bd2">n</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Example Usage (highly conceptual due to complexity of full implementation):
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const fHeap = new FibonacciHeap();
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const node1 = fHeap.insert(10);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const node2 = fHeap.insert(3);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// fHeap.insert(15);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Min node:&#34;, fHeap.findMin().key); // Expected: 3
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// // fHeap.decreaseKey(node1, 2); // Requires full cut/cascading cut
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// // console.log(&#34;Min node after decreaseKey:&#34;, fHeap.findMin().key);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const extractedMin = fHeap.extractMin();
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Extracted min:&#34;, extractedMin.key); // Expected: 3
+</span></span></span></code></pre></div><h3 id="cpp">Cpp</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;iostream&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;vector&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;algorithm&gt;</span><span style="color:#93a1a1;font-style:italic"> </span><span style="color:#93a1a1;font-style:italic">// For std::min
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;limits&gt;</span><span style="color:#93a1a1;font-style:italic">    </span><span style="color:#93a1a1;font-style:italic">// For std::numeric_limits
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Conceptual Fibonacci Heap Node
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#859900">class</span> <span style="color:#cb4b16">FibonacciHeapNode</span> {
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">key</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">void</span>&lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">value</span>; <span style="color:#93a1a1;font-style:italic">// Can store any associated value
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">FibonacciHeapNode</span>&lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">parent</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">FibonacciHeapNode</span>&lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">child</span>; <span style="color:#93a1a1;font-style:italic">// Pointer to any one of its children
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">FibonacciHeapNode</span>&lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">left</span>;  <span style="color:#93a1a1;font-style:italic">// Pointers for circular doubly linked list of siblings
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">FibonacciHeapNode</span>&lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">right</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">degree</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">bool</span> <span style="color:#268bd2">mark</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">FibonacciHeapNode</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">k</span>, <span style="color:#859900;font-weight:bold">void</span>&lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">val</span> = <span style="color:#859900">nullptr</span>) :
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">key</span>(<span style="color:#268bd2">k</span>), <span style="color:#268bd2">value</span>(<span style="color:#268bd2">val</span>), <span style="color:#268bd2">parent</span>(<span style="color:#859900">nullptr</span>), <span style="color:#268bd2">child</span>(<span style="color:#859900">nullptr</span>),
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">left</span>(<span style="color:#859900">this</span>), <span style="color:#268bd2">right</span>(<span style="color:#859900">this</span>), <span style="color:#268bd2">degree</span>(<span style="color:#2aa198;font-weight:bold">0</span>), <span style="color:#268bd2">mark</span>(<span style="color:#cb4b16">false</span>) {}
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Conceptual Fibonacci Heap (Simplified - full implementation is very complex)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#859900">class</span> <span style="color:#cb4b16">FibonacciHeap</span> {
+</span></span><span style="display:flex;"><span><span style="color:#859900">private</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">FibonacciHeapNode</span>&lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">min_node</span>; <span style="color:#93a1a1;font-style:italic">// Pointer to the node with the minimum key
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">n</span>; <span style="color:#93a1a1;font-style:italic">// Number of nodes in the heap
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Helper to add a node to the root list (circular doubly linked list)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">_add_to_root_list</span>(<span style="color:#268bd2">FibonacciHeapNode</span>&lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">node</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">min_node</span> == <span style="color:#859900">nullptr</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">min_node</span> = <span style="color:#268bd2">node</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">left</span> = <span style="color:#268bd2">node</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">right</span> = <span style="color:#268bd2">node</span>;
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Insert node next to min_node in the circular list
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">left</span> = <span style="color:#268bd2">min_node</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">right</span> = <span style="color:#268bd2">min_node</span>-&gt;<span style="color:#268bd2">right</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">min_node</span>-&gt;<span style="color:#268bd2">right</span>-&gt;<span style="color:#268bd2">left</span> = <span style="color:#268bd2">node</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">min_node</span>-&gt;<span style="color:#268bd2">right</span> = <span style="color:#268bd2">node</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Helper to remove a node from the root list
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">_remove_from_root_list</span>(<span style="color:#268bd2">FibonacciHeapNode</span>&lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">node</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">left</span>-&gt;<span style="color:#268bd2">right</span> = <span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">right</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">right</span>-&gt;<span style="color:#268bd2">left</span> = <span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">left</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Consolidate is the most complex part, omitted for brevity.
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#93a1a1;font-style:italic">// It reduces the number of trees in the heap after extract_min.
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">_consolidate</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Pseudo-code:
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#93a1a1;font-style:italic">// Create an array of pointers to roots, indexed by degree.
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#93a1a1;font-style:italic">// Iterate through root list, linking trees of same degree.
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#93a1a1;font-style:italic">// Update min_node.
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Cut and Cascading Cut are complex, omitted for brevity.
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#93a1a1;font-style:italic">// They are used in decrease_key to maintain heap properties.
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">_cut</span>(<span style="color:#268bd2">FibonacciHeapNode</span>&lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">x</span>, <span style="color:#268bd2">FibonacciHeapNode</span>&lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">y</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Remove x from y&#39;s child list
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#93a1a1;font-style:italic">// Add x to the root list
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#93a1a1;font-style:italic">// y.degree--
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#93a1a1;font-style:italic">// x.mark = false
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">_cascading_cut</span>(<span style="color:#268bd2">FibonacciHeapNode</span>&lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">y</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// if y has a parent and is marked, cut y from its parent
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#93a1a1;font-style:italic">// if y is unmarked, mark it
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">FibonacciHeap</span>() : <span style="color:#268bd2">min_node</span>(<span style="color:#859900">nullptr</span>), <span style="color:#268bd2">n</span>(<span style="color:#2aa198;font-weight:bold">0</span>) {}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Destructor (important for memory management in C++)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    ~<span style="color:#268bd2">FibonacciHeap</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Proper recursive deletion of all nodes is complex for Fibonacci Heap
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#93a1a1;font-style:italic">// For conceptual simplicity, this is often a major challenge.
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#93a1a1;font-style:italic">// In a full implementation, you&#39;d iterate through all nodes and delete them.
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">FibonacciHeapNode</span>&lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">insert</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">key</span>, <span style="color:#859900;font-weight:bold">void</span>&lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">value</span> = <span style="color:#859900">nullptr</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">FibonacciHeapNode</span>&lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">node</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">FibonacciHeapNode</span>(<span style="color:#268bd2">key</span>, <span style="color:#268bd2">value</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">_add_to_root_list</span>(<span style="color:#268bd2">node</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">key</span> &lt; <span style="color:#268bd2">min_node</span>-&gt;<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">min_node</span> = <span style="color:#268bd2">node</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">n</span>++;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">node</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">FibonacciHeapNode</span>&lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">find_min</span>() <span style="color:#859900">const</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">min_node</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">FibonacciHeapNode</span>&lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">extract_min</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">min_node</span> == <span style="color:#859900">nullptr</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#859900">nullptr</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">FibonacciHeapNode</span>&lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">z</span> = <span style="color:#268bd2">min_node</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Add children of z to the root list
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">z</span>-&gt;<span style="color:#268bd2">child</span> != <span style="color:#859900">nullptr</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">FibonacciHeapNode</span>&lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">current_child</span> = <span style="color:#268bd2">z</span>-&gt;<span style="color:#268bd2">child</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">do</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">FibonacciHeapNode</span>&lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">next_child</span> = <span style="color:#268bd2">current_child</span>-&gt;<span style="color:#268bd2">right</span>;
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">_remove_from_root_list</span>(<span style="color:#268bd2">current_child</span>); <span style="color:#93a1a1;font-style:italic">// Temporarily remove from old child list
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#268bd2">_add_to_root_list</span>(<span style="color:#268bd2">current_child</span>); <span style="color:#93a1a1;font-style:italic">// Add to new root list
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#268bd2">current_child</span>-&gt;<span style="color:#268bd2">parent</span> = <span style="color:#859900">nullptr</span>;
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">current_child</span> = <span style="color:#268bd2">next_child</span>;
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">while</span> (<span style="color:#268bd2">current_child</span> != <span style="color:#268bd2">z</span>-&gt;<span style="color:#268bd2">child</span>); <span style="color:#93a1a1;font-style:italic">// Fixed: loop until we&#39;ve processed all children
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">_remove_from_root_list</span>(<span style="color:#268bd2">z</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">n</span>--;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">n</span> == <span style="color:#2aa198;font-weight:bold">0</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">min_node</span> = <span style="color:#859900">nullptr</span>;
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// This is the most complex part: consolidate the root list
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#93a1a1;font-style:italic">// For conceptual code, we&#39;ll just pick a new min and skip consolidation.
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#93a1a1;font-style:italic">// In a real implementation, call _consolidate() here.
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#268bd2">min_node</span> = <span style="color:#268bd2">min_node</span>-&gt;<span style="color:#268bd2">right</span>; <span style="color:#93a1a1;font-style:italic">// Arbitrary new min for demonstration
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#93a1a1;font-style:italic">// _consolidate(); // Placeholder
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">z</span>; <span style="color:#93a1a1;font-style:italic">// The extracted node (caller is responsible for deleting it)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">decrease_key</span>(<span style="color:#268bd2">FibonacciHeapNode</span>&lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">x</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">new_key</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">new_key</span> &gt; <span style="color:#268bd2">x</span>-&gt;<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">throw</span> <span style="color:#268bd2">std</span>::<span style="color:#268bd2">runtime_error</span>(<span style="color:#2aa198">&#34;New key is greater than current key&#34;</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">x</span>-&gt;<span style="color:#268bd2">key</span> = <span style="color:#268bd2">new_key</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">FibonacciHeapNode</span>&lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">y</span> = <span style="color:#268bd2">x</span>-&gt;<span style="color:#268bd2">parent</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">y</span> != <span style="color:#859900">nullptr</span> &amp;&amp; <span style="color:#268bd2">x</span>-&gt;<span style="color:#268bd2">key</span> &lt; <span style="color:#268bd2">y</span>-&gt;<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// _cut(x, y); // Placeholder for cut operation
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#93a1a1;font-style:italic">// _cascading_cut(y); // Placeholder for cascading cut operation
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">x</span>-&gt;<span style="color:#268bd2">key</span> &lt; <span style="color:#268bd2">min_node</span>-&gt;<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">min_node</span> = <span style="color:#268bd2">x</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">merge</span>(<span style="color:#268bd2">FibonacciHeap</span>&lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">other_heap</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">min_node</span> == <span style="color:#859900">nullptr</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">min_node</span> = <span style="color:#268bd2">other_heap</span>-&gt;<span style="color:#268bd2">min_node</span>;
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> <span style="color:#859900">if</span> (<span style="color:#268bd2">other_heap</span>-&gt;<span style="color:#268bd2">min_node</span> != <span style="color:#859900">nullptr</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Concatenate the root lists
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#268bd2">FibonacciHeapNode</span>&lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">this_right</span> = <span style="color:#268bd2">min_node</span>-&gt;<span style="color:#268bd2">right</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">FibonacciHeapNode</span>* <span style="color:#268bd2">other_left</span> = <span style="color:#268bd2">other_heap</span>-&gt;<span style="color:#268bd2">min_node</span>-&gt;<span style="color:#268bd2">left</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">min_node</span>-&gt;<span style="color:#268bd2">right</span> = <span style="color:#268bd2">other_heap</span>-&gt;<span style="color:#268bd2">min_node</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">other_heap</span>-&gt;<span style="color:#268bd2">min_node</span>-&gt;<span style="color:#268bd2">left</span> = <span style="color:#268bd2">min_node</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">this_right</span>-&gt;<span style="color:#268bd2">left</span> = <span style="color:#268bd2">other_left</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">other_left</span>-&gt;<span style="color:#268bd2">right</span> = <span style="color:#268bd2">this_right</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">other_heap</span>-&gt;<span style="color:#268bd2">min_node</span>-&gt;<span style="color:#268bd2">key</span> &lt; <span style="color:#268bd2">min_node</span>-&gt;<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">min_node</span> = <span style="color:#268bd2">other_heap</span>-&gt;<span style="color:#268bd2">min_node</span>;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">n</span> += <span style="color:#268bd2">other_heap</span>-&gt;<span style="color:#268bd2">n</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">other_heap</span>-&gt;<span style="color:#268bd2">min_node</span> = <span style="color:#859900">nullptr</span>; <span style="color:#93a1a1;font-style:italic">// Ensure other_heap is empty
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">other_heap</span>-&gt;<span style="color:#268bd2">n</span> = <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></div><h2 id="code-walkthrough">Code Walkthrough</h2>
+<h3 id="code-walkthrough-1">Code Walkthrough</h3>
+<p>A full <code>Fibonacci Heap</code> implementation is notoriously complex due to its intricate structure and &lsquo;<code>lazy</code>&rsquo; operations. The provided conceptual code highlights the main classes and the high-level steps of some operations.</p>
+<hr>
+<p><strong><code>FibonacciHeapNode</code> Class:</strong> Represents a <code>node</code> in the heap.</p>
+<pre><code>- `key`, `value`: Data stored in the `node`.
+
+- `parent`, `child`: Pointers to parent and one child.
+
+- `left`, `right`: Pointers for the circular doubly linked list of siblings.
+
+- `degree`: Number of children.
+
+- `mark`: A boolean flag for `decrease-key` operations.
+</code></pre>
+<p><strong><code>FibonacciHeap</code> Class:</strong> Manages the collection of trees.</p>
+<pre><code>- `min_node`: Pointer to the `node` with the minimum `key` in the entire heap.
+
+- `n`: Total number of `nodes` in the heap.
+
+- **`insert(key, value)`:** Creates a new `FibonacciHeapNode` and adds it to the `root list` (a circular doubly linked list of tree `roots`). Updates `min_node` if the new `node`'s `key` is smaller. `O(1)` amortized.
+
+- **`find_min()`:** Returns `min_node`. `O(1)`.
+
+- **`extract_min()`:** The most complex operation. It removes the `min_node`, adds its children to the `root list`, and then (conceptually) calls a `consolidate` function. This `consolidate` operation reduces the number of trees in the `root list` by linking trees of the same degree. `O(log n)` amortized.
+
+- **`decrease_key(node, new_key)`:** Decreases a `node`'s `key`. If this violates the `min-heap` property, the `node` is '`cut`' from its parent and moved to the `root list`. This can trigger '`cascading cuts`' up the tree if parents also violate their `min-heap` property. `O(1)` amortized.
+
+- **`merge(other_heap)`:** Concatenates the `root lists` of two `Fibonacci Heaps`. `O(1)`.
+</code></pre>
+<h2 id="applications">Applications</h2>
+<h3 id="application">Application</h3>
+<p>Fibonacci Heaps are primarily of theoretical importance due to their excellent amortized time complexities. Their most famous application is in optimizing graph algorithms. For instance, they are used to improve the asymptotic running time of <strong>Dijkstra&rsquo;s shortest path algorithm</strong> to <code>O(E + V log V)</code> and <strong>Prim&rsquo;s algorithm for minimum spanning trees</strong> to <code>O(E + V log V)</code>, which is a significant improvement for dense graphs. While their high constant factors make them less practical for many real-world applications compared to simpler heaps, they are essential for theoretical computer science and in scenarios where the <code>decrease-key</code> operation is very frequent.</p>
+
+    </div>
+</article>
+
+<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
+    
+    <a href="//localhost:1313/dsa-42_/data_structures/specialized/hyperloglog/" class="nav-btn">← Previous</a>
+    
+    
+    <a href="//localhost:1313/dsa-42_/data_structures/specialized/" class="nav-btn">Up</a>
+
+    
+    <a href="//localhost:1313/dsa-42_/data_structures/specialized/fenwick_tree/" class="nav-btn">Next →</a>
+    
+</div>
+
+    </main>
+
+    <footer class="footer">
+        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
+    </footer>
+
+    <script>
+        const body = document.getElementById('theme-body');
+        const btn = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme');
+
+        
+        function updateButtonText() {
+            if (body.classList.contains('theme-terminal')) {
+                btn.textContent = "Light Mode";
+            } else {
+                btn.textContent = "Dark Mode";
+            }
+        }
+
+        if (currentTheme === 'terminal') {
+            body.classList.add('theme-terminal');
+        }
+        
+        
+        updateButtonText();
+
+        btn.addEventListener('click', () => {
+            body.classList.toggle('theme-terminal');
+            updateButtonText();
+            
+            let theme = 'natural';
+            if (body.classList.contains('theme-terminal')) {
+                theme = 'terminal';
+            }
+            localStorage.setItem('theme', theme);
+        });
+    </script>
+</body>
+</html>

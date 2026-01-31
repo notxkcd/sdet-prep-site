@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matrix Chain Multiplication | SDET Interview Preparation Kit</title>
+    <link rel="stylesheet" href="//localhost:1313/css/style.css">
+    <link rel="stylesheet" href="//localhost:1313/css/terminal.css">
+    
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    
+    <link rel="stylesheet" href="//localhost:1313/lib/katex/katex.min.css">
+    <script defer src="//localhost:1313/lib/katex/katex.min.js"></script>
+    <script defer src="//localhost:1313/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</head>
+<body id="theme-body">
+    <button id="theme-toggle">Switch Theme</button>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="//localhost:1313/">Index</a></li>
+                
+            </ul>
+        </nav>
+        <div class="site-breadcrumb">
+            <a href="//localhost:1313/">Home</a>
+            
+                
+                    <span>/</span> <a href="//localhost:1313/">SDET Interview Dashboard</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/dsa-42/">42 Algorithms &amp; 42 Data Structures</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/dsa-42/algorithms/">Algorithms</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/dsa-42/algorithms/dynamic_programming/">Dynamic Programming</a>
+                
+            
+            
+                <span>/</span> Matrix Chain Multiplication
+            
+        </div>
+    </header>
+
+    <main>
+        
+<article>
+    <div class="category-title" style="margin-bottom: 0.5rem;">Dynamic Programming</div>
+    <h1>Matrix Chain Multiplication</h1>
+    <div class="content-body" style="margin-top: 2rem;">
+        <p>The <code>Matrix Chain Multiplication</code> problem is a classic optimization problem that can be efficiently solved using <code>dynamic programming</code>. Given a sequence of matrices, the goal is to find the most efficient way to multiply these matrices. The problem is not about performing the actual multiplications, but merely determining the order of parenthesization that minimizes the total number of scalar multiplications.</p>
+<p>Matrix multiplication is associative, meaning that the order in which matrices are multiplied does not affect the final product. However, the number of scalar multiplications required can vary dramatically depending on the order of parenthesization.</p>
+<h2 id="how-it-works">How it Works</h2>
+<h3 id="how-it-works-expanded">How it Works (Expanded)</h3>
+<p>To multiply a <code>p x q</code> matrix <code>A</code> by a <code>q x r</code> matrix <code>B</code>, the resulting matrix <code>C</code> will be <code>p x r</code>, and it will require <code>p * q * r</code> scalar multiplications. The key insight is that for a chain of matrices <code>A1 * A2 * ... * An</code>, a final multiplication splits the chain into two sub-chains: <code>(A1 * ... * Ak) * (Ak+1 * ... * An)</code>. The optimal solution for the whole chain contains optimal solutions for its sub-chains.</p>
+<hr>
+<p>Example: Chain of matrices A1, A2, A3, A4
+Dimensions: A1(10x100), A2(100x5), A3(5x50), A4(50x1)</p>
+<p>Possible parenthesizations:</p>
+<ul>
+<li>((A1A2)A3)A4:</li>
+<li>(A1A2) costs 10<em>100</em>5 = 5000 (result 10x5)</li>
+<li>((A1A2)A3) costs 5000 + 10<em>5</em>50 = 7500 (result 10x50)</li>
+<li>(((A1A2)A3)A4) costs 7500 + 10<em>50</em>1 = 8000</li>
+<li>(A1(A2A3))A4:</li>
+<li>(A2A3) costs 100<em>5</em>50 = 25000 (result 100x50)</li>
+<li>(A1(A2A3)) costs 25000 + 10<em>100</em>50 = 75000 (result 10x50)</li>
+<li>((A1(A2A3))A4) costs 75000 + 10<em>50</em>1 = 75500</li>
+<li>&hellip; and so on.</li>
+</ul>
+<p>The goal is to find the minimum.</p>
+<p><a href="#code-walkthrough">Jump to Code Walkthrough</a></p>
+<h2 id="implementation">Implementation</h2>
+<h3 id="python">Python</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">sys</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">def</span> <span style="color:#268bd2">matrix_chain_order</span>(<span style="color:#268bd2">dims</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">n</span> = <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">dims</span>) - <span style="color:#2aa198;font-weight:bold">1</span> <span style="color:#93a1a1;font-style:italic"># Number of matrices</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># m[i][j] stores the minimum number of scalar multiplications</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># needed to compute the matrix A[i]...A[j]</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">m</span> = [[<span style="color:#2aa198;font-weight:bold">0</span> <span style="color:#859900">for</span> <span style="color:#268bd2">_</span> <span style="color:#859900">in</span> <span style="color:#cb4b16">range</span>(<span style="color:#268bd2">n</span>)] <span style="color:#859900">for</span> <span style="color:#268bd2">_</span> <span style="color:#859900">in</span> <span style="color:#cb4b16">range</span>(<span style="color:#268bd2">n</span>)]
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># s[i][j] stores the index k where the optimal split occurs</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">s</span> = [[<span style="color:#2aa198;font-weight:bold">0</span> <span style="color:#859900">for</span> <span style="color:#268bd2">_</span> <span style="color:#859900">in</span> <span style="color:#cb4b16">range</span>(<span style="color:#268bd2">n</span>)] <span style="color:#859900">for</span> <span style="color:#268bd2">_</span> <span style="color:#859900">in</span> <span style="color:#cb4b16">range</span>(<span style="color:#268bd2">n</span>)]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># chain length L from 2 to n</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">L</span> <span style="color:#859900">in</span> <span style="color:#cb4b16">range</span>(<span style="color:#2aa198;font-weight:bold">2</span>, <span style="color:#268bd2">n</span> + <span style="color:#2aa198;font-weight:bold">1</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> <span style="color:#859900">in</span> <span style="color:#cb4b16">range</span>(<span style="color:#268bd2">n</span> - <span style="color:#268bd2">L</span> + <span style="color:#2aa198;font-weight:bold">1</span>):
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">j</span> = <span style="color:#268bd2">i</span> + <span style="color:#268bd2">L</span> - <span style="color:#2aa198;font-weight:bold">1</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">m</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#268bd2">sys</span>.<span style="color:#268bd2">maxsize</span> <span style="color:#93a1a1;font-style:italic"># Initialize with a very large value</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic"># Try all possible split points k</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">for</span> <span style="color:#268bd2">k</span> <span style="color:#859900">in</span> <span style="color:#cb4b16">range</span>(<span style="color:#268bd2">i</span>, <span style="color:#268bd2">j</span>):
+</span></span><span style="display:flex;"><span>                <span style="color:#93a1a1;font-style:italic"># cost = cost of (A[i]...A[k]) + cost of (A[k+1]...A[j]) + cost of multiplying results</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">cost</span> = <span style="color:#268bd2">m</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">k</span>] + <span style="color:#268bd2">m</span>[<span style="color:#268bd2">k</span> + <span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">j</span>] + <span style="color:#268bd2">dims</span>[<span style="color:#268bd2">i</span>] &lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">dims</span>[<span style="color:#268bd2">k</span> + <span style="color:#2aa198;font-weight:bold">1</span>] &lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">dims</span>[<span style="color:#268bd2">j</span> + <span style="color:#2aa198;font-weight:bold">1</span>]
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">if</span> <span style="color:#268bd2">cost</span> &lt; <span style="color:#268bd2">m</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>]:
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">m</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#268bd2">cost</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">s</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#268bd2">k</span> <span style="color:#93a1a1;font-style:italic"># Store the split point</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">m</span>[<span style="color:#2aa198;font-weight:bold">0</span>][<span style="color:#268bd2">n</span>-<span style="color:#2aa198;font-weight:bold">1</span>], <span style="color:#268bd2">s</span> <span style="color:#93a1a1;font-style:italic"># Return min multiplications and split points</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">def</span> <span style="color:#268bd2">print_optimal_parenthesization</span>(<span style="color:#268bd2">s</span>, <span style="color:#268bd2">i</span>, <span style="color:#268bd2">j</span>, <span style="color:#268bd2">names</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#268bd2">i</span> == <span style="color:#268bd2">j</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">names</span>[<span style="color:#268bd2">i</span>]
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">else</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#2aa198">&#34;(&#34;</span> + <span style="color:#268bd2">print_optimal_parenthesization</span>(<span style="color:#268bd2">s</span>, <span style="color:#268bd2">i</span>, <span style="color:#268bd2">s</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>], <span style="color:#268bd2">names</span>) + \
+</span></span><span style="display:flex;"><span>               <span style="color:#268bd2">print_optimal_parenthesization</span>(<span style="color:#268bd2">s</span>, <span style="color:#268bd2">s</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] + <span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">j</span>, <span style="color:#268bd2">names</span>) + <span style="color:#2aa198">&#34;)&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># Example</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># A1: 10x100, A2: 100x5, A3: 5x50, A4: 50x1</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># Dimensions array: p = [p0, p1, p2, p3, p4] =&gt; A1(p0xp1), A2(p1xp2), ...</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># So, dims = [10, 100, 5, 50, 1]</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># min_mults, splits = matrix_chain_order(dims)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(&#34;Minimum scalar multiplications:&#34;, min_mults) # Expected: 1550</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># # To reconstruct parenthesization:</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># matrix_names = [&#34;A1&#34;, &#34;A2&#34;, &#34;A3&#34;, &#34;A4&#34;]</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(&#34;Optimal Parenthesization:&#34;, print_optimal_parenthesization(splits, 0, len(dims) - 2, matrix_names)) # Expected: ((A1(A2A3))A4)</span>
+</span></span></code></pre></div><h3 id="javascript">Javascript</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#859900">function</span> <span style="color:#268bd2">matrixChainOrder</span>(<span style="color:#268bd2">dims</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">const</span> <span style="color:#268bd2">n</span> = <span style="color:#268bd2">dims</span>.<span style="color:#268bd2">length</span> - <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#93a1a1;font-style:italic">// Number of matrices
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// m[i][j] stores the minimum number of scalar multiplications
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#93a1a1;font-style:italic">// needed to compute the matrix A[i]...A[j]
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">const</span> <span style="color:#268bd2">m</span> = <span style="color:#cb4b16">Array</span>(<span style="color:#268bd2">n</span>).<span style="color:#268bd2">fill</span>(<span style="color:#2aa198;font-weight:bold">0</span>).<span style="color:#268bd2">map</span>(() =&gt; <span style="color:#cb4b16">Array</span>(<span style="color:#268bd2">n</span>).<span style="color:#268bd2">fill</span>(<span style="color:#2aa198;font-weight:bold">0</span>));
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// s[i][j] stores the index k where the optimal split occurs
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">const</span> <span style="color:#268bd2">s</span> = <span style="color:#cb4b16">Array</span>(<span style="color:#268bd2">n</span>).<span style="color:#268bd2">fill</span>(<span style="color:#2aa198;font-weight:bold">0</span>).<span style="color:#268bd2">map</span>(() =&gt; <span style="color:#cb4b16">Array</span>(<span style="color:#268bd2">n</span>).<span style="color:#268bd2">fill</span>(<span style="color:#2aa198;font-weight:bold">0</span>));
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// chain length L from 2 to n
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">L</span> = <span style="color:#2aa198;font-weight:bold">2</span>; <span style="color:#268bd2">L</span> &lt;= <span style="color:#268bd2">n</span>; <span style="color:#268bd2">L</span>++) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt;= <span style="color:#268bd2">n</span> - <span style="color:#268bd2">L</span>; <span style="color:#268bd2">i</span>++) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">const</span> <span style="color:#268bd2">j</span> = <span style="color:#268bd2">i</span> + <span style="color:#268bd2">L</span> - <span style="color:#2aa198;font-weight:bold">1</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">m</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#859900;font-weight:bold">Infinity</span>; <span style="color:#93a1a1;font-style:italic">// Initialize with a very large value
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Try all possible split points k
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">k</span> = <span style="color:#268bd2">i</span>; <span style="color:#268bd2">k</span> &lt; <span style="color:#268bd2">j</span>; <span style="color:#268bd2">k</span>++) {
+</span></span><span style="display:flex;"><span>                <span style="color:#93a1a1;font-style:italic">// cost = cost of (A[i]...A[k]) + cost of (A[k+1]...A[j]) + cost of multiplying results
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#859900">const</span> <span style="color:#268bd2">cost</span> = <span style="color:#268bd2">m</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">k</span>] + <span style="color:#268bd2">m</span>[<span style="color:#268bd2">k</span> + <span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">j</span>] + <span style="color:#268bd2">dims</span>[<span style="color:#268bd2">i</span>] &lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">dims</span>[<span style="color:#268bd2">k</span> + <span style="color:#2aa198;font-weight:bold">1</span>] &lt;/em&gt; dims[j + 1];
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">if</span> (<span style="color:#268bd2">cost</span> &lt; <span style="color:#268bd2">m</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>]) {
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">m</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#268bd2">cost</span>;
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">s</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#268bd2">k</span>; <span style="color:#93a1a1;font-style:italic">// Store the split point
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> { <span style="color:#268bd2">minMults</span>: <span style="color:#268bd2">m</span>[<span style="color:#2aa198;font-weight:bold">0</span>][<span style="color:#268bd2">n</span>-<span style="color:#2aa198;font-weight:bold">1</span>], <span style="color:#268bd2">splits</span>: <span style="color:#268bd2">s</span> };
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">function</span> <span style="color:#268bd2">printOptimalParenthesization</span>(<span style="color:#268bd2">s</span>, <span style="color:#268bd2">i</span>, <span style="color:#268bd2">j</span>, <span style="color:#268bd2">names</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">i</span> === <span style="color:#268bd2">j</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">names</span>[<span style="color:#268bd2">i</span>];
+</span></span><span style="display:flex;"><span>    } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#2aa198">&#34;(&#34;</span> + <span style="color:#268bd2">printOptimalParenthesization</span>(<span style="color:#268bd2">s</span>, <span style="color:#268bd2">i</span>, <span style="color:#268bd2">s</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>], <span style="color:#268bd2">names</span>) +
+</span></span><span style="display:flex;"><span>               <span style="color:#268bd2">printOptimalParenthesization</span>(<span style="color:#268bd2">s</span>, <span style="color:#268bd2">s</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] + <span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">j</span>, <span style="color:#268bd2">names</span>) + <span style="color:#2aa198">&#34;)&#34;</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const dims = [10, 100, 5, 50, 1]; // A1(10x100), A2(100x5), A3(5x50), A4(50x1)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const { minMults, splits } = matrixChainOrder(dims);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Minimum scalar multiplications:&#34;, minMults); // Expected: 1550
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const matrixNames = [&#34;A1&#34;, &#34;A2&#34;, &#34;A3&#34;, &#34;A4&#34;];
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Optimal Parenthesization:&#34;, printOptimalParenthesization(splits, 0, dims.length - 2, matrixNames)); // Expected: ((A1(A2A3))A4)
+</span></span></span></code></pre></div><h3 id="typescript">Typescript</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-typescript" data-lang="typescript"><span style="display:flex;"><span><span style="color:#859900">function</span> <span style="color:#268bd2">matrixChainOrderTS</span>(<span style="color:#268bd2">dims</span>: <span style="color:#859900;font-weight:bold">number</span>[]): { <span style="color:#268bd2">minMults</span>: <span style="color:#859900;font-weight:bold">number</span>; <span style="color:#268bd2">splits</span>: <span style="color:#859900;font-weight:bold">number</span>[][] } {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">const</span> <span style="color:#268bd2">n</span> = <span style="color:#268bd2">dims</span>.<span style="color:#268bd2">length</span> - <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#93a1a1;font-style:italic">// Number of matrices
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// m[i][j] stores the minimum number of scalar multiplications
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#93a1a1;font-style:italic">// needed to compute the matrix A[i]...A[j]
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">const</span> <span style="color:#268bd2">m</span>: <span style="color:#859900;font-weight:bold">number</span>[][] = <span style="color:#cb4b16">Array</span>(<span style="color:#268bd2">n</span>).<span style="color:#268bd2">fill</span>(<span style="color:#2aa198;font-weight:bold">0</span>).<span style="color:#268bd2">map</span>(() =&gt; <span style="color:#cb4b16">Array</span>(<span style="color:#268bd2">n</span>).<span style="color:#268bd2">fill</span>(<span style="color:#2aa198;font-weight:bold">0</span>));
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// s[i][j] stores the index k where the optimal split occurs
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">const</span> <span style="color:#268bd2">s</span>: <span style="color:#859900;font-weight:bold">number</span>[][] = <span style="color:#cb4b16">Array</span>(<span style="color:#268bd2">n</span>).<span style="color:#268bd2">fill</span>(<span style="color:#2aa198;font-weight:bold">0</span>).<span style="color:#268bd2">map</span>(() =&gt; <span style="color:#cb4b16">Array</span>(<span style="color:#268bd2">n</span>).<span style="color:#268bd2">fill</span>(<span style="color:#2aa198;font-weight:bold">0</span>));
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// chain length L from 2 to n
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">L</span> = <span style="color:#2aa198;font-weight:bold">2</span>; <span style="color:#268bd2">L</span> &lt;= <span style="color:#268bd2">n</span>; <span style="color:#268bd2">L</span>++) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt;= <span style="color:#268bd2">n</span> - <span style="color:#268bd2">L</span>; <span style="color:#268bd2">i</span>++) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">const</span> <span style="color:#268bd2">j</span> = <span style="color:#268bd2">i</span> + <span style="color:#268bd2">L</span> - <span style="color:#2aa198;font-weight:bold">1</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">m</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#859900;font-weight:bold">Infinity</span>; <span style="color:#93a1a1;font-style:italic">// Initialize with a very large value
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Try all possible split points k
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">k</span> = <span style="color:#268bd2">i</span>; <span style="color:#268bd2">k</span> &lt; <span style="color:#268bd2">j</span>; <span style="color:#268bd2">k</span>++) {
+</span></span><span style="display:flex;"><span>                <span style="color:#93a1a1;font-style:italic">// cost = cost of (A[i]...A[k]) + cost of (A[k+1]...A[j]) + cost of multiplying results
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#859900">const</span> <span style="color:#268bd2">cost</span> = <span style="color:#268bd2">m</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">k</span>] + <span style="color:#268bd2">m</span>[<span style="color:#268bd2">k</span> + <span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">j</span>] + <span style="color:#268bd2">dims</span>[<span style="color:#268bd2">i</span>] &lt;<span style="color:#268bd2;font-weight:bold">em</span>&gt; <span style="color:#268bd2">dims</span>[<span style="color:#268bd2">k</span> + <span style="color:#2aa198;font-weight:bold">1</span>] &lt;/<span style="color:#268bd2;font-weight:bold">em</span>&gt; <span style="color:#268bd2">dims</span>[<span style="color:#268bd2">j</span> + <span style="color:#2aa198;font-weight:bold">1</span>];
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">if</span> (<span style="color:#268bd2">cost</span> &lt; <span style="color:#268bd2">m</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>]) {
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">m</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#268bd2">cost</span>;
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">s</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#268bd2">k</span>; <span style="color:#93a1a1;font-style:italic">// Store the split point
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> { <span style="color:#268bd2">minMults</span>: <span style="color:#859900;font-weight:bold">m</span>[<span style="color:#2aa198;font-weight:bold">0</span>][<span style="color:#268bd2">n</span>-<span style="color:#2aa198;font-weight:bold">1</span>], <span style="color:#268bd2">splits</span>: <span style="color:#859900;font-weight:bold">s</span> };
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">function</span> <span style="color:#268bd2">printOptimalParenthesizationTS</span>(<span style="color:#268bd2">s</span>: <span style="color:#859900;font-weight:bold">number</span>[][], <span style="color:#268bd2">i</span>: <span style="color:#859900;font-weight:bold">number</span>, <span style="color:#268bd2">j</span>: <span style="color:#859900;font-weight:bold">number</span>, <span style="color:#268bd2">names</span>: <span style="color:#859900;font-weight:bold">string</span>[]): <span style="color:#859900;font-weight:bold">string</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">i</span> === <span style="color:#268bd2">j</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">names</span>[<span style="color:#268bd2">i</span>];
+</span></span><span style="display:flex;"><span>    } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#2aa198">&#34;(&#34;</span> + <span style="color:#268bd2">printOptimalParenthesizationTS</span>(<span style="color:#268bd2">s</span>, <span style="color:#268bd2">i</span>, <span style="color:#268bd2">s</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>], <span style="color:#268bd2">names</span>) +
+</span></span><span style="display:flex;"><span>               <span style="color:#268bd2">printOptimalParenthesizationTS</span>(<span style="color:#268bd2">s</span>, <span style="color:#268bd2">s</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] + <span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">j</span>, <span style="color:#268bd2">names</span>) + <span style="color:#2aa198">&#34;)&#34;</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const dimsTS = [10, 100, 5, 50, 1]; // A1(10x100), A2(100x5), A3(5x50), A4(50x1)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const { minMults: minMultsTS, splits: splitsTS } = matrixChainOrderTS(dimsTS);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Minimum scalar multiplications:&#34;, minMultsTS); // Expected: 1550
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const matrixNamesTS = [&#34;A1&#34;, &#34;A2&#34;, &#34;A3&#34;, &#34;A4&#34;];
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Optimal Parenthesization:&#34;, printOptimalParenthesizationTS(splitsTS, 0, dimsTS.length - 2, matrixNamesTS)); // Expected: ((A1(A2A3))A4)
+</span></span></span></code></pre></div><h3 id="cpp">Cpp</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;vector&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;iostream&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;algorithm&gt;</span><span style="color:#93a1a1;font-style:italic"> </span><span style="color:#93a1a1;font-style:italic">// For std::min
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;limits&gt;</span><span style="color:#93a1a1;font-style:italic">    </span><span style="color:#93a1a1;font-style:italic">// For std::numeric_limits
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">std</span>::<span style="color:#268bd2">pair</span>&lt;<span style="color:#859900;font-weight:bold">int</span>, <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt;&gt;&gt; <span style="color:#268bd2">matrixChainOrder</span>(<span style="color:#859900">const</span> <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt;&amp; <span style="color:#268bd2">dims</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">n</span> = <span style="color:#268bd2">dims</span>.<span style="color:#268bd2">size</span>() - <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#93a1a1;font-style:italic">// Number of matrices
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// m[i][j] stores the minimum number of scalar multiplications
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#93a1a1;font-style:italic">// needed to compute the matrix A[i]...A[j]
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt;&gt; <span style="color:#268bd2">m</span>(<span style="color:#268bd2">n</span>, <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt;(<span style="color:#268bd2">n</span>, <span style="color:#2aa198;font-weight:bold">0</span>));
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// s[i][j] stores the index k where the optimal split occurs
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt;&gt; <span style="color:#268bd2">s</span>(<span style="color:#268bd2">n</span>, <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt;(<span style="color:#268bd2">n</span>, <span style="color:#2aa198;font-weight:bold">0</span>));
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// chain length L from 2 to n
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">L</span> = <span style="color:#2aa198;font-weight:bold">2</span>; <span style="color:#268bd2">L</span> &lt;= <span style="color:#268bd2">n</span>; <span style="color:#268bd2">L</span>++) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt;= <span style="color:#268bd2">n</span> - <span style="color:#268bd2">L</span>; <span style="color:#268bd2">i</span>++) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">j</span> = <span style="color:#268bd2">i</span> + <span style="color:#268bd2">L</span> - <span style="color:#2aa198;font-weight:bold">1</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">m</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#268bd2">std</span>::<span style="color:#268bd2">numeric_limits</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt;::<span style="color:#268bd2">max</span>(); <span style="color:#93a1a1;font-style:italic">// Initialize with a very large value
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Try all possible split points k
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">k</span> = <span style="color:#268bd2">i</span>; <span style="color:#268bd2">k</span> &lt; <span style="color:#268bd2">j</span>; <span style="color:#268bd2">k</span>++) {
+</span></span><span style="display:flex;"><span>                <span style="color:#93a1a1;font-style:italic">// cost = cost of (A[i]...A[k]) + cost of (A[k+1]...A[j]) + cost of multiplying results
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">cost</span> = <span style="color:#268bd2">m</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">k</span>] + <span style="color:#268bd2">m</span>[<span style="color:#268bd2">k</span> + <span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">j</span>] + <span style="color:#268bd2">dims</span>[<span style="color:#268bd2">i</span>] &lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">dims</span>[<span style="color:#268bd2">k</span> + <span style="color:#2aa198;font-weight:bold">1</span>] &lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">dims</span>[<span style="color:#268bd2">j</span> + <span style="color:#2aa198;font-weight:bold">1</span>];
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">if</span> (<span style="color:#268bd2">cost</span> &lt; <span style="color:#268bd2">m</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>]) {
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">m</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#268bd2">cost</span>;
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">s</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#268bd2">k</span>; <span style="color:#93a1a1;font-style:italic">// Store the split point
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> {<span style="color:#268bd2">m</span>[<span style="color:#2aa198;font-weight:bold">0</span>][<span style="color:#268bd2">n</span>-<span style="color:#2aa198;font-weight:bold">1</span>], <span style="color:#268bd2">s</span>};
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">printOptimalParenthesization</span>(<span style="color:#859900">const</span> <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt;&gt;&amp; <span style="color:#268bd2">s</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">j</span>, <span style="color:#859900">const</span> <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#268bd2">std</span>::<span style="color:#268bd2">string</span>&gt;&amp; <span style="color:#268bd2">names</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">i</span> == <span style="color:#268bd2">j</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">std</span>::<span style="color:#268bd2">cout</span> &lt;&lt; <span style="color:#268bd2">names</span>[<span style="color:#268bd2">i</span>];
+</span></span><span style="display:flex;"><span>    } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">std</span>::<span style="color:#268bd2">cout</span> &lt;&lt; <span style="color:#2aa198">&#34;(&#34;</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">printOptimalParenthesization</span>(<span style="color:#268bd2">s</span>, <span style="color:#268bd2">i</span>, <span style="color:#268bd2">s</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>], <span style="color:#268bd2">names</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">printOptimalParenthesization</span>(<span style="color:#268bd2">s</span>, <span style="color:#268bd2">s</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] + <span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">j</span>, <span style="color:#268bd2">names</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">std</span>::<span style="color:#268bd2">cout</span> &lt;&lt; <span style="color:#2aa198">&#34;)&#34;</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// int main() {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     // A1: 10x100, A2: 100x5, A3: 5x50, A4: 50x1
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     // Dimensions array: p = [p0, p1, p2, p3, p4] =&gt; A1(p0xp1), A2(p1xp2), ...
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::vector&lt;int&gt; dims = {10, 100, 5, 50, 1};
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::vector&lt;std::string&gt; matrix_names = {&#34;A1&#34;, &#34;A2&#34;, &#34;A3&#34;, &#34;A4&#34;};
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     auto result = matrixChainOrder(dims);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     int min_mults = result.first;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::vector&lt;std::vector&lt;int&gt;&gt; splits = result.second;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; &#34;Minimum scalar multiplications: &#34; &lt;&lt; min_mults &lt;&lt; std::endl; // 1550
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; &#34;Optimal Parenthesization: &#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     printOptimalParenthesization(splits, 0, dims.size() - 2, matrix_names); // ((A1(A2A3))A4)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; std::endl;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     return 0;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span></code></pre></div><h3 id="go">Go</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">package</span> <span style="color:#268bd2">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> (
+</span></span><span style="display:flex;"><span>    <span style="color:#2aa198">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#2aa198">&#34;math&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#2aa198">&#34;strings&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> <span style="color:#268bd2">matrixChainOrder</span>(<span style="color:#268bd2">dims</span> []<span style="color:#859900;font-weight:bold">int</span>) (<span style="color:#859900;font-weight:bold">int</span>, [][]<span style="color:#859900;font-weight:bold">int</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">n</span> := <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">dims</span>) - <span style="color:#2aa198;font-weight:bold">1</span> <span style="color:#93a1a1;font-style:italic">// Number of matrices</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// m[i][j] stores the minimum number of scalar multiplications</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// needed to compute the matrix A[i]...A[j]</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">m</span> := <span style="color:#cb4b16">make</span>([][]<span style="color:#859900;font-weight:bold">int</span>, <span style="color:#268bd2">n</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> := <span style="color:#859900">range</span> <span style="color:#268bd2">m</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">m</span>[<span style="color:#268bd2">i</span>] = <span style="color:#cb4b16">make</span>([]<span style="color:#859900;font-weight:bold">int</span>, <span style="color:#268bd2">n</span>)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// s[i][j] stores the index k where the optimal split occurs</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">s</span> := <span style="color:#cb4b16">make</span>([][]<span style="color:#859900;font-weight:bold">int</span>, <span style="color:#268bd2">n</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> := <span style="color:#859900">range</span> <span style="color:#268bd2">s</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">s</span>[<span style="color:#268bd2">i</span>] = <span style="color:#cb4b16">make</span>([]<span style="color:#859900;font-weight:bold">int</span>, <span style="color:#268bd2">n</span>)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// chain length L from 2 to n</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">L</span> := <span style="color:#2aa198;font-weight:bold">2</span>; <span style="color:#268bd2">L</span> &lt;= <span style="color:#268bd2">n</span>; <span style="color:#268bd2">L</span>++ {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> := <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt;= <span style="color:#268bd2">n</span> - <span style="color:#268bd2">L</span>; <span style="color:#268bd2">i</span>++ {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">j</span> := <span style="color:#268bd2">i</span> + <span style="color:#268bd2">L</span> - <span style="color:#2aa198;font-weight:bold">1</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">m</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#268bd2">math</span>.<span style="color:#268bd2">MaxInt32</span> <span style="color:#93a1a1;font-style:italic">// Initialize with a very large value</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Try all possible split points k</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">for</span> <span style="color:#268bd2">k</span> := <span style="color:#268bd2">i</span>; <span style="color:#268bd2">k</span> &lt; <span style="color:#268bd2">j</span>; <span style="color:#268bd2">k</span>++ {
+</span></span><span style="display:flex;"><span>                <span style="color:#93a1a1;font-style:italic">// cost = cost of (A[i]...A[k]) + cost of (A[k+1]...A[j]) + cost of multiplying results</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">cost</span> := <span style="color:#268bd2">m</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">k</span>] + <span style="color:#268bd2">m</span>[<span style="color:#268bd2">k</span>+<span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">j</span>] + <span style="color:#268bd2">dims</span>[<span style="color:#268bd2">i</span>]&lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">dims</span>[<span style="color:#268bd2">k</span>+<span style="color:#2aa198;font-weight:bold">1</span>]&lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">dims</span>[<span style="color:#268bd2">j</span>+<span style="color:#2aa198;font-weight:bold">1</span>]
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">if</span> <span style="color:#268bd2">cost</span> &lt; <span style="color:#268bd2">m</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] {
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">m</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#268bd2">cost</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">s</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#268bd2">k</span> <span style="color:#93a1a1;font-style:italic">// Store the split point</span>
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">m</span>[<span style="color:#2aa198;font-weight:bold">0</span>][<span style="color:#268bd2">n</span>-<span style="color:#2aa198;font-weight:bold">1</span>], <span style="color:#268bd2">s</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> <span style="color:#268bd2">printOptimalParenthesization</span>(<span style="color:#268bd2">s</span> [][]<span style="color:#859900;font-weight:bold">int</span>, <span style="color:#268bd2">i</span>, <span style="color:#268bd2">j</span> <span style="color:#859900;font-weight:bold">int</span>, <span style="color:#268bd2">names</span> []<span style="color:#859900;font-weight:bold">string</span>) <span style="color:#859900;font-weight:bold">string</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#268bd2">i</span> == <span style="color:#268bd2">j</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">names</span>[<span style="color:#268bd2">i</span>]
+</span></span><span style="display:flex;"><span>    } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">var</span> <span style="color:#268bd2">builder</span> <span style="color:#268bd2">strings</span>.<span style="color:#268bd2">Builder</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">builder</span>.<span style="color:#268bd2">WriteString</span>(<span style="color:#2aa198">&#34;(&#34;</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">builder</span>.<span style="color:#268bd2">WriteString</span>(<span style="color:#268bd2">printOptimalParenthesization</span>(<span style="color:#268bd2">s</span>, <span style="color:#268bd2">i</span>, <span style="color:#268bd2">s</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>], <span style="color:#268bd2">names</span>))
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">builder</span>.<span style="color:#268bd2">WriteString</span>(<span style="color:#268bd2">printOptimalParenthesization</span>(<span style="color:#268bd2">s</span>, <span style="color:#268bd2">s</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>]+<span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">j</span>, <span style="color:#268bd2">names</span>))
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">builder</span>.<span style="color:#268bd2">WriteString</span>(<span style="color:#2aa198">&#34;)&#34;</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">builder</span>.<span style="color:#268bd2">String</span>()
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// func main() {</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     // A1: 10x100, A2: 100x5, A3: 5x50, A4: 50x1</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     // Dimensions array: p = [p0, p1, p2, p3, p4] =&gt; A1(p0xp1), A2(p1xp2), ...</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     dims := []int{10, 100, 5, 50, 1}</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     matrixNames := []string{&#34;A1&#34;, &#34;A2&#34;, &#34;A3&#34;, &#34;A4&#34;}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     minMults, splits := matrixChainOrder(dims)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     fmt.Println(&#34;Minimum scalar multiplications:&#34;, minMults) // 1550</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     fmt.Print(&#34;Optimal Parenthesization: &#34;)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     fmt.Println(printOptimalParenthesization(splits, 0, len(dims)-2, matrixNames)) // ((A1(A2A3))A4)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }</span>
+</span></span></code></pre></div><h3 id="d">D</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-d" data-lang="d"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.stdio</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.array</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.algorithm</span>; <span style="color:#93a1a1;font-style:italic">// For std.algorithm.min
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.string</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.conv</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">Tuple</span>!(<span style="color:#859900;font-weight:bold">int</span>, <span style="color:#2aa198">&#34;minMults&#34;</span>, <span style="color:#859900;font-weight:bold">int</span>[][], <span style="color:#2aa198">&#34;splits&#34;</span>) <span style="color:#268bd2">matrixChainOrder</span>(<span style="color:#859900;font-weight:bold">int</span>[] <span style="color:#268bd2">dims</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">auto</span> <span style="color:#268bd2">n</span> = <span style="color:#268bd2">dims</span>.<span style="color:#268bd2">length</span> - <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#93a1a1;font-style:italic">// Number of matrices
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// m[i][j] stores the minimum number of scalar multiplications
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#93a1a1;font-style:italic">// needed to compute the matrix A[i]...A[j]
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">auto</span> <span style="color:#268bd2">m</span> = <span style="color:#859900">new</span> <span style="color:#859900;font-weight:bold">int</span>[<span style="color:#268bd2">n</span>][<span style="color:#268bd2">n</span>];
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// s[i][j] stores the index k where the optimal split occurs
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">auto</span> <span style="color:#268bd2">s</span> = <span style="color:#859900">new</span> <span style="color:#859900;font-weight:bold">int</span>[<span style="color:#268bd2">n</span>][<span style="color:#268bd2">n</span>];
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Initialize m[i][i] to 0 for single matrices
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">foreach</span> (<span style="color:#268bd2">i</span>; <span style="color:#2aa198;font-weight:bold">0</span> .. <span style="color:#268bd2">n</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">m</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">i</span>] = <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// chain length L from 2 to n
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">foreach</span> (<span style="color:#268bd2">L</span>; <span style="color:#2aa198;font-weight:bold">2</span> .. <span style="color:#268bd2">n</span> + <span style="color:#2aa198;font-weight:bold">1</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">foreach</span> (<span style="color:#268bd2">i</span>; <span style="color:#2aa198;font-weight:bold">0</span> .. <span style="color:#268bd2">n</span> - <span style="color:#268bd2">L</span> + <span style="color:#2aa198;font-weight:bold">1</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">auto</span> <span style="color:#268bd2">j</span> = <span style="color:#268bd2">i</span> + <span style="color:#268bd2">L</span> - <span style="color:#2aa198;font-weight:bold">1</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">m</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#859900;font-weight:bold">int</span>.<span style="color:#268bd2">max</span>; <span style="color:#93a1a1;font-style:italic">// Initialize with a very large value
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Try all possible split points k
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">foreach</span> (<span style="color:#268bd2">k</span>; <span style="color:#268bd2">i</span> .. <span style="color:#268bd2">j</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#93a1a1;font-style:italic">// cost = cost of (A[i]...A[k]) + cost of (A[k+1]...A[j]) + cost of multiplying results
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#859900">auto</span> <span style="color:#268bd2">cost</span> = <span style="color:#268bd2">m</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">k</span>] + <span style="color:#268bd2">m</span>[<span style="color:#268bd2">k</span> + <span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">j</span>] + <span style="color:#268bd2">dims</span>[<span style="color:#268bd2">i</span>] &lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">dims</span>[<span style="color:#268bd2">k</span> + <span style="color:#2aa198;font-weight:bold">1</span>] &lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">dims</span>[<span style="color:#268bd2">j</span> + <span style="color:#2aa198;font-weight:bold">1</span>];
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">if</span> (<span style="color:#268bd2">cost</span> &lt; <span style="color:#268bd2">m</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>]) {
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">m</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#268bd2">cost</span>;
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">s</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#268bd2">k</span>; <span style="color:#93a1a1;font-style:italic">// Store the split point
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#859900">typeof</span>(<span style="color:#859900">return</span>)(<span style="color:#268bd2">m</span>[<span style="color:#2aa198;font-weight:bold">0</span>][<span style="color:#268bd2">n</span>-<span style="color:#2aa198;font-weight:bold">1</span>], <span style="color:#268bd2">s</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#cb4b16">string</span> <span style="color:#268bd2">printOptimalParenthesization</span>(<span style="color:#859900;font-weight:bold">int</span>[][] <span style="color:#268bd2">s</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">j</span>, <span style="color:#cb4b16">string</span>[] <span style="color:#268bd2">names</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">i</span> == <span style="color:#268bd2">j</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">names</span>[<span style="color:#268bd2">i</span>];
+</span></span><span style="display:flex;"><span>    } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#2aa198">&#34;(&#34;</span> ~ <span style="color:#268bd2">printOptimalParenthesization</span>(<span style="color:#268bd2">s</span>, <span style="color:#268bd2">i</span>, <span style="color:#268bd2">s</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>], <span style="color:#268bd2">names</span>) ~
+</span></span><span style="display:flex;"><span>               <span style="color:#268bd2">printOptimalParenthesization</span>(<span style="color:#268bd2">s</span>, <span style="color:#268bd2">s</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] + <span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">j</span>, <span style="color:#268bd2">names</span>) ~ <span style="color:#2aa198">&#34;)&#34;</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// void main() {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     // A1: 10x100, A2: 100x5, A3: 5x50, A4: 50x1
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     // Dimensions array: p = [p0, p1, p2, p3, p4] =&gt; A1(p0xp1), A2(p1xp2), ...
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     auto dims = [10, 100, 5, 50, 1];
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     string[] matrixNames = [&#34;A1&#34;, &#34;A2&#34;, &#34;A3&#34;, &#34;A4&#34;];
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     auto result = matrixChainOrder(dims);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     int minMults = result.minMults;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     int[][] splits = result.splits;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     writeln(&#34;Minimum scalar multiplications: &#34;, minMults); // 1550
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     write(&#34;Optimal Parenthesization: &#34;);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     writeln(printOptimalParenthesization(splits, 0, dims.length - 2, matrixNames)); // ((A1(A2A3))A4)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span></code></pre></div><h2 id="code-walkthrough">Code Walkthrough</h2>
+<p><a href="#implementation">Back to Implementation</a></p>
+<h3 id="code-walkthrough-1">Code Walkthrough</h3>
+<p>The <code>Matrix Chain Multiplication</code> algorithm uses <code>dynamic programming</code> to compute the minimum scalar multiplications by breaking the problem into overlapping subproblems.</p>
+<hr>
+<p><strong>Input (<code>dims</code> array):</strong></p>
+<ul>
+<li>The dimensions of <code>n</code> matrices <code>A1, ..., An</code> are represented by an <code>array p</code> of size <code>n+1</code>.</li>
+<li><code>Matrix Ai</code> has dimensions <code>p[i-1] x p[i]</code>.</li>
+<li>For example, if <code>dims = [10, 100, 5, 50, 1]</code>, then <code>A1</code> is 10x100, <code>A2</code> is 100x5, <code>A3</code> is 5x50, <code>A4</code> is 50x1.</li>
+</ul>
+<p><strong>Initialization:</strong></p>
+<ul>
+<li><code>m[i][j]</code>: A 2D array (DP table) where <code>m[i][j]</code> stores the minimum scalar multiplications needed to multiply the chain of matrices from <code>A_i</code> to <code>A_j</code>.</li>
+<li><code>s[i][j]</code>: An additional 2D array to store the optimal split point <code>k</code> for the chain <code>A_i...A_j</code>. This is used to reconstruct the optimal parenthesization.</li>
+<li>All <code>m[i][i]</code> are initialized to 0, as multiplying a single matrix requires no scalar multiplications.</li>
+</ul>
+<p><strong>Filling the DP Table (<code>m</code> array):</strong></p>
+<ul>
+<li>
+<p>The algorithm iterates through <code>L</code>, the chain <code>length</code>, from 2 to <code>n</code>.</p>
+</li>
+<li>
+<p>For each <code>length L</code>, it iterates through <code>i</code>, the starting <code>index</code> of the chain (from 0 to <code>n - L</code>).</p>
+</li>
+<li>
+<p><code>j</code> is calculated as <code>i + L - 1</code>, the ending <code>index</code> of the current chain.</p>
+</li>
+<li>
+<p>For each <code>chain A_i...A_j</code>, <code>m[i][j]</code> is initially set to infinity.</p>
+</li>
+<li>
+<p>The inner loop iterates through <code>k</code>, all possible split points for the chain <code>A_i...A_j</code> (<code>i &lt;= k &lt; j</code>).</p>
+</li>
+<li>
+<p>The cost for a split at <code>k</code> is calculated as <code>m[i][k] + m[k+1][j] + dims[i]*dims[k+1]*dims[j+1]</code>.</p>
+</li>
+<li>
+<p><code>m[i][k]</code> is the cost to multiply <code>A_i...A_k</code>.</p>
+</li>
+<li>
+<p><code>m[k+1][j]</code> is the cost to multiply <code>A_k+1...A_j</code>.</p>
+</li>
+<li>
+<p><code>dims[i]*dims[k+1]*dims[j+1]</code> is the cost to multiply the two resulting matrices (dimensions <code>dims[i] x dims[k+1]</code> and <code>dims[k+1] x dims[j+1]</code>).</p>
+  </li>
+</li>
+<li>
+<p>If this <code>cost</code> is less than the current <code>m[i][j]</code>, <code>m[i][j]</code> is updated, and the split point <code>k</code> is stored in <code>s[i][j]</code>.</p>
+</li>
+</ul>
+<p><strong>Result:</strong></p>
+<ul>
+<li>The minimum scalar multiplications for the entire chain <code>A_0...A_n-1</code> is <code>m[0][n-1]</code>.</li>
+<li>The <code>print_optimal_parenthesization</code> function uses the <code>s</code> table to recursively reconstruct the optimal parenthesization.</li>
+</ul>
+<p><a href="#implementation">Back to Implementation</a></p>
+<h2 id="applications">Applications</h2>
+<h3 id="application">Application</h3>
+<p>The <code>Matrix Chain Multiplication</code> algorithm is a foundational problem in <code>dynamic programming</code> with applications in various fields:</p>
+<ul>
+<li><strong>Compiler Optimization:</strong> Optimizing the order of matrix multiplications in mathematical expressions within programming languages. Compilers can use this to generate more efficient code.</li>
+<li><strong>Computer Graphics:</strong> In 3D graphics, transformations (translation, rotation, scaling) are often represented as matrices. Optimizing the order of these matrix multiplications can significantly improve rendering performance.</li>
+<li><strong>Scientific Computing:</strong> Any field involving extensive matrix algebra, such as physics, engineering, and data science, can benefit from optimizing matrix multiplication sequences for performance.</li>
+<li><strong>Bioinformatics:</strong> Some algorithms, particularly in sequence alignment, might involve operations that can be modeled as matrix chain multiplications, where the goal is to reduce computational cost.</li>
+</ul>
+
+    </div>
+</article>
+
+<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
+    
+    <a href="//localhost:1313/dsa-42/algorithms/dynamic_programming/rod_cutting/" class="nav-btn">← Previous</a>
+    
+    
+    <a href="//localhost:1313/dsa-42/algorithms/dynamic_programming/" class="nav-btn">Up</a>
+
+    
+    <a href="//localhost:1313/dsa-42/algorithms/dynamic_programming/lps/" class="nav-btn">Next →</a>
+    
+</div>
+
+    </main>
+
+    <footer class="footer">
+        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
+    </footer>
+
+    <script>
+        const body = document.getElementById('theme-body');
+        const btn = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme');
+
+        
+        function updateButtonText() {
+            if (body.classList.contains('theme-terminal')) {
+                btn.textContent = "Light Mode";
+            } else {
+                btn.textContent = "Dark Mode";
+            }
+        }
+
+        if (currentTheme === 'terminal') {
+            body.classList.add('theme-terminal');
+        }
+        
+        
+        updateButtonText();
+
+        btn.addEventListener('click', () => {
+            body.classList.toggle('theme-terminal');
+            updateButtonText();
+            
+            let theme = 'natural';
+            if (body.classList.contains('theme-terminal')) {
+                theme = 'terminal';
+            }
+            localStorage.setItem('theme', theme);
+        });
+    </script>
+</body>
+</html>

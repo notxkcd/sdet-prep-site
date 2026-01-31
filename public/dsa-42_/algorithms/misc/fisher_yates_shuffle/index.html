@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fisher-Yates Shuffle | SDET Interview Preparation Kit</title>
+    <link rel="stylesheet" href="//localhost:1313/css/style.css">
+    <link rel="stylesheet" href="//localhost:1313/css/terminal.css">
+    
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    
+    <link rel="stylesheet" href="//localhost:1313/lib/katex/katex.min.css">
+    <script defer src="//localhost:1313/lib/katex/katex.min.js"></script>
+    <script defer src="//localhost:1313/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</head>
+<body id="theme-body">
+    <button id="theme-toggle">Switch Theme</button>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="//localhost:1313/">Index</a></li>
+                
+            </ul>
+        </nav>
+        <div class="site-breadcrumb">
+            <a href="//localhost:1313/">Home</a>
+            
+                
+                    <span>/</span> <a href="//localhost:1313/">SDET Interview Dashboard</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/dsa-42_/">42 Algorithms &amp; 42 Data Structures</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/dsa-42_/algorithms/">Algorithms</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/dsa-42_/algorithms/misc/">Misc</a>
+                
+            
+            
+                <span>/</span> Fisher-Yates Shuffle
+            
+        </div>
+    </header>
+
+    <main>
+        
+<article>
+    <div class="category-title" style="margin-bottom: 0.5rem;">Misc</div>
+    <h1>Fisher-Yates Shuffle</h1>
+    <div class="content-body" style="margin-top: 2rem;">
+        <p>The <code>Fisher-Yates Shuffle</code> is an algorithm for generating a random permutation of a finite sequence. In simple terms, it shuffles an array in an unbiased way, meaning every possible permutation is equally likely. The modern version of the algorithm, often attributed to Richard Durstenfeld and popularized by Donald Knuth, is an in-place shuffle that is both efficient and easy to implement.</p>
+<p>The algorithm iterates through the array from the end to the beginning. In each step, it swaps the current element with a randomly chosen element from the unshuffled part of the array (including itself).</p>
+<h2 id="how-it-works">How it Works</h2>
+<h3 id="how-it-works-expanded">How it Works (Expanded)</h3>
+<p>The <code>Fisher-Yates Shuffle</code> works by building up a random permutation one element at a time. It ensures that at each step <code>i</code>, the element placed at index <code>i</code> has an equal chance of being any of the elements from the original array that have not yet been placed.</p>
+<hr>
+<p>Example: Shuffle Array = [1, 2, 3, 4]</p>
+<ol>
+<li>
+<p>Start at last element (index 3).</p>
+<ul>
+<li>i = 3. Pick a random index j from [0, 1, 2, 3]. Say j=1.</li>
+<li>Swap arr[3] and arr[1]. Array becomes: [1, 4, 3, 2].</li>
+<li>Element at index 3 is now fixed.</li>
+</ul>
+</li>
+<li>
+<p>Move to next element (index 2).</p>
+<ul>
+<li>i = 2. Pick a random index j from [0, 1, 2]. Say j=2.</li>
+<li>Swap arr[2] and arr[2]. Array remains: [1, 4, 3, 2].</li>
+<li>Element at index 2 is now fixed.</li>
+</ul>
+</li>
+<li>
+<p>Move to next element (index 1).</p>
+<ul>
+<li>i = 1. Pick a random index j from [0, 1]. Say j=0.</li>
+<li>Swap arr[1] and arr[0]. Array becomes: [4, 1, 3, 2].</li>
+<li>Element at index 1 is now fixed.</li>
+</ul>
+</li>
+<li>
+<p>Loop finishes. Array is shuffled.</p>
+</li>
+</ol>
+<h2 id="implementation">Implementation</h2>
+<h3 id="python">Python</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">random</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">def</span> <span style="color:#268bd2">fisher_yates_shuffle</span>(<span style="color:#268bd2">arr</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#2aa198">&#34;&#34;&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#2aa198">    Shuffles an array in-place using the Fisher-Yates shuffle algorithm.
+</span></span></span><span style="display:flex;"><span><span style="color:#2aa198">    &#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">n</span> = <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">arr</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> <span style="color:#859900">in</span> <span style="color:#cb4b16">range</span>(<span style="color:#268bd2">n</span> - <span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#2aa198;font-weight:bold">0</span>, -<span style="color:#2aa198;font-weight:bold">1</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># Pick a random index from 0 to i</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">j</span> = <span style="color:#268bd2">random</span>.<span style="color:#268bd2">randint</span>(<span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#268bd2">i</span>)
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># Swap arr[i] with the element at random index</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">i</span>], <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">j</span>] = <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">j</span>], <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">i</span>]
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">arr</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># Example</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># my_arr = [1, 2, 3, 4, 5, 6, 7, 8]</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(&#34;Original:&#34;, my_arr)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(&#34;Shuffled:&#34;, fisher_yates_shuffle(my_arr))</span>
+</span></span></code></pre></div><h3 id="javascript">Javascript</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#859900">function</span> <span style="color:#268bd2">fisherYatesShuffle</span>(<span style="color:#268bd2">arr</span>) {
+</span></span><span style="display:flex;"><span>    /*&lt;em&gt;
+</span></span><span style="display:flex;"><span>     &lt;/em&gt; Shuffles an array in-place using the Fisher-Yates shuffle algorithm.
+</span></span><span style="display:flex;"><span>     &lt;<span style="color:#268bd2">em</span>&gt;/
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">let</span> <span style="color:#268bd2">n</span> = <span style="color:#268bd2">arr</span>.<span style="color:#268bd2">length</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">i</span> = <span style="color:#268bd2">n</span> - <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#268bd2">i</span> &gt; <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span>--) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Pick a random index from 0 to i
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">const</span> <span style="color:#268bd2">j</span> = <span style="color:#cb4b16">Math</span>.<span style="color:#268bd2">floor</span>(<span style="color:#cb4b16">Math</span>.<span style="color:#268bd2">random</span>() &lt;/em&gt; (i + 1));
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Swap arr[i] with the element at random index
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        [<span style="color:#268bd2">arr</span>[<span style="color:#268bd2">i</span>], <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">j</span>]] = [<span style="color:#268bd2">arr</span>[<span style="color:#268bd2">j</span>], <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">i</span>]];
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">arr</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const myArr = [1, 2, 3, 4, 5, 6, 7, 8];
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Original:&#34;, myArr);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Shuffled:&#34;, fisherYatesShuffle([...myArr])); // Use spread to avoid modifying original array for demo
+</span></span></span></code></pre></div><h3 id="typescript">Typescript</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-typescript" data-lang="typescript"><span style="display:flex;"><span><span style="color:#859900">function</span> <span style="color:#268bd2">fisherYatesShuffleTS</span>(<span style="color:#268bd2">arr</span>: <span style="color:#859900;font-weight:bold">any</span>[]): <span style="color:#859900;font-weight:bold">any</span>[] {
+</span></span><span style="display:flex;"><span>    /*&lt;em&gt;
+</span></span><span style="display:flex;"><span>     &lt;/<span style="color:#268bd2;font-weight:bold">em</span>&gt; <span style="color:#268bd2">Shuffles</span> <span style="color:#268bd2">an</span> <span style="color:#268bd2">array</span> <span style="color:#859900">in</span>-<span style="color:#268bd2">place</span> <span style="color:#268bd2">using</span> <span style="color:#268bd2">the</span> <span style="color:#268bd2">Fisher</span>-<span style="color:#268bd2">Yates</span> <span style="color:#268bd2">shuffle</span> <span style="color:#268bd2">algorithm</span>.
+</span></span><span style="display:flex;"><span>     &lt;<span style="color:#268bd2;font-weight:bold">em</span>&gt;/
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">let</span> <span style="color:#268bd2">n</span> = <span style="color:#268bd2">arr</span>.<span style="color:#268bd2">length</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">i</span> = <span style="color:#268bd2">n</span> - <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#268bd2">i</span> &gt; <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span>--) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Pick a random index from 0 to i
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">const</span> <span style="color:#268bd2">j</span> = <span style="color:#cb4b16">Math</span>.<span style="color:#268bd2">floor</span>(<span style="color:#cb4b16">Math</span>.<span style="color:#268bd2">random</span>() &lt;/<span style="color:#268bd2;font-weight:bold">em</span>&gt; (<span style="color:#268bd2">i</span> + <span style="color:#2aa198;font-weight:bold">1</span>));
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Swap arr[i] with the element at random index
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        [<span style="color:#268bd2">arr</span>[<span style="color:#268bd2">i</span>], <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">j</span>]] = [<span style="color:#268bd2">arr</span>[<span style="color:#268bd2">j</span>], <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">i</span>]];
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">arr</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const myArrTS: number[] = [1, 2, 3, 4, 5, 6, 7, 8];
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Original:&#34;, myArrTS);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Shuffled:&#34;, fisherYatesShuffleTS([...myArrTS])); // Use spread to avoid modifying original array for demo
+</span></span></span></code></pre></div><h3 id="cpp">Cpp</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;vector&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;iostream&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;random&gt;</span><span style="color:#93a1a1;font-style:italic">    </span><span style="color:#93a1a1;font-style:italic">// For std::mt19937 and std::uniform_int_distribution
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;algorithm&gt;</span><span style="color:#93a1a1;font-style:italic"> </span><span style="color:#93a1a1;font-style:italic">// For std::swap
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">fisherYatesShuffle</span>(<span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt;&amp; <span style="color:#268bd2">arr</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">n</span> = <span style="color:#268bd2">arr</span>.<span style="color:#268bd2">size</span>();
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Create a random number generator
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">random_device</span> <span style="color:#268bd2">rd</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">mt19937</span> <span style="color:#268bd2">g</span>(<span style="color:#268bd2">rd</span>());
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i</span> = <span style="color:#268bd2">n</span> - <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#268bd2">i</span> &gt; <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span>--) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Pick a random index from 0 to i
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">std</span>::<span style="color:#268bd2">uniform_int_distribution</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt; <span style="color:#268bd2">dist</span>(<span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#268bd2">i</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">j</span> = <span style="color:#268bd2">dist</span>(<span style="color:#268bd2">g</span>);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Swap arr[i] with the element at random index
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">std</span>::<span style="color:#268bd2">swap</span>(<span style="color:#268bd2">arr</span>[<span style="color:#268bd2">i</span>], <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">j</span>]);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// int main() {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::vector&lt;int&gt; myArr = {1, 2, 3, 4, 5, 6, 7, 8};
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; &#34;Original: &#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     for (int val : myArr) std::cout &lt;&lt; val &lt;&lt; &#34; &#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; std::endl;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     fisherYatesShuffle(myArr);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; &#34;Shuffled: &#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     for (int val : myArr) std::cout &lt;&lt; val &lt;&lt; &#34; &#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; std::endl;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     return 0;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span></code></pre></div><h3 id="go">Go</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">package</span> <span style="color:#268bd2">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> (
+</span></span><span style="display:flex;"><span>    <span style="color:#2aa198">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#2aa198">&#34;math/rand&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#2aa198">&#34;time&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> <span style="color:#268bd2">fisherYatesShuffle</span>(<span style="color:#268bd2">arr</span> []<span style="color:#859900">interface</span>{}) {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">n</span> := <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">arr</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">rand</span>.<span style="color:#268bd2">Seed</span>(<span style="color:#268bd2">time</span>.<span style="color:#268bd2">Now</span>().<span style="color:#268bd2">UnixNano</span>())
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> := <span style="color:#268bd2">n</span> - <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#268bd2">i</span> &gt; <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span>-- {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Pick a random index from 0 to i</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">j</span> := <span style="color:#268bd2">rand</span>.<span style="color:#268bd2">Intn</span>(<span style="color:#268bd2">i</span> + <span style="color:#2aa198;font-weight:bold">1</span>)
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Swap arr[i] with the element at random index</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">i</span>], <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">j</span>] = <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">j</span>], <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">i</span>]
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// func main() {</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     myArr := []interface{}{1, 2, 3, 4, 5, 6, 7, 8}</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     fmt.Println(&#34;Original:&#34;, myArr)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     fisherYatesShuffle(myArr)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     fmt.Println(&#34;Shuffled:&#34;, myArr)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }</span>
+</span></span></code></pre></div><h3 id="d">D</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-d" data-lang="d"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.stdio</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.random</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.array</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.algorithm</span>; <span style="color:#93a1a1;font-style:italic">// For std.algorithm.swap
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">fisherYatesShuffle</span>(<span style="color:#268bd2">T</span>)(<span style="color:#268bd2">T</span>[] <span style="color:#268bd2">arr</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">auto</span> <span style="color:#268bd2">n</span> = <span style="color:#268bd2">arr</span>.<span style="color:#268bd2">length</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">auto</span> <span style="color:#268bd2">rnd</span> = <span style="color:#268bd2">Random</span>(<span style="color:#268bd2">unpredictableSeed</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i</span> = <span style="color:#268bd2">n</span> - <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#268bd2">i</span> &gt; <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span>--) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Pick a random index from 0 to i
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">j</span> = <span style="color:#268bd2">uniform</span>(<span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#268bd2">i</span> + <span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">rnd</span>);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Swap arr[i] with the element at random index
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">swap</span>(<span style="color:#268bd2">arr</span>[<span style="color:#268bd2">i</span>], <span style="color:#268bd2">arr</span>[<span style="color:#268bd2">j</span>]);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// void main() {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     auto myArr = [1, 2, 3, 4, 5, 6, 7, 8];
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     writeln(&#34;Original: &#34;, myArr);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     fisherYatesShuffle(myArr);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     writeln(&#34;Shuffled: &#34;, myArr);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span></code></pre></div><h2 id="code-walkthrough">Code Walkthrough</h2>
+<h3 id="code-walkthrough-1">Code Walkthrough</h3>
+<p>The <code>Fisher-Yates Shuffle</code> is an in-place algorithm that iterates backwards through an array, swapping each element with a randomly chosen one from the unshuffled portion.</p>
+<hr>
+<p><strong><code>fisher_yates_shuffle(arr)</code> Function:</strong></p>
+<pre><code>- `n`: The number of elements in the array `arr`.
+</code></pre>
+<p><strong>Algorithm Steps:</strong></p>
+<pre><code>- **Loop Backwards:** The algorithm starts a loop from the last element of the array (`i = n - 1`) and goes down to the second element (`i = 1`). The element at `i=0` does not need to be processed because when `i=1`, `arr[1]` will be swapped with either `arr[0]` or `arr[1]`, effectively randomizing the first element's position.
+
+- **Pick Random Index `j`:** Inside the loop, a random index `j` is chosen from the range `[0, i]` (inclusive). This `j` points to a random element in the part of the array that has not yet been &quot;fixed&quot; or shuffled.
+
+- **Swap:** The element at the current position `i` is swapped with the element at the randomly chosen position `j`. This places a randomly selected element from the unshuffled part of the array into the `i`-th position.
+
+- After the swap, the element at `arr[i]` is considered &quot;fixed&quot; in its final shuffled position. The loop continues by decrementing `i`, reducing the range of unshuffled elements.
+</code></pre>
+<p><strong>Result:</strong></p>
+<pre><code>- After the loop completes, the entire array is shuffled in-place.
+</code></pre>
+<h2 id="applications">Applications</h2>
+<h3 id="application">Application</h3>
+<p>The <code>Fisher-Yates Shuffle</code> is the standard and most robust algorithm for shuffling a list or array, with many practical applications:</p>
+<pre><code>    - **Gaming and Gambling:** Shuffling a deck of cards, randomizing a sequence of events (e.g., enemy spawns), or generating random game boards.
+
+    - **Statistics and Machine Learning:** Randomly shuffling a dataset before splitting it into training and testing sets to ensure unbiased sampling.
+
+    - **Cryptography:** Used in some cryptographic algorithms as part of the process for generating random permutations or keys.
+
+    - **Simulations:** In Monte Carlo simulations or other probabilistic models, for randomizing the order of events or samples.
+
+    - **Music Players:** Implementing a &quot;shuffle&quot; feature for a playlist to ensure a random and non-repeating (until all songs are played) order.
+</code></pre>
+
+    </div>
+</article>
+
+<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
+    
+    <a href="//localhost:1313/dsa-42_/algorithms/misc/reservoir_sampling/" class="nav-btn">← Previous</a>
+    
+    
+    <a href="//localhost:1313/dsa-42_/algorithms/misc/" class="nav-btn">Up</a>
+
+    
+    <span></span>
+    
+</div>
+
+    </main>
+
+    <footer class="footer">
+        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
+    </footer>
+
+    <script>
+        const body = document.getElementById('theme-body');
+        const btn = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme');
+
+        
+        function updateButtonText() {
+            if (body.classList.contains('theme-terminal')) {
+                btn.textContent = "Light Mode";
+            } else {
+                btn.textContent = "Dark Mode";
+            }
+        }
+
+        if (currentTheme === 'terminal') {
+            body.classList.add('theme-terminal');
+        }
+        
+        
+        updateButtonText();
+
+        btn.addEventListener('click', () => {
+            body.classList.toggle('theme-terminal');
+            updateButtonText();
+            
+            let theme = 'natural';
+            if (body.classList.contains('theme-terminal')) {
+                theme = 'terminal';
+            }
+            localStorage.setItem('theme', theme);
+        });
+    </script>
+</body>
+</html>

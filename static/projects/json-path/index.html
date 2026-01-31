@@ -1,0 +1,118 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voxel JSONPath Explorer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --paper-bg: #f4f1ea;
+            --voxel-font-size: 1.1rem;
+            --noise-opacity: 0.04;
+        }
+
+        body {
+            font-family: 'VT323', monospace;
+            background-color: var(--paper-bg);
+            color: #332c28;
+            font-size: var(--voxel-font-size);
+            image-rendering: pixelated;
+            position: relative;
+            overflow-x: hidden;
+            transition: font-size 0.2s ease, background-color 0.3s ease;
+            /* Extra top padding to ensure the very first row of cards doesn't have clipped titles */
+            padding-top: 2rem;
+            min-height: 100vh;
+        }
+
+        .font-mono-plex {
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        /* Paper Grain Texture Overlay */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            opacity: var(--noise-opacity);
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            z-index: 9999;
+        }
+
+        .voxel-border {
+            border: 3px solid #332c28;
+            box-shadow: 4px 4px 0px 0px #332c28;
+            transition: all 0.1s ease;
+        }
+        .voxel-border-sm {
+            border: 2px solid #332c28;
+            box-shadow: 2px 2px 0px 0px #332c28;
+        }
+        .voxel-btn {
+            position: relative;
+            top: 0;
+            left: 0;
+            transition: all 0.05s ease;
+        }
+        .voxel-btn:active {
+            top: 2px;
+            left: 2px;
+            box-shadow: 0px 0px 0px 0px #332c28;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 12px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #e6e2d3;
+            border-left: 2px solid #332c28;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #332c28;
+            border: 2px solid #f4f1ea;
+        }
+        
+        .tree-node-active {
+            background-color: #332c28;
+            color: #fffefc !important;
+        }
+
+        @keyframes voxel-pop {
+            0% { transform: scale(0.98); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .animate-voxel {
+            animation: voxel-pop 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .settings-overlay {
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(2px);
+        }
+
+        /* Ensure grid sections don't clip their absolute children */
+        section, main, div {
+            overflow: visible;
+        }
+    </style>
+
+<link rel="stylesheet" href="index.css">
+<script type="importmap">
+{
+  "imports": {
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "react": "https://esm.sh/react@^19.2.3",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/"
+  }
+}
+</script>
+  <script type="module" crossorigin src="assets/index-IzlyEjX_.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+</body>
+</html>

@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lis | SDET Interview Preparation Kit</title>
+    <link rel="stylesheet" href="//localhost:1313/css/style.css">
+    <link rel="stylesheet" href="//localhost:1313/css/terminal.css">
+    
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    
+    <link rel="stylesheet" href="//localhost:1313/lib/katex/katex.min.css">
+    <script defer src="//localhost:1313/lib/katex/katex.min.js"></script>
+    <script defer src="//localhost:1313/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</head>
+<body id="theme-body">
+    <button id="theme-toggle">Switch Theme</button>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="//localhost:1313/">Index</a></li>
+                
+            </ul>
+        </nav>
+        <div class="site-breadcrumb">
+            <a href="//localhost:1313/">Home</a>
+            
+                
+                    <span>/</span> <a href="//localhost:1313/">SDET Interview Dashboard</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/hugo_content/">42 Algorithms &amp; 42 Data Structures</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/hugo_content/algorithms/">Algorithms</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/hugo_content/algorithms/dynamic_programming/">Dynamic Programming</a>
+                
+            
+            
+                <span>/</span> Lis
+            
+        </div>
+    </header>
+
+    <main>
+        
+<article>
+    <div class="category-title" style="margin-bottom: 0.5rem;">Dynamic Programming</div>
+    <h1>Lis</h1>
+    <div class="content-body" style="margin-top: 2rem;">
+        <p>The <code>Longest Increasing Subsequence (LIS)</code> problem is a classic problem in <code>dynamic programming</code>. Given an <code>array</code> of <code>numbers</code>, the goal is to find the length of the longest <code>subsequence</code> such that all <code>elements</code> of the <code>subsequence</code> are in increasing order. A <code>subsequence</code> is a sequence that can be derived from another sequence by deleting some or no <code>elements</code> without changing the order of the remaining <code>elements</code>.</p>
+<p>For example, in the <code>array</code> <code>[3, 10, 2, 1, 20]</code>, the <code>LIS</code> is <code>[3, 10, 20]</code> with a length of 3.</p>
+<h2 id="how-it-works">How it Works</h2>
+<h3 id="how-it-works-expanded">How it Works (Expanded)</h3>
+<p>There are multiple ways to solve the <code>LIS</code> problem. The most straightforward approach uses <code>dynamic programming</code> with a time complexity of <code>O(N^2)</code>. A more optimized approach uses <code>dynamic programming</code> with <code>binary search</code>, achieving <code>O(N log N)</code> time complexity.</p>
+<hr>
+<p>Example (O(N^2) DP): Array = [3, 10, 2, 1, 20]</p>
+<p>dp array will store the length of LIS ending at each index.</p>
+<ul>
+<li>dp[0] for 3:  [3] -&gt; length 1. dp = [1]</li>
+<li>dp[1] for 10: [3, 10] -&gt; length 2. dp = [1, 2]</li>
+<li>dp[2] for 2:  [2] -&gt; length 1. dp = [1, 2, 1]</li>
+<li>dp[3] for 1:  [1] -&gt; length 1. dp = [1, 2, 1, 1]</li>
+<li>dp[4] for 20: [3, 10, 20] or [2, 20] or [1, 20] -&gt; length 3. dp = [1, 2, 1, 1, 3]</li>
+</ul>
+<p>Maximum value in dp array is the length of LIS.</p>
+<p>Example (O(N log N) with Binary Search): Array = [3, 10, 2, 1, 20]</p>
+<p>tails array will store the smallest tail of all increasing subsequences of length i+1.</p>
+<ul>
+<li>[3]: tails = [3]</li>
+<li>[3, 10]: tails = [3, 10]</li>
+<li>[2]: 2 &lt; 3. Replace 3 with 2. tails = [2, 10]</li>
+<li>[1]: 1 &lt; 2. Replace 2 with 1. tails = [1, 10]</li>
+<li>[1, 20]: 20 &gt; 10. Append 20. tails = [1, 10, 20]</li>
+</ul>
+<p>Length of LIS is tails.length = 3.</p>
+<h2 id="implementation">Implementation</h2>
+<h3 id="python">Python</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">bisect</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">def</span> <span style="color:#268bd2">longest_increasing_subsequence_n_log_n</span>(<span style="color:#268bd2">arr</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#859900">not</span> <span style="color:#268bd2">arr</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#2aa198;font-weight:bold">0</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">tails</span> = [] <span style="color:#93a1a1;font-style:italic"># tails[k] is the smallest tail of all increasing subsequences of length k+1</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">num</span> <span style="color:#859900">in</span> <span style="color:#268bd2">arr</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># If num is greater than any tail, it can extend the longest subsequence</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#859900">not</span> <span style="color:#268bd2">tails</span> <span style="color:#859900">or</span> <span style="color:#268bd2">num</span> &gt; <span style="color:#268bd2">tails</span>[-<span style="color:#2aa198;font-weight:bold">1</span>]:
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">tails</span>.<span style="color:#268bd2">append</span>(<span style="color:#268bd2">num</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">else</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic"># Find the smallest tail that is greater than or equal to num</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic"># Use bisect_left for binary search: returns insertion point</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">idx</span> = <span style="color:#268bd2">bisect</span>.<span style="color:#268bd2">bisect_left</span>(<span style="color:#268bd2">tails</span>, <span style="color:#268bd2">num</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">tails</span>[<span style="color:#268bd2">idx</span>] = <span style="color:#268bd2">num</span> <span style="color:#93a1a1;font-style:italic"># Replace that tail with num</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">tails</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># Example</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># arr1 = [3, 10, 2, 1, 20]</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(longest_increasing_subsequence_n_log_n(arr1)) # Expected: 3 ([3, 10, 20] or [2, 20] or [1, 20])</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># arr2 = [0, 8, 4, 12, 2, 10, 6, 14, 1, 9, 5, 13, 3, 11, 7, 15]</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(longest_increasing_subsequence_n_log_n(arr2)) # Expected: 6 ([0, 2, 6, 9, 11, 15] etc.)</span>
+</span></span></code></pre></div><h3 id="javascript">Javascript</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#859900">function</span> <span style="color:#268bd2">longestIncreasingSubsequenceNLogN</span>(<span style="color:#268bd2">arr</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">arr</span>.<span style="color:#268bd2">length</span> === <span style="color:#2aa198;font-weight:bold">0</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">const</span> <span style="color:#268bd2">tails</span> = []; <span style="color:#93a1a1;font-style:italic">// tails[k] is the smallest tail of all increasing subsequences of length k+1
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> (<span style="color:#859900">const</span> <span style="color:#268bd2">num</span> <span style="color:#859900">of</span> <span style="color:#268bd2">arr</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">tails</span>.<span style="color:#268bd2">length</span> === <span style="color:#2aa198;font-weight:bold">0</span> || <span style="color:#268bd2">num</span> &gt; <span style="color:#268bd2">tails</span>[<span style="color:#268bd2">tails</span>.<span style="color:#268bd2">length</span> - <span style="color:#2aa198;font-weight:bold">1</span>]) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">tails</span>.<span style="color:#268bd2">push</span>(<span style="color:#268bd2">num</span>);
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Find the smallest tail that is greater than or equal to num
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#93a1a1;font-style:italic">// Binary search to find the index to replace
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">let</span> <span style="color:#268bd2">low</span> = <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">let</span> <span style="color:#268bd2">high</span> = <span style="color:#268bd2">tails</span>.<span style="color:#268bd2">length</span> - <span style="color:#2aa198;font-weight:bold">1</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">let</span> <span style="color:#268bd2">idx</span> = -<span style="color:#2aa198;font-weight:bold">1</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">while</span> (<span style="color:#268bd2">low</span> &lt;= <span style="color:#268bd2">high</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">const</span> <span style="color:#268bd2">mid</span> = <span style="color:#cb4b16">Math</span>.<span style="color:#268bd2">floor</span>((<span style="color:#268bd2">low</span> + <span style="color:#268bd2">high</span>) / <span style="color:#2aa198;font-weight:bold">2</span>);
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">if</span> (<span style="color:#268bd2">tails</span>[<span style="color:#268bd2">mid</span>] &gt;= <span style="color:#268bd2">num</span>) {
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">idx</span> = <span style="color:#268bd2">mid</span>;
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">high</span> = <span style="color:#268bd2">mid</span> - <span style="color:#2aa198;font-weight:bold">1</span>;
+</span></span><span style="display:flex;"><span>                } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">low</span> = <span style="color:#268bd2">mid</span> + <span style="color:#2aa198;font-weight:bold">1</span>;
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">idx</span> !== -<span style="color:#2aa198;font-weight:bold">1</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">tails</span>[<span style="color:#268bd2">idx</span>] = <span style="color:#268bd2">num</span>;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">tails</span>.<span style="color:#268bd2">length</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const arr1 = [3, 10, 2, 1, 20];
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(longestIncreasingSubsequenceNLogN(arr1)); // Expected: 3
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const arr2 = [0, 8, 4, 12, 2, 10, 6, 14, 1, 9, 5, 13, 3, 11, 7, 15];
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(longestIncreasingSubsequenceNLogN(arr2)); // Expected: 6
+</span></span></span></code></pre></div><h3 id="typescript">Typescript</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-typescript" data-lang="typescript"><span style="display:flex;"><span><span style="color:#859900">function</span> <span style="color:#268bd2">longestIncreasingSubsequenceNLogNTS</span>(<span style="color:#268bd2">arr</span>: <span style="color:#859900;font-weight:bold">number</span>[]): <span style="color:#859900;font-weight:bold">number</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">arr</span>.<span style="color:#268bd2">length</span> === <span style="color:#2aa198;font-weight:bold">0</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">const</span> <span style="color:#268bd2">tails</span>: <span style="color:#859900;font-weight:bold">number</span>[] = []; <span style="color:#93a1a1;font-style:italic">// tails[k] is the smallest tail of all increasing subsequences of length k+1
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> (<span style="color:#859900">const</span> <span style="color:#268bd2">num</span> <span style="color:#859900">of</span> <span style="color:#268bd2">arr</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">tails</span>.<span style="color:#268bd2">length</span> === <span style="color:#2aa198;font-weight:bold">0</span> || <span style="color:#268bd2">num</span> &gt; <span style="color:#268bd2">tails</span>[<span style="color:#268bd2">tails</span>.<span style="color:#268bd2">length</span> - <span style="color:#2aa198;font-weight:bold">1</span>]) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">tails</span>.<span style="color:#268bd2">push</span>(<span style="color:#268bd2">num</span>);
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Find the smallest tail that is greater than or equal to num
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#93a1a1;font-style:italic">// Binary search to find the index to replace
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">let</span> <span style="color:#268bd2">low</span> = <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">let</span> <span style="color:#268bd2">high</span> = <span style="color:#268bd2">tails</span>.<span style="color:#268bd2">length</span> - <span style="color:#2aa198;font-weight:bold">1</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">let</span> <span style="color:#268bd2">idx</span> = -<span style="color:#2aa198;font-weight:bold">1</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">while</span> (<span style="color:#268bd2">low</span> &lt;= <span style="color:#268bd2">high</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">const</span> <span style="color:#268bd2">mid</span> = <span style="color:#cb4b16">Math</span>.<span style="color:#268bd2">floor</span>((<span style="color:#268bd2">low</span> + <span style="color:#268bd2">high</span>) / <span style="color:#2aa198;font-weight:bold">2</span>);
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">if</span> (<span style="color:#268bd2">tails</span>[<span style="color:#268bd2">mid</span>] &gt;= <span style="color:#268bd2">num</span>) {
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">idx</span> = <span style="color:#268bd2">mid</span>;
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">high</span> = <span style="color:#268bd2">mid</span> - <span style="color:#2aa198;font-weight:bold">1</span>;
+</span></span><span style="display:flex;"><span>                } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">low</span> = <span style="color:#268bd2">mid</span> + <span style="color:#2aa198;font-weight:bold">1</span>;
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">idx</span> !== -<span style="color:#2aa198;font-weight:bold">1</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">tails</span>[<span style="color:#268bd2">idx</span>] = <span style="color:#268bd2">num</span>;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">tails</span>.<span style="color:#268bd2">length</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const arr1TS = [3, 10, 2, 1, 20];
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(longestIncreasingSubsequenceNLogNTS(arr1TS)); // Expected: 3
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const arr2TS = [0, 8, 4, 12, 2, 10, 6, 14, 1, 9, 5, 13, 3, 11, 7, 15];
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(longestIncreasingSubsequenceNLogNTS(arr2TS)); // Expected: 6
+</span></span></span></code></pre></div><h3 id="cpp">Cpp</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;vector&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;iostream&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;algorithm&gt;</span><span style="color:#93a1a1;font-style:italic"> </span><span style="color:#93a1a1;font-style:italic">// For std::lower_bound
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">longestIncreasingSubsequenceNLogN</span>(<span style="color:#859900">const</span> <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt;&amp; <span style="color:#268bd2">arr</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">arr</span>.<span style="color:#268bd2">empty</span>()) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt; <span style="color:#268bd2">tails</span>; <span style="color:#93a1a1;font-style:italic">// tails[k] is the smallest tail of all increasing subsequences of length k+1
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">num</span> : <span style="color:#268bd2">arr</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// If num is greater than any tail, it can extend the longest subsequence
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">tails</span>.<span style="color:#268bd2">empty</span>() || <span style="color:#268bd2">num</span> &gt; <span style="color:#268bd2">tails</span>.<span style="color:#268bd2">back</span>()) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">tails</span>.<span style="color:#268bd2">push_back</span>(<span style="color:#268bd2">num</span>);
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Find the smallest tail that is greater than or equal to num
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#93a1a1;font-style:italic">// std::lower_bound returns an iterator to the first element not less than num
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">auto</span> <span style="color:#268bd2">it</span> = <span style="color:#268bd2">std</span>::<span style="color:#268bd2">lower_bound</span>(<span style="color:#268bd2">tails</span>.<span style="color:#268bd2">begin</span>(), <span style="color:#268bd2">tails</span>.<span style="color:#268bd2">end</span>(), <span style="color:#268bd2">num</span>);
+</span></span><span style="display:flex;"><span>            &lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">it</span> = <span style="color:#268bd2">num</span>; <span style="color:#93a1a1;font-style:italic">// Replace that tail with num
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">tails</span>.<span style="color:#268bd2">size</span>();
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// int main() {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::vector&lt;int&gt; arr1 = {3, 10, 2, 1, 20};
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; &#34;LIS length for arr1: &#34; &lt;&lt; longestIncreasingSubsequenceNLogN(arr1) &lt;&lt; std::endl; // 3
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::vector&lt;int&gt; arr2 = {0, 8, 4, 12, 2, 10, 6, 14, 1, 9, 5, 13, 3, 11, 7, 15};
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; &#34;LIS length for arr2: &#34; &lt;&lt; longestIncreasingSubsequenceNLogN(arr2) &lt;&lt; std::endl; // 6
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     return 0;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span></code></pre></div><h3 id="go">Go</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">package</span> <span style="color:#268bd2">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> (
+</span></span><span style="display:flex;"><span>    <span style="color:#2aa198">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#2aa198">&#34;sort&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> <span style="color:#268bd2">longestIncreasingSubsequenceNLogN</span>(<span style="color:#268bd2">arr</span> []<span style="color:#859900;font-weight:bold">int</span>) <span style="color:#859900;font-weight:bold">int</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">arr</span>) == <span style="color:#2aa198;font-weight:bold">0</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#2aa198;font-weight:bold">0</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">tails</span> := []<span style="color:#859900;font-weight:bold">int</span>{} <span style="color:#93a1a1;font-style:italic">// tails[k] is the smallest tail of all increasing subsequences of length k+1</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">_</span>, <span style="color:#268bd2">num</span> := <span style="color:#859900">range</span> <span style="color:#268bd2">arr</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">tails</span>) == <span style="color:#2aa198;font-weight:bold">0</span> || <span style="color:#268bd2">num</span> &gt; <span style="color:#268bd2">tails</span>[<span style="color:#cb4b16">len</span>(<span style="color:#268bd2">tails</span>)-<span style="color:#2aa198;font-weight:bold">1</span>] {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">tails</span> = <span style="color:#cb4b16">append</span>(<span style="color:#268bd2">tails</span>, <span style="color:#268bd2">num</span>)
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Find the smallest tail that is greater than or equal to num</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// using binary search (sort.SearchInts returns the index to insert)</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">idx</span> := <span style="color:#268bd2">sort</span>.<span style="color:#268bd2">SearchInts</span>(<span style="color:#268bd2">tails</span>, <span style="color:#268bd2">num</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">tails</span>[<span style="color:#268bd2">idx</span>] = <span style="color:#268bd2">num</span> <span style="color:#93a1a1;font-style:italic">// Replace that tail with num</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">tails</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// func main() {</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     arr1 := []int{3, 10, 2, 1, 20}</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     fmt.Println(&#34;LIS length for arr1:&#34;, longestIncreasingSubsequenceNLogN(arr1)) // 3</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     arr2 := []int{0, 8, 4, 12, 2, 10, 6, 14, 1, 9, 5, 13, 3, 11, 7, 15}</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     fmt.Println(&#34;LIS length for arr2:&#34;, longestIncreasingSubsequenceNLogN(arr2)) // 6</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }</span>
+</span></span></code></pre></div><h3 id="d">D</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-d" data-lang="d"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.stdio</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.array</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.algorithm</span>; <span style="color:#93a1a1;font-style:italic">// For std.algorithm.lowerBound
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">longestIncreasingSubsequenceNLogN</span>(<span style="color:#859900;font-weight:bold">int</span>[] <span style="color:#268bd2">arr</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">arr</span>.<span style="color:#268bd2">empty</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span>[] <span style="color:#268bd2">tails</span>; <span style="color:#93a1a1;font-style:italic">// tails[k] is the smallest tail of all increasing subsequences of length k+1
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">foreach</span> (<span style="color:#268bd2">num</span>; <span style="color:#268bd2">arr</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// If num is greater than any tail, it can extend the longest subsequence
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">tails</span>.<span style="color:#268bd2">empty</span> || <span style="color:#268bd2">num</span> &gt; <span style="color:#268bd2">tails</span>.<span style="color:#268bd2">back</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">tails</span> ~= <span style="color:#268bd2">num</span>;
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Find the smallest tail that is greater than or equal to num
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#93a1a1;font-style:italic">// lowerBound returns an iterator to the first element not less than num
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">auto</span> <span style="color:#268bd2">it</span> = <span style="color:#268bd2">tails</span>.<span style="color:#268bd2">lowerBound</span>(<span style="color:#268bd2">num</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">it</span> != <span style="color:#268bd2">tails</span>.<span style="color:#268bd2">end</span>) { <span style="color:#93a1a1;font-style:italic">// Ensure element found
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                &lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">it</span> = <span style="color:#268bd2">num</span>; <span style="color:#93a1a1;font-style:italic">// Replace that tail with num
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#859900">cast</span>(<span style="color:#859900;font-weight:bold">int</span>)<span style="color:#268bd2">tails</span>.<span style="color:#268bd2">length</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// void main() {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     auto arr1 = [3, 10, 2, 1, 20];
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     writeln(&#34;LIS length for arr1: &#34;, longestIncreasingSubsequenceNLogN(arr1)); // 3
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     auto arr2 = [0, 8, 4, 12, 2, 10, 6, 14, 1, 9, 5, 13, 3, 11, 7, 15];
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     writeln(&#34;LIS length for arr2: &#34;, longestIncreasingSubsequenceNLogN(arr2)); // 6
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span></code></pre></div><h2 id="code-walkthrough">Code Walkthrough</h2>
+<h3 id="code-walkthrough-1">Code Walkthrough</h3>
+<p>The <code>Longest Increasing Subsequence</code> problem can be solved in <code>O(N log N)</code> time using a combination of <code>dynamic programming</code> and <code>binary search</code>. This is a significant optimization over the <code>O(N^2)</code> DP approach.</p>
+<hr>
+<p><strong>Key Idea (<code>tails</code> array):</strong></p>
+<pre><code>- We maintain a `tails array` (or `list`). `tails[k]` stores the smallest *ending element* of all `increasing subsequences` of `length k+1` found so far.
+
+- It's crucial to understand that the `tails` array itself is not an `increasing subsequence`. Instead, its length is the `length` of the `LIS`, and its elements are just the smallest tails.
+
+- The `tails` array will always be sorted in `increasing order`.
+</code></pre>
+<p><strong>Algorithm Steps:</strong></p>
+<pre><code>- Initialize an empty `tails` array.
+
+- Iterate through each `num` in the input `array`:
+
+        - **Case 1: `tails` is empty or `num` is greater than the last element of `tails`.**
+
+                - If this is true, `num` can extend the longest `increasing subsequence` found so far. We append `num` to `tails`.
+
+        &lt;/li&gt;
+        - **Case 2: `num` is not greater than the last element of `tails`.**
+
+                - This means `num` cannot extend the `LIS` to a new longer length immediately. However, it might be able to form an `increasing subsequence` of the *same length* but with a *smaller tail*. A smaller tail is always better, as it allows more numbers to extend the subsequence later.
+
+                - We use `binary search` (`bisect_left` in Python, `lower_bound` in C++, `sort.SearchInts` in Go) to find the smallest `element` in `tails` that is greater than or equal to `num`.
+
+                - We replace that `element` with `num`. This operation maintains the sorted property of `tails` and ensures that `tails[k]` always holds the smallest tail for `LIS` of length `k+1`.
+
+        &lt;/li&gt;
+
+&lt;/li&gt;
+</code></pre>
+<p><strong>Result:</strong></p>
+<pre><code>- The final length of the `tails` array is the length of the `Longest Increasing Subsequence`.
+</code></pre>
+<h2 id="applications">Applications</h2>
+<h3 id="application">Application</h3>
+<p>The <code>Longest Increasing Subsequence (LIS)</code> problem has applications in various fields:</p>
+<pre><code>    - **Bioinformatics:** Used in analyzing DNA or protein sequences to identify common patterns or structures.
+
+    - **Data Mining:** Finding patterns or trends in sequential data, such as stock prices or sensor readings.
+
+    - **Job Scheduling:** Optimizing the order of tasks to maximize efficiency, where tasks have dependencies.
+
+    - **File Versioning:** Comparing different versions of a file to find out how they evolved, or to reconstruct a sequence of changes.
+
+    - **Card Games:** In certain card games, finding the `LIS` can be part of strategy optimization.
+
+    - **Compiler Optimization:** In some cases, instruction reordering can be optimized by finding the `LIS` to improve cache performance or reduce dependencies.
+</code></pre>
+
+    </div>
+</article>
+
+<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
+    
+    <a href="//localhost:1313/hugo_content/algorithms/dynamic_programming/lcs/" class="nav-btn">← Previous</a>
+    
+    
+    <a href="//localhost:1313/hugo_content/algorithms/dynamic_programming/" class="nav-btn">Up</a>
+
+    
+    <a href="//localhost:1313/hugo_content/algorithms/dynamic_programming/knapsack/" class="nav-btn">Next →</a>
+    
+</div>
+
+    </main>
+
+    <footer class="footer">
+        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
+    </footer>
+
+    <script>
+        const body = document.getElementById('theme-body');
+        const btn = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme');
+
+        
+        function updateButtonText() {
+            if (body.classList.contains('theme-terminal')) {
+                btn.textContent = "Light Mode";
+            } else {
+                btn.textContent = "Dark Mode";
+            }
+        }
+
+        if (currentTheme === 'terminal') {
+            body.classList.add('theme-terminal');
+        }
+        
+        
+        updateButtonText();
+
+        btn.addEventListener('click', () => {
+            body.classList.toggle('theme-terminal');
+            updateButtonText();
+            
+            let theme = 'natural';
+            if (body.classList.contains('theme-terminal')) {
+                theme = 'terminal';
+            }
+            localStorage.setItem('theme', theme);
+        });
+    </script>
+</body>
+</html>

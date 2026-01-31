@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rabin-Karp Algorithm | SDET Interview Preparation Kit</title>
+    <link rel="stylesheet" href="//localhost:1313/css/style.css">
+    <link rel="stylesheet" href="//localhost:1313/css/terminal.css">
+    
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    
+    <link rel="stylesheet" href="//localhost:1313/lib/katex/katex.min.css">
+    <script defer src="//localhost:1313/lib/katex/katex.min.js"></script>
+    <script defer src="//localhost:1313/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</head>
+<body id="theme-body">
+    <button id="theme-toggle">Switch Theme</button>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="//localhost:1313/">Index</a></li>
+                
+            </ul>
+        </nav>
+        <div class="site-breadcrumb">
+            <a href="//localhost:1313/">Home</a>
+            
+                
+                    <span>/</span> <a href="//localhost:1313/">SDET Interview Dashboard</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/hugo_content/">42 Algorithms &amp; 42 Data Structures</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/hugo_content/algorithms/">Algorithms</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/hugo_content/algorithms/string_searching/">String Searching</a>
+                
+            
+            
+                <span>/</span> Rabin-Karp Algorithm
+            
+        </div>
+    </header>
+
+    <main>
+        
+<article>
+    <div class="category-title" style="margin-bottom: 0.5rem;">String Searching</div>
+    <h1>Rabin-Karp Algorithm</h1>
+    <div class="content-body" style="margin-top: 2rem;">
+        <p>The <code>Rabin-Karp Algorithm</code> is a string searching algorithm that uses <code>hashing</code> to find any one of a set of <code>pattern</code> strings in a <code>text</code>. Instead of directly comparing the <code>pattern</code> with every substring of the <code>text</code>, it computes a <code>hash value</code> for the <code>pattern</code> and for each substring of the <code>text</code> of the same length. If the <code>hash values</code> match, it then performs a full character-by-character comparison to confirm a true match.</p>
+<p>Its primary advantage lies in its ability to efficiently find <em>multiple</em> patterns simultaneously and in its generally good average-case performance. Its average-case time complexity is <code>O(N + M)</code>, where <code>N</code> is the length of the text and <code>M</code> is the length of the pattern, but its worst-case can be <code>O(N &lt;em&gt; M)</code> due to hash collisions.</p>
+<h2 id="how-it-works">How it Works</h2>
+<h3 id="how-it-works-expanded">How it Works (Expanded)</h3>
+<p>The key to <code>Rabin-Karp</code> is the use of a &ldquo;<code>rolling hash</code>&rdquo; (also known as a &ldquo;<code>polynomial hashing</code>&rdquo;) function. A <code>rolling hash</code> allows the hash of a substring to be updated in constant time as the window slides, without recomputing the hash from scratch.</p>
+<hr>
+<p>Example: Search for Pattern &ldquo;abc&rdquo; in Text &ldquo;ababcab&rdquo;</p>
+<ol>
+<li>
+<p>Pattern Hash: h(&ldquo;abc&rdquo;) = (a</em>p^2 + b<em>p^1 + c</em>p^0) mod Q
+(e.g., if p=31, Q=101, then h(&ldquo;abc&rdquo;) = (97<em>31^2 + 98</em>31^1 + 99<em>31^0) mod 101)</p>
+</li>
+<li>
+<p>Text Substring Hashes (sliding window):</p>
+<ul>
+<li>h(&ldquo;aba&rdquo;) = (a</em>p^2 + b<em>p^1 + a</em>p^0) mod Q</li>
+<li>h(&ldquo;bab&rdquo;) = (b<em>p^2 + a</em>p^1 + b<em>p^0) mod Q (derived from h(&ldquo;aba&rdquo;) in O(1))</li>
+<li>h(&ldquo;abc&rdquo;) = &hellip; Match! Then verify character by character.</li>
+<li>&hellip; and so on.</li>
+</ul>
+</li>
+</ol>
+<h2 id="implementation">Implementation</h2>
+<h3 id="python">Python</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#859900">def</span> <span style="color:#268bd2">rabin_karp_search</span>(<span style="color:#268bd2">text</span>, <span style="color:#268bd2">pattern</span>, <span style="color:#268bd2">prime</span>=<span style="color:#2aa198;font-weight:bold">101</span>, <span style="color:#268bd2">base</span>=<span style="color:#2aa198;font-weight:bold">256</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">n</span> = <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">text</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">m</span> = <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">pattern</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#268bd2">m</span> == <span style="color:#2aa198;font-weight:bold">0</span> <span style="color:#859900">or</span> <span style="color:#268bd2">m</span> &gt; <span style="color:#268bd2">n</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> []
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">pattern_hash</span> = <span style="color:#2aa198;font-weight:bold">0</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">text_hash</span> = <span style="color:#2aa198;font-weight:bold">0</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">h</span> = <span style="color:#2aa198;font-weight:bold">1</span> <span style="color:#93a1a1;font-style:italic"># h = base^(m-1) % prime</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">results</span> = []
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># Precompute h</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> <span style="color:#859900">in</span> <span style="color:#cb4b16">range</span>(<span style="color:#268bd2">m</span> - <span style="color:#2aa198;font-weight:bold">1</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">h</span> = (<span style="color:#268bd2">h</span> &lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">base</span>) % <span style="color:#268bd2">prime</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># Compute hash of pattern and first text window</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> <span style="color:#859900">in</span> <span style="color:#cb4b16">range</span>(<span style="color:#268bd2">m</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">pattern_hash</span> = (<span style="color:#268bd2">pattern_hash</span> &lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">base</span> + <span style="color:#cb4b16">ord</span>(<span style="color:#268bd2">pattern</span>[<span style="color:#268bd2">i</span>])) % <span style="color:#268bd2">prime</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">text_hash</span> = (<span style="color:#268bd2">text_hash</span> &lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">base</span> + <span style="color:#cb4b16">ord</span>(<span style="color:#268bd2">text</span>[<span style="color:#268bd2">i</span>])) % <span style="color:#268bd2">prime</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># Slide the pattern over text</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> <span style="color:#859900">in</span> <span style="color:#cb4b16">range</span>(<span style="color:#268bd2">n</span> - <span style="color:#268bd2">m</span> + <span style="color:#2aa198;font-weight:bold">1</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">pattern_hash</span> == <span style="color:#268bd2">text_hash</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic"># Check for character-by-character match to avoid spurious hits</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">match</span> = <span style="color:#859900;font-weight:bold">True</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">for</span> <span style="color:#268bd2">j</span> <span style="color:#859900">in</span> <span style="color:#cb4b16">range</span>(<span style="color:#268bd2">m</span>):
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">if</span> <span style="color:#268bd2">text</span>[<span style="color:#268bd2">i</span> + <span style="color:#268bd2">j</span>] != <span style="color:#268bd2">pattern</span>[<span style="color:#268bd2">j</span>]:
+</span></span><span style="display:flex;"><span>                    <span style="color:#859900">match</span> = <span style="color:#859900;font-weight:bold">False</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#859900">break</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> <span style="color:#859900">match</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">results</span>.<span style="color:#268bd2">append</span>(<span style="color:#268bd2">i</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># Calculate hash for next window of text</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">n</span> - <span style="color:#268bd2">m</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">text_hash</span> = (<span style="color:#268bd2">text_hash</span> - <span style="color:#cb4b16">ord</span>(<span style="color:#268bd2">text</span>[<span style="color:#268bd2">i</span>]) &lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">h</span>) % <span style="color:#268bd2">prime</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">text_hash</span> = (<span style="color:#268bd2">text_hash</span> &lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">base</span> + <span style="color:#cb4b16">ord</span>(<span style="color:#268bd2">text</span>[<span style="color:#268bd2">i</span> + <span style="color:#268bd2">m</span>])) % <span style="color:#268bd2">prime</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">text_hash</span> = (<span style="color:#268bd2">text_hash</span> + <span style="color:#268bd2">prime</span>) % <span style="color:#268bd2">prime</span> <span style="color:#93a1a1;font-style:italic"># Ensure positive hash</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">results</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># Example</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># text = &#34;GEEKS FOR GEEKS&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># pattern = &#34;GEEK&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(rabin_karp_search(text, pattern)) # [0, 10]</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># text2 = &#34;AAAAA&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># pattern2 = &#34;AAA&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(rabin_karp_search(text2, pattern2)) # [0, 1, 2]</span>
+</span></span></code></pre></div><h3 id="javascript">Javascript</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#859900">function</span> <span style="color:#268bd2">rabinKarpSearch</span>(<span style="color:#268bd2">text</span>, <span style="color:#268bd2">pattern</span>, <span style="color:#268bd2">prime</span> = <span style="color:#2aa198;font-weight:bold">101</span>, <span style="color:#268bd2">base</span> = <span style="color:#2aa198;font-weight:bold">256</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">const</span> <span style="color:#268bd2">n</span> = <span style="color:#268bd2">text</span>.<span style="color:#268bd2">length</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">const</span> <span style="color:#268bd2">m</span> = <span style="color:#268bd2">pattern</span>.<span style="color:#268bd2">length</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">m</span> === <span style="color:#2aa198;font-weight:bold">0</span> || <span style="color:#268bd2">m</span> &gt; <span style="color:#268bd2">n</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> [];
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">let</span> <span style="color:#268bd2">patternHash</span> = <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">let</span> <span style="color:#268bd2">textHash</span> = <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">let</span> <span style="color:#268bd2">h</span> = <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#93a1a1;font-style:italic">// h = base^(m-1) % prime
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">const</span> <span style="color:#268bd2">results</span> = [];
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Precompute h (base^(m-1) % prime)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">m</span> - <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#268bd2">i</span>++) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">h</span> = (<span style="color:#268bd2">h</span> &lt;/em&gt; base) % prime;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Compute hash of pattern and first text window
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">m</span>; <span style="color:#268bd2">i</span>++) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">patternHash</span> = (<span style="color:#268bd2">patternHash</span> &lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">base</span> + <span style="color:#268bd2">text</span>.<span style="color:#268bd2">charCodeAt</span>(<span style="color:#268bd2">i</span>)) % <span style="color:#268bd2">prime</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">textHash</span> = (<span style="color:#268bd2">textHash</span> &lt;<span style="color:#2aa198">/em&gt; base + pattern.charCodeAt(i)) % prime; /</span>/ <span style="color:#268bd2">Fixed</span>: <span style="color:#268bd2">pattern</span>.<span style="color:#268bd2">charCodeAt</span>(<span style="color:#268bd2">i</span>)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Corrected to reflect pattern_hash and text_hash usage
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">let</span> <span style="color:#268bd2">correctPatternHash</span> = <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">m</span>; <span style="color:#268bd2">i</span>++) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">correctPatternHash</span> = (<span style="color:#268bd2">correctPatternHash</span> &lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">base</span> + <span style="color:#268bd2">pattern</span>.<span style="color:#268bd2">charCodeAt</span>(<span style="color:#268bd2">i</span>)) % <span style="color:#268bd2">prime</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">let</span> <span style="color:#268bd2">currentTextHash</span> = <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">m</span>; <span style="color:#268bd2">i</span>++) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">currentTextHash</span> = (<span style="color:#268bd2">currentTextHash</span> &lt;/em&gt; base + text.charCodeAt(i)) % prime;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Slide the pattern over text
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt;= <span style="color:#268bd2">n</span> - <span style="color:#268bd2">m</span>; <span style="color:#268bd2">i</span>++) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">correctPatternHash</span> === <span style="color:#268bd2">currentTextHash</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Check for character-by-character match to avoid spurious hits
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">let</span> <span style="color:#268bd2">match</span> = <span style="color:#859900;font-weight:bold">true</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">j</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">j</span> &lt; <span style="color:#268bd2">m</span>; <span style="color:#268bd2">j</span>++) {
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">if</span> (<span style="color:#268bd2">text</span>[<span style="color:#268bd2">i</span> + <span style="color:#268bd2">j</span>] !== <span style="color:#268bd2">pattern</span>[<span style="color:#268bd2">j</span>]) {
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">match</span> = <span style="color:#859900;font-weight:bold">false</span>;
+</span></span><span style="display:flex;"><span>                    <span style="color:#859900">break</span>;
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">match</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">results</span>.<span style="color:#268bd2">push</span>(<span style="color:#268bd2">i</span>);
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Calculate hash for next window of text
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">n</span> - <span style="color:#268bd2">m</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">currentTextHash</span> = (<span style="color:#268bd2">currentTextHash</span> - <span style="color:#268bd2">text</span>.<span style="color:#268bd2">charCodeAt</span>(<span style="color:#268bd2">i</span>) &lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">h</span>) % <span style="color:#268bd2">prime</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">currentTextHash</span> = (<span style="color:#268bd2">currentTextHash</span> &lt;/em&gt; base + text.charCodeAt(i + m)) % prime;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">currentTextHash</span> = (<span style="color:#268bd2">currentTextHash</span> + <span style="color:#268bd2">prime</span>) % <span style="color:#268bd2">prime</span>; <span style="color:#93a1a1;font-style:italic">// Ensure positive hash
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">results</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const text = &#34;GEEKS FOR GEEKS&#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const pattern = &#34;GEEK&#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(rabinKarpSearch(text, pattern)); // [0, 10]
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const text2 = &#34;AAAAA&#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const pattern2 = &#34;AAA&#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(rabinKarpSearch(text2, pattern2)); // [0, 1, 2]
+</span></span></span></code></pre></div><h3 id="typescript">Typescript</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-typescript" data-lang="typescript"><span style="display:flex;"><span><span style="color:#859900">function</span> <span style="color:#268bd2">rabinKarpSearchTS</span>(<span style="color:#268bd2">text</span>: <span style="color:#859900;font-weight:bold">string</span>, <span style="color:#268bd2">pattern</span>: <span style="color:#859900;font-weight:bold">string</span>, <span style="color:#268bd2">prime</span>: <span style="color:#859900;font-weight:bold">number</span> = <span style="color:#2aa198;font-weight:bold">101</span>, <span style="color:#268bd2">base</span>: <span style="color:#859900;font-weight:bold">number</span> = <span style="color:#2aa198;font-weight:bold">256</span>): <span style="color:#859900;font-weight:bold">number</span>[] {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">const</span> <span style="color:#268bd2">n</span> = <span style="color:#268bd2">text</span>.<span style="color:#268bd2">length</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">const</span> <span style="color:#268bd2">m</span> = <span style="color:#268bd2">pattern</span>.<span style="color:#268bd2">length</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">m</span> === <span style="color:#2aa198;font-weight:bold">0</span> || <span style="color:#268bd2">m</span> &gt; <span style="color:#268bd2">n</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> [];
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">let</span> <span style="color:#268bd2">patternHash</span> = <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">let</span> <span style="color:#268bd2">textHash</span> = <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">let</span> <span style="color:#268bd2">h</span> = <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#93a1a1;font-style:italic">// h = base^(m-1) % prime
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">const</span> <span style="color:#268bd2">results</span>: <span style="color:#859900;font-weight:bold">number</span>[] = [];
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Precompute h (base^(m-1) % prime)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">m</span> - <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#268bd2">i</span>++) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">h</span> = (<span style="color:#268bd2">h</span> &lt;<span style="color:#268bd2;font-weight:bold">em</span>&gt; <span style="color:#268bd2">base</span>) % <span style="color:#268bd2">prime</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Compute hash of pattern and first text window
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">m</span>; <span style="color:#268bd2">i</span>++) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">patternHash</span> = (<span style="color:#268bd2">patternHash</span> &lt;/<span style="color:#268bd2;font-weight:bold">em</span>&gt; <span style="color:#268bd2">base</span> + <span style="color:#268bd2">pattern</span>.<span style="color:#268bd2">charCodeAt</span>(<span style="color:#268bd2">i</span>)) % <span style="color:#268bd2">prime</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">textHash</span> = (<span style="color:#268bd2">textHash</span> &lt;<span style="color:#268bd2;font-weight:bold">em</span>&gt; <span style="color:#268bd2">base</span> + <span style="color:#268bd2">text</span>.<span style="color:#268bd2">charCodeAt</span>(<span style="color:#268bd2">i</span>)) % <span style="color:#268bd2">prime</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Slide the pattern over text
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt;= <span style="color:#268bd2">n</span> - <span style="color:#268bd2">m</span>; <span style="color:#268bd2">i</span>++) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">patternHash</span> === <span style="color:#268bd2">textHash</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Check for character-by-character match to avoid spurious hits
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">let</span> <span style="color:#268bd2">match</span> = <span style="color:#859900;font-weight:bold">true</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">j</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">j</span> &lt; <span style="color:#268bd2">m</span>; <span style="color:#268bd2">j</span>++) {
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">if</span> (<span style="color:#268bd2">text</span>[<span style="color:#268bd2">i</span> + <span style="color:#268bd2">j</span>] !== <span style="color:#268bd2">pattern</span>[<span style="color:#268bd2">j</span>]) {
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">match</span> = <span style="color:#859900;font-weight:bold">false</span>;
+</span></span><span style="display:flex;"><span>                    <span style="color:#859900">break</span>;
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">match</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">results</span>.<span style="color:#268bd2">push</span>(<span style="color:#268bd2">i</span>);
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Calculate hash for next window of text
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">n</span> - <span style="color:#268bd2">m</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">textHash</span> = (<span style="color:#268bd2">textHash</span> - <span style="color:#268bd2">text</span>.<span style="color:#268bd2">charCodeAt</span>(<span style="color:#268bd2">i</span>) &lt;/<span style="color:#268bd2;font-weight:bold">em</span>&gt; <span style="color:#268bd2">h</span>) % <span style="color:#268bd2">prime</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">textHash</span> = (<span style="color:#268bd2">textHash</span> &lt;<span style="color:#268bd2;font-weight:bold">em</span>&gt; <span style="color:#268bd2">base</span> + <span style="color:#268bd2">text</span>.<span style="color:#268bd2">charCodeAt</span>(<span style="color:#268bd2">i</span> + <span style="color:#268bd2">m</span>)) % <span style="color:#268bd2">prime</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">textHash</span> = (<span style="color:#268bd2">textHash</span> + <span style="color:#268bd2">prime</span>) % <span style="color:#268bd2">prime</span>; <span style="color:#93a1a1;font-style:italic">// Ensure positive hash
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">results</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const textTS = &#34;GEEKS FOR GEEKS&#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const patternTS = &#34;GEEK&#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(rabinKarpSearchTS(textTS, patternTS)); // [0, 10]
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const text2TS = &#34;AAAAA&#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const pattern2TS = &#34;AAA&#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(rabinKarpSearchTS(text2TS, pattern2TS)); // [0, 1, 2]
+</span></span></span></code></pre></div><h3 id="cpp">Cpp</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;string&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;vector&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;iostream&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// d is the number of characters in the input alphabet
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// For ASCII characters, d can be 256
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#859900">const</span> <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">BASE</span> = <span style="color:#2aa198;font-weight:bold">256</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">rabinKarpSearch</span>(<span style="color:#859900">const</span> <span style="color:#268bd2">std</span>::<span style="color:#268bd2">string</span>&amp; <span style="color:#268bd2">text</span>, <span style="color:#859900">const</span> <span style="color:#268bd2">std</span>::<span style="color:#268bd2">string</span>&amp; <span style="color:#268bd2">pattern</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">prime</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">n</span> = <span style="color:#268bd2">text</span>.<span style="color:#268bd2">length</span>();
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">m</span> = <span style="color:#268bd2">pattern</span>.<span style="color:#268bd2">length</span>();
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">m</span> == <span style="color:#2aa198;font-weight:bold">0</span> || <span style="color:#268bd2">m</span> &gt; <span style="color:#268bd2">n</span>) <span style="color:#859900">return</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">pattern_hash</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#93a1a1;font-style:italic">// hash value for pattern
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">text_hash</span> = <span style="color:#2aa198;font-weight:bold">0</span>;    <span style="color:#93a1a1;font-style:italic">// hash value for text
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">h</span> = <span style="color:#2aa198;font-weight:bold">1</span>;            <span style="color:#93a1a1;font-style:italic">// h = BASE^(m-1) % prime
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// The value of h would be &#34;pow(BASE, m-1)%prime&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">m</span> - <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#268bd2">i</span>++) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">h</span> = (<span style="color:#268bd2">h</span> &lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">BASE</span>) % <span style="color:#268bd2">prime</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Calculate the hash value of pattern and first window of text
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">m</span>; <span style="color:#268bd2">i</span>++) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">pattern_hash</span> = (<span style="color:#268bd2">BASE</span> &lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">pattern_hash</span> + <span style="color:#268bd2">pattern</span>[<span style="color:#268bd2">i</span>]) % <span style="color:#268bd2">prime</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">text_hash</span> = (<span style="color:#268bd2">BASE</span> &lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">text_hash</span> + <span style="color:#268bd2">text</span>[<span style="color:#268bd2">i</span>]) % <span style="color:#268bd2">prime</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Slide the pattern over text one by one
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt;= <span style="color:#268bd2">n</span> - <span style="color:#268bd2">m</span>; <span style="color:#268bd2">i</span>++) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Check if hash values match
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">pattern_hash</span> == <span style="color:#268bd2">text_hash</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// If hash values match, then only check characters one by one
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900;font-weight:bold">bool</span> <span style="color:#268bd2">match</span> = <span style="color:#cb4b16">true</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">j</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">j</span> &lt; <span style="color:#268bd2">m</span>; <span style="color:#268bd2">j</span>++) {
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">if</span> (<span style="color:#268bd2">text</span>[<span style="color:#268bd2">i</span> + <span style="color:#268bd2">j</span>] != <span style="color:#268bd2">pattern</span>[<span style="color:#268bd2">j</span>]) {
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">match</span> = <span style="color:#cb4b16">false</span>;
+</span></span><span style="display:flex;"><span>                    <span style="color:#859900">break</span>;
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">match</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">std</span>::<span style="color:#268bd2">cout</span> &lt;&lt; <span style="color:#2aa198">&#34;Pattern found at index &#34;</span> &lt;&lt; <span style="color:#268bd2">i</span> &lt;&lt; <span style="color:#268bd2">std</span>::<span style="color:#268bd2">endl</span>;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Calculate hash value for next window of text: Remove leading digit, add trailing digit
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">n</span> - <span style="color:#268bd2">m</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">text_hash</span> = (<span style="color:#268bd2">BASE</span> &lt;<span style="color:#268bd2">em</span>&gt; (<span style="color:#268bd2">text_hash</span> - <span style="color:#268bd2">text</span>[<span style="color:#268bd2">i</span>] &lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">h</span>) + <span style="color:#268bd2">text</span>[<span style="color:#268bd2">i</span> + <span style="color:#268bd2">m</span>]) % <span style="color:#268bd2">prime</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// We might get negative value of text_hash, converting it to positive
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">text_hash</span> &lt; <span style="color:#2aa198;font-weight:bold">0</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">text_hash</span> = (<span style="color:#268bd2">text_hash</span> + <span style="color:#268bd2">prime</span>);
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// int main() {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::string text = &#34;GEEKS FOR GEEKS&#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::string pattern = &#34;GEEK&#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     rabinKarpSearch(text, pattern, 101); // 101 is a prime number
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::string text2 = &#34;AAAAA&#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::string pattern2 = &#34;AAA&#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     rabinKarpSearch(text2, pattern2, 101);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span></code></pre></div><h3 id="go">Go</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">package</span> <span style="color:#268bd2">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#2aa198">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">const</span> <span style="color:#268bd2">BASE_GO</span> = <span style="color:#2aa198;font-weight:bold">256</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> <span style="color:#268bd2">rabinKarpSearch</span>(<span style="color:#268bd2">text</span>, <span style="color:#268bd2">pattern</span> <span style="color:#859900;font-weight:bold">string</span>, <span style="color:#268bd2">prime</span> <span style="color:#859900;font-weight:bold">int</span>) []<span style="color:#859900;font-weight:bold">int</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">n</span> := <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">text</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">m</span> := <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">pattern</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#268bd2">m</span> == <span style="color:#2aa198;font-weight:bold">0</span> || <span style="color:#268bd2">m</span> &gt; <span style="color:#268bd2">n</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#859900;font-weight:bold">nil</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">patternHash</span> := <span style="color:#2aa198;font-weight:bold">0</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">textHash</span> := <span style="color:#2aa198;font-weight:bold">0</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">h</span> := <span style="color:#2aa198;font-weight:bold">1</span> <span style="color:#93a1a1;font-style:italic">// h = BASE^(m-1) % prime</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">results</span> := []<span style="color:#859900;font-weight:bold">int</span>{}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Precompute h (BASE^(m-1) % prime)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> := <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">m</span>-<span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#268bd2">i</span>++ {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">h</span> = (<span style="color:#268bd2">h</span> &lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">BASE_GO</span>) % <span style="color:#268bd2">prime</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Compute hash of pattern and first text window</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> := <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">m</span>; <span style="color:#268bd2">i</span>++ {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">patternHash</span> = (<span style="color:#268bd2">patternHash</span>&lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">BASE_GO</span> + <span style="color:#cb4b16">int</span>(<span style="color:#268bd2">pattern</span>[<span style="color:#268bd2">i</span>])) % <span style="color:#268bd2">prime</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">textHash</span> = (<span style="color:#268bd2">textHash</span>&lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">BASE_GO</span> + <span style="color:#cb4b16">int</span>(<span style="color:#268bd2">text</span>[<span style="color:#268bd2">i</span>])) % <span style="color:#268bd2">prime</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Slide the pattern over text</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> := <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt;= <span style="color:#268bd2">n</span>-<span style="color:#268bd2">m</span>; <span style="color:#268bd2">i</span>++ {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">patternHash</span> == <span style="color:#268bd2">textHash</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Check for character-by-character match to avoid spurious hits</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">match</span> := <span style="color:#859900;font-weight:bold">true</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">for</span> <span style="color:#268bd2">j</span> := <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">j</span> &lt; <span style="color:#268bd2">m</span>; <span style="color:#268bd2">j</span>++ {
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">if</span> <span style="color:#268bd2">text</span>[<span style="color:#268bd2">i</span>+<span style="color:#268bd2">j</span>] != <span style="color:#268bd2">pattern</span>[<span style="color:#268bd2">j</span>] {
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">match</span> = <span style="color:#859900;font-weight:bold">false</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#859900">break</span>
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> <span style="color:#268bd2">match</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">results</span> = <span style="color:#cb4b16">append</span>(<span style="color:#268bd2">results</span>, <span style="color:#268bd2">i</span>)
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Calculate hash for next window of text</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">n</span>-<span style="color:#268bd2">m</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">textHash</span> = (<span style="color:#268bd2">textHash</span> - <span style="color:#cb4b16">int</span>(<span style="color:#268bd2">text</span>[<span style="color:#268bd2">i</span>])&lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">h</span>) % <span style="color:#268bd2">prime</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">textHash</span> = (<span style="color:#268bd2">textHash</span>&lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">BASE_GO</span> + <span style="color:#cb4b16">int</span>(<span style="color:#268bd2">text</span>[<span style="color:#268bd2">i</span>+<span style="color:#268bd2">m</span>])) % <span style="color:#268bd2">prime</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">textHash</span> = (<span style="color:#268bd2">textHash</span> + <span style="color:#268bd2">prime</span>) % <span style="color:#268bd2">prime</span> <span style="color:#93a1a1;font-style:italic">// Ensure positive hash</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">results</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// func main() {</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     text := &#34;GEEKS FOR GEEKS&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     pattern := &#34;GEEK&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     fmt.Println(rabinKarpSearch(text, pattern, 101)) // [0 10]</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     text2 := &#34;AAAAA&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     pattern2 := &#34;AAA&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     fmt.Println(rabinKarpSearch(text2, pattern2, 101)) // [0 1 2]</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }</span>
+</span></span></code></pre></div><h3 id="d">D</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-d" data-lang="d"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.stdio</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.array</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">enum</span> <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">BASE_D</span> = <span style="color:#2aa198;font-weight:bold">256</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900;font-weight:bold">int</span>[] <span style="color:#268bd2">rabinKarpSearch</span>(<span style="color:#cb4b16">string</span> <span style="color:#268bd2">text</span>, <span style="color:#cb4b16">string</span> <span style="color:#268bd2">pattern</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">prime</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">auto</span> <span style="color:#268bd2">n</span> = <span style="color:#268bd2">text</span>.<span style="color:#268bd2">length</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">auto</span> <span style="color:#268bd2">m</span> = <span style="color:#268bd2">pattern</span>.<span style="color:#268bd2">length</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">m</span> == <span style="color:#2aa198;font-weight:bold">0</span> || <span style="color:#268bd2">m</span> &gt; <span style="color:#268bd2">n</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> [];
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">patternHash</span> = <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">textHash</span> = <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">h</span> = <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#93a1a1;font-style:italic">// h = BASE^(m-1) % prime
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span>[] <span style="color:#268bd2">results</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Precompute h (BASE^(m-1) % prime)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">m</span> - <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#268bd2">i</span>++) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">h</span> = (<span style="color:#268bd2">h</span> &lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">BASE_D</span>) % <span style="color:#268bd2">prime</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Compute hash of pattern and first text window
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">m</span>; <span style="color:#268bd2">i</span>++) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">patternHash</span> = (<span style="color:#268bd2">patternHash</span> &lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">BASE_D</span> + <span style="color:#268bd2">text</span>[<span style="color:#268bd2">i</span>]) % <span style="color:#268bd2">prime</span>; <span style="color:#93a1a1;font-style:italic">// Use text[i] for character value
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">textHash</span> = (<span style="color:#268bd2">textHash</span> &lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">BASE_D</span> + <span style="color:#268bd2">pattern</span>[<span style="color:#268bd2">i</span>]) % <span style="color:#268bd2">prime</span>;     <span style="color:#93a1a1;font-style:italic">// Use pattern[i] for character value
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Recalculate based on corrected example
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">actualPatternHash</span> = <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">m</span>; <span style="color:#268bd2">i</span>++) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">actualPatternHash</span> = (<span style="color:#268bd2">actualPatternHash</span> &lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">BASE_D</span> + <span style="color:#268bd2">pattern</span>[<span style="color:#268bd2">i</span>]) % <span style="color:#268bd2">prime</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">currentTextHash</span> = <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">m</span>; <span style="color:#268bd2">i</span>++) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">currentTextHash</span> = (<span style="color:#268bd2">currentTextHash</span> &lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">BASE_D</span> + <span style="color:#268bd2">text</span>[<span style="color:#268bd2">i</span>]) % <span style="color:#268bd2">prime</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Slide the pattern over text
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt;= <span style="color:#268bd2">n</span> - <span style="color:#268bd2">m</span>; <span style="color:#268bd2">i</span>++) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">actualPatternHash</span> == <span style="color:#268bd2">currentTextHash</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Check for character-by-character match to avoid spurious hits
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900;font-weight:bold">bool</span> <span style="color:#268bd2">match</span> = <span style="color:#859900;font-weight:bold">true</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">j</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">j</span> &lt; <span style="color:#268bd2">m</span>; <span style="color:#268bd2">j</span>++) {
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">if</span> (<span style="color:#268bd2">text</span>[<span style="color:#268bd2">i</span> + <span style="color:#268bd2">j</span>] != <span style="color:#268bd2">pattern</span>[<span style="color:#268bd2">j</span>]) {
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">match</span> = <span style="color:#859900;font-weight:bold">false</span>;
+</span></span><span style="display:flex;"><span>                    <span style="color:#859900">break</span>;
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">match</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">results</span> ~= <span style="color:#268bd2">i</span>;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Calculate hash for next window of text
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">n</span> - <span style="color:#268bd2">m</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">currentTextHash</span> = (<span style="color:#268bd2">currentTextHash</span> - <span style="color:#268bd2">text</span>[<span style="color:#268bd2">i</span>] &lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">h</span>) % <span style="color:#268bd2">prime</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">currentTextHash</span> = (<span style="color:#268bd2">currentTextHash</span> &lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">BASE_D</span> + <span style="color:#268bd2">text</span>[<span style="color:#268bd2">i</span> + <span style="color:#268bd2">m</span>]) % <span style="color:#268bd2">prime</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">currentTextHash</span> = (<span style="color:#268bd2">currentTextHash</span> + <span style="color:#268bd2">prime</span>) % <span style="color:#268bd2">prime</span>; <span style="color:#93a1a1;font-style:italic">// Ensure positive hash
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">results</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// void main() {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     string text = &#34;GEEKS FOR GEEKS&#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     string pattern = &#34;GEEK&#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     writeln(rabinKarpSearch(text, pattern, 101)); // [0, 10]
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     string text2 = &#34;AAAAA&#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     string pattern2 = &#34;AAA&#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     writeln(rabinKarpSearch(text2, pattern2, 101)); // [0, 1, 2]
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span></code></pre></div><h2 id="code-walkthrough">Code Walkthrough</h2>
+<h3 id="code-walkthrough-1">Code Walkthrough</h3>
+<p>The <code>Rabin-Karp algorithm</code> leverages <code>hashing</code> and a &ldquo;<code>rolling hash</code>&rdquo; technique to quickly compare substrings, reducing the need for costly character-by-character comparisons.</p>
+<hr>
+<p><strong>Initialization:</strong></p>
+<pre><code>- `n`, `m`: Lengths of `text` and `pattern`.
+
+- `pattern_hash`, `text_hash`: Variables to store the calculated hash values.
+
+- `prime`: A large prime number used for the modulo operation in hashing to reduce hash collisions.
+
+- `base`: The size of the alphabet (e.g., 256 for ASCII).
+
+- `h`: A precomputed value `base^(m-1) % prime`, used to efficiently remove the contribution of the leading character in the `rolling hash` calculation.
+</code></pre>
+<p><strong>Hash Calculation:</strong></p>
+<pre><code>- The `pattern_hash` and the `text_hash` for the first window of the `text` (of length `m`) are computed using the polynomial hashing formula. Each character's ASCII value contributes to the hash, weighted by powers of `base`.
+</code></pre>
+<p><strong>Sliding Window and Comparison:</strong></p>
+<pre><code>- The algorithm then slides a window of size `m` across the `text`.
+
+- In each step, it compares `pattern_hash` with `text_hash`.
+
+- **Hash Match:** If the hashes match, a potential match is found. A full character-by-character comparison is then performed to confirm it's not a `spurious hit` (a hash collision). If confirmed, the `index` is recorded.
+
+- **Rolling Hash Update:** If it's not the last window, the `text_hash` is updated for the next window in `O(1)` time using the `rolling hash` formula:
+
+        - Subtract the contribution of the character leaving the window (`text[i] &lt;em&gt; h`).
+
+        - Multiply by `base` to shift the remaining characters' contributions.
+
+        - Add the contribution of the new character entering the window (`text[i + m]`).
+
+        - Apply the modulo `prime` at each step to keep the numbers manageable.
+
+        - A `prime` addition might be needed to handle negative results from the modulo operator in some languages.
+
+&lt;/li&gt;
+</code></pre>
+<h2 id="applications">Applications</h2>
+<h3 id="application">Application</h3>
+<p>The <code>Rabin-Karp Algorithm</code> is particularly powerful for problems involving multiple pattern searches or when hash collisions are rare.</p>
+<pre><code>    - **Plagiarism Detection:** Can be extended to find cases of plagiarism across many documents by hashing sentences or blocks of text.
+
+    - **Bioinformatics:** Searching for patterns in large biological sequences (DNA, RNA, protein).
+
+    - **File System Integrity:** Checking for duplicate files or identifying corrupted blocks by comparing hashes.
+
+    - **Network Intrusion Detection:** Scanning network packets for known attack signatures, especially when a large database of signatures needs to be checked against streaming data.
+
+    - **Finding Multiple Patterns:** It can be easily modified to find any one of `k` patterns in `O(N + M&lt;/em&gt;K)` in the worst case, but `O(N + K)` on average, where `K` is the number of patterns and `M` is the pattern length.
+</code></pre>
+
+    </div>
+</article>
+
+<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
+    
+    <a href="//localhost:1313/hugo_content/algorithms/string_searching/z_algorithm/" class="nav-btn">← Previous</a>
+    
+    
+    <a href="//localhost:1313/hugo_content/algorithms/string_searching/" class="nav-btn">Up</a>
+
+    
+    <a href="//localhost:1313/hugo_content/algorithms/string_searching/kmp/" class="nav-btn">Next →</a>
+    
+</div>
+
+    </main>
+
+    <footer class="footer">
+        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
+    </footer>
+
+    <script>
+        const body = document.getElementById('theme-body');
+        const btn = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme');
+
+        
+        function updateButtonText() {
+            if (body.classList.contains('theme-terminal')) {
+                btn.textContent = "Light Mode";
+            } else {
+                btn.textContent = "Dark Mode";
+            }
+        }
+
+        if (currentTheme === 'terminal') {
+            body.classList.add('theme-terminal');
+        }
+        
+        
+        updateButtonText();
+
+        btn.addEventListener('click', () => {
+            body.classList.toggle('theme-terminal');
+            updateButtonText();
+            
+            let theme = 'natural';
+            if (body.classList.contains('theme-terminal')) {
+                theme = 'terminal';
+            }
+            localStorage.setItem('theme', theme);
+        });
+    </script>
+</body>
+</html>

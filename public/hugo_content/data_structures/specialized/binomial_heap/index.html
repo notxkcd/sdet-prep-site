@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Binomial Heap | SDET Interview Preparation Kit</title>
+    <link rel="stylesheet" href="//localhost:1313/css/style.css">
+    <link rel="stylesheet" href="//localhost:1313/css/terminal.css">
+    
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    
+    <link rel="stylesheet" href="//localhost:1313/lib/katex/katex.min.css">
+    <script defer src="//localhost:1313/lib/katex/katex.min.js"></script>
+    <script defer src="//localhost:1313/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</head>
+<body id="theme-body">
+    <button id="theme-toggle">Switch Theme</button>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="//localhost:1313/">Index</a></li>
+                
+            </ul>
+        </nav>
+        <div class="site-breadcrumb">
+            <a href="//localhost:1313/">Home</a>
+            
+                
+                    <span>/</span> <a href="//localhost:1313/">SDET Interview Dashboard</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/hugo_content/">42 Algorithms &amp; 42 Data Structures</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/hugo_content/data_structures/">Data Structures</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/hugo_content/data_structures/specialized/">Specialized</a>
+                
+            
+            
+                <span>/</span> Binomial Heap
+            
+        </div>
+    </header>
+
+    <main>
+        
+<article>
+    <div class="category-title" style="margin-bottom: 0.5rem;">Specialized</div>
+    <h1>Binomial Heap</h1>
+    <div class="content-body" style="margin-top: 2rem;">
+        <p>A <code>Binomial Heap</code> is a collection of <code>binomial trees</code> that satisfies the <code>min-heap property</code> (or <code>max-heap property</code>). Like <code>Fibonacci Heaps</code> and <code>Pairing Heaps</code>, it is a <code>mergeable heap</code>, designed for efficient <code>merge</code> operations, alongside <code>insertion</code> and <code>extract-min</code>.</p>
+<p>Each <code>binomial tree</code> in the collection has a specific structure defined by its &ldquo;<code>order</code>&rdquo;. The number of <code>nodes</code> in a <code>binomial tree</code> of <code>order k</code> is <code>2^k</code>, and it has <code>k children</code>. The arrangement of these <code>trees</code> within the <code>heap</code> resembles the binary representation of the total number of <code>elements</code>.</p>
+<h2 id="how-it-works">How it Works</h2>
+<h3 id="how-it-works-expanded">How it Works (Expanded)</h3>
+<p>A <code>Binomial Heap</code> is a <code>forest</code> (collection) of <code>binomial trees</code>. A <code>binomial tree</code> of <code>order 0 (B0)</code> is a single <code>node</code>. A <code>binomial tree</code> of <code>order k (Bk)</code> is formed by linking two <code>Bk-1</code> trees: making one <code>root</code> the <code>leftmost child</code> of the other <code>root</code>, ensuring the <code>min-heap property</code> is maintained.</p>
+<hr>
+<p>Conceptual Binomial Trees:</p>
+<p>B0:  (Node)</p>
+<p>B1:  (Node)
+|
+(Node)</p>
+<p>B2:  (Node)
+|
+| (Node)
+|  |
+| (Node)
+(Node)
+|
+(Node)</p>
+<h2 id="implementation">Implementation</h2>
+<h3 id="python">Python</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#cb4b16">BinomialNode</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">__init__</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">key</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">key</span> = <span style="color:#268bd2">key</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">degree</span> = <span style="color:#2aa198;font-weight:bold">0</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">parent</span> = <span style="color:#859900;font-weight:bold">None</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">child</span> = <span style="color:#859900;font-weight:bold">None</span>    <span style="color:#93a1a1;font-style:italic"># Pointer to leftmost child</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">sibling</span> = <span style="color:#859900;font-weight:bold">None</span>  <span style="color:#93a1a1;font-style:italic"># Pointer to next sibling</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#cb4b16">BinomialHeap</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">__init__</span>(<span style="color:#cb4b16">self</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">trees</span> = [] <span style="color:#93a1a1;font-style:italic"># List of roots of binomial trees</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">min_node</span> = <span style="color:#859900;font-weight:bold">None</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">n</span> = <span style="color:#2aa198;font-weight:bold">0</span> <span style="color:#93a1a1;font-style:italic"># Number of nodes</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">_link_trees</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">h1</span>, <span style="color:#268bd2">h2</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># Link two binomial trees of the same degree</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># h2 becomes child of h1</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">h2</span>.<span style="color:#268bd2">parent</span> = <span style="color:#268bd2">h1</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">h2</span>.<span style="color:#268bd2">sibling</span> = <span style="color:#268bd2">h1</span>.<span style="color:#268bd2">child</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">h1</span>.<span style="color:#268bd2">child</span> = <span style="color:#268bd2">h2</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">h1</span>.<span style="color:#268bd2">degree</span> += <span style="color:#2aa198;font-weight:bold">1</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">h1</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">merge</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">other_heap</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># Merge two lists of binomial trees</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">merged_trees</span> = []
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">i</span>, <span style="color:#268bd2">j</span> = <span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#2aa198;font-weight:bold">0</span>
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># Combine lists of trees, keeping them sorted by degree</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">while</span> <span style="color:#268bd2">i</span> &lt; <span style="color:#cb4b16">len</span>(<span style="color:#cb4b16">self</span>.<span style="color:#268bd2">trees</span>) <span style="color:#859900">and</span> <span style="color:#268bd2">j</span> &lt; <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">other_heap</span>.<span style="color:#268bd2">trees</span>):
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">trees</span>[<span style="color:#268bd2">i</span>].<span style="color:#268bd2">degree</span> &lt; <span style="color:#268bd2">other_heap</span>.<span style="color:#268bd2">trees</span>[<span style="color:#268bd2">j</span>].<span style="color:#268bd2">degree</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">merged_trees</span>.<span style="color:#268bd2">append</span>(<span style="color:#cb4b16">self</span>.<span style="color:#268bd2">trees</span>[<span style="color:#268bd2">i</span>])
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">i</span> += <span style="color:#2aa198;font-weight:bold">1</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">else</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">merged_trees</span>.<span style="color:#268bd2">append</span>(<span style="color:#268bd2">other_heap</span>.<span style="color:#268bd2">trees</span>[<span style="color:#268bd2">j</span>])
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">j</span> += <span style="color:#2aa198;font-weight:bold">1</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">merged_trees</span>.<span style="color:#268bd2">extend</span>(<span style="color:#cb4b16">self</span>.<span style="color:#268bd2">trees</span>[<span style="color:#268bd2">i</span>:])
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">merged_trees</span>.<span style="color:#268bd2">extend</span>(<span style="color:#268bd2">other_heap</span>.<span style="color:#268bd2">trees</span>[<span style="color:#268bd2">j</span>:])
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">trees</span> = []
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">n</span> += <span style="color:#268bd2">other_heap</span>.<span style="color:#268bd2">n</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">other_heap</span>.<span style="color:#268bd2">n</span> = <span style="color:#2aa198;font-weight:bold">0</span> <span style="color:#93a1a1;font-style:italic"># Other heap is now empty</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">other_heap</span>.<span style="color:#268bd2">trees</span> = []
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#859900">not</span> <span style="color:#268bd2">merged_trees</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">min_node</span> = <span style="color:#859900;font-weight:bold">None</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># Actual merge (like binary addition)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">while</span> <span style="color:#268bd2">i</span> &lt; <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">merged_trees</span>):
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> <span style="color:#268bd2">i</span> + <span style="color:#2aa198;font-weight:bold">1</span> &lt; <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">merged_trees</span>) <span style="color:#859900">and</span> <span style="color:#268bd2">merged_trees</span>[<span style="color:#268bd2">i</span>].<span style="color:#268bd2">degree</span> == <span style="color:#268bd2">merged_trees</span>[<span style="color:#268bd2">i</span>+<span style="color:#2aa198;font-weight:bold">1</span>].<span style="color:#268bd2">degree</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#93a1a1;font-style:italic"># Two trees of same degree</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">if</span> (<span style="color:#268bd2">i</span> + <span style="color:#2aa198;font-weight:bold">2</span> &lt; <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">merged_trees</span>) <span style="color:#859900">and</span> 
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">merged_trees</span>[<span style="color:#268bd2">i</span>+<span style="color:#2aa198;font-weight:bold">1</span>].<span style="color:#268bd2">degree</span> == <span style="color:#268bd2">merged_trees</span>[<span style="color:#268bd2">i</span>+<span style="color:#2aa198;font-weight:bold">2</span>].<span style="color:#268bd2">degree</span>):
+</span></span><span style="display:flex;"><span>                    <span style="color:#93a1a1;font-style:italic"># Three trees of same degree, skip first and resolve later</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">trees</span>.<span style="color:#268bd2">append</span>(<span style="color:#268bd2">merged_trees</span>[<span style="color:#268bd2">i</span>])
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">i</span> += <span style="color:#2aa198;font-weight:bold">1</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">else</span>:
+</span></span><span style="display:flex;"><span>                    <span style="color:#93a1a1;font-style:italic"># Merge two trees</span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#859900">if</span> <span style="color:#268bd2">merged_trees</span>[<span style="color:#268bd2">i</span>].<span style="color:#268bd2">key</span> &lt; <span style="color:#268bd2">merged_trees</span>[<span style="color:#268bd2">i</span>+<span style="color:#2aa198;font-weight:bold">1</span>].<span style="color:#268bd2">key</span>:
+</span></span><span style="display:flex;"><span>                        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">trees</span>.<span style="color:#268bd2">append</span>(<span style="color:#cb4b16">self</span>.<span style="color:#268bd2">_link_trees</span>(<span style="color:#268bd2">merged_trees</span>[<span style="color:#268bd2">i</span>], <span style="color:#268bd2">merged_trees</span>[<span style="color:#268bd2">i</span>+<span style="color:#2aa198;font-weight:bold">1</span>]))
+</span></span><span style="display:flex;"><span>                    <span style="color:#859900">else</span>:
+</span></span><span style="display:flex;"><span>                        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">trees</span>.<span style="color:#268bd2">append</span>(<span style="color:#cb4b16">self</span>.<span style="color:#268bd2">_link_trees</span>(<span style="color:#268bd2">merged_trees</span>[<span style="color:#268bd2">i</span>+<span style="color:#2aa198;font-weight:bold">1</span>], <span style="color:#268bd2">merged_trees</span>[<span style="color:#268bd2">i</span>]))
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">i</span> += <span style="color:#2aa198;font-weight:bold">2</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">else</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">trees</span>.<span style="color:#268bd2">append</span>(<span style="color:#268bd2">merged_trees</span>[<span style="color:#268bd2">i</span>])
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">i</span> += <span style="color:#2aa198;font-weight:bold">1</span>
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">_update_min_node</span>()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">insert</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">key</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">new_node</span> = <span style="color:#268bd2">BinomialNode</span>(<span style="color:#268bd2">key</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">temp_heap</span> = <span style="color:#268bd2">BinomialHeap</span>()
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">temp_heap</span>.<span style="color:#268bd2">trees</span>.<span style="color:#268bd2">append</span>(<span style="color:#268bd2">new_node</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">temp_heap</span>.<span style="color:#268bd2">n</span> = <span style="color:#2aa198;font-weight:bold">1</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">merge</span>(<span style="color:#268bd2">temp_heap</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">find_min</span>(<span style="color:#cb4b16">self</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">min_node</span>.<span style="color:#268bd2">key</span> <span style="color:#859900">if</span> <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">min_node</span> <span style="color:#859900">else</span> <span style="color:#859900;font-weight:bold">None</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">extract_min</span>(<span style="color:#cb4b16">self</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#859900">not</span> <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">min_node</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#859900;font-weight:bold">None</span>
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">min_key</span> = <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">min_node</span>.<span style="color:#268bd2">key</span>
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># Remove min_node from root list</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">trees</span>.<span style="color:#268bd2">remove</span>(<span style="color:#cb4b16">self</span>.<span style="color:#268bd2">min_node</span>)
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># Create a new heap from min_node&#39;s children</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">min_children_heap</span> = <span style="color:#268bd2">BinomialHeap</span>()
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># Reverse the order of children to maintain degree ordering for merge</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">children_list</span> = []
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">current_child</span> = <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">min_node</span>.<span style="color:#268bd2">child</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">while</span> <span style="color:#268bd2">current_child</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">next_child</span> = <span style="color:#268bd2">current_child</span>.<span style="color:#268bd2">sibling</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">current_child</span>.<span style="color:#268bd2">parent</span> = <span style="color:#859900;font-weight:bold">None</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">current_child</span>.<span style="color:#268bd2">sibling</span> = <span style="color:#859900;font-weight:bold">None</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">children_list</span>.<span style="color:#268bd2">append</span>(<span style="color:#268bd2">current_child</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">current_child</span> = <span style="color:#268bd2">next_child</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">min_children_heap</span>.<span style="color:#268bd2">trees</span> = <span style="color:#cb4b16">list</span>(<span style="color:#cb4b16">reversed</span>(<span style="color:#268bd2">children_list</span>))
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">min_children_heap</span>.<span style="color:#268bd2">n</span> = <span style="color:#cb4b16">sum</span>(<span style="color:#2aa198;font-weight:bold">2</span>*&lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">t</span>.<span style="color:#268bd2">degree</span> <span style="color:#859900">for</span> <span style="color:#268bd2">t</span> <span style="color:#859900">in</span> <span style="color:#268bd2">min_children_heap</span>.<span style="color:#268bd2">trees</span>) <span style="color:#93a1a1;font-style:italic"># Recalculate n for children</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># Merge with remaining trees</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">merge</span>(<span style="color:#268bd2">min_children_heap</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">n</span> -= <span style="color:#2aa198;font-weight:bold">1</span> <span style="color:#93a1a1;font-style:italic"># Min node was removed</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">_update_min_node</span>()
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">min_key</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">_update_min_node</span>(<span style="color:#cb4b16">self</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">min_node</span> = <span style="color:#859900;font-weight:bold">None</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">trees</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">min_node</span> = <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">trees</span>[<span style="color:#2aa198;font-weight:bold">0</span>]
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">for</span> <span style="color:#268bd2">tree_root</span> <span style="color:#859900">in</span> <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">trees</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">if</span> <span style="color:#268bd2">tree_root</span>.<span style="color:#268bd2">key</span> &lt; <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">min_node</span>.<span style="color:#268bd2">key</span>:
+</span></span><span style="display:flex;"><span>                    <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">min_node</span> = <span style="color:#268bd2">tree_root</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># Example Usage:</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># bh = BinomialHeap()</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># bh.insert(10)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># bh.insert(20)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># bh.insert(5)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># bh.insert(3)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(&#34;Min:&#34;, bh.find_min()) # Expected: 3</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(&#34;Extract Min:&#34;, bh.extract_min()) # Expected: 3</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(&#34;Min after extract:&#34;, bh.find_min()) # Expected: 5</span>
+</span></span></code></pre></div><h3 id="javascript">Javascript</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#268bd2">BinomialNode</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">constructor</span>(<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">key</span> = <span style="color:#268bd2">key</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">degree</span> = <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">parent</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">child</span> = <span style="color:#859900;font-weight:bold">null</span>;    <span style="color:#93a1a1;font-style:italic">// Pointer to leftmost child
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">sibling</span> = <span style="color:#859900;font-weight:bold">null</span>;  <span style="color:#93a1a1;font-style:italic">// Pointer to next sibling
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#268bd2">BinomialHeap</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">constructor</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">trees</span> = []; <span style="color:#93a1a1;font-style:italic">// List of roots of binomial trees
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">minNode</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">n</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#93a1a1;font-style:italic">// Number of nodes
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">_linkTrees</span>(<span style="color:#268bd2">h1</span>, <span style="color:#268bd2">h2</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Link two binomial trees of the same degree
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#93a1a1;font-style:italic">// h2 becomes child of h1
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">h2</span>.<span style="color:#268bd2">parent</span> = <span style="color:#268bd2">h1</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">h2</span>.<span style="color:#268bd2">sibling</span> = <span style="color:#268bd2">h1</span>.<span style="color:#268bd2">child</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">h1</span>.<span style="color:#268bd2">child</span> = <span style="color:#268bd2">h2</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">h1</span>.<span style="color:#268bd2">degree</span>++;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">h1</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">merge</span>(<span style="color:#268bd2">otherHeap</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">let</span> <span style="color:#268bd2">mergedTrees</span> = [];
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">let</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">let</span> <span style="color:#268bd2">j</span> = <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Combine lists of trees, keeping them sorted by degree
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">while</span> (<span style="color:#268bd2">i</span> &lt; <span style="color:#859900">this</span>.<span style="color:#268bd2">trees</span>.<span style="color:#268bd2">length</span> &amp;&amp; <span style="color:#268bd2">j</span> &lt; <span style="color:#268bd2">otherHeap</span>.<span style="color:#268bd2">trees</span>.<span style="color:#268bd2">length</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#859900">this</span>.<span style="color:#268bd2">trees</span>[<span style="color:#268bd2">i</span>].<span style="color:#268bd2">degree</span> &lt; <span style="color:#268bd2">otherHeap</span>.<span style="color:#268bd2">trees</span>[<span style="color:#268bd2">j</span>].<span style="color:#268bd2">degree</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">mergedTrees</span>.<span style="color:#268bd2">push</span>(<span style="color:#859900">this</span>.<span style="color:#268bd2">trees</span>[<span style="color:#268bd2">i</span>]);
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">i</span>++;
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">mergedTrees</span>.<span style="color:#268bd2">push</span>(<span style="color:#268bd2">otherHeap</span>.<span style="color:#268bd2">trees</span>[<span style="color:#268bd2">j</span>]);
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">j</span>++;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">mergedTrees</span>.<span style="color:#268bd2">push</span>(...<span style="color:#859900">this</span>.<span style="color:#268bd2">trees</span>.<span style="color:#268bd2">slice</span>(<span style="color:#268bd2">i</span>));
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">mergedTrees</span>.<span style="color:#268bd2">push</span>(...<span style="color:#268bd2">otherHeap</span>.<span style="color:#268bd2">trees</span>.<span style="color:#268bd2">slice</span>(<span style="color:#268bd2">j</span>));
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">trees</span> = []; <span style="color:#93a1a1;font-style:italic">// Clear current trees
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">n</span> += <span style="color:#268bd2">otherHeap</span>.<span style="color:#268bd2">n</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">otherHeap</span>.<span style="color:#268bd2">n</span> = <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">otherHeap</span>.<span style="color:#268bd2">trees</span> = [];
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (!<span style="color:#268bd2">mergedTrees</span>.<span style="color:#268bd2">length</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">this</span>.<span style="color:#268bd2">minNode</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Actual merge (like binary addition)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">let</span> <span style="color:#268bd2">k</span> = <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">while</span> (<span style="color:#268bd2">k</span> &lt; <span style="color:#268bd2">mergedTrees</span>.<span style="color:#268bd2">length</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">k</span> + <span style="color:#2aa198;font-weight:bold">1</span> &lt; <span style="color:#268bd2">mergedTrees</span>.<span style="color:#268bd2">length</span> &amp;&amp; <span style="color:#268bd2">mergedTrees</span>[<span style="color:#268bd2">k</span>].<span style="color:#268bd2">degree</span> === <span style="color:#268bd2">mergedTrees</span>[<span style="color:#268bd2">k</span>+<span style="color:#2aa198;font-weight:bold">1</span>].<span style="color:#268bd2">degree</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">if</span> (<span style="color:#268bd2">k</span> + <span style="color:#2aa198;font-weight:bold">2</span> &lt; <span style="color:#268bd2">mergedTrees</span>.<span style="color:#268bd2">length</span> &amp;&amp; 
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">mergedTrees</span>[<span style="color:#268bd2">k</span>+<span style="color:#2aa198;font-weight:bold">1</span>].<span style="color:#268bd2">degree</span> === <span style="color:#268bd2">mergedTrees</span>[<span style="color:#268bd2">k</span>+<span style="color:#2aa198;font-weight:bold">2</span>].<span style="color:#268bd2">degree</span>) {
+</span></span><span style="display:flex;"><span>                    <span style="color:#93a1a1;font-style:italic">// Three trees of same degree, skip first and resolve later
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                    <span style="color:#859900">this</span>.<span style="color:#268bd2">trees</span>.<span style="color:#268bd2">push</span>(<span style="color:#268bd2">mergedTrees</span>[<span style="color:#268bd2">k</span>]);
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">k</span>++;
+</span></span><span style="display:flex;"><span>                } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>                    <span style="color:#93a1a1;font-style:italic">// Merge two trees
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                    <span style="color:#859900">if</span> (<span style="color:#268bd2">mergedTrees</span>[<span style="color:#268bd2">k</span>].<span style="color:#268bd2">key</span> &lt; <span style="color:#268bd2">mergedTrees</span>[<span style="color:#268bd2">k</span>+<span style="color:#2aa198;font-weight:bold">1</span>].<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>                        <span style="color:#859900">this</span>.<span style="color:#268bd2">trees</span>.<span style="color:#268bd2">push</span>(<span style="color:#859900">this</span>.<span style="color:#268bd2">_linkTrees</span>(<span style="color:#268bd2">mergedTrees</span>[<span style="color:#268bd2">k</span>], <span style="color:#268bd2">mergedTrees</span>[<span style="color:#268bd2">k</span>+<span style="color:#2aa198;font-weight:bold">1</span>]));
+</span></span><span style="display:flex;"><span>                    } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>                        <span style="color:#859900">this</span>.<span style="color:#268bd2">trees</span>.<span style="color:#268bd2">push</span>(<span style="color:#859900">this</span>.<span style="color:#268bd2">_linkTrees</span>(<span style="color:#268bd2">mergedTrees</span>[<span style="color:#268bd2">k</span>+<span style="color:#2aa198;font-weight:bold">1</span>], <span style="color:#268bd2">mergedTrees</span>[<span style="color:#268bd2">k</span>]));
+</span></span><span style="display:flex;"><span>                    }
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">k</span> += <span style="color:#2aa198;font-weight:bold">2</span>;
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">this</span>.<span style="color:#268bd2">trees</span>.<span style="color:#268bd2">push</span>(<span style="color:#268bd2">mergedTrees</span>[<span style="color:#268bd2">k</span>]);
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">k</span>++;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">_updateMinNode</span>();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">insert</span>(<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">const</span> <span style="color:#268bd2">newNode</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">BinomialNode</span>(<span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">const</span> <span style="color:#268bd2">tempHeap</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">BinomialHeap</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">tempHeap</span>.<span style="color:#268bd2">trees</span>.<span style="color:#268bd2">push</span>(<span style="color:#268bd2">newNode</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">tempHeap</span>.<span style="color:#268bd2">n</span> = <span style="color:#2aa198;font-weight:bold">1</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">merge</span>(<span style="color:#268bd2">tempHeap</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">findMin</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#859900">this</span>.<span style="color:#268bd2">minNode</span> ? <span style="color:#859900">this</span>.<span style="color:#268bd2">minNode</span>.<span style="color:#268bd2">key</span> : <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">extractMin</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (!<span style="color:#859900">this</span>.<span style="color:#268bd2">minNode</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">const</span> <span style="color:#268bd2">minKey</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">minNode</span>.<span style="color:#268bd2">key</span>;
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Remove minNode from root list
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">trees</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">trees</span>.<span style="color:#268bd2">filter</span>(<span style="color:#268bd2">tree</span> =&gt; <span style="color:#268bd2">tree</span> !== <span style="color:#859900">this</span>.<span style="color:#268bd2">minNode</span>);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Create a new heap from minNode&#39;s children
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">const</span> <span style="color:#268bd2">minChildrenHeap</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">BinomialHeap</span>();
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Reverse the order of children to maintain degree ordering for merge
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">let</span> <span style="color:#268bd2">childrenList</span> = [];
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">let</span> <span style="color:#268bd2">currentChild</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">minNode</span>.<span style="color:#268bd2">child</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">while</span> (<span style="color:#268bd2">currentChild</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">const</span> <span style="color:#268bd2">nextChild</span> = <span style="color:#268bd2">currentChild</span>.<span style="color:#268bd2">sibling</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">currentChild</span>.<span style="color:#268bd2">parent</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">currentChild</span>.<span style="color:#268bd2">sibling</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">childrenList</span>.<span style="color:#268bd2">push</span>(<span style="color:#268bd2">currentChild</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">currentChild</span> = <span style="color:#268bd2">nextChild</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">minChildrenHeap</span>.<span style="color:#268bd2">trees</span> = <span style="color:#268bd2">childrenList</span>.<span style="color:#268bd2">reverse</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">minChildrenHeap</span>.<span style="color:#268bd2">n</span> = <span style="color:#268bd2">minChildrenHeap</span>.<span style="color:#268bd2">trees</span>.<span style="color:#268bd2">reduce</span>((<span style="color:#268bd2">sum</span>, <span style="color:#268bd2">tree</span>) =&gt; <span style="color:#268bd2">sum</span> + <span style="color:#cb4b16">Math</span>.<span style="color:#268bd2">pow</span>(<span style="color:#2aa198;font-weight:bold">2</span>, <span style="color:#268bd2">tree</span>.<span style="color:#268bd2">degree</span>), <span style="color:#2aa198;font-weight:bold">0</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Merge with remaining trees
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">merge</span>(<span style="color:#268bd2">minChildrenHeap</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">n</span>--; <span style="color:#93a1a1;font-style:italic">// Min node was removed
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">_updateMinNode</span>();
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">minKey</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">_updateMinNode</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">minNode</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#859900">this</span>.<span style="color:#268bd2">trees</span>.<span style="color:#268bd2">length</span> &gt; <span style="color:#2aa198;font-weight:bold">0</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">this</span>.<span style="color:#268bd2">minNode</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">trees</span>[<span style="color:#2aa198;font-weight:bold">0</span>];
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">for</span> (<span style="color:#859900">const</span> <span style="color:#268bd2">treeRoot</span> <span style="color:#859900">of</span> <span style="color:#859900">this</span>.<span style="color:#268bd2">trees</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">if</span> (<span style="color:#268bd2">treeRoot</span>.<span style="color:#268bd2">key</span> &lt; <span style="color:#859900">this</span>.<span style="color:#268bd2">minNode</span>.<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>                    <span style="color:#859900">this</span>.<span style="color:#268bd2">minNode</span> = <span style="color:#268bd2">treeRoot</span>;
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// DecreaseKey is complex and omitted for conceptual simplicity.
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const bh = new BinomialHeap();
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// bh.insert(10);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// bh.insert(20);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// bh.insert(5);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// bh.insert(3);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Min:&#34;, bh.findMin()); // Expected: 3
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Extract Min:&#34;, bh.extractMin()); // Expected: 3
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Min after extract:&#34;, bh.findMin()); // Expected: 5
+</span></span></span></code></pre></div><h3 id="typescript">Typescript</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-typescript" data-lang="typescript"><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#268bd2">BinomialNodeTS</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">key</span>: <span style="color:#859900;font-weight:bold">number</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">degree</span>: <span style="color:#859900;font-weight:bold">number</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">parent</span>: <span style="color:#859900;font-weight:bold">BinomialNodeTS</span> | <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">child</span>: <span style="color:#859900;font-weight:bold">BinomialNodeTS</span> | <span style="color:#859900;font-weight:bold">null</span>;    <span style="color:#93a1a1;font-style:italic">// Pointer to leftmost child
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">public</span> <span style="color:#268bd2">sibling</span>: <span style="color:#859900;font-weight:bold">BinomialNodeTS</span> | <span style="color:#859900;font-weight:bold">null</span>;  <span style="color:#93a1a1;font-style:italic">// Pointer to next sibling
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">constructor</span>(<span style="color:#268bd2">key</span>: <span style="color:#859900;font-weight:bold">number</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">key</span> = <span style="color:#268bd2">key</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">degree</span> = <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">parent</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">child</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">sibling</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#268bd2">BinomialHeapTS</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">trees</span>: <span style="color:#859900;font-weight:bold">BinomialNodeTS</span>[]; <span style="color:#93a1a1;font-style:italic">// List of roots of binomial trees
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">public</span> <span style="color:#268bd2">minNode</span>: <span style="color:#859900;font-weight:bold">BinomialNodeTS</span> | <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">n</span>: <span style="color:#859900;font-weight:bold">number</span>; <span style="color:#93a1a1;font-style:italic">// Number of nodes
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">constructor</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">trees</span> = [];
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">minNode</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">n</span> = <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">private</span> <span style="color:#268bd2">_linkTrees</span>(<span style="color:#268bd2">h1</span>: <span style="color:#859900;font-weight:bold">BinomialNodeTS</span>, <span style="color:#268bd2">h2</span>: <span style="color:#859900;font-weight:bold">BinomialNodeTS</span>): <span style="color:#268bd2">BinomialNodeTS</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Link two binomial trees of the same degree
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#93a1a1;font-style:italic">// h2 becomes child of h1
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">h2</span>.<span style="color:#268bd2">parent</span> = <span style="color:#268bd2">h1</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">h2</span>.<span style="color:#268bd2">sibling</span> = <span style="color:#268bd2">h1</span>.<span style="color:#268bd2">child</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">h1</span>.<span style="color:#268bd2">child</span> = <span style="color:#268bd2">h2</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">h1</span>.<span style="color:#268bd2">degree</span>++;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">h1</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">merge</span>(<span style="color:#268bd2">otherHeap</span>: <span style="color:#859900;font-weight:bold">BinomialHeapTS</span>): <span style="color:#859900">void</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">let</span> <span style="color:#268bd2">mergedTrees</span>: <span style="color:#859900;font-weight:bold">BinomialNodeTS</span>[] = [];
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">let</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">let</span> <span style="color:#268bd2">j</span> = <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Combine lists of trees, keeping them sorted by degree
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">while</span> (<span style="color:#268bd2">i</span> &lt; <span style="color:#859900">this</span>.<span style="color:#268bd2">trees</span>.<span style="color:#268bd2">length</span> &amp;&amp; <span style="color:#268bd2">j</span> &lt; <span style="color:#268bd2">otherHeap</span>.<span style="color:#268bd2">trees</span>.<span style="color:#268bd2">length</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#859900">this</span>.<span style="color:#268bd2">trees</span>[<span style="color:#268bd2">i</span>].<span style="color:#268bd2">degree</span> &lt; <span style="color:#268bd2">otherHeap</span>.<span style="color:#268bd2">trees</span>[<span style="color:#268bd2">j</span>].<span style="color:#268bd2">degree</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">mergedTrees</span>.<span style="color:#268bd2">push</span>(<span style="color:#859900">this</span>.<span style="color:#268bd2">trees</span>[<span style="color:#268bd2">i</span>]);
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">i</span>++;
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">mergedTrees</span>.<span style="color:#268bd2">push</span>(<span style="color:#268bd2">otherHeap</span>.<span style="color:#268bd2">trees</span>[<span style="color:#268bd2">j</span>]);
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">j</span>++;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">mergedTrees</span>.<span style="color:#268bd2">push</span>(...<span style="color:#859900">this</span>.<span style="color:#268bd2">trees</span>.<span style="color:#268bd2">slice</span>(<span style="color:#268bd2">i</span>));
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">mergedTrees</span>.<span style="color:#268bd2">push</span>(...<span style="color:#268bd2">otherHeap</span>.<span style="color:#268bd2">trees</span>.<span style="color:#268bd2">slice</span>(<span style="color:#268bd2">j</span>));
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">trees</span> = []; <span style="color:#93a1a1;font-style:italic">// Clear current trees
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">n</span> += <span style="color:#268bd2">otherHeap</span>.<span style="color:#268bd2">n</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">otherHeap</span>.<span style="color:#268bd2">n</span> = <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">otherHeap</span>.<span style="color:#268bd2">trees</span> = [];
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (!<span style="color:#268bd2">mergedTrees</span>.<span style="color:#268bd2">length</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">this</span>.<span style="color:#268bd2">minNode</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Actual merge (like binary addition)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">let</span> <span style="color:#268bd2">k</span> = <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">while</span> (<span style="color:#268bd2">k</span> &lt; <span style="color:#268bd2">mergedTrees</span>.<span style="color:#268bd2">length</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">k</span> + <span style="color:#2aa198;font-weight:bold">1</span> &lt; <span style="color:#268bd2">mergedTrees</span>.<span style="color:#268bd2">length</span> &amp;&amp; <span style="color:#268bd2">mergedTrees</span>[<span style="color:#268bd2">k</span>].<span style="color:#268bd2">degree</span> === <span style="color:#268bd2">mergedTrees</span>[<span style="color:#268bd2">k</span>+<span style="color:#2aa198;font-weight:bold">1</span>].<span style="color:#268bd2">degree</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">if</span> (<span style="color:#268bd2">k</span> + <span style="color:#2aa198;font-weight:bold">2</span> &lt; <span style="color:#268bd2">mergedTrees</span>.<span style="color:#268bd2">length</span> &amp;&amp; 
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">mergedTrees</span>[<span style="color:#268bd2">k</span>+<span style="color:#2aa198;font-weight:bold">1</span>].<span style="color:#268bd2">degree</span> === <span style="color:#268bd2">mergedTrees</span>[<span style="color:#268bd2">k</span>+<span style="color:#2aa198;font-weight:bold">2</span>].<span style="color:#268bd2">degree</span>) {
+</span></span><span style="display:flex;"><span>                    <span style="color:#93a1a1;font-style:italic">// Three trees of same degree, skip first and resolve later
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                    <span style="color:#859900">this</span>.<span style="color:#268bd2">trees</span>.<span style="color:#268bd2">push</span>(<span style="color:#268bd2">mergedTrees</span>[<span style="color:#268bd2">k</span>]);
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">k</span>++;
+</span></span><span style="display:flex;"><span>                } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>                    <span style="color:#93a1a1;font-style:italic">// Merge two trees
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                    <span style="color:#859900">if</span> (<span style="color:#268bd2">mergedTrees</span>[<span style="color:#268bd2">k</span>].<span style="color:#268bd2">key</span> &lt; <span style="color:#268bd2">mergedTrees</span>[<span style="color:#268bd2">k</span>+<span style="color:#2aa198;font-weight:bold">1</span>].<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>                        <span style="color:#859900">this</span>.<span style="color:#268bd2">trees</span>.<span style="color:#268bd2">push</span>(<span style="color:#859900">this</span>.<span style="color:#268bd2">_linkTrees</span>(<span style="color:#268bd2">mergedTrees</span>[<span style="color:#268bd2">k</span>], <span style="color:#268bd2">mergedTrees</span>[<span style="color:#268bd2">k</span>+<span style="color:#2aa198;font-weight:bold">1</span>]));
+</span></span><span style="display:flex;"><span>                    } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>                        <span style="color:#859900">this</span>.<span style="color:#268bd2">trees</span>.<span style="color:#268bd2">push</span>(<span style="color:#859900">this</span>.<span style="color:#268bd2">_linkTrees</span>(<span style="color:#268bd2">mergedTrees</span>[<span style="color:#268bd2">k</span>+<span style="color:#2aa198;font-weight:bold">1</span>], <span style="color:#268bd2">mergedTrees</span>[<span style="color:#268bd2">k</span>]));
+</span></span><span style="display:flex;"><span>                    }
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">k</span> += <span style="color:#2aa198;font-weight:bold">2</span>;
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">this</span>.<span style="color:#268bd2">trees</span>.<span style="color:#268bd2">push</span>(<span style="color:#268bd2">mergedTrees</span>[<span style="color:#268bd2">k</span>]);
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">k</span>++;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">_updateMinNode</span>();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">insert</span>(<span style="color:#268bd2">key</span>: <span style="color:#859900;font-weight:bold">number</span>): <span style="color:#859900">void</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">const</span> <span style="color:#268bd2">newNode</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">BinomialNodeTS</span>(<span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">const</span> <span style="color:#268bd2">tempHeap</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">BinomialHeapTS</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">tempHeap</span>.<span style="color:#268bd2">trees</span>.<span style="color:#268bd2">push</span>(<span style="color:#268bd2">newNode</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">tempHeap</span>.<span style="color:#268bd2">n</span> = <span style="color:#2aa198;font-weight:bold">1</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">merge</span>(<span style="color:#268bd2">tempHeap</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">findMin</span>(): <span style="color:#859900;font-weight:bold">number</span> | <span style="color:#859900;font-weight:bold">null</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#859900">this</span>.<span style="color:#268bd2">minNode</span> ? <span style="color:#859900">this</span>.<span style="color:#268bd2">minNode.key</span> : <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">extractMin</span>(): <span style="color:#859900;font-weight:bold">number</span> | <span style="color:#859900;font-weight:bold">null</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (!<span style="color:#859900">this</span>.<span style="color:#268bd2">minNode</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">const</span> <span style="color:#268bd2">minKey</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">minNode</span>.<span style="color:#268bd2">key</span>;
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Remove minNode from root list
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">trees</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">trees</span>.<span style="color:#268bd2">filter</span>(<span style="color:#268bd2">tree</span> =&gt; <span style="color:#268bd2">tree</span> !== <span style="color:#859900">this</span>.<span style="color:#268bd2">minNode</span>);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Create a new heap from minNode&#39;s children
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">const</span> <span style="color:#268bd2">minChildrenHeap</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">BinomialHeapTS</span>();
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Reverse the order of children to maintain degree ordering for merge
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">let</span> <span style="color:#268bd2">childrenList</span>: <span style="color:#859900;font-weight:bold">BinomialNodeTS</span>[] = [];
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">let</span> <span style="color:#268bd2">currentChild</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">minNode</span>.<span style="color:#268bd2">child</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">while</span> (<span style="color:#268bd2">currentChild</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">const</span> <span style="color:#268bd2">nextChild</span> = <span style="color:#268bd2">currentChild</span>.<span style="color:#268bd2">sibling</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">currentChild</span>.<span style="color:#268bd2">parent</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">currentChild</span>.<span style="color:#268bd2">sibling</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">childrenList</span>.<span style="color:#268bd2">push</span>(<span style="color:#268bd2">currentChild</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">currentChild</span> = <span style="color:#268bd2">nextChild</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">minChildrenHeap</span>.<span style="color:#268bd2">trees</span> = <span style="color:#268bd2">childrenList</span>.<span style="color:#268bd2">reverse</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">minChildrenHeap</span>.<span style="color:#268bd2">n</span> = <span style="color:#268bd2">minChildrenHeap</span>.<span style="color:#268bd2">trees</span>.<span style="color:#268bd2">reduce</span>((<span style="color:#268bd2">sum</span>, <span style="color:#268bd2">tree</span>) =&gt; <span style="color:#268bd2">sum</span> + <span style="color:#cb4b16">Math</span>.<span style="color:#268bd2">pow</span>(<span style="color:#2aa198;font-weight:bold">2</span>, <span style="color:#268bd2">tree</span>.<span style="color:#268bd2">degree</span>), <span style="color:#2aa198;font-weight:bold">0</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Merge with remaining trees
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">merge</span>(<span style="color:#268bd2">minChildrenHeap</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">n</span>--; <span style="color:#93a1a1;font-style:italic">// Min node was removed
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">_updateMinNode</span>();
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">minKey</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">private</span> <span style="color:#268bd2">_updateMinNode</span>(): <span style="color:#859900">void</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">minNode</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#859900">this</span>.<span style="color:#268bd2">trees</span>.<span style="color:#268bd2">length</span> &gt; <span style="color:#2aa198;font-weight:bold">0</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">this</span>.<span style="color:#268bd2">minNode</span> = <span style="color:#859900">this</span>.<span style="color:#268bd2">trees</span>[<span style="color:#2aa198;font-weight:bold">0</span>];
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">for</span> (<span style="color:#859900">const</span> <span style="color:#268bd2">treeRoot</span> <span style="color:#859900">of</span> <span style="color:#859900">this</span>.<span style="color:#268bd2">trees</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">if</span> (<span style="color:#268bd2">treeRoot</span>.<span style="color:#268bd2">key</span> &lt; <span style="color:#859900">this</span>.<span style="color:#268bd2">minNode</span>.<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>                    <span style="color:#859900">this</span>.<span style="color:#268bd2">minNode</span> = <span style="color:#268bd2">treeRoot</span>;
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// DecreaseKey is complex and omitted for conceptual simplicity.
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const bhTS = new BinomialHeapTS();
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// bhTS.insert(10);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// bhTS.insert(20);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// bhTS.insert(5);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// bhTS.insert(3);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Min:&#34;, bhTS.findMin()); // Expected: 3
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Extract Min:&#34;, bhTS.extractMin()); // Expected: 3
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&#34;Min after extract:&#34;, bhTS.findMin()); // Expected: 5
+</span></span></span></code></pre></div><h3 id="cpp">Cpp</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;iostream&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;vector&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;algorithm&gt;</span><span style="color:#93a1a1;font-style:italic"> </span><span style="color:#93a1a1;font-style:italic">// For std::reverse
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;limits&gt;</span><span style="color:#93a1a1;font-style:italic">    </span><span style="color:#93a1a1;font-style:italic">// For std::numeric_limits
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;numeric&gt;</span><span style="color:#93a1a1;font-style:italic">   </span><span style="color:#93a1a1;font-style:italic">// For std::accumulate
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#cb4b16">BinomialNode</span> {
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">key</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">degree</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">BinomialNode</span>&lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">parent</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">BinomialNode</span>&lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">child</span>;    <span style="color:#93a1a1;font-style:italic">// Pointer to leftmost child
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">BinomialNode</span>&lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">sibling</span>;  <span style="color:#93a1a1;font-style:italic">// Pointer to next sibling
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">BinomialNode</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">k</span>) : <span style="color:#268bd2">key</span>(<span style="color:#268bd2">k</span>), <span style="color:#268bd2">degree</span>(<span style="color:#2aa198;font-weight:bold">0</span>), <span style="color:#268bd2">parent</span>(<span style="color:#859900">nullptr</span>), <span style="color:#268bd2">child</span>(<span style="color:#859900">nullptr</span>), <span style="color:#268bd2">sibling</span>(<span style="color:#859900">nullptr</span>) {}
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#cb4b16">BinomialHeap</span> {
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#268bd2">BinomialNode</span>&lt;<span style="color:#268bd2">em</span>&gt;&gt; <span style="color:#268bd2">trees</span>; <span style="color:#93a1a1;font-style:italic">// List of roots of binomial trees
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">BinomialNode</span>&lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">min_node</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">n</span>; <span style="color:#93a1a1;font-style:italic">// Number of nodes
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">BinomialHeap</span>() : <span style="color:#268bd2">min_node</span>(<span style="color:#859900">nullptr</span>), <span style="color:#268bd2">n</span>(<span style="color:#2aa198;font-weight:bold">0</span>) {}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Helper to link two binomial trees of the same degree
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">BinomialNode</span>&lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">_link_trees</span>(<span style="color:#268bd2">BinomialNode</span>&lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">h1</span>, <span style="color:#268bd2">BinomialNode</span>&lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">h2</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Ensure h1-&gt;key &lt;= h2-&gt;key (min-heap property)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">h1</span>-&gt;<span style="color:#268bd2">key</span> &gt; <span style="color:#268bd2">h2</span>-&gt;<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">std</span>::<span style="color:#268bd2">swap</span>(<span style="color:#268bd2">h1</span>, <span style="color:#268bd2">h2</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">h2</span>-&gt;<span style="color:#268bd2">parent</span> = <span style="color:#268bd2">h1</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">h2</span>-&gt;<span style="color:#268bd2">sibling</span> = <span style="color:#268bd2">h1</span>-&gt;<span style="color:#268bd2">child</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">h1</span>-&gt;<span style="color:#268bd2">child</span> = <span style="color:#268bd2">h2</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">h1</span>-&gt;<span style="color:#268bd2">degree</span>++;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">h1</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">merge</span>(<span style="color:#268bd2">BinomialHeap</span>&amp; <span style="color:#268bd2">other_heap</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#268bd2">BinomialNode</span>&lt;/<span style="color:#268bd2">em</span>&gt;&gt; <span style="color:#268bd2">merged_list</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#268bd2">j</span> = <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Combine lists of trees, keeping them sorted by degree
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">while</span> (<span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">trees</span>.<span style="color:#268bd2">size</span>() &amp;&amp; <span style="color:#268bd2">j</span> &lt; <span style="color:#268bd2">other_heap</span>.<span style="color:#268bd2">trees</span>.<span style="color:#268bd2">size</span>()) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">trees</span>[<span style="color:#268bd2">i</span>]-&gt;<span style="color:#268bd2">degree</span> &lt; <span style="color:#268bd2">other_heap</span>.<span style="color:#268bd2">trees</span>[<span style="color:#268bd2">j</span>]-&gt;<span style="color:#268bd2">degree</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">merged_list</span>.<span style="color:#268bd2">push_back</span>(<span style="color:#268bd2">trees</span>[<span style="color:#268bd2">i</span>]);
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">i</span>++;
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">merged_list</span>.<span style="color:#268bd2">push_back</span>(<span style="color:#268bd2">other_heap</span>.<span style="color:#268bd2">trees</span>[<span style="color:#268bd2">j</span>]);
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">j</span>++;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Add remaining trees
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">while</span> (<span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">trees</span>.<span style="color:#268bd2">size</span>()) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">merged_list</span>.<span style="color:#268bd2">push_back</span>(<span style="color:#268bd2">trees</span>[<span style="color:#268bd2">i</span>]);
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">i</span>++;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">while</span> (<span style="color:#268bd2">j</span> &lt; <span style="color:#268bd2">other_heap</span>.<span style="color:#268bd2">trees</span>.<span style="color:#268bd2">size</span>()) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">merged_list</span>.<span style="color:#268bd2">push_back</span>(<span style="color:#268bd2">other_heap</span>.<span style="color:#268bd2">trees</span>[<span style="color:#268bd2">j</span>]);
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">j</span>++;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">trees</span>.<span style="color:#268bd2">clear</span>(); <span style="color:#93a1a1;font-style:italic">// Clear current trees
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">n</span> += <span style="color:#268bd2">other_heap</span>.<span style="color:#268bd2">n</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">other_heap</span>.<span style="color:#268bd2">n</span> = <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">other_heap</span>.<span style="color:#268bd2">trees</span>.<span style="color:#268bd2">clear</span>();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">merged_list</span>.<span style="color:#268bd2">empty</span>()) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">min_node</span> = <span style="color:#859900">nullptr</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Actual merge (like binary addition)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">BinomialNode</span>&lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">current_tree</span> = <span style="color:#859900">nullptr</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> (<span style="color:#268bd2">BinomialNode</span>&lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">next_tree</span> : <span style="color:#268bd2">merged_list</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">current_tree</span> == <span style="color:#859900">nullptr</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">current_tree</span> = <span style="color:#268bd2">next_tree</span>;
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> <span style="color:#859900">if</span> (<span style="color:#268bd2">current_tree</span>-&gt;<span style="color:#268bd2">degree</span> == <span style="color:#268bd2">next_tree</span>-&gt;<span style="color:#268bd2">degree</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#93a1a1;font-style:italic">// Check if there&#39;s a third tree of same degree
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#859900">if</span> (!<span style="color:#268bd2">trees</span>.<span style="color:#268bd2">empty</span>() &amp;&amp; <span style="color:#268bd2">trees</span>.<span style="color:#268bd2">back</span>()-&gt;<span style="color:#268bd2">degree</span> == <span style="color:#268bd2">current_tree</span>-&gt;<span style="color:#268bd2">degree</span>) {
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">trees</span>.<span style="color:#268bd2">push_back</span>(<span style="color:#268bd2">current_tree</span>);
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">current_tree</span> = <span style="color:#268bd2">next_tree</span>;
+</span></span><span style="display:flex;"><span>                } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">current_tree</span> = <span style="color:#268bd2">_link_trees</span>(<span style="color:#268bd2">current_tree</span>, <span style="color:#268bd2">next_tree</span>);
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">trees</span>.<span style="color:#268bd2">push_back</span>(<span style="color:#268bd2">current_tree</span>);
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">current_tree</span> = <span style="color:#268bd2">next_tree</span>;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">current_tree</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">trees</span>.<span style="color:#268bd2">push_back</span>(<span style="color:#268bd2">current_tree</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">_update_min_node</span>();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">insert</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">BinomialNode</span>&lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">newNode</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">BinomialNode</span>(<span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">BinomialHeap</span> <span style="color:#268bd2">tempHeap</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">tempHeap</span>.<span style="color:#268bd2">trees</span>.<span style="color:#268bd2">push_back</span>(<span style="color:#268bd2">newNode</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">tempHeap</span>.<span style="color:#268bd2">n</span> = <span style="color:#2aa198;font-weight:bold">1</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">merge</span>(<span style="color:#268bd2">tempHeap</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">findMin</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (!<span style="color:#268bd2">min_node</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">throw</span> <span style="color:#268bd2">std</span>::<span style="color:#268bd2">runtime_error</span>(<span style="color:#2aa198">&#34;Heap is empty&#34;</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">min_node</span>-&gt;<span style="color:#268bd2">key</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">extractMin</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (!<span style="color:#268bd2">min_node</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">throw</span> <span style="color:#268bd2">std</span>::<span style="color:#268bd2">runtime_error</span>(<span style="color:#2aa198">&#34;Heap is empty&#34;</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">min_key</span> = <span style="color:#268bd2">min_node</span>-&gt;<span style="color:#268bd2">key</span>;
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Remove min_node from root list
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">trees</span>.<span style="color:#268bd2">erase</span>(<span style="color:#268bd2">std</span>::<span style="color:#268bd2">remove</span>(<span style="color:#268bd2">trees</span>.<span style="color:#268bd2">begin</span>(), <span style="color:#268bd2">trees</span>.<span style="color:#268bd2">end</span>(), <span style="color:#268bd2">min_node</span>), <span style="color:#268bd2">trees</span>.<span style="color:#268bd2">end</span>());
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Create a new heap from min_node&#39;s children
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">BinomialHeap</span> <span style="color:#268bd2">minChildrenHeap</span>;
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Collect children and reverse order (for merge)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#268bd2">BinomialNode</span>&lt;/<span style="color:#268bd2">em</span>&gt;&gt; <span style="color:#268bd2">children_list</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">BinomialNode</span>&lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">current_child</span> = <span style="color:#268bd2">min_node</span>-&gt;<span style="color:#268bd2">child</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">while</span> (<span style="color:#268bd2">current_child</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">BinomialNode</span>&lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">next_child</span> = <span style="color:#268bd2">current_child</span>-&gt;<span style="color:#268bd2">sibling</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">current_child</span>-&gt;<span style="color:#268bd2">parent</span> = <span style="color:#859900">nullptr</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">current_child</span>-&gt;<span style="color:#268bd2">sibling</span> = <span style="color:#859900">nullptr</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">children_list</span>.<span style="color:#268bd2">push_back</span>(<span style="color:#268bd2">current_child</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">current_child</span> = <span style="color:#268bd2">next_child</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">std</span>::<span style="color:#268bd2">reverse</span>(<span style="color:#268bd2">children_list</span>.<span style="color:#268bd2">begin</span>(), <span style="color:#268bd2">children_list</span>.<span style="color:#268bd2">end</span>());
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">minChildrenHeap</span>.<span style="color:#268bd2">trees</span> = <span style="color:#268bd2">children_list</span>;
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Merge with remaining trees
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">merge</span>(<span style="color:#268bd2">minChildrenHeap</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">n</span>--; <span style="color:#93a1a1;font-style:italic">// Min node was removed
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">_update_min_node</span>();
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">min_key</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">_update_min_node</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">min_node</span> = <span style="color:#859900">nullptr</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (!<span style="color:#268bd2">trees</span>.<span style="color:#268bd2">empty</span>()) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">min_node</span> = <span style="color:#268bd2">trees</span>[<span style="color:#2aa198;font-weight:bold">0</span>];
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">for</span> (<span style="color:#268bd2">BinomialNode</span>&lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">tree_root</span> : <span style="color:#268bd2">trees</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">if</span> (<span style="color:#268bd2">tree_root</span>-&gt;<span style="color:#268bd2">key</span> &lt; <span style="color:#268bd2">min_node</span>-&gt;<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">min_node</span> = <span style="color:#268bd2">tree_root</span>;
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// DecreaseKey is complex and omitted for conceptual simplicity.
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// int main() {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     BinomialHeap bh;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     bh.insert(10);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     bh.insert(20);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     bh.insert(5);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     bh.insert(3);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; &#34;Min: &#34; &lt;&lt; bh.findMin() &lt;&lt; std::endl; // Expected: 3
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; &#34;Extract Min: &#34; &lt;&lt; bh.extractMin() &lt;&lt; std::endl; // Expected: 3
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; &#34;Min after extract: &#34; &lt;&lt; bh.findMin() &lt;&lt; std::endl; // Expected: 5
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     return 0;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span></code></pre></div><h3 id="go">Go</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">package</span> <span style="color:#268bd2">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> (
+</span></span><span style="display:flex;"><span>    <span style="color:#2aa198">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#2aa198">&#34;math&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#2aa198">&#34;sort&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">type</span> <span style="color:#268bd2">BinomialNode</span> <span style="color:#859900">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">Key</span>    <span style="color:#859900;font-weight:bold">int</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">Degree</span> <span style="color:#859900;font-weight:bold">int</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">Parent</span> &lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">BinomialNode</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">Child</span>  &lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">BinomialNode</span>   <span style="color:#93a1a1;font-style:italic">// Pointer to leftmost child</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">Sibling</span> &lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">BinomialNode</span>   <span style="color:#93a1a1;font-style:italic">// Pointer to next sibling</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> <span style="color:#268bd2">NewBinomialNode</span>(<span style="color:#268bd2">key</span> <span style="color:#859900;font-weight:bold">int</span>) &lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">BinomialNode</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> &amp;<span style="color:#268bd2">BinomialNode</span>{<span style="color:#268bd2">Key</span>: <span style="color:#268bd2">key</span>}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">type</span> <span style="color:#268bd2">BinomialHeap</span> <span style="color:#859900">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">Trees</span>   []&lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">BinomialNode</span> <span style="color:#93a1a1;font-style:italic">// List of roots of binomial trees</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">MinNode</span> &lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">BinomialNode</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">N</span>       <span style="color:#859900;font-weight:bold">int</span> <span style="color:#93a1a1;font-style:italic">// Number of nodes</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> (<span style="color:#268bd2">bh</span> &lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">BinomialHeap</span>) <span style="color:#268bd2">linkTrees</span>(<span style="color:#268bd2">h1</span>, <span style="color:#268bd2">h2</span> &lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">BinomialNode</span>) &lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">BinomialNode</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Link two binomial trees of the same degree</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// h2 becomes child of h1</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#268bd2">h1</span>.<span style="color:#268bd2">Key</span> &gt; <span style="color:#268bd2">h2</span>.<span style="color:#268bd2">Key</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">h1</span>, <span style="color:#268bd2">h2</span> = <span style="color:#268bd2">h2</span>, <span style="color:#268bd2">h1</span> <span style="color:#93a1a1;font-style:italic">// Ensure h1.Key &lt;= h2.Key</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">h2</span>.<span style="color:#268bd2">Parent</span> = <span style="color:#268bd2">h1</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">h2</span>.<span style="color:#268bd2">Sibling</span> = <span style="color:#268bd2">h1</span>.<span style="color:#268bd2">Child</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">h1</span>.<span style="color:#268bd2">Child</span> = <span style="color:#268bd2">h2</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">h1</span>.<span style="color:#268bd2">Degree</span>++
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">h1</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> (<span style="color:#268bd2">bh</span> &lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">BinomialHeap</span>) <span style="color:#268bd2">Merge</span>(<span style="color:#268bd2">otherHeap</span> &lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">BinomialHeap</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">mergedTrees</span> := []&lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">BinomialNode</span>{}
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">i</span>, <span style="color:#268bd2">j</span> := <span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#2aa198;font-weight:bold">0</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Combine lists of trees, keeping them sorted by degree</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> &lt; <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">bh</span>.<span style="color:#268bd2">Trees</span>) &amp;&amp; <span style="color:#268bd2">j</span> &lt; <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">otherHeap</span>.<span style="color:#268bd2">Trees</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">bh</span>.<span style="color:#268bd2">Trees</span>[<span style="color:#268bd2">i</span>].<span style="color:#268bd2">Degree</span> &lt; <span style="color:#268bd2">otherHeap</span>.<span style="color:#268bd2">Trees</span>[<span style="color:#268bd2">j</span>].<span style="color:#268bd2">Degree</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">mergedTrees</span> = <span style="color:#cb4b16">append</span>(<span style="color:#268bd2">mergedTrees</span>, <span style="color:#268bd2">bh</span>.<span style="color:#268bd2">Trees</span>[<span style="color:#268bd2">i</span>])
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">i</span>++
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">mergedTrees</span> = <span style="color:#cb4b16">append</span>(<span style="color:#268bd2">mergedTrees</span>, <span style="color:#268bd2">otherHeap</span>.<span style="color:#268bd2">Trees</span>[<span style="color:#268bd2">j</span>])
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">j</span>++
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">mergedTrees</span> = <span style="color:#cb4b16">append</span>(<span style="color:#268bd2">mergedTrees</span>, <span style="color:#268bd2">bh</span>.<span style="color:#268bd2">Trees</span>[<span style="color:#268bd2">i</span>:]...)
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">mergedTrees</span> = <span style="color:#cb4b16">append</span>(<span style="color:#268bd2">mergedTrees</span>, <span style="color:#268bd2">otherHeap</span>.<span style="color:#268bd2">Trees</span>[<span style="color:#268bd2">j</span>:]...)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">bh</span>.<span style="color:#268bd2">Trees</span> = []&lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">BinomialNode</span>{} <span style="color:#93a1a1;font-style:italic">// Clear current trees</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">bh</span>.<span style="color:#268bd2">N</span> += <span style="color:#268bd2">otherHeap</span>.<span style="color:#268bd2">N</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">otherHeap</span>.<span style="color:#268bd2">N</span> = <span style="color:#2aa198;font-weight:bold">0</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">otherHeap</span>.<span style="color:#268bd2">Trees</span> = []&lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">BinomialNode</span>{}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">mergedTrees</span>) == <span style="color:#2aa198;font-weight:bold">0</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">bh</span>.<span style="color:#268bd2">MinNode</span> = <span style="color:#859900;font-weight:bold">nil</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Actual merge (like binary addition)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">var</span> <span style="color:#268bd2">currentTree</span> &lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">BinomialNode</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">_</span>, <span style="color:#268bd2">nextTree</span> := <span style="color:#859900">range</span> <span style="color:#268bd2">mergedTrees</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">currentTree</span> == <span style="color:#859900;font-weight:bold">nil</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">currentTree</span> = <span style="color:#268bd2">nextTree</span>
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> <span style="color:#859900">if</span> <span style="color:#268bd2">currentTree</span>.<span style="color:#268bd2">Degree</span> == <span style="color:#268bd2">nextTree</span>.<span style="color:#268bd2">Degree</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">bh</span>.<span style="color:#268bd2">Trees</span>) &gt; <span style="color:#2aa198;font-weight:bold">0</span> &amp;&amp; <span style="color:#268bd2">bh</span>.<span style="color:#268bd2">Trees</span>[<span style="color:#cb4b16">len</span>(<span style="color:#268bd2">bh</span>.<span style="color:#268bd2">Trees</span>)-<span style="color:#2aa198;font-weight:bold">1</span>].<span style="color:#268bd2">Degree</span> == <span style="color:#268bd2">currentTree</span>.<span style="color:#268bd2">Degree</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#93a1a1;font-style:italic">// Three trees of same degree, append current and resolve next two</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">bh</span>.<span style="color:#268bd2">Trees</span> = <span style="color:#cb4b16">append</span>(<span style="color:#268bd2">bh</span>.<span style="color:#268bd2">Trees</span>, <span style="color:#268bd2">currentTree</span>)
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">currentTree</span> = <span style="color:#268bd2">nextTree</span>
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">currentTree</span> = <span style="color:#268bd2">bh</span>.<span style="color:#268bd2">linkTrees</span>(<span style="color:#268bd2">currentTree</span>, <span style="color:#268bd2">nextTree</span>)
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">bh</span>.<span style="color:#268bd2">Trees</span> = <span style="color:#cb4b16">append</span>(<span style="color:#268bd2">bh</span>.<span style="color:#268bd2">Trees</span>, <span style="color:#268bd2">currentTree</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">currentTree</span> = <span style="color:#268bd2">nextTree</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#268bd2">currentTree</span> != <span style="color:#859900;font-weight:bold">nil</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">bh</span>.<span style="color:#268bd2">Trees</span> = <span style="color:#cb4b16">append</span>(<span style="color:#268bd2">bh</span>.<span style="color:#268bd2">Trees</span>, <span style="color:#268bd2">currentTree</span>)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">bh</span>.<span style="color:#268bd2">updateMinNode</span>()
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> (<span style="color:#268bd2">bh</span> &lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">BinomialHeap</span>) <span style="color:#268bd2">Insert</span>(<span style="color:#268bd2">key</span> <span style="color:#859900;font-weight:bold">int</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">newNode</span> := <span style="color:#268bd2">NewBinomialNode</span>(<span style="color:#268bd2">key</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">tempHeap</span> := &amp;<span style="color:#268bd2">BinomialHeap</span>{}
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">tempHeap</span>.<span style="color:#268bd2">Trees</span> = <span style="color:#cb4b16">append</span>(<span style="color:#268bd2">tempHeap</span>.<span style="color:#268bd2">Trees</span>, <span style="color:#268bd2">newNode</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">tempHeap</span>.<span style="color:#268bd2">N</span> = <span style="color:#2aa198;font-weight:bold">1</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">bh</span>.<span style="color:#268bd2">Merge</span>(<span style="color:#268bd2">tempHeap</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> (<span style="color:#268bd2">bh</span> &lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">BinomialHeap</span>) <span style="color:#268bd2">FindMin</span>() (<span style="color:#859900;font-weight:bold">int</span>, <span style="color:#859900;font-weight:bold">error</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#268bd2">bh</span>.<span style="color:#268bd2">MinNode</span> == <span style="color:#859900;font-weight:bold">nil</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#268bd2">fmt</span>.<span style="color:#268bd2">Errorf</span>(<span style="color:#2aa198">&#34;heap is empty&#34;</span>)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">bh</span>.<span style="color:#268bd2">MinNode</span>.<span style="color:#268bd2">Key</span>, <span style="color:#859900;font-weight:bold">nil</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> (<span style="color:#268bd2">bh</span> &lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">BinomialHeap</span>) <span style="color:#268bd2">ExtractMin</span>() (<span style="color:#859900;font-weight:bold">int</span>, <span style="color:#859900;font-weight:bold">error</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#268bd2">bh</span>.<span style="color:#268bd2">MinNode</span> == <span style="color:#859900;font-weight:bold">nil</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#268bd2">fmt</span>.<span style="color:#268bd2">Errorf</span>(<span style="color:#2aa198">&#34;heap is empty&#34;</span>)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">minKey</span> := <span style="color:#268bd2">bh</span>.<span style="color:#268bd2">MinNode</span>.<span style="color:#268bd2">Key</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Remove minNode from root list</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">var</span> <span style="color:#268bd2">filteredTrees</span> []&lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">BinomialNode</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">_</span>, <span style="color:#268bd2">tree</span> := <span style="color:#859900">range</span> <span style="color:#268bd2">bh</span>.<span style="color:#268bd2">Trees</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">tree</span> != <span style="color:#268bd2">bh</span>.<span style="color:#268bd2">MinNode</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">filteredTrees</span> = <span style="color:#cb4b16">append</span>(<span style="color:#268bd2">filteredTrees</span>, <span style="color:#268bd2">tree</span>)
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">bh</span>.<span style="color:#268bd2">Trees</span> = <span style="color:#268bd2">filteredTrees</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Create a new heap from minNode&#39;s children</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">minChildrenHeap</span> := &amp;<span style="color:#268bd2">BinomialHeap</span>{}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Collect children and reverse order to maintain degree ordering for merge</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">childrenList</span> := []&lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">BinomialNode</span>{}
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">currentChild</span> := <span style="color:#268bd2">bh</span>.<span style="color:#268bd2">MinNode</span>.<span style="color:#268bd2">Child</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">currentChild</span> != <span style="color:#859900;font-weight:bold">nil</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">nextChild</span> := <span style="color:#268bd2">currentChild</span>.<span style="color:#268bd2">Sibling</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">currentChild</span>.<span style="color:#268bd2">Parent</span> = <span style="color:#859900;font-weight:bold">nil</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">currentChild</span>.<span style="color:#268bd2">Sibling</span> = <span style="color:#859900;font-weight:bold">nil</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">childrenList</span> = <span style="color:#cb4b16">append</span>(<span style="color:#268bd2">childrenList</span>, <span style="color:#268bd2">currentChild</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">currentChild</span> = <span style="color:#268bd2">nextChild</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Reverse children list</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">i</span>, <span style="color:#268bd2">j</span> := <span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">childrenList</span>)-<span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">j</span>; <span style="color:#268bd2">i</span>, <span style="color:#268bd2">j</span> = <span style="color:#268bd2">i</span>+<span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">j</span>-<span style="color:#2aa198;font-weight:bold">1</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">childrenList</span>[<span style="color:#268bd2">i</span>], <span style="color:#268bd2">childrenList</span>[<span style="color:#268bd2">j</span>] = <span style="color:#268bd2">childrenList</span>[<span style="color:#268bd2">j</span>], <span style="color:#268bd2">childrenList</span>[<span style="color:#268bd2">i</span>]
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">minChildrenHeap</span>.<span style="color:#268bd2">Trees</span> = <span style="color:#268bd2">childrenList</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">bh</span>.<span style="color:#268bd2">Merge</span>(<span style="color:#268bd2">minChildrenHeap</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">bh</span>.<span style="color:#268bd2">N</span>-- <span style="color:#93a1a1;font-style:italic">// Min node was removed</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">bh</span>.<span style="color:#268bd2">updateMinNode</span>()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">minKey</span>, <span style="color:#859900;font-weight:bold">nil</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> (<span style="color:#268bd2">bh</span> &lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">BinomialHeap</span>) <span style="color:#268bd2">updateMinNode</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">bh</span>.<span style="color:#268bd2">MinNode</span> = <span style="color:#859900;font-weight:bold">nil</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">bh</span>.<span style="color:#268bd2">Trees</span>) &gt; <span style="color:#2aa198;font-weight:bold">0</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">bh</span>.<span style="color:#268bd2">MinNode</span> = <span style="color:#268bd2">bh</span>.<span style="color:#268bd2">Trees</span>[<span style="color:#2aa198;font-weight:bold">0</span>]
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> <span style="color:#268bd2">_</span>, <span style="color:#268bd2">treeRoot</span> := <span style="color:#859900">range</span> <span style="color:#268bd2">bh</span>.<span style="color:#268bd2">Trees</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> <span style="color:#268bd2">treeRoot</span>.<span style="color:#268bd2">Key</span> &lt; <span style="color:#268bd2">bh</span>.<span style="color:#268bd2">MinNode</span>.<span style="color:#268bd2">Key</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">bh</span>.<span style="color:#268bd2">MinNode</span> = <span style="color:#268bd2">treeRoot</span>
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// DecreaseKey is complex and omitted for conceptual simplicity.</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// func main() {</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     bh := &amp;BinomialHeap{}</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     bh.Insert(10)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     bh.Insert(20)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     bh.Insert(5)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     bh.Insert(3)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     minVal, _ := bh.FindMin()</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     fmt.Println(&#34;Min:&#34;, minVal) // Expected: 3</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     extracted, _ := bh.ExtractMin()</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     fmt.Println(&#34;Extract Min:&#34;, extracted) // Expected: 3</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     minVal, _ = bh.FindMin()</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     fmt.Println(&#34;Min after extract:&#34;, minVal) // Expected: 5</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }</span>
+</span></span></code></pre></div><h3 id="d">D</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-d" data-lang="d"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.stdio</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.array</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.algorithm</span>; <span style="color:#93a1a1;font-style:italic">// For std.algorithm.min, std.algorithm.swap
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.conv</span>; <span style="color:#93a1a1;font-style:italic">// For to!string
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.sum</span>; <span style="color:#93a1a1;font-style:italic">// For sum
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#cb4b16">BinomialNode</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">key</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">degree</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">BinomialNode</span> <span style="color:#268bd2">parent</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">BinomialNode</span> <span style="color:#268bd2">child</span>;    <span style="color:#93a1a1;font-style:italic">// Pointer to leftmost child
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">BinomialNode</span> <span style="color:#268bd2">sibling</span>;  <span style="color:#93a1a1;font-style:italic">// Pointer to next sibling
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">this</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">k</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">key</span> = <span style="color:#268bd2">k</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">degree</span> = <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">parent</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">child</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">sibling</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#cb4b16">BinomialHeap</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">BinomialNode</span>[] <span style="color:#268bd2">trees</span>; <span style="color:#93a1a1;font-style:italic">// List of roots of binomial trees
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">BinomialNode</span> <span style="color:#268bd2">min_node</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">n</span>; <span style="color:#93a1a1;font-style:italic">// Number of nodes
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">this</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">trees</span> = [];
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">min_node</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">n</span> = <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">
+</span></span></span><span style="display:flex;"><span><span style="color:#268bd2">private:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">BinomialNode</span> <span style="color:#268bd2">linkTrees</span>(<span style="color:#268bd2">BinomialNode</span> <span style="color:#268bd2">h1</span>, <span style="color:#268bd2">BinomialNode</span> <span style="color:#268bd2">h2</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Link two binomial trees of the same degree
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#93a1a1;font-style:italic">// h2 becomes child of h1
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">h1</span>.<span style="color:#268bd2">key</span> &gt; <span style="color:#268bd2">h2</span>.<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">swap</span>(<span style="color:#268bd2">h1</span>, <span style="color:#268bd2">h2</span>); <span style="color:#93a1a1;font-style:italic">// Ensure h1.key &lt;= h2.key
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">h2</span>.<span style="color:#268bd2">parent</span> = <span style="color:#268bd2">h1</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">h2</span>.<span style="color:#268bd2">sibling</span> = <span style="color:#268bd2">h1</span>.<span style="color:#268bd2">child</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">h1</span>.<span style="color:#268bd2">child</span> = <span style="color:#268bd2">h2</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">h1</span>.<span style="color:#268bd2">degree</span>++;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">h1</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">
+</span></span></span><span style="display:flex;"><span><span style="color:#268bd2">public:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">merge</span>(<span style="color:#268bd2">BinomialHeap</span> <span style="color:#268bd2">other_heap</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">BinomialNode</span>[] <span style="color:#268bd2">merged_trees_list</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>, <span style="color:#268bd2">j</span> = <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Combine lists of trees, keeping them sorted by degree
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">while</span> (<span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">trees</span>.<span style="color:#268bd2">length</span> &amp;&amp; <span style="color:#268bd2">j</span> &lt; <span style="color:#268bd2">other_heap</span>.<span style="color:#268bd2">trees</span>.<span style="color:#268bd2">length</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">trees</span>[<span style="color:#268bd2">i</span>].<span style="color:#268bd2">degree</span> &lt; <span style="color:#268bd2">other_heap</span>.<span style="color:#268bd2">trees</span>[<span style="color:#268bd2">j</span>].<span style="color:#268bd2">degree</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">merged_trees_list</span> ~= <span style="color:#268bd2">trees</span>[<span style="color:#268bd2">i</span>];
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">i</span>++;
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">merged_trees_list</span> ~= <span style="color:#268bd2">other_heap</span>.<span style="color:#268bd2">trees</span>[<span style="color:#268bd2">j</span>];
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">j</span>++;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">merged_trees_list</span> ~= <span style="color:#268bd2">trees</span>[<span style="color:#268bd2">i</span>..<span style="color:#268bd2">$</span>];
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">merged_trees_list</span> ~= <span style="color:#268bd2">other_heap</span>.<span style="color:#268bd2">trees</span>[<span style="color:#268bd2">j</span>..<span style="color:#268bd2">$</span>];
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">trees</span> = []; <span style="color:#93a1a1;font-style:italic">// Clear current trees
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">n</span> += <span style="color:#268bd2">other_heap</span>.<span style="color:#268bd2">n</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">other_heap</span>.<span style="color:#268bd2">n</span> = <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">other_heap</span>.<span style="color:#268bd2">trees</span> = [];
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">merged_trees_list</span>.<span style="color:#268bd2">empty</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">min_node</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Actual merge (like binary addition)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">BinomialNode</span> <span style="color:#268bd2">current_tree</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">foreach</span> (<span style="color:#268bd2">next_tree</span>; <span style="color:#268bd2">merged_trees_list</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">current_tree</span> <span style="color:#859900">is</span> <span style="color:#859900;font-weight:bold">null</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">current_tree</span> = <span style="color:#268bd2">next_tree</span>;
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> <span style="color:#859900">if</span> (<span style="color:#268bd2">current_tree</span>.<span style="color:#268bd2">degree</span> == <span style="color:#268bd2">next_tree</span>.<span style="color:#268bd2">degree</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#93a1a1;font-style:italic">// Check if there&#39;s a third tree of same degree
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                <span style="color:#859900">if</span> (!<span style="color:#268bd2">trees</span>.<span style="color:#268bd2">empty</span> &amp;&amp; <span style="color:#268bd2">trees</span>.<span style="color:#268bd2">back</span>.<span style="color:#268bd2">degree</span> == <span style="color:#268bd2">current_tree</span>.<span style="color:#268bd2">degree</span>) {
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">trees</span> ~= <span style="color:#268bd2">current_tree</span>;
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">current_tree</span> = <span style="color:#268bd2">next_tree</span>;
+</span></span><span style="display:flex;"><span>                } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">current_tree</span> = <span style="color:#268bd2">linkTrees</span>(<span style="color:#268bd2">current_tree</span>, <span style="color:#268bd2">next_tree</span>);
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">trees</span> ~= <span style="color:#268bd2">current_tree</span>;
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">current_tree</span> = <span style="color:#268bd2">next_tree</span>;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">current_tree</span> !<span style="color:#859900">is</span> <span style="color:#859900;font-weight:bold">null</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">trees</span> ~= <span style="color:#268bd2">current_tree</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">_updateMinNode</span>();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">insert</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">BinomialNode</span> <span style="color:#268bd2">new_node</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">BinomialNode</span>(<span style="color:#268bd2">key</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">BinomialHeap</span> <span style="color:#268bd2">temp_heap</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">BinomialHeap</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">temp_heap</span>.<span style="color:#268bd2">trees</span> ~= <span style="color:#268bd2">new_node</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">temp_heap</span>.<span style="color:#268bd2">n</span> = <span style="color:#2aa198;font-weight:bold">1</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">merge</span>(<span style="color:#268bd2">temp_heap</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">findMin</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">min_node</span> <span style="color:#859900">is</span> <span style="color:#859900;font-weight:bold">null</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">throw</span> <span style="color:#859900">new</span> <span style="color:#cb4b16">Exception</span>(<span style="color:#2aa198">&#34;Heap is empty&#34;</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">min_node</span>.<span style="color:#268bd2">key</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">extractMin</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">min_node</span> <span style="color:#859900">is</span> <span style="color:#859900;font-weight:bold">null</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">throw</span> <span style="color:#859900">new</span> <span style="color:#cb4b16">Exception</span>(<span style="color:#2aa198">&#34;Heap is empty&#34;</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">min_key</span> = <span style="color:#268bd2">min_node</span>.<span style="color:#268bd2">key</span>;
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Remove min_node from root list
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">trees</span> = <span style="color:#268bd2">trees</span>.<span style="color:#268bd2">filter</span>!(<span style="color:#268bd2">t</span> =&gt; <span style="color:#268bd2">t</span> !<span style="color:#859900">is</span> <span style="color:#268bd2">min_node</span>).<span style="color:#268bd2">array</span>;
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Create a new heap from min_node&#39;s children
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">BinomialHeap</span> <span style="color:#268bd2">min_children_heap</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">BinomialHeap</span>();
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Collect children and reverse order (for merge)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">BinomialNode</span>[] <span style="color:#268bd2">children_list</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">BinomialNode</span> <span style="color:#268bd2">current_child</span> = <span style="color:#268bd2">min_node</span>.<span style="color:#268bd2">child</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">while</span> (<span style="color:#268bd2">current_child</span> !<span style="color:#859900">is</span> <span style="color:#859900;font-weight:bold">null</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">BinomialNode</span> <span style="color:#268bd2">next_child</span> = <span style="color:#268bd2">current_child</span>.<span style="color:#268bd2">sibling</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">current_child</span>.<span style="color:#268bd2">parent</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">current_child</span>.<span style="color:#268bd2">sibling</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">children_list</span> ~= <span style="color:#268bd2">current_child</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">current_child</span> = <span style="color:#268bd2">next_child</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">min_children_heap</span>.<span style="color:#268bd2">trees</span> = <span style="color:#268bd2">children_list</span>.<span style="color:#268bd2">reverse</span>.<span style="color:#268bd2">array</span>;
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Merge with remaining trees
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">merge</span>(<span style="color:#268bd2">min_children_heap</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">n</span>--; <span style="color:#93a1a1;font-style:italic">// Min node was removed
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">_updateMinNode</span>();
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">min_key</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">
+</span></span></span><span style="display:flex;"><span><span style="color:#268bd2">private:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">_updateMinNode</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">min_node</span> = <span style="color:#859900;font-weight:bold">null</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (!<span style="color:#268bd2">trees</span>.<span style="color:#268bd2">empty</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">min_node</span> = <span style="color:#268bd2">trees</span>[<span style="color:#2aa198;font-weight:bold">0</span>];
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">foreach</span> (<span style="color:#268bd2">tree_root</span>; <span style="color:#268bd2">trees</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">if</span> (<span style="color:#268bd2">tree_root</span>.<span style="color:#268bd2">key</span> &lt; <span style="color:#268bd2">min_node</span>.<span style="color:#268bd2">key</span>) {
+</span></span><span style="display:flex;"><span>                    <span style="color:#268bd2">min_node</span> = <span style="color:#268bd2">tree_root</span>;
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// DecreaseKey is complex and omitted for conceptual simplicity.
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// void main() {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     auto bh = new BinomialHeap();
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     bh.insert(10);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     bh.insert(20);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     bh.insert(5);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     bh.insert(3);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     writefln(&#34;Min: %s&#34;, bh.findMin()); // Expected: 3
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     writefln(&#34;Extract Min: %s&#34;, bh.extractMin()); // Expected: 3
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     writefln(&#34;Min after extract: %s&#34;, bh.findMin()); // Expected: 5
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>}
+</span></span></code></pre></div><h2 id="code-walkthrough">Code Walkthrough</h2>
+<h3 id="code-walkthrough-1">Code Walkthrough</h3>
+<p>A <code>Binomial Heap</code> implementation manages a <code>list</code> of <code>binomial trees</code>. The complexity comes from the <code>merge</code> operation, which acts like binary addition on the <code>trees</code>.</p>
+<hr>
+<p><strong><code>BinomialNode</code> Class:</strong></p>
+<pre><code>- `key`: The value stored in the `node`.
+
+- `degree`: The `order` of the `binomial tree` rooted at this `node`.
+
+- `parent`: Pointer to the `parent node`.
+
+- `child`: Pointer to the `leftmost child` (`root` of a smaller `binomial tree`).
+
+- `sibling`: Pointer to the next `sibling node` (`root` of a `binomial tree` of a different `order`).
+</code></pre>
+<p><strong><code>BinomialHeap</code> Class:</strong></p>
+<pre><code>- `trees`: A `list`/`vector`/`array` of `BinomialNode`s, representing the `roots` of the `binomial trees` in the `heap`. These are typically stored in increasing `order` of `degree`.
+
+- `min_node`: A pointer to the `root node` containing the minimum `key` in the entire `heap`.
+
+- `n`: The total number of `nodes` in the `heap`.
+
+- **`_link_trees(h1, h2)`:** A helper function to link two `binomial trees` of the same `degree`. It assumes `h1.key &lt;= h2.key` and makes `h2` the `leftmost child` of `h1`.
+
+- **`merge(other_heap)`:** The core operation. It combines the `lists` of `binomial trees` from the current `heap` and `other_heap` into a single `list`, similar to how binary numbers are added. If two `trees` of the same `degree` are encountered, they are linked using `_link_trees` to form a `tree` of the next higher `degree`, and the process continues.
+
+- **`insert(key)`:** Creates a new `B0` (order 0) `binomial tree` with the new `key` and `merges` it with the existing `heap`.
+
+- **`find_min()`:** Returns the `key` of the `min_node`. Requires `min_node` to be updated correctly.
+
+- **`extract_min()`:**
+
+        - Removes the `min_node` from its `binomial tree`.
+
+        - Its children form a new `Binomial Heap` (after reversing their order to ensure correct merging by `degree`).
+
+        - This new `heap` is then `merged` with the remaining `trees` from the original `heap`.
+
+&lt;/li&gt;
+- **`_update_min_node()`:** A helper to scan the `roots` of all `binomial trees` to find the new `min_node`.
+</code></pre>
+<h2 id="applications">Applications</h2>
+<h3 id="application">Application</h3>
+<p>Binomial Heaps are a type of mergeable <code>priority queue</code>, similar to <code>Fibonacci Heaps</code> and <code>Pairing Heaps</code>. They are particularly useful in situations where efficient merging of heaps is a frequent operation.</p>
+<pre><code>    - **Graph Algorithms:** Used in implementations of `Dijkstra's algorithm` and `Prim's algorithm` where `priority queues` are needed. While `Fibonacci Heaps` offer theoretically better asymptotic bounds, `Binomial Heaps` can be competitive or better in practice for some workloads.
+
+    - **Network Routing:** Managing packet queues with different priorities, especially in complex network topologies where queues might need to be combined.
+
+    - **Event Simulation:** Handling events in discrete event simulations where event lists may need to be merged.
+
+    - **Operating Systems:** In task scheduling where processes are queued by priority, and new process queues might arise and need to be integrated.
+</code></pre>
+
+    </div>
+</article>
+
+<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
+    
+    <a href="//localhost:1313/hugo_content/data_structures/specialized/bloom_filter/" class="nav-btn">← Previous</a>
+    
+    
+    <a href="//localhost:1313/hugo_content/data_structures/specialized/" class="nav-btn">Up</a>
+
+    
+    <a href="//localhost:1313/hugo_content/data_structures/specialized/b_plus_tree/" class="nav-btn">Next →</a>
+    
+</div>
+
+    </main>
+
+    <footer class="footer">
+        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
+    </footer>
+
+    <script>
+        const body = document.getElementById('theme-body');
+        const btn = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme');
+
+        
+        function updateButtonText() {
+            if (body.classList.contains('theme-terminal')) {
+                btn.textContent = "Light Mode";
+            } else {
+                btn.textContent = "Dark Mode";
+            }
+        }
+
+        if (currentTheme === 'terminal') {
+            body.classList.add('theme-terminal');
+        }
+        
+        
+        updateButtonText();
+
+        btn.addEventListener('click', () => {
+            body.classList.toggle('theme-terminal');
+            updateButtonText();
+            
+            let theme = 'natural';
+            if (body.classList.contains('theme-terminal')) {
+                theme = 'terminal';
+            }
+            localStorage.setItem('theme', theme);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suffix Tree | SDET Interview Preparation Kit</title>
+    <link rel="stylesheet" href="//localhost:1313/css/style.css">
+    <link rel="stylesheet" href="//localhost:1313/css/terminal.css">
+    
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    
+    <link rel="stylesheet" href="//localhost:1313/lib/katex/katex.min.css">
+    <script defer src="//localhost:1313/lib/katex/katex.min.js"></script>
+    <script defer src="//localhost:1313/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</head>
+<body id="theme-body">
+    <button id="theme-toggle">Switch Theme</button>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="//localhost:1313/">Index</a></li>
+                
+            </ul>
+        </nav>
+        <div class="site-breadcrumb">
+            <a href="//localhost:1313/">Home</a>
+            
+                
+                    <span>/</span> <a href="//localhost:1313/">SDET Interview Dashboard</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/hugo_content/">42 Algorithms &amp; 42 Data Structures</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/hugo_content/data_structures/">Data Structures</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/hugo_content/data_structures/specialized/">Specialized</a>
+                
+            
+            
+                <span>/</span> Suffix Tree
+            
+        </div>
+    </header>
+
+    <main>
+        
+<article>
+    <div class="category-title" style="margin-bottom: 0.5rem;">Specialized</div>
+    <h1>Suffix Tree</h1>
+    <div class="content-body" style="margin-top: 2rem;">
+        <p>A <code>Suffix Tree</code> is a data structure that stores all the suffixes of a given string in a compressed trie-like structure. It&rsquo;s a powerful tool for solving a wide range of string problems, often in linear time relative to the length of the string.</p>
+<p>Each path from the <code>root</code> of the <code>tree</code> to a <code>leaf</code> represents a unique suffix of the string. The edges of the <code>tree</code> are labeled with substrings of the original string. This compression is what makes it highly efficient for complex text processing.</p>
+<h2 id="how-it-works">How it Works</h2>
+<h3 id="how-it-works-expanded">How it Works (Expanded)</h3>
+<p>A <code>Suffix Tree</code> for a string <code>S</code> of length <code>N</code> has exactly <code>N</code> leaves, each corresponding to a unique suffix of <code>S</code>. The edges are labeled such that following a path from the <code>root</code> to a <code>leaf</code> spells out a suffix of <code>S</code>. Crucially, common prefixes among suffixes share common paths from the <code>root</code>, leading to compression.</p>
+<p>To ensure every suffix ends at a leaf and to handle cases where one suffix is a prefix of another, a unique terminator character (e.g., <code>$</code>) is usually appended to the string <code>S</code> before building the <code>Suffix Tree</code>.</p>
+<hr>
+<p>Example: S = &ldquo;banana$&rdquo;</p>
+<p>Suffixes:
+banana$
+anana$
+nana$
+ana$
+na$
+a$
+$</p>
+<p>The Suffix Tree (conceptual, not actual build):</p>
+<pre><code>    (root)
+   /  \  \  \
+  $    a   b  n
+      /|\   |  |
+     ...   ... ...
+    /  \
+   na   nana$
+  / \
+ na$ anana$
+</code></pre>
+<h2 id="implementation">Implementation</h2>
+<h3 id="python">Python</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># Conceptual Suffix Tree in Python (simplified, full implementation is very complex)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># This shows the basic Node structure and search idea for understanding.</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#cb4b16">SuffixTreeNode</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">__init__</span>(<span style="color:#cb4b16">self</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">children</span> = {} <span style="color:#93a1a1;font-style:italic"># Map char to SuffixTreeNode</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">suffix_indices</span> = [] <span style="color:#93a1a1;font-style:italic"># List of starting indices of suffixes passing through this node</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">insert</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">suffix</span>, <span style="color:#268bd2">start_index</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">suffix_indices</span>.<span style="color:#268bd2">append</span>(<span style="color:#268bd2">start_index</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#859900">not</span> <span style="color:#268bd2">suffix</span>: <span style="color:#93a1a1;font-style:italic"># End of a suffix</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">char</span> = <span style="color:#268bd2">suffix</span>[<span style="color:#2aa198;font-weight:bold">0</span>]
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">char</span> <span style="color:#859900">not</span> <span style="color:#859900">in</span> <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">children</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">children</span>[<span style="color:#268bd2">char</span>] = <span style="color:#268bd2">SuffixTreeNode</span>()
+</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">children</span>[<span style="color:#268bd2">char</span>].<span style="color:#268bd2">insert</span>(<span style="color:#268bd2">suffix</span>[<span style="color:#2aa198;font-weight:bold">1</span>:], <span style="color:#268bd2">start_index</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">search</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">pattern</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">node</span> = <span style="color:#cb4b16">self</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> <span style="color:#268bd2">char</span> <span style="color:#859900">in</span> <span style="color:#268bd2">pattern</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> <span style="color:#268bd2">char</span> <span style="color:#859900">in</span> <span style="color:#268bd2">node</span>.<span style="color:#268bd2">children</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">node</span> = <span style="color:#268bd2">node</span>.<span style="color:#268bd2">children</span>[<span style="color:#268bd2">char</span>]
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">else</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">return</span> [] <span style="color:#93a1a1;font-style:italic"># Pattern not found</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">node</span>.<span style="color:#268bd2">suffix_indices</span> <span style="color:#93a1a1;font-style:italic"># Return all occurrences (start indices)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># Main function to build a conceptual Suffix Tree</span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">def</span> <span style="color:#268bd2">build_conceptual_suffix_tree</span>(<span style="color:#268bd2">text</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">root</span> = <span style="color:#268bd2">SuffixTreeNode</span>()
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> <span style="color:#859900">in</span> <span style="color:#cb4b16">range</span>(<span style="color:#cb4b16">len</span>(<span style="color:#268bd2">text</span>)):
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">root</span>.<span style="color:#268bd2">insert</span>(<span style="color:#268bd2">text</span>[<span style="color:#268bd2">i</span>:], <span style="color:#268bd2">i</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">root</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># Example Usage:</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># text = &#34;banana$&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># st = build_conceptual_suffix_tree(text)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(st.search(&#34;ana&#34;)) # Expected to return indices where &#34;ana&#34; starts, e.g., [1, 3]</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(st.search(&#34;nan&#34;)) # Expected: [2]</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(st.search(&#34;apple&#34;)) # Expected: []</span>
+</span></span></code></pre></div><h3 id="javascript">Javascript</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Conceptual Suffix Tree in JavaScript (simplified)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#268bd2">SuffixTreeNode</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">constructor</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">children</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">Map</span>(); <span style="color:#93a1a1;font-style:italic">// Map char to SuffixTreeNode
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">suffixIndices</span> = []; <span style="color:#93a1a1;font-style:italic">// List of starting indices of suffixes passing through this node
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">insert</span>(<span style="color:#268bd2">suffix</span>, <span style="color:#268bd2">startIndex</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">suffixIndices</span>.<span style="color:#268bd2">push</span>(<span style="color:#268bd2">startIndex</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (!<span style="color:#268bd2">suffix</span>) { <span style="color:#93a1a1;font-style:italic">// End of a suffix
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">return</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">const</span> <span style="color:#859900">char</span> = <span style="color:#268bd2">suffix</span>[<span style="color:#2aa198;font-weight:bold">0</span>];
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (!<span style="color:#859900">this</span>.<span style="color:#268bd2">children</span>.<span style="color:#268bd2">has</span>(<span style="color:#859900">char</span>)) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">this</span>.<span style="color:#268bd2">children</span>.<span style="color:#268bd2">set</span>(<span style="color:#859900">char</span>, <span style="color:#859900">new</span> <span style="color:#268bd2">SuffixTreeNode</span>());
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">children</span>.<span style="color:#268bd2">get</span>(<span style="color:#859900">char</span>).<span style="color:#268bd2">insert</span>(<span style="color:#268bd2">suffix</span>.<span style="color:#268bd2">substring</span>(<span style="color:#2aa198;font-weight:bold">1</span>), <span style="color:#268bd2">startIndex</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">search</span>(<span style="color:#268bd2">pattern</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">let</span> <span style="color:#268bd2">node</span> = <span style="color:#859900">this</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> (<span style="color:#859900">const</span> <span style="color:#859900">char</span> <span style="color:#859900">of</span> <span style="color:#268bd2">pattern</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">node</span>.<span style="color:#268bd2">children</span>.<span style="color:#268bd2">has</span>(<span style="color:#859900">char</span>)) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">node</span> = <span style="color:#268bd2">node</span>.<span style="color:#268bd2">children</span>.<span style="color:#268bd2">get</span>(<span style="color:#859900">char</span>);
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">return</span> []; <span style="color:#93a1a1;font-style:italic">// Pattern not found
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">node</span>.<span style="color:#268bd2">suffixIndices</span>; <span style="color:#93a1a1;font-style:italic">// Return all occurrences (start indices)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Main function to build a conceptual Suffix Tree
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#859900">function</span> <span style="color:#268bd2">buildConceptualSuffixTree</span>(<span style="color:#268bd2">text</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">const</span> <span style="color:#268bd2">root</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">SuffixTreeNode</span>();
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">text</span>.<span style="color:#268bd2">length</span>; <span style="color:#268bd2">i</span>++) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">root</span>.<span style="color:#268bd2">insert</span>(<span style="color:#268bd2">text</span>.<span style="color:#268bd2">substring</span>(<span style="color:#268bd2">i</span>), <span style="color:#268bd2">i</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">root</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const text = &#34;banana$&#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const st = buildConceptualSuffixTree(text);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(st.search(&#34;ana&#34;)); // Expected: [1, 3]
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(st.search(&#34;nan&#34;)); // Expected: [2]
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(st.search(&#34;apple&#34;)); // Expected: []
+</span></span></span></code></pre></div><h3 id="typescript">Typescript</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-typescript" data-lang="typescript"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Conceptual Suffix Tree in TypeScript (simplified)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#268bd2">SuffixTreeNodeTS</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">children</span>: <span style="color:#859900;font-weight:bold">Map</span>&lt;<span style="color:#268bd2;font-weight:bold">string</span>, <span style="color:#268bd2">SuffixTreeNodeTS</span>&gt;; <span style="color:#93a1a1;font-style:italic">// Map char to SuffixTreeNode
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">public</span> <span style="color:#268bd2">suffixIndices</span>: <span style="color:#859900;font-weight:bold">number</span>[]; <span style="color:#93a1a1;font-style:italic">// List of starting indices of suffixes passing through this node
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">constructor</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">children</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">Map</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">suffixIndices</span> = [];
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">insert</span>(<span style="color:#268bd2">suffix</span>: <span style="color:#859900;font-weight:bold">string</span>, <span style="color:#268bd2">startIndex</span>: <span style="color:#859900;font-weight:bold">number</span>): <span style="color:#859900">void</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">suffixIndices</span>.<span style="color:#268bd2">push</span>(<span style="color:#268bd2">startIndex</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (!<span style="color:#268bd2">suffix</span>) { <span style="color:#93a1a1;font-style:italic">// End of a suffix
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">return</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">const</span> <span style="color:#268bd2">char</span> = <span style="color:#268bd2">suffix</span>[<span style="color:#2aa198;font-weight:bold">0</span>];
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (!<span style="color:#859900">this</span>.<span style="color:#268bd2">children</span>.<span style="color:#268bd2">has</span>(<span style="color:#268bd2">char</span>)) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">this</span>.<span style="color:#268bd2">children</span>.<span style="color:#859900">set</span>(<span style="color:#268bd2">char</span>, <span style="color:#859900">new</span> <span style="color:#268bd2">SuffixTreeNodeTS</span>());
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">children</span>.<span style="color:#859900">get</span>(<span style="color:#268bd2">char</span>)!.<span style="color:#268bd2">insert</span>(<span style="color:#268bd2">suffix</span>.<span style="color:#268bd2">substring</span>(<span style="color:#2aa198;font-weight:bold">1</span>), <span style="color:#268bd2">startIndex</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#268bd2">search</span>(<span style="color:#268bd2">pattern</span>: <span style="color:#859900;font-weight:bold">string</span>): <span style="color:#859900;font-weight:bold">number</span>[] {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">let</span> <span style="color:#268bd2">node</span>: <span style="color:#859900;font-weight:bold">SuffixTreeNodeTS</span> = <span style="color:#859900">this</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> (<span style="color:#859900">const</span> <span style="color:#268bd2">char</span> <span style="color:#859900">of</span> <span style="color:#268bd2">pattern</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">node</span>.<span style="color:#268bd2">children</span>.<span style="color:#268bd2">has</span>(<span style="color:#268bd2">char</span>)) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">node</span> = <span style="color:#268bd2">node</span>.<span style="color:#268bd2">children</span>.<span style="color:#859900">get</span>(<span style="color:#268bd2">char</span>)!;
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">return</span> []; <span style="color:#93a1a1;font-style:italic">// Pattern not found
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">node</span>.<span style="color:#268bd2">suffixIndices</span>; <span style="color:#93a1a1;font-style:italic">// Return all occurrences (start indices)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Main function to build a conceptual Suffix Tree
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#859900">function</span> <span style="color:#268bd2">buildConceptualSuffixTreeTS</span>(<span style="color:#268bd2">text</span>: <span style="color:#859900;font-weight:bold">string</span>): <span style="color:#268bd2">SuffixTreeNodeTS</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">const</span> <span style="color:#268bd2">root</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">SuffixTreeNodeTS</span>();
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">text</span>.<span style="color:#268bd2">length</span>; <span style="color:#268bd2">i</span>++) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">root</span>.<span style="color:#268bd2">insert</span>(<span style="color:#268bd2">text</span>.<span style="color:#268bd2">substring</span>(<span style="color:#268bd2">i</span>), <span style="color:#268bd2">i</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">root</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const textTS = &#34;banana$&#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const stTS = buildConceptualSuffixTreeTS(textTS);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(stTS.search(&#34;ana&#34;)); // Expected: [1, 3]
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(stTS.search(&#34;nan&#34;)); // Expected: [2]
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(stTS.search(&#34;apple&#34;)); // Expected: []
+</span></span></span></code></pre></div><h3 id="cpp">Cpp</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;iostream&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;string&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;vector&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;map&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Conceptual Suffix Tree Node (simplified)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#859900">class</span> <span style="color:#cb4b16">SuffixTreeNode</span> {
+</span></span><span style="display:flex;"><span><span style="color:#859900">public</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">map</span>&lt;<span style="color:#859900;font-weight:bold">char</span>, <span style="color:#268bd2">SuffixTreeNode</span>&lt;<span style="color:#268bd2">em</span>&gt;&gt; <span style="color:#268bd2">children</span>; <span style="color:#93a1a1;font-style:italic">// Map char to SuffixTreeNode
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt; <span style="color:#268bd2">suffix_indices</span>;          <span style="color:#93a1a1;font-style:italic">// List of starting indices of suffixes passing through this node
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">SuffixTreeNode</span>() {}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    ~<span style="color:#268bd2">SuffixTreeNode</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Proper memory management for large trees can be complex.
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#93a1a1;font-style:italic">// For this conceptual example, a simple destructor to avoid immediate leaks.
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">for</span> (<span style="color:#859900">auto</span> <span style="color:#859900">const</span>&amp; [<span style="color:#268bd2">key</span>, <span style="color:#268bd2">val</span>] : <span style="color:#268bd2">children</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">delete</span> <span style="color:#268bd2">val</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">insert</span>(<span style="color:#859900">const</span> <span style="color:#268bd2">std</span>::<span style="color:#268bd2">string</span>&amp; <span style="color:#268bd2">suffix</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">start_index</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">suffix_indices</span>.<span style="color:#268bd2">push_back</span>(<span style="color:#268bd2">start_index</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">suffix</span>.<span style="color:#268bd2">empty</span>()) { <span style="color:#93a1a1;font-style:italic">// End of a suffix
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">return</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900;font-weight:bold">char</span> <span style="color:#268bd2">char_to_insert</span> = <span style="color:#268bd2">suffix</span>[<span style="color:#2aa198;font-weight:bold">0</span>];
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">children</span>.<span style="color:#268bd2">find</span>(<span style="color:#268bd2">char_to_insert</span>) == <span style="color:#268bd2">children</span>.<span style="color:#268bd2">end</span>()) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">children</span>[<span style="color:#268bd2">char_to_insert</span>] = <span style="color:#859900">new</span> <span style="color:#268bd2">SuffixTreeNode</span>();
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">children</span>[<span style="color:#268bd2">char_to_insert</span>]-&gt;<span style="color:#268bd2">insert</span>(<span style="color:#268bd2">suffix</span>.<span style="color:#268bd2">substr</span>(<span style="color:#2aa198;font-weight:bold">1</span>), <span style="color:#268bd2">start_index</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt; <span style="color:#268bd2">search</span>(<span style="color:#859900">const</span> <span style="color:#268bd2">std</span>::<span style="color:#268bd2">string</span>&amp; <span style="color:#268bd2">pattern</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">SuffixTreeNode</span>&lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">node</span> = <span style="color:#859900">this</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">char</span> <span style="color:#268bd2">char_to_find</span> : <span style="color:#268bd2">pattern</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">children</span>.<span style="color:#268bd2">find</span>(<span style="color:#268bd2">char_to_find</span>) != <span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">children</span>.<span style="color:#268bd2">end</span>()) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">node</span> = <span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">children</span>[<span style="color:#268bd2">char_to_find</span>];
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">return</span> {}; <span style="color:#93a1a1;font-style:italic">// Pattern not found
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">node</span>-&gt;<span style="color:#268bd2">suffix_indices</span>; <span style="color:#93a1a1;font-style:italic">// Return all occurrences (start indices)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Main function to build a conceptual Suffix Tree
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#268bd2">SuffixTreeNode</span>&lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">buildConceptualSuffixTree</span>(<span style="color:#859900">const</span> <span style="color:#268bd2">std</span>::<span style="color:#268bd2">string</span>&amp; <span style="color:#268bd2">text</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">SuffixTreeNode</span>&lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">root</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">SuffixTreeNode</span>();
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">text</span>.<span style="color:#268bd2">length</span>(); ++<span style="color:#268bd2">i</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">root</span>-&gt;<span style="color:#268bd2">insert</span>(<span style="color:#268bd2">text</span>.<span style="color:#268bd2">substr</span>(<span style="color:#268bd2">i</span>), <span style="color:#268bd2">i</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">root</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// int main() {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::string text = &#34;banana$&#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     SuffixTreeNode&lt;em&gt; st = buildConceptualSuffixTree(text);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::vector&lt;int&gt; ana_indices = st-&gt;search(&#34;ana&#34;);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; &#34;Search &#39;ana&#39;: &#34;; // Expected: 1 3
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     for (int idx : ana_indices) std::cout &lt;&lt; idx &lt;&lt; &#34; &#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; std::endl;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::vector&lt;int&gt; nan_indices = st-&gt;search(&#34;nan&#34;);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; &#34;Search &#39;nan&#39;: &#34;; // Expected: 2
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     for (int idx : nan_indices) std::cout &lt;&lt; idx &lt;&lt; &#34; &#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; std::endl;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::vector&lt;int&gt; apple_indices = st-&gt;search(&#34;apple&#34;);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; &#34;Search &#39;apple&#39;: &#34;; // Expected: (empty)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     for (int idx : apple_indices) std::cout &lt;&lt; idx &lt;&lt; &#34; &#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; std::endl;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     delete st; // Clean up memory
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     return 0;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span></code></pre></div><h3 id="go">Go</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">package</span> <span style="color:#268bd2">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> (
+</span></span><span style="display:flex;"><span>    <span style="color:#2aa198">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#2aa198">&#34;strings&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Conceptual Suffix Tree Node (simplified)</span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">type</span> <span style="color:#268bd2">SuffixTreeNode</span> <span style="color:#859900">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">Children</span>     <span style="color:#859900">map</span>[<span style="color:#859900;font-weight:bold">rune</span>]&lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">SuffixTreeNode</span> <span style="color:#93a1a1;font-style:italic">// Map char to SuffixTreeNode</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">SuffixIndices</span> []<span style="color:#859900;font-weight:bold">int</span>                    <span style="color:#93a1a1;font-style:italic">// List of starting indices of suffixes passing through this node</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> <span style="color:#268bd2">NewSuffixTreeNode</span>() &lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">SuffixTreeNode</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> &amp;<span style="color:#268bd2">SuffixTreeNode</span>{
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">Children</span>:      <span style="color:#cb4b16">make</span>(<span style="color:#859900">map</span>[<span style="color:#859900;font-weight:bold">rune</span>]&lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">SuffixTreeNode</span>),
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">SuffixIndices</span>: []<span style="color:#859900;font-weight:bold">int</span>{},
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> (<span style="color:#268bd2">node</span> &lt;<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">SuffixTreeNode</span>) <span style="color:#268bd2">Insert</span>(<span style="color:#268bd2">suffix</span> <span style="color:#859900;font-weight:bold">string</span>, <span style="color:#268bd2">startIndex</span> <span style="color:#859900;font-weight:bold">int</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">node</span>.<span style="color:#268bd2">SuffixIndices</span> = <span style="color:#cb4b16">append</span>(<span style="color:#268bd2">node</span>.<span style="color:#268bd2">SuffixIndices</span>, <span style="color:#268bd2">startIndex</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">suffix</span>) == <span style="color:#2aa198;font-weight:bold">0</span> { <span style="color:#93a1a1;font-style:italic">// End of a suffix</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">charToInsert</span> := <span style="color:#cb4b16">rune</span>(<span style="color:#268bd2">suffix</span>[<span style="color:#2aa198;font-weight:bold">0</span>])
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#268bd2">_</span>, <span style="color:#268bd2">ok</span> := <span style="color:#268bd2">node</span>.<span style="color:#268bd2">Children</span>[<span style="color:#268bd2">charToInsert</span>]; !<span style="color:#268bd2">ok</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">node</span>.<span style="color:#268bd2">Children</span>[<span style="color:#268bd2">charToInsert</span>] = <span style="color:#268bd2">NewSuffixTreeNode</span>()
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">node</span>.<span style="color:#268bd2">Children</span>[<span style="color:#268bd2">charToInsert</span>].<span style="color:#268bd2">Insert</span>(<span style="color:#268bd2">suffix</span>[<span style="color:#2aa198;font-weight:bold">1</span>:], <span style="color:#268bd2">startIndex</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> (<span style="color:#268bd2">node</span> &lt;/<span style="color:#268bd2">em</span>&gt;<span style="color:#268bd2">SuffixTreeNode</span>) <span style="color:#268bd2">Search</span>(<span style="color:#268bd2">pattern</span> <span style="color:#859900;font-weight:bold">string</span>) []<span style="color:#859900;font-weight:bold">int</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">currNode</span> := <span style="color:#268bd2">node</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">_</span>, <span style="color:#268bd2">charToFind</span> := <span style="color:#859900">range</span> <span style="color:#268bd2">pattern</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">nextNode</span>, <span style="color:#268bd2">ok</span> := <span style="color:#268bd2">currNode</span>.<span style="color:#268bd2">Children</span>[<span style="color:#268bd2">charToFind</span>]; <span style="color:#268bd2">ok</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">currNode</span> = <span style="color:#268bd2">nextNode</span>
+</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> []<span style="color:#859900;font-weight:bold">int</span>{} <span style="color:#93a1a1;font-style:italic">// Pattern not found</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">currNode</span>.<span style="color:#268bd2">SuffixIndices</span> <span style="color:#93a1a1;font-style:italic">// Return all occurrences (start indices)</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Main function to build a conceptual Suffix Tree</span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> <span style="color:#268bd2">BuildConceptualSuffixTree</span>(<span style="color:#268bd2">text</span> <span style="color:#859900;font-weight:bold">string</span>) *<span style="color:#268bd2">SuffixTreeNode</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">root</span> := <span style="color:#268bd2">NewSuffixTreeNode</span>()
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> := <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">text</span>); <span style="color:#268bd2">i</span>++ {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">root</span>.<span style="color:#268bd2">Insert</span>(<span style="color:#268bd2">text</span>[<span style="color:#268bd2">i</span>:], <span style="color:#268bd2">i</span>)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">root</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// func main() {</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     text := &#34;banana$&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     st := BuildConceptualSuffixTree(text)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     fmt.Println(&#34;Search &#39;ana&#39;:&#34;, st.Search(&#34;ana&#34;))   // Expected: [1 3]</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     fmt.Println(&#34;Search &#39;nan&#39;:&#34;, st.Search(&#34;nan&#34;))   // Expected: [2]</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     fmt.Println(&#34;Search &#39;apple&#39;:&#34;, st.Search(&#34;apple&#34;)) // Expected: []</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }</span>
+</span></span></code></pre></div><h3 id="d">D</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-d" data-lang="d"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.stdio</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.string</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.array</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.exception</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.container.array</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Conceptual Suffix Tree Node (simplified)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#859900">class</span> <span style="color:#cb4b16">SuffixTreeNode</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">this</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">children</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">HashMap</span>!(<span style="color:#859900;font-weight:bold">char</span>, <span style="color:#268bd2">SuffixTreeNode</span>)();
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">suffixIndices</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">Array</span>!(<span style="color:#859900;font-weight:bold">int</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">HashMap</span>!(<span style="color:#859900;font-weight:bold">char</span>, <span style="color:#268bd2">SuffixTreeNode</span>) <span style="color:#268bd2">children</span>; <span style="color:#93a1a1;font-style:italic">// Map char to SuffixTreeNode
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">Array</span>!(<span style="color:#859900;font-weight:bold">int</span>) <span style="color:#268bd2">suffixIndices</span>;                <span style="color:#93a1a1;font-style:italic">// List of starting indices of suffixes passing through this node
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">insert</span>(<span style="color:#cb4b16">string</span> <span style="color:#268bd2">suffix</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">startIndex</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">suffixIndices</span>.<span style="color:#268bd2">insertBack</span>(<span style="color:#268bd2">startIndex</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">suffix</span>.<span style="color:#268bd2">empty</span>) { <span style="color:#93a1a1;font-style:italic">// End of a suffix
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">return</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#859900;font-weight:bold">char</span> <span style="color:#268bd2">charToInsert</span> = <span style="color:#268bd2">suffix</span>[<span style="color:#2aa198;font-weight:bold">0</span>];
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (!(<span style="color:#268bd2">charToInsert</span> <span style="color:#859900">in</span> <span style="color:#268bd2">children</span>)) {
+</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">children</span>[<span style="color:#268bd2">charToInsert</span>] = <span style="color:#859900">new</span> <span style="color:#268bd2">SuffixTreeNode</span>();
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">children</span>[<span style="color:#268bd2">charToInsert</span>].<span style="color:#268bd2">insert</span>(<span style="color:#268bd2">suffix</span>[<span style="color:#2aa198;font-weight:bold">1.</span>.<span style="color:#268bd2">$</span>], <span style="color:#859900">cast</span>(<span style="color:#859900;font-weight:bold">int</span>)<span style="color:#268bd2">startIndex</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">Array</span>!(<span style="color:#859900;font-weight:bold">int</span>) <span style="color:#268bd2">search</span>(<span style="color:#cb4b16">string</span> <span style="color:#268bd2">pattern</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">SuffixTreeNode</span> <span style="color:#268bd2">node</span> = <span style="color:#859900">this</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">foreach</span> (<span style="color:#859900;font-weight:bold">char</span> <span style="color:#268bd2">charToFind</span>; <span style="color:#268bd2">pattern</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">charToFind</span> <span style="color:#859900">in</span> <span style="color:#268bd2">node</span>.<span style="color:#268bd2">children</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">node</span> = <span style="color:#268bd2">node</span>.<span style="color:#268bd2">children</span>[<span style="color:#268bd2">charToFind</span>];
+</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#859900">return</span> <span style="color:#859900">new</span> <span style="color:#268bd2">Array</span>!(<span style="color:#859900;font-weight:bold">int</span>); <span style="color:#93a1a1;font-style:italic">// Pattern not found
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">node</span>.<span style="color:#268bd2">suffixIndices</span>; <span style="color:#93a1a1;font-style:italic">// Return all occurrences (start indices)
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Main function to build a conceptual Suffix Tree
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#268bd2">SuffixTreeNode</span> <span style="color:#268bd2">buildConceptualSuffixTree</span>(<span style="color:#cb4b16">string</span> <span style="color:#268bd2">text</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">auto</span> <span style="color:#268bd2">root</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">SuffixTreeNode</span>();
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">foreach</span> (<span style="color:#268bd2">i</span>; <span style="color:#2aa198;font-weight:bold">0.</span>.<span style="color:#268bd2">text</span>.<span style="color:#268bd2">length</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">root</span>.<span style="color:#268bd2">insert</span>(<span style="color:#268bd2">text</span>[<span style="color:#268bd2">i</span>..<span style="color:#268bd2">$</span>], <span style="color:#859900">cast</span>(<span style="color:#859900;font-weight:bold">int</span>)<span style="color:#268bd2">i</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">root</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// void main() {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     string text = &#34;banana$&#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     auto st = buildConceptualSuffixTree(text);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     writeln(&#34;Search &#39;ana&#39;: &#34;, st.search(&#34;ana&#34;));   // Expected: [1, 3]
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     writeln(&#34;Search &#39;nan&#39;: &#34;, st.search(&#34;nan&#34;));   // Expected: [2]
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     writeln(&#34;Search &#39;apple&#39;: &#34;, st.search(&#34;apple&#34;)); // Expected: []
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span></code></pre></div><h2 id="applications">Applications</h2>
+<h3 id="application">Application</h3>
+<p>Suffix Trees are incredibly powerful in computational biology, text processing, and data compression. They are used for:</p>
+<pre><code>    - **Exact String Matching:** Finding all occurrences of a pattern in a text efficiently. This is faster than simple string searching algorithms for multiple searches.
+
+    - **Longest Repeated Substring:** Identifying the longest substring that appears at least twice in a text.
+
+    - **Longest Common Substring:** Finding the longest common substring between two or more texts (using a generalized Suffix Tree).
+
+    - **Bioinformatics:** Essential for genomic analysis, finding similar regions in DNA sequences, identifying gene patterns, and sequence alignment.
+
+    - **Data Compression:** Used in algorithms like LZW compression and Burrows-Wheeler Transform.
+
+    - **Spell Checkers and Autocomplete:** Though Tries are more common for simple cases, Suffix Trees can handle more complex variations.
+</code></pre>
+
+    </div>
+</article>
+
+<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
+    
+    <a href="//localhost:1313/hugo_content/data_structures/specialized/treap/" class="nav-btn">← Previous</a>
+    
+    
+    <a href="//localhost:1313/hugo_content/data_structures/specialized/" class="nav-btn">Up</a>
+
+    
+    <a href="//localhost:1313/hugo_content/data_structures/specialized/suffix_automaton/" class="nav-btn">Next →</a>
+    
+</div>
+
+    </main>
+
+    <footer class="footer">
+        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
+    </footer>
+
+    <script>
+        const body = document.getElementById('theme-body');
+        const btn = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme');
+
+        
+        function updateButtonText() {
+            if (body.classList.contains('theme-terminal')) {
+                btn.textContent = "Light Mode";
+            } else {
+                btn.textContent = "Dark Mode";
+            }
+        }
+
+        if (currentTheme === 'terminal') {
+            body.classList.add('theme-terminal');
+        }
+        
+        
+        updateButtonText();
+
+        btn.addEventListener('click', () => {
+            body.classList.toggle('theme-terminal');
+            updateButtonText();
+            
+            let theme = 'natural';
+            if (body.classList.contains('theme-terminal')) {
+                theme = 'terminal';
+            }
+            localStorage.setItem('theme', theme);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suffix Array | SDET Interview Preparation Kit</title>
+    <link rel="stylesheet" href="//localhost:1313/css/style.css">
+    <link rel="stylesheet" href="//localhost:1313/css/terminal.css">
+    
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    
+    <link rel="stylesheet" href="//localhost:1313/lib/katex/katex.min.css">
+    <script defer src="//localhost:1313/lib/katex/katex.min.js"></script>
+    <script defer src="//localhost:1313/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</head>
+<body id="theme-body">
+    <button id="theme-toggle">Switch Theme</button>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="//localhost:1313/">Index</a></li>
+                
+            </ul>
+        </nav>
+        <div class="site-breadcrumb">
+            <a href="//localhost:1313/">Home</a>
+            
+                
+                    <span>/</span> <a href="//localhost:1313/">SDET Interview Dashboard</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/dsa-42/">42 Algorithms &amp; 42 Data Structures</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/dsa-42/data_structures/">Data Structures</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/dsa-42/data_structures/specialized/">Specialized</a>
+                
+            
+            
+                <span>/</span> Suffix Array
+            
+        </div>
+    </header>
+
+    <main>
+        
+<article>
+    <div class="category-title" style="margin-bottom: 0.5rem;">Specialized</div>
+    <h1>Suffix Array</h1>
+    <div class="content-body" style="margin-top: 2rem;">
+        <p>A <code>Suffix Array</code> is a sorted array of all suffixes of a given string. It is a simple, yet powerful data structure used for a wide variety of string processing problems. It provides a more space-efficient alternative to a <code>Suffix Tree</code> while still enabling many of the same operations.</p>
+<p>By pairing a <code>Suffix Array</code> with an <code>LCP (Longest Common Prefix) array</code>, one can solve complex problems like finding the longest repeated substring, finding the longest common substring between two strings, and more.</p>
+<h2 id="how-it-works">How it Works</h2>
+<h3 id="how-it-works-expanded">How it Works (Expanded)</h3>
+<p>The construction of a <code>Suffix Array</code> involves two main steps:</p>
+<ul>
+<li><strong>Generate all suffixes:</strong> For a string <code>S</code> of length <code>N</code>, generate all <code>N</code> suffixes.</li>
+<li><strong>Sort the suffixes:</strong> Sort these suffixes lexicographically (alphabetically). The <code>Suffix Array</code> itself stores the starting indices of these sorted suffixes.</li>
+</ul>
+<hr>
+<p>Example for string S = &ldquo;banana$&rdquo;:</p>
+<p>Suffixes:
+0: banana$
+1: anana$
+2: nana$
+3: ana$
+4: na$
+5: a$
+6: $</p>
+<p>Sorted Suffixes:      Suffix Array (SA):
+$:                 6
+a$:                5
+ana$:              3
+anana$:            1
+banana$:           0
+na$:               4
+nana$:             2</p>
+<h2 id="implementation">Implementation</h2>
+<h3 id="python">Python</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># Simple (naive) Suffix Array construction in Python</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">def</span> <span style="color:#268bd2">build_suffix_array</span>(<span style="color:#268bd2">s</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#2aa198">&#34;&#34;&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#2aa198">    Builds a suffix array for the given string in a simple, readable way.
+</span></span></span><span style="display:flex;"><span><span style="color:#2aa198">    Time complexity: O(n^2 &lt;em&gt; log n) due to slicing and sorting.
+</span></span></span><span style="display:flex;"><span><span style="color:#2aa198">    &#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># Create a list of all suffixes</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">suffixes</span> = [(<span style="color:#268bd2">s</span>[<span style="color:#268bd2">i</span>:], <span style="color:#268bd2">i</span>) <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> <span style="color:#859900">in</span> <span style="color:#cb4b16">range</span>(<span style="color:#cb4b16">len</span>(<span style="color:#268bd2">s</span>))]
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># Sort the suffixes lexicographically</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">suffixes</span>.<span style="color:#268bd2">sort</span>(<span style="color:#268bd2">key</span>=<span style="color:#859900">lambda</span> <span style="color:#268bd2">x</span>: <span style="color:#268bd2">x</span>[<span style="color:#2aa198;font-weight:bold">0</span>])
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># Extract the original indices to form the suffix array</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">suffix_array</span> = [<span style="color:#268bd2">suffix</span>[<span style="color:#2aa198;font-weight:bold">1</span>] <span style="color:#859900">for</span> <span style="color:#268bd2">suffix</span> <span style="color:#859900">in</span> <span style="color:#268bd2">suffixes</span>]
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">suffix_array</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># Example Usage:</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># text = &#34;banana&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># sa = build_suffix_array(text + &#34;$&#34;) # Add a special char smaller than any other</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(f&#34;Suffix Array for &#39;banana$&#39;: {sa}&#34;) # Expected: [6, 5, 3, 1, 0, 4, 2]</span>
+</span></span></code></pre></div><h3 id="javascript">Javascript</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Simple (naive) Suffix Array construction in JavaScript
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">function</span> <span style="color:#268bd2">buildSuffixArray</span>(<span style="color:#268bd2">s</span>) {
+</span></span><span style="display:flex;"><span>    /&lt;/em&gt;&lt;em&gt;
+</span></span><span style="display:flex;"><span>     &lt;/em&gt; Builds a suffix array for the given string in a simple, readable way.
+</span></span><span style="display:flex;"><span>     &lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">Time</span> <span style="color:#268bd2">complexity</span>: <span style="color:#268bd2">O</span>(<span style="color:#268bd2">n</span>^<span style="color:#2aa198;font-weight:bold">2</span> &lt;/em&gt; log n) due to slicing and sorting.
+</span></span><span style="display:flex;"><span>     &lt;<span style="color:#268bd2">em</span>&gt;/
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Create an array of all suffixes
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">const</span> <span style="color:#268bd2">suffixes</span> = [];
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">s</span>.<span style="color:#268bd2">length</span>; <span style="color:#268bd2">i</span>++) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">suffixes</span>.<span style="color:#268bd2">push</span>({ <span style="color:#268bd2">suffix</span>: <span style="color:#268bd2">s</span>.<span style="color:#268bd2">substring</span>(<span style="color:#268bd2">i</span>), <span style="color:#268bd2">index</span>: <span style="color:#268bd2">i</span> });
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Sort the suffixes lexicographically
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">suffixes</span>.<span style="color:#268bd2">sort</span>((<span style="color:#268bd2">a</span>, <span style="color:#268bd2">b</span>) =&gt; {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">a</span>.<span style="color:#268bd2">suffix</span> &lt; <span style="color:#268bd2">b</span>.<span style="color:#268bd2">suffix</span>) <span style="color:#859900">return</span> -<span style="color:#2aa198;font-weight:bold">1</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">a</span>.<span style="color:#268bd2">suffix</span> &gt; <span style="color:#268bd2">b</span>.<span style="color:#268bd2">suffix</span>) <span style="color:#859900">return</span> <span style="color:#2aa198;font-weight:bold">1</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>    });
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Extract the original indices to form the suffix array
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">const</span> <span style="color:#268bd2">suffixArray</span> = <span style="color:#268bd2">suffixes</span>.<span style="color:#268bd2">map</span>(<span style="color:#268bd2">item</span> =&gt; <span style="color:#268bd2">item</span>.<span style="color:#268bd2">index</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">suffixArray</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Example Usage:
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const text = &#34;banana&#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const sa = buildSuffixArray(text + &#34;$&#34;); // Add a special char smaller than any other
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&lt;code&gt;Suffix Array for &#39;banana$&#39;:&lt;/code&gt;, sa); // Expected: [6, 5, 3, 1, 0, 4, 2]
+</span></span></span></code></pre></div><h3 id="typescript">Typescript</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-typescript" data-lang="typescript"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Simple (naive) Suffix Array construction in TypeScript
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">function</span> <span style="color:#268bd2">buildSuffixArrayTS</span>(<span style="color:#268bd2">s</span>: <span style="color:#859900;font-weight:bold">string</span>): <span style="color:#859900;font-weight:bold">number</span>[] {
+</span></span><span style="display:flex;"><span>    /&lt;/em&gt;&lt;em&gt;
+</span></span><span style="display:flex;"><span>     &lt;/<span style="color:#268bd2;font-weight:bold">em</span>&gt; <span style="color:#268bd2">Builds</span> <span style="color:#268bd2">a</span> <span style="color:#268bd2">suffix</span> <span style="color:#268bd2">array</span> <span style="color:#859900">for</span> <span style="color:#268bd2">the</span> <span style="color:#268bd2">given</span> <span style="color:#859900;font-weight:bold">string</span> <span style="color:#859900">in</span> <span style="color:#268bd2">a</span> <span style="color:#268bd2">simple</span>, <span style="color:#268bd2">readable</span> <span style="color:#268bd2">way</span>.
+</span></span><span style="display:flex;"><span>     &lt;<span style="color:#268bd2;font-weight:bold">em</span>&gt; <span style="color:#268bd2">Time</span> <span style="color:#268bd2">complexity</span>: <span style="color:#859900;font-weight:bold">O</span>(<span style="color:#268bd2">n</span>^<span style="color:#2aa198;font-weight:bold">2</span> &lt;/<span style="color:#268bd2;font-weight:bold">em</span>&gt; <span style="color:#268bd2">log</span> <span style="color:#268bd2">n</span>) <span style="color:#268bd2">due</span> <span style="color:#268bd2">to</span> <span style="color:#268bd2">slicing</span> <span style="color:#268bd2">and</span> <span style="color:#268bd2">sorting</span>.
+</span></span><span style="display:flex;"><span>     */
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">interface</span> <span style="color:#268bd2">Suffix</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">suffix</span>: <span style="color:#859900;font-weight:bold">string</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">index</span>: <span style="color:#859900;font-weight:bold">number</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Create an array of all suffixes
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">const</span> <span style="color:#268bd2">suffixes</span>: <span style="color:#859900;font-weight:bold">Suffix</span>[] = [];
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">s</span>.<span style="color:#268bd2">length</span>; <span style="color:#268bd2">i</span>++) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">suffixes</span>.<span style="color:#268bd2">push</span>({ <span style="color:#268bd2">suffix</span>: <span style="color:#859900;font-weight:bold">s.substring</span>(<span style="color:#268bd2">i</span>), <span style="color:#268bd2">index</span>: <span style="color:#859900;font-weight:bold">i</span> });
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Sort the suffixes lexicographically
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">suffixes</span>.<span style="color:#268bd2">sort</span>((<span style="color:#268bd2">a</span>, <span style="color:#268bd2">b</span>) =&gt; {
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">a</span>.<span style="color:#268bd2">suffix</span> &lt; <span style="color:#268bd2">b</span>.<span style="color:#268bd2">suffix</span>) <span style="color:#859900">return</span> -<span style="color:#2aa198;font-weight:bold">1</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">a</span>.<span style="color:#268bd2">suffix</span> &gt; <span style="color:#268bd2">b</span>.<span style="color:#268bd2">suffix</span>) <span style="color:#859900">return</span> <span style="color:#2aa198;font-weight:bold">1</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#2aa198;font-weight:bold">0</span>;
+</span></span><span style="display:flex;"><span>    });
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Extract the original indices to form the suffix array
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">const</span> <span style="color:#268bd2">suffixArray</span>: <span style="color:#859900;font-weight:bold">number</span>[] = <span style="color:#268bd2">suffixes</span>.<span style="color:#268bd2">map</span>(<span style="color:#268bd2">item</span> =&gt; <span style="color:#268bd2">item</span>.<span style="color:#268bd2">index</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">suffixArray</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Example Usage:
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const textTS = &#34;banana&#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const saTS = buildSuffixArrayTS(textTS + &#34;$&#34;); // Add a special char smaller than any other
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&lt;code&gt;Suffix Array for &#39;banana$&#39;:&lt;/code&gt;, saTS); // Expected: [6, 5, 3, 1, 0, 4, 2]
+</span></span></span></code></pre></div><h3 id="cpp">Cpp</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;iostream&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;string&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;vector&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;algorithm&gt;</span><span style="color:#93a1a1;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">struct</span> <span style="color:#cb4b16">Suffix</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">index</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">string</span> <span style="color:#268bd2">suff</span>;
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Comparison function for sorting suffixes
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#859900;font-weight:bold">bool</span> <span style="color:#268bd2">compareSuffixes</span>(<span style="color:#859900">const</span> <span style="color:#268bd2">Suffix</span>&amp; <span style="color:#268bd2">a</span>, <span style="color:#859900">const</span> <span style="color:#268bd2">Suffix</span>&amp; <span style="color:#268bd2">b</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">a</span>.<span style="color:#268bd2">suff</span> &lt; <span style="color:#268bd2">b</span>.<span style="color:#268bd2">suff</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Simple (naive) Suffix Array construction
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt; <span style="color:#268bd2">buildSuffixArray</span>(<span style="color:#859900">const</span> <span style="color:#268bd2">std</span>::<span style="color:#268bd2">string</span>&amp; <span style="color:#268bd2">s</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">n</span> = <span style="color:#268bd2">s</span>.<span style="color:#268bd2">length</span>();
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#268bd2">Suffix</span>&gt; <span style="color:#268bd2">suffixes</span>(<span style="color:#268bd2">n</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Create a vector of all suffixes
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">n</span>; ++<span style="color:#268bd2">i</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">suffixes</span>[<span style="color:#268bd2">i</span>].<span style="color:#268bd2">index</span> = <span style="color:#268bd2">i</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">suffixes</span>[<span style="color:#268bd2">i</span>].<span style="color:#268bd2">suff</span> = <span style="color:#268bd2">s</span>.<span style="color:#268bd2">substr</span>(<span style="color:#268bd2">i</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Sort the suffixes lexicographically
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">sort</span>(<span style="color:#268bd2">suffixes</span>.<span style="color:#268bd2">begin</span>(), <span style="color:#268bd2">suffixes</span>.<span style="color:#268bd2">end</span>(), <span style="color:#268bd2">compareSuffixes</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Extract the original indices to form the suffix array
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt; <span style="color:#268bd2">suffixArray</span>(<span style="color:#268bd2">n</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">n</span>; ++<span style="color:#268bd2">i</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">suffixArray</span>[<span style="color:#268bd2">i</span>] = <span style="color:#268bd2">suffixes</span>[<span style="color:#268bd2">i</span>].<span style="color:#268bd2">index</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">suffixArray</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Example Usage:
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// int main() {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::string text = &#34;banana$&#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::vector&lt;int&gt; sa = buildSuffixArray(text);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; &#34;Suffix Array for &#39;banana$&#39;: &#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     for (int index : sa) {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         std::cout &lt;&lt; index &lt;&lt; &#34; &#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     }
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; std::endl; // Expected: 6 5 3 1 0 4 2
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     return 0;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span></code></pre></div><h3 id="go">Go</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">package</span> <span style="color:#268bd2">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> (
+</span></span><span style="display:flex;"><span>    <span style="color:#2aa198">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#2aa198">&#34;sort&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// A struct to hold a suffix and its original index</span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">type</span> <span style="color:#268bd2">Suffix</span> <span style="color:#859900">struct</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">Index</span>  <span style="color:#859900;font-weight:bold">int</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">Suffix</span> <span style="color:#859900;font-weight:bold">string</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// A slice of Suffixes that implements sort.Interface</span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">type</span> <span style="color:#268bd2">SuffixSlice</span> []<span style="color:#268bd2">Suffix</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> (<span style="color:#268bd2">s</span> <span style="color:#268bd2">SuffixSlice</span>) <span style="color:#268bd2">Len</span>() <span style="color:#859900;font-weight:bold">int</span>           { <span style="color:#859900">return</span> <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">s</span>) }
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> (<span style="color:#268bd2">s</span> <span style="color:#268bd2">SuffixSlice</span>) <span style="color:#268bd2">Less</span>(<span style="color:#268bd2">i</span>, <span style="color:#268bd2">j</span> <span style="color:#859900;font-weight:bold">int</span>) <span style="color:#859900;font-weight:bold">bool</span> { <span style="color:#859900">return</span> <span style="color:#268bd2">s</span>[<span style="color:#268bd2">i</span>].<span style="color:#268bd2">Suffix</span> &lt; <span style="color:#268bd2">s</span>[<span style="color:#268bd2">j</span>].<span style="color:#268bd2">Suffix</span> }
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> (<span style="color:#268bd2">s</span> <span style="color:#268bd2">SuffixSlice</span>) <span style="color:#268bd2">Swap</span>(<span style="color:#268bd2">i</span>, <span style="color:#268bd2">j</span> <span style="color:#859900;font-weight:bold">int</span>)      { <span style="color:#268bd2">s</span>[<span style="color:#268bd2">i</span>], <span style="color:#268bd2">s</span>[<span style="color:#268bd2">j</span>] = <span style="color:#268bd2">s</span>[<span style="color:#268bd2">j</span>], <span style="color:#268bd2">s</span>[<span style="color:#268bd2">i</span>] }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Simple (naive) Suffix Array construction</span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> <span style="color:#268bd2">buildSuffixArray</span>(<span style="color:#268bd2">s</span> <span style="color:#859900;font-weight:bold">string</span>) []<span style="color:#859900;font-weight:bold">int</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">n</span> := <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">s</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">suffixes</span> := <span style="color:#cb4b16">make</span>(<span style="color:#268bd2">SuffixSlice</span>, <span style="color:#268bd2">n</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Create a slice of all suffixes</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> := <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">n</span>; <span style="color:#268bd2">i</span>++ {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">suffixes</span>[<span style="color:#268bd2">i</span>] = <span style="color:#268bd2">Suffix</span>{<span style="color:#268bd2">Index</span>: <span style="color:#268bd2">i</span>, <span style="color:#268bd2">Suffix</span>: <span style="color:#268bd2">s</span>[<span style="color:#268bd2">i</span>:]}
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Sort the suffixes lexicographically</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">sort</span>.<span style="color:#268bd2">Sort</span>(<span style="color:#268bd2">suffixes</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Extract the original indices to form the suffix array</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">suffixArray</span> := <span style="color:#cb4b16">make</span>([]<span style="color:#859900;font-weight:bold">int</span>, <span style="color:#268bd2">n</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> := <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">n</span>; <span style="color:#268bd2">i</span>++ {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">suffixArray</span>[<span style="color:#268bd2">i</span>] = <span style="color:#268bd2">suffixes</span>[<span style="color:#268bd2">i</span>].<span style="color:#268bd2">Index</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">suffixArray</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// func main() {</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     text := &#34;banana$&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     sa := buildSuffixArray(text)</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     fmt.Printf(&#34;Suffix Array for &#39;%s&#39;: %v\n&#34;, text, sa) // Expected: [6 5 3 1 0 4 2]</span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }</span>
+</span></span></code></pre></div><h3 id="d">D</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-d" data-lang="d"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.stdio</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.algorithm</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.array</span>;
+</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.range</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#859900">struct</span> <span style="color:#cb4b16">Suffix</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">index</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#cb4b16">string</span> <span style="color:#268bd2">suffix</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Simple (naive) Suffix Array construction
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#859900;font-weight:bold">int</span>[] <span style="color:#268bd2">buildSuffixArray</span>(<span style="color:#cb4b16">string</span> <span style="color:#268bd2">s</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">auto</span> <span style="color:#268bd2">n</span> = <span style="color:#268bd2">s</span>.<span style="color:#268bd2">length</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">auto</span> <span style="color:#268bd2">suffixes</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">Suffix</span>[<span style="color:#268bd2">n</span>];
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Create an array of all suffixes
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">foreach</span> (<span style="color:#268bd2">i</span>; <span style="color:#2aa198;font-weight:bold">0.</span>.<span style="color:#268bd2">n</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">suffixes</span>[<span style="color:#268bd2">i</span>] = <span style="color:#268bd2">Suffix</span>(<span style="color:#859900">cast</span>(<span style="color:#859900;font-weight:bold">int</span>)<span style="color:#268bd2">i</span>, <span style="color:#268bd2">s</span>[<span style="color:#268bd2">i</span>..<span style="color:#268bd2">$</span>]);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Sort the suffixes lexicographically
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">sort</span>!((<span style="color:#268bd2">a</span>, <span style="color:#268bd2">b</span>) =&gt; <span style="color:#268bd2">a</span>.<span style="color:#268bd2">suffix</span> &lt; <span style="color:#268bd2">b</span>.<span style="color:#268bd2">suffix</span>)(<span style="color:#268bd2">suffixes</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Extract the original indices to form the suffix array
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">auto</span> <span style="color:#268bd2">suffixArray</span> = <span style="color:#859900">new</span> <span style="color:#859900;font-weight:bold">int</span>[<span style="color:#268bd2">n</span>];
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">foreach</span> (<span style="color:#268bd2">i</span>, <span style="color:#268bd2">suf</span>; <span style="color:#268bd2">suffixes</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">suffixArray</span>[<span style="color:#268bd2">i</span>] = <span style="color:#268bd2">suf</span>.<span style="color:#268bd2">index</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">suffixArray</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// void main() {
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     auto text = &#34;banana$&#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     auto sa = buildSuffixArray(text);
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     writefln(&#34;Suffix Array for &#39;%s&#39;: %s&#34;, text, sa); // Expected: [6, 5, 3, 1, 0, 4, 2]
+</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
+</span></span></span></code></pre></div><h2 id="applications">Applications</h2>
+<h3 id="application">Application</h3>
+<pre><code>&lt;p&gt;Suffix Arrays are a fundamental tool in stringology and bioinformatics. Their primary use is for **fast substring searching** (finding if a pattern exists in a text). They are the core of many full-text search utilities like `grep`. In **bioinformatics**, they are used to find long repeated sequences or commonalities within DNA or protein sequences. They are also used in **data compression** algorithms and for problems like finding the longest repeated substring or the longest common substring between two strings.&lt;/p&gt;
+</code></pre>
+
+    </div>
+</article>
+
+<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
+    
+    <a href="//localhost:1313/dsa-42/data_structures/specialized/suffix_automaton/" class="nav-btn">← Previous</a>
+    
+    
+    <a href="//localhost:1313/dsa-42/data_structures/specialized/" class="nav-btn">Up</a>
+
+    
+    <a href="//localhost:1313/dsa-42/data_structures/specialized/splay_tree/" class="nav-btn">Next →</a>
+    
+</div>
+
+    </main>
+
+    <footer class="footer">
+        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
+    </footer>
+
+    <script>
+        const body = document.getElementById('theme-body');
+        const btn = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme');
+
+        
+        function updateButtonText() {
+            if (body.classList.contains('theme-terminal')) {
+                btn.textContent = "Light Mode";
+            } else {
+                btn.textContent = "Dark Mode";
+            }
+        }
+
+        if (currentTheme === 'terminal') {
+            body.classList.add('theme-terminal');
+        }
+        
+        
+        updateButtonText();
+
+        btn.addEventListener('click', () => {
+            body.classList.toggle('theme-terminal');
+            updateButtonText();
+            
+            let theme = 'natural';
+            if (body.classList.contains('theme-terminal')) {
+                theme = 'terminal';
+            }
+            localStorage.setItem('theme', theme);
+        });
+    </script>
+</body>
+</html>
