@@ -71,6 +71,6 @@ A structured repository of interview question dumps, mastery guides, and deep-di
 
 | Project | Description |
 | :--- | :--- |
-| **[DSA-42](/projects/DSA-42/)** | **42 Algorithms & 42 Data Structures** |
-| **[Voxel JSONPath](/projects/json-path/)** | **Interactive JSONPath Explorer** |
-| **[Voxel JSON](/projects/voxel-json/)** | **Voxel-themed JSON Editor** |
+| **[DSA-42](projects/DSA-42/)** | **42 Algorithms & 42 Data Structures** |
+| **[Voxel JSONPath](projects/json-path/)** | **Interactive JSONPath Explorer** |
+| **[Voxel JSON](projects/voxel-json/)** | **Voxel-themed JSON Editor** |

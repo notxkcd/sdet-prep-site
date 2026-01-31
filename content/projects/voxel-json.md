@@ -6,4 +6,4 @@ categories: ["Projects"]
 
 Voxel-themed JSON Editor.
 
-[**Open Voxel JSON Editor**](/projects/voxel-json/)
+[**Open Voxel JSON Editor**](/sdet-prep-site/projects/voxel-json/)

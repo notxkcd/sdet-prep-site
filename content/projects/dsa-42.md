@@ -6,4 +6,4 @@ categories: ["Projects"]
 
 42 Algorithms & 42 Data Structures.
 
-[**View Project Original UI**](/projects/DSA-42/)
+[**View Project Original UI**](/sdet-prep-site/projects/DSA-42/)

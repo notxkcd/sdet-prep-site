@@ -6,4 +6,4 @@ categories: ["Projects"]
 
 Interactive JSONPath Explorer with a voxel aesthetic.
 
-[**Launch JSONPath Explorer**](/projects/json-path/)
+[**Launch JSONPath Explorer**](/sdet-prep-site/projects/json-path/)

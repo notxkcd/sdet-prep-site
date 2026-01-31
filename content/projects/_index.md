@@ -6,6 +6,6 @@ category: "Projects"
 
 A collection of my past work and experimental tools.
 
-- **[DSA-42](/projects/DSA-42/)** - 42 Algorithms & 42 Data Structures
-- **[Voxel JSONPath](/projects/json-path/)** - Interactive JSONPath Explorer
-- **[Voxel JSON](/projects/voxel-json/)** - Voxel-themed JSON Editor
+- **[DSA-42](/sdet-prep-site/projects/DSA-42/)** - 42 Algorithms & 42 Data Structures
+- **[Voxel JSONPath](/sdet-prep-site/projects/json-path/)** - Interactive JSONPath Explorer
+- **[Voxel JSON](/sdet-prep-site/projects/voxel-json/)** - Voxel-themed JSON Editor
