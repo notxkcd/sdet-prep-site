@@ -1,0 +1,235 @@
+<div id="explanation-content">
+    <p>The <code>Fisher-Yates Shuffle</code> is an algorithm for generating a random permutation of a finite sequence. In simple terms, it shuffles an array in an unbiased way, meaning every possible permutation is equally likely. The modern version of the algorithm, often attributed to Richard Durstenfeld and popularized by Donald Knuth, is an in-place shuffle that is both efficient and easy to implement.</p>
+    <p>The algorithm iterates through the array from the end to the beginning. In each step, it swaps the current element with a randomly chosen element from the unshuffled part of the array (including itself).</p>
+</div>
+
+<div id="expanded-explanation-content">
+    <h3>How it Works (Expanded)</h3>
+    <p>The <code>Fisher-Yates Shuffle</code> works by building up a random permutation one element at a time. It ensures that at each step <code>i</code>, the element placed at index <code>i</code> has an equal chance of being any of the elements from the original array that have not yet been placed.</p>
+    <div class="explanation-fence">
+Example: Shuffle Array = [1, 2, 3, 4]
+
+1. Start at last element (index 3).
+   - i = 3. Pick a random index j from [0, 1, 2, 3]. Say j=1.
+   - Swap arr[3] and arr[1]. Array becomes: [1, 4, 3, 2].
+   - Element at index 3 is now fixed.
+
+2. Move to next element (index 2).
+   - i = 2. Pick a random index j from [0, 1, 2]. Say j=2.
+   - Swap arr[2] and arr[2]. Array remains: [1, 4, 3, 2].
+   - Element at index 2 is now fixed.
+
+3. Move to next element (index 1).
+   - i = 1. Pick a random index j from [0, 1]. Say j=0.
+   - Swap arr[1] and arr[0]. Array becomes: [4, 1, 3, 2].
+   - Element at index 1 is now fixed.
+
+4. Loop finishes. Array is shuffled.
+    </div>
+    <p><strong>Algorithm Steps (Modern, In-Place Version):</strong></p>
+    <ol>
+        <li>Start from the last element of the array (<code>i = n - 1</code>).</li>
+        <li>While <code>i > 0</code>:
+            <ul>
+                <li>Generate a random integer <code>j</code> such that <code>0 <= j <= i</code>.</li>
+                <li>Swap the element at index <code>i</code> with the element at index <code>j</code>.</li>
+                <li>Decrement <code>i</code>.</li>
+            </ul>
+        </li>
+        <li>The array is now shuffled.</li>
+    </ol>
+    <p><strong>Time Complexity:</strong> <code>O(N)</code>, as it iterates through the array once.</p>
+    <p><strong>Space Complexity:</strong> <code>O(1)</code>, as it is an in-place algorithm.</p>
+</div>
+
+<div id="code-implementations">
+    <pre data-lang="python"><code class="language-python">import random
+
+def fisher_yates_shuffle(arr):
+    """
+    Shuffles an array in-place using the Fisher-Yates shuffle algorithm.
+    """
+    n = len(arr)
+    for i in range(n - 1, 0, -1):
+        # Pick a random index from 0 to i
+        j = random.randint(0, i)
+        
+        # Swap arr[i] with the element at random index
+        arr[i], arr[j] = arr[j], arr[i]
+    return arr
+
+# Example
+# my_arr = [1, 2, 3, 4, 5, 6, 7, 8]
+# print("Original:", my_arr)
+# print("Shuffled:", fisher_yates_shuffle(my_arr))
+</code></pre>
+
+    <pre data-lang="javascript"><code class="language-javascript">function fisherYatesShuffle(arr) {
+    /*<em>
+     </em> Shuffles an array in-place using the Fisher-Yates shuffle algorithm.
+     <em>/
+    let n = arr.length;
+    for (let i = n - 1; i > 0; i--) {
+        // Pick a random index from 0 to i
+        const j = Math.floor(Math.random() </em> (i + 1));
+        
+        // Swap arr[i] with the element at random index
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+}
+
+// const myArr = [1, 2, 3, 4, 5, 6, 7, 8];
+// console.log("Original:", myArr);
+// console.log("Shuffled:", fisherYatesShuffle([...myArr])); // Use spread to avoid modifying original array for demo
+</code></pre>
+
+    <pre data-lang="typescript"><code class="language-typescript">function fisherYatesShuffleTS(arr: any[]): any[] {
+    /*<em>
+     </em> Shuffles an array in-place using the Fisher-Yates shuffle algorithm.
+     <em>/
+    let n = arr.length;
+    for (let i = n - 1; i > 0; i--) {
+        // Pick a random index from 0 to i
+        const j = Math.floor(Math.random() </em> (i + 1));
+        
+        // Swap arr[i] with the element at random index
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+}
+
+// const myArrTS: number[] = [1, 2, 3, 4, 5, 6, 7, 8];
+// console.log("Original:", myArrTS);
+// console.log("Shuffled:", fisherYatesShuffleTS([...myArrTS])); // Use spread to avoid modifying original array for demo
+</code></pre>
+    
+    <pre data-lang="cpp"><code class="language-cpp">#include &lt;vector&gt;
+#include &lt;iostream&gt;
+#include &lt;random&gt;    // For std::mt19937 and std::uniform_int_distribution
+#include &lt;algorithm&gt; // For std::swap
+
+void fisherYatesShuffle(std::vector&lt;int&gt;& arr) {
+    int n = arr.size();
+    
+    // Create a random number generator
+    std::random_device rd;
+    std::mt19937 g(rd());
+
+    for (int i = n - 1; i > 0; i--) {
+        // Pick a random index from 0 to i
+        std::uniform_int_distribution&lt;int&gt; dist(0, i);
+        int j = dist(g);
+        
+        // Swap arr[i] with the element at random index
+        std::swap(arr[i], arr[j]);
+    }
+}
+
+// int main() {
+//     std::vector<int> myArr = {1, 2, 3, 4, 5, 6, 7, 8};
+//     std::cout << "Original: ";
+//     for (int val : myArr) std::cout << val << " ";
+//     std::cout << std::endl;
+//     
+//     fisherYatesShuffle(myArr);
+//     
+//     std::cout << "Shuffled: ";
+//     for (int val : myArr) std::cout << val << " ";
+//     std::cout << std::endl;
+//     return 0;
+// }
+</code></pre>
+
+    <pre data-lang="go"><code class="language-go">package main
+
+import (
+    "fmt"
+    "math/rand"
+    "time"
+)
+
+func fisherYatesShuffle(arr []interface{}) {
+    n := len(arr)
+    rand.Seed(time.Now().UnixNano())
+
+    for i := n - 1; i > 0; i-- {
+        // Pick a random index from 0 to i
+        j := rand.Intn(i + 1)
+        
+        // Swap arr[i] with the element at random index
+        arr[i], arr[j] = arr[j], arr[i]
+    }
+}
+
+// func main() {
+//     myArr := []interface{}{1, 2, 3, 4, 5, 6, 7, 8}
+//     fmt.Println("Original:", myArr)
+//     fisherYatesShuffle(myArr)
+//     fmt.Println("Shuffled:", myArr)
+// }
+</code></pre>
+    
+    <pre data-lang="d"><code class="language-d">import std.stdio;
+import std.random;
+import std.array;
+import std.algorithm; // For std.algorithm.swap
+
+void fisherYatesShuffle(T)(T[] arr) {
+    auto n = arr.length;
+    auto rnd = Random(unpredictableSeed);
+
+    for (int i = n - 1; i > 0; i--) {
+        // Pick a random index from 0 to i
+        int j = uniform(0, i + 1, rnd);
+        
+        // Swap arr[i] with the element at random index
+        swap(arr[i], arr[j]);
+    }
+}
+
+// void main() {
+//     auto myArr = [1, 2, 3, 4, 5, 6, 7, 8];
+//     writeln("Original: ", myArr);
+//     fisherYatesShuffle(myArr);
+//     writeln("Shuffled: ", myArr);
+// }
+</code></pre>
+</div>
+
+<div id="code-explanation-content"><div class="markdown-content">
+    <h3>Code Walkthrough</h3>
+    <p>The <code>Fisher-Yates Shuffle</code> is an in-place algorithm that iterates backwards through an array, swapping each element with a randomly chosen one from the unshuffled portion.</p>
+    <div class="explanation-fence">
+<strong><code>fisher_yates_shuffle(arr)</code> Function:</strong>
+<ul>
+    <li><code>n</code>: The number of elements in the array <code>arr</code>.</li>
+</ul>
+<br>
+<strong>Algorithm Steps:</strong>
+<ol>
+    <li><strong>Loop Backwards:</strong> The algorithm starts a loop from the last element of the array (<code>i = n - 1</code>) and goes down to the second element (<code>i = 1</code>). The element at <code>i=0</code> does not need to be processed because when <code>i=1</code>, <code>arr[1]</code> will be swapped with either <code>arr[0]</code> or <code>arr[1]</code>, effectively randomizing the first element's position.</li>
+    <li><strong>Pick Random Index <code>j</code>:</strong> Inside the loop, a random index <code>j</code> is chosen from the range <code>[0, i]</code> (inclusive). This <code>j</code> points to a random element in the part of the array that has not yet been "fixed" or shuffled.</li>
+    <li><strong>Swap:</strong> The element at the current position <code>i</code> is swapped with the element at the randomly chosen position <code>j</code>. This places a randomly selected element from the unshuffled part of the array into the <code>i</code>-th position.</li>
+    <li>After the swap, the element at <code>arr[i]</code> is considered "fixed" in its final shuffled position. The loop continues by decrementing <code>i</code>, reducing the range of unshuffled elements.</li>
+</ol>
+<br>
+<strong>Result:</strong>
+<ul>
+    <li>After the loop completes, the entire array is shuffled in-place.</li>
+</ul>
+    </div></div>
+</div>
+
+<div id="application-content"><div class="markdown-content">
+    <h3>Application</h3>
+    <p>The <code>Fisher-Yates Shuffle</code> is the standard and most robust algorithm for shuffling a list or array, with many practical applications:</p>
+    <ul>
+        <li><strong>Gaming and Gambling:</strong> Shuffling a deck of cards, randomizing a sequence of events (e.g., enemy spawns), or generating random game boards.</li>
+        <li><strong>Statistics and Machine Learning:</strong> Randomly shuffling a dataset before splitting it into training and testing sets to ensure unbiased sampling.</li>
+        <li><strong>Cryptography:</strong> Used in some cryptographic algorithms as part of the process for generating random permutations or keys.</li>
+        <li><strong>Simulations:</strong> In Monte Carlo simulations or other probabilistic models, for randomizing the order of events or samples.</li>
+        <li><strong>Music Players:</strong> Implementing a "shuffle" feature for a playlist to ensure a random and non-repeating (until all songs are played) order.</li>
+    </ul>
+    </p>
+</div></div>

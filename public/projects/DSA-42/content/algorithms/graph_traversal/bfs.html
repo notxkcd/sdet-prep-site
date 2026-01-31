@@ -1,0 +1,328 @@
+<div id="explanation-content">
+    <p><code>Breadth-First Search (BFS)</code> is a fundamental graph traversal algorithm that explores a graph "layer by layer". Starting from a given source <code>node</code>, it explores all of its immediate neighbors first, before moving on to the next level of neighbors. It is often used to find the shortest path between two <code>nodes</code> in an unweighted graph.</p>
+    <p>The algorithm uses a <code>queue</code> to keep track of the <code>nodes</code> to visit next. This ensures that <code>nodes</code> are visited in the order of their distance from the source, guaranteeing that the first time a <code>node</code> is reached, it is via the shortest path.</p>
+</div>
+
+<div id="expanded-explanation-content">
+    <h3>How it Works (Expanded)</h3>
+    <p><code>BFS</code> maintains a <code>queue</code> of <code>nodes</code> to visit and a set of <code>visited</code> nodes to avoid cycles and redundant processing.</p>
+    <div class="explanation-fence">
+Example: Traverse a simple graph
+Graph: A -> B, A -> C, B -> D
+
+1. Start at A. Queue: [A]. Visited: {A}.
+2. Dequeue A. Visit its neighbors B and C.
+   - Enqueue B. Visited: {A, B}. Queue: [B].
+   - Enqueue C. Visited: {A, B, C}. Queue: [B, C].
+3. Dequeue B. Visit its neighbor D.
+   - Enqueue D. Visited: {A, B, C, D}. Queue: [C, D].
+4. Dequeue C. No unvisited neighbors.
+5. Dequeue D. No unvisited neighbors.
+6. Queue is empty. Search is complete.
+
+Traversal Order: A, B, C, D
+    </div>
+    <p><strong>Steps:</strong></p>
+    <ol>
+        <li>Initialize a <code>queue</code> and add the starting <code>node</code> to it.</li>
+        <li>Initialize a <code>visited</code> set and add the starting <code>node</code> to it.</li>
+        <li>While the <code>queue</code> is not empty:
+            <ul>
+                <li>Dequeue the current <code>node</code>.</li>
+                <li>For each of the current <code>node</code>'s unvisited neighbors:
+                    <ul>
+                        <li>Mark the neighbor as <code>visited</code>.</li>
+                        <li>Enqueue the neighbor.</li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+    </ol>
+    <p>This process guarantees that all reachable <code>nodes</code> are visited exactly once, and the traversal explores the graph in expanding layers of distance from the source.</p>
+    <p><strong>Time Complexity:</strong> <code>O(V + E)</code>, where <code>V</code> is the number of vertices (nodes) and <code>E</code> is the number of edges. This is because every <code>vertex</code> and every <code>edge</code> will be explored once.</p>
+    <p><strong>Space Complexity:</strong> <code>O(V)</code> in the worst case, as the <code>queue</code> could potentially store all vertices in the graph (e.g., in a star-shaped graph).</p>
+</div>
+
+<div id="code-implementations">
+    <pre data-lang="python"><code class="language-python">from collections import deque
+
+def bfs(graph, start_node):
+    """
+    Performs BFS on a graph represented as an adjacency list.
+    <code>graph</code> is a dict where keys are nodes and values are lists of neighbors.
+    """
+    if start_node not in graph:
+        return []
+
+    visited = {start_node}
+    queue = deque([start_node])
+    traversal_order = []
+
+    while queue:
+        current_node = queue.popleft()
+        traversal_order.append(current_node)
+
+        for neighbor in graph.get(current_node, []):
+            if neighbor not in visited:
+                visited.add(neighbor)
+                queue.append(neighbor)
+                
+    return traversal_order
+
+# Example
+# graph = {
+#     'A': ['B', 'C'],
+#     'B': ['D'],
+#     'C': [],
+#     'D': []
+# }
+# print(bfs(graph, 'A')) # ['A', 'B', 'C', 'D']
+</code></pre>
+
+    <pre data-lang="javascript"><code class="language-javascript">function bfs(graph, startNode) {
+    if (!graph[startNode]) {
+        return [];
+    }
+
+    const visited = new Set([startNode]);
+    const queue = [startNode];
+    const traversalOrder = [];
+
+    while (queue.length > 0) {
+        const currentNode = queue.shift(); // Dequeue
+        traversalOrder.push(currentNode);
+
+        const neighbors = graph[currentNode] || [];
+        for (const neighbor of neighbors) {
+            if (!visited.has(neighbor)) {
+                visited.add(neighbor);
+                queue.push(neighbor); // Enqueue
+            }
+        }
+    }
+    
+    return traversalOrder;
+}
+
+// const graph = {
+//     'A': ['B', 'C'],
+//     'B': ['D'],
+//     'C': [],
+//     'D': []
+// };
+// console.log(bfs(graph, 'A')); // ['A', 'B', 'C', 'D']
+</code></pre>
+
+    <pre data-lang="typescript"><code class="language-typescript">function bfsTS(graph: Record&lt;string, string[]&gt;, startNode: string): string[] {
+    if (!graph[startNode]) {
+        return [];
+    }
+
+    const visited = new Set<string>([startNode]);
+    const queue: string[] = [startNode];
+    const traversalOrder: string[] = [];
+
+    while (queue.length > 0) {
+        const currentNode = queue.shift()!; // Dequeue
+        traversalOrder.push(currentNode);
+
+        const neighbors = graph[currentNode] || [];
+        for (const neighbor of neighbors) {
+            if (!visited.has(neighbor)) {
+                visited.add(neighbor);
+                queue.push(neighbor); // Enqueue
+            }
+        }
+    }
+    
+    return traversalOrder;
+}
+
+// const graphTS: Record&lt;string, string[]&gt; = {
+//     'A': ['B', 'C'],
+//     'B': ['D'],
+//     'C': [],
+//     'D': []
+// };
+// console.log(bfsTS(graphTS, 'A')); // ['A', 'B', 'C', 'D']
+</code></pre>
+    
+    <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;queue&gt;
+#include &lt;map&gt;
+#include &lt;set&gt;
+
+std::vector&lt;char&gt; bfs(const std::map&lt;char, std::vector&lt;char&gt;&gt;& graph, char startNode) {
+    if (graph.find(startNode) == graph.end()) {
+        return {};
+    }
+
+    std::set&lt;char&gt; visited;
+    std::queue&lt;char&gt; q;
+    std::vector&lt;char&gt; traversalOrder;
+
+    visited.insert(startNode);
+    q.push(startNode);
+
+    while (!q.empty()) {
+        char currentNode = q.front();
+        q.pop();
+        traversalOrder.push_back(currentNode);
+
+        auto it = graph.find(currentNode);
+        if (it != graph.end()) {
+            for (char neighbor : it->second) {
+                if (visited.find(neighbor) == visited.end()) {
+                    visited.insert(neighbor);
+                    q.push(neighbor);
+                }
+            }
+        }
+    }
+    
+    return traversalOrder;
+}
+
+// int main() {
+//     std::map&lt;char, std::vector&lt;char&gt;&gt; graph = {
+//         {'A', {'B', 'C'}},
+//         {'B', {'D'}},
+//         {'C', {}},
+//         {'D', {}}
+//     };
+//     std::vector&lt;char&gt; result = bfs(graph, 'A');
+//     for(char node : result) {
+//         std::cout << node << " "; // A B C D
+//     }
+//     std::cout << std::endl;
+// }
+</code></pre>
+
+    <pre data-lang="go"><code class="language-go">package main
+
+import "fmt"
+
+func bfs(graph map[string][]string, startNode string) []string {
+    if _, ok := graph[startNode]; !ok {
+        return nil
+    }
+
+    visited := make(map[string]bool)
+    queue := []string{startNode}
+    traversalOrder := []string{}
+
+    visited[startNode] = true
+
+    for len(queue) > 0 {
+        currentNode := queue[0]
+        queue = queue[1:] // Dequeue
+        traversalOrder = append(traversalOrder, currentNode)
+
+        for _, neighbor := range graph[currentNode] {
+            if !visited[neighbor] {
+                visited[neighbor] = true
+                queue = append(queue, neighbor) // Enqueue
+            }
+        }
+    }
+    
+    return traversalOrder
+}
+
+// func main() {
+//     graph := map[string][]string{
+//         "A": {"B", "C"},
+//         "B": {"D"},
+//         "C": {},
+//         "D": {},
+//     }
+//     fmt.Println(bfs(graph, "A")) // [A B C D]
+// }
+</code></pre>
+    
+    <pre data-lang="d"><code class="language-d">import std.stdio;
+import std.collections;
+
+string[] bfs(string[][string] graph, string startNode) {
+    if (startNode !in graph) {
+        return [];
+    }
+
+    bool[string] visited;
+    ArrayQueue!string queue;
+    string[] traversalOrder;
+
+    visited[startNode] = true;
+    queue.put(startNode);
+
+    while (!queue.empty) {
+        string currentNode = queue.get();
+        traversalOrder ~= currentNode;
+
+        if (auto neighbors = startNode in graph) {
+             foreach (neighbor; *neighbors) {
+                if (neighbor !in visited) {
+                    visited[neighbor] = true;
+                    queue.put(neighbor);
+                }
+            }
+        }
+    }
+    
+    return traversalOrder;
+}
+
+// void main() {
+//     auto graph = [
+//         "A": ["B", "C"],
+//         "B": ["D"],
+//         "C": [],
+//         "D": []
+//     ];
+//     writeln(bfs(graph, "A")); // ["A", "B", "C", "D"]
+// }
+</code></pre>
+</div>
+
+<div id="code-explanation-content"><div class="markdown-content">
+    <h3>Code Walkthrough</h3>
+    <p>The implementation of <code>BFS</code> is straightforward and relies on a <code>queue</code> and a way to track visited <code>nodes</code> to prevent infinite loops in graphs with cycles.</p>
+    <div class="explanation-fence">
+<ol>
+    <li><strong>Initialization:</strong>
+        <ul>
+            <li>A <code>queue</code> is created to hold the <code>nodes</code> that are waiting to be processed. The <code>startNode</code> is added to it.</li>
+            <li>A <code>visited</code> set (or hash map) is created to keep track of <code>nodes</code> that have already been enqueued. This is crucial to avoid processing the same <code>node</code> multiple times and getting stuck in cycles. The <code>startNode</code> is marked as visited.</li>
+            <li>An <code>traversalOrder</code> array is initialized to store the result.</li>
+        </ul>
+    </li>
+    <li><strong>Main Loop:</strong> The loop continues as long as the <code>queue</code> is not empty.
+        <ul>
+            <li><strong>Dequeue:</strong> The <code>currentNode</code> is removed from the front of the <code>queue</code>.</li>
+            <li><strong>Process:</strong> The <code>currentNode</code> is added to the <code>traversalOrder</code>.</li>
+            <li><strong>Explore Neighbors:</strong> The algorithm iterates through the neighbors of the <code>currentNode</code>. For each <code>neighbor</code>:
+                <ul>
+                    <li>It checks if the <code>neighbor</code> has already been <code>visited</code>.</li>
+                    <li>If not, the <code>neighbor</code> is marked as <code>visited</code> and enqueued.</li>
+                </ul>
+            </li>
+        </ul>
+    </li>
+    <li><strong>Return:</strong> Once the <code>queue</code> is empty, it means all reachable <code>nodes</code> have been visited, and the <code>traversalOrder</code> is returned.</li>
+</ol>
+    </div></div>
+</div>
+
+<div id="application-content"><div class="markdown-content">
+    <h3>Application</h3>
+    <p><code>BFS</code> is a fundamental algorithm with a wide range of applications in computer science and graph theory.</p>
+    <ul>
+        <li><strong>Shortest Path in Unweighted Graphs:</strong> It is the standard algorithm for finding the shortest path from a source <code>node</code> to all other <code>nodes</code> in an unweighted graph. The first time <code>BFS</code> visits a <code>node</code>, it does so via the shortest possible path.</li>
+        <li><strong>Network Broadcasting:</strong> Simulating the broadcast of a message in a network to all connected devices.</li>
+        <li><strong>Web Crawlers (Crawling):</strong> Used to discover all pages on a website starting from a homepage. Each page is a <code>node</code>, and hyperlinks are edges.</li>
+        <li><strong>Finding Connected Components:</strong> By running <code>BFS</code> starting from an arbitrary <code>node</code>, you can find all <code>nodes</code> in its connected component. Repeating this for all unvisited <code>nodes</code> finds all components.</li>
+        <li><strong>Solving Puzzles:</strong> Finding the shortest number of steps to solve puzzles like Rubik's Cubes or finding the shortest path in a maze.</li>
+    </ul>
+    </p>
+</div></div>

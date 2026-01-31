@@ -1,0 +1,105 @@
+<div id="explanation-content">
+    <p>Imagine a line at a ticket counter. The first person to get in line is the first person to get served. A Queue data structure works exactly like this, following the <code>FIFO</code> (<code>First-In, First-Out</code>) principle.</p>
+    <p>It's used for any situation where you need to process things in the order they were received, like a print queue or a server handling requests.</p>
+</div>
+
+<div id="expanded-explanation-content">
+    <h3>How it Works (Expanded)</h3>
+    <p>A Queue is an abstract data type (ADT) that maintains a collection of elements. It has two primary operations:</p>
+    <ol>
+        <li><strong><code>Enqueue</code>:</strong> Adds an element to the back (or '<code>tail</code>') of the queue.</li>
+        <li><strong><code>Dequeue</code>:</strong> Removes and returns the element from the front (or '<code>head</code>') of the queue.</li>
+    </ol>
+    <p>The <code>FIFO</code> principle means the first element added is always the first one to be removed.</p>
+    <div class="explanation-fence">
+ FRONT                                      BACK
+   |                                          |
+   v                                          v
+   [ A ] -> [ B ] -> [ C ] -> [ D ]
+    </div>
+    <p>When you 'enqueue' E, it goes after D. When you 'dequeue', A comes off first, then B, and so on.</p>
+    <p><strong>Common Uses:</strong> Handling requests on a server, print job scheduling, breadth-first search in graphs, message queuing systems.</p>
+    <p><strong>Time Complexity:</strong> <code>Enqueue</code> and <code>Dequeue</code> should be <code>O(1)</code> if implemented efficiently (e.g., using an array that resizes, or a linked list).</p>
+</div>
+
+<div id="code-implementations">
+    <pre data-lang="python"><code class="language-python">from collections import deque
+
+# Python's deque is an efficient double-ended queue.
+my_queue = deque()
+
+# Enqueue (O(1))
+my_queue.append('A')
+my_queue.append('B')
+my_queue.append('C')
+print("Queue after enqueues:", my_queue)
+
+# Dequeue (O(1))
+front_item = my_queue.popleft()
+print("Dequeued item:", front_item)
+print("Queue after dequeue:", my_queue)
+
+# Peek (O(1))
+if my_queue:
+    print("Front item (peek):", my_queue[0])
+</code></pre>
+
+    <pre data-lang="javascript"><code class="language-javascript">// JavaScript's Array can be used as a queue, but shift() can be O(n).
+// For high-performance queues, a linked list is better.
+let myQueue = [];
+
+// Enqueue (O(1))
+myQueue.push('A');
+myQueue.push('B');
+myQueue.push('C');
+console.log("Queue after enqueues:", myQueue); // Output: ["A", "B", "C"]
+
+// Dequeue (O(n) for Array, O(1) for Linked List)
+let frontItem = myQueue.shift();
+console.log("Dequeued item:", frontItem); // Output: A
+console.log("Queue after dequeue:", myQueue); // Output: ["B", "C"]
+
+// Peek (O(1))
+if (myQueue.length > 0) {
+    console.log("Front item (peek):", myQueue[0]); // Output: B
+}
+</code></pre>
+
+    <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;queue&gt; // Standard Library Queue
+
+int main() {
+    std::queue&lt;char&gt; myQueue;
+
+    // Enqueue (O(1))
+    myQueue.push('A');
+    myQueue.push('B');
+    myQueue.push('C');
+    std::cout &lt;&lt; "Queue size after enqueues: " &lt;&lt; myQueue.size() &lt;&lt; std::endl;
+
+    // Dequeue (O(1))
+    char frontItem = myQueue.front(); // Get front element
+    myQueue.pop();                 // Remove front element
+    std::cout &lt;&lt; "Dequeued item: " &lt;&lt; frontItem &lt;&lt; std::endl;
+    std::cout &lt;&lt; "Queue size after dequeue: " &lt;&lt; myQueue.size() &lt;&lt; std::endl;
+
+    // Peek (O(1))
+    if (!myQueue.empty()) {
+        std::cout &lt;&lt; "Front item (peek): " &lt;&lt; myQueue.front() &lt;&lt; std::endl;
+    }
+    return 0;
+}
+</code></pre>
+</div>
+
+<div id="code-explanation-content"><div class="markdown-content">
+    <h3>Code Walkthrough</h3>
+    <p>Implementing a queue efficiently requires care. A standard array/list is okay for <code>enqueue</code>, but removing from the start is often slow.</p>
+    <div class="explanation-fence">
+<strong>Python:</strong> Uses <code>collections.deque</code>, a double-ended queue optimized for fast <code>appends</code> and <code>pops</code> from both ends. <code>append()</code> <code>enqueues</code> and <code>popleft()</code> <code>dequeues</code>, both in <code>O(1)</code> time.
+<br><br>
+<strong>JavaScript:</strong> Using <code>push()</code> to <code>enqueue</code> is <code>O(1)</code>, but using <code>shift()</code> to <code>dequeue</code> is an <code>O(n)</code> operation because all other elements must be shifted. For performance-critical applications, a custom linked-list based queue is preferred.
+<br><br>
+<strong>C++:</strong> The STL <code>std::queue</code> is an adapter that uses a <code>std::deque</code> by default. <code>push()</code> <code>enqueues</code>, <code>pop()</code> <code>dequeues</code>, and <code>front()</code> peeks at the first item. All are <code>O(1)</code> operations.
+    </div></div>
+</div>

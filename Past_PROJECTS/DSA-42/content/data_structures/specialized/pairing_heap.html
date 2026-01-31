@@ -1,0 +1,833 @@
+<div id="explanation-content">
+    <p>A <code>Pairing Heap</code> is a simple, efficient, and highly practical type of <code>mergeable heap</code> data structure. It supports operations like <code>insert</code>, <code>extract-min</code>, <code>decrease-key</code>, and <code>merge</code> with excellent amortized time complexities, often outperforming <code>Fibonacci Heaps</code> in practice despite having worse theoretical worst-case bounds for some operations.</p>
+    <p>Its "<code>pairing</code>" property comes from how it combines sub-heaps during its <code>merge</code> operation, resulting in a relatively flat tree structure that is easy to implement.</p>
+</div>
+
+<div id="expanded-explanation-content">
+    <h3>How it Works (Expanded)</h3>
+    <p>A <code>Pairing Heap</code> is a <code>min-heap</code> (or <code>max-heap</code>) ordered <code>multi-way tree</code>. Each <code>node</code> contains a <code>key</code> and a <code>list</code> of its children. There are no explicit <code>rank</code> or <code>npl (null path length)</code> values. Its efficiency comes from a specific <code>merge</code> operation that is used as a building block for most other operations.</p>
+    <div class="explanation-fence">
+Conceptual Pairing Heap Node:
+
+      (Key=10)
+     / | \
+   (20)(30)(40) (Children list)
+    </div>
+    <p>The <code>merge</code> operation is central to a <code>Pairing Heap</code>. To <code>merge</code> two heaps <code>H1</code> and <code>H2</code>:</p>
+    <ol>
+        <li>If either <code>H1</code> or <code>H2</code> is <code>null</code>, return the other.</li>
+        <li>Assume <code>H1.key <= H2.key</code> (swap if not).</li>
+        <li>Make <code>H2</code> a child of <code>H1</code> by adding <code>H2</code> to <code>H1</code>'s <code>list</code> of children. This is typically done by adding <code>H2</code> as the new first child of <code>H1</code>, and linking it to <code>H1</code>'s existing first child.</li>
+        <li>Return <code>H1</code> as the <code>root</code> of the new <code>heap</code>.</li>
+    </ol>
+    <p>This simple <code>merge</code> operation (<code>O(1)</code>) is then used for other, more complex operations:</p>
+    <p><strong>Operations:</strong></p>
+    <ul>
+        <li><strong><code>Insert</code>:</strong> To <code>insert</code> a new <code>element</code>, create a new <code>heap</code> with just that <code>element</code> and <code>merge</code> it with the main <code>heap</code>. Amortized <code>O(1)</code>.</li>
+        <li><strong><code>Find-Min</code>:</strong> The <code>minimum element</code> is always at the <code>root</code>. <code>O(1)</code>.</li>
+        <li><strong><code>Extract-Min</code>:</strong>
+            <ol>
+                <li>Remove the <code>root</code> (the <code>min element</code>).</li>
+                <li>The <code>root</code>'s children now form a <code>list</code> of separate <code>heaps</code>.</li>
+                <li>These children are then <code>merged</code> using a two-pass approach:
+                    <ul>
+                        <li><strong>First Pass:</strong> From <code>left to right</code>, <code>merge</code> children into pairs (e.g., child1 with child2, child3 with child4, etc.). This creates a new <code>list</code> of merged <code>heaps</code>.</li>
+                        <li><strong>Second Pass:</strong> From <code>right to left</code>, <code>merge</code> the <code>heaps</code> created in the first pass into a single <code>heap</code>.</li>
+                    </ul>
+                </li>
+            </ol>
+            Amortized <code>O(log N)</code>.
+        </li>
+        <li><strong><code>Decrease-Key</code>:</strong>
+            <ol>
+                <li>Decrease the <code>key</code> of a specific <code>node</code>.</li>
+                <li>If the new <code>key</code> is smaller than its <code>parent</code>'s <code>key</code>, cut the <code>node</code> from its <code>parent</code> and <code>merge</code> it with the <code>root</code> of the main <code>heap</code>.</li>
+            </ol>
+            Amortized <code>O(log N)</code>.
+        </li>
+    </ul>
+    <p><strong>Time Complexity:</strong> Amortized <code>O(1)</code> for <code>insert</code>, <code>find-min</code>, and <code>merge</code>. Amortized <code>O(log N)</code> for <code>extract-min</code> and <code>decrease-key</code>.</p>
+    <p><strong>Space Complexity:</strong> <code>O(N)</code> to store the <code>nodes</code>.</p>
+</div>
+
+<div id="code-implementations">
+    <pre data-lang="python"><code class="language-python">class PairingNode:
+    def __init__(self, key):
+        self.key = key
+        self.child = None    # Pointer to first child
+        self.sibling = None  # Pointer to next sibling (in child list)
+        self.prev = None     # Pointer to previous sibling/parent (for decrease-key)
+
+class PairingHeap:
+    def __init__(self):
+        self.root = None
+
+    def _merge_recursive(self, h1, h2):
+        if not h1:
+            return h2
+        if not h2:
+            return h1
+        
+        # Ensure h1.key <= h2.key (min-heap property)
+        if h1.key > h2.key:
+            h1, h2 = h2, h1
+        
+        # Make h2 a child of h1
+        h2.prev = h1
+        h2.sibling = h1.child
+        if h1.child:
+            h1.child.prev = h2
+        h1.child = h2
+        
+        return h1
+
+    def insert(self, key):
+        new_node = PairingNode(key)
+        self.root = self._merge_recursive(self.root, new_node)
+        return new_node # Return new_node for decrease_key reference
+
+    def extract_min(self):
+        if not self.root:
+            return None
+        
+        min_key = self.root.key
+        
+        # Merge children of the root
+        if self.root.child:
+            self._merge_pairs(self.root.child)
+        else:
+            new_root = None
+        
+        # Clear old root (in Python, GC handles it)
+        # self.root = None # For explicit deletion
+        
+        self.root = new_root
+        return min_key
+
+    def _merge_pairs(self, child_list_head):
+        if not child_list_head or not child_list_head.sibling:
+            return child_list_head
+        
+        # First pass: merge children in pairs
+        h1 = child_list_head
+        h2 = child_list_head.sibling
+        h3 = h2.sibling # Remaining list
+        
+        h1.prev = None
+        h2.prev = None
+        h1.sibling = None # Detach h1 from h2
+        h2.sibling = None # Detach h2 from h3 (if h3 exists) 
+        
+        return self._merge_recursive(self._merge_recursive(h1, h2), self._merge_pairs(h3))
+
+    def decrease_key(self, node, new_key):
+        if not node or new_key > node.key:
+            raise ValueError("New key is greater than current key or node is invalid.")
+        
+        node.key = new_key
+        # If node is not the root and its key is smaller than its parent's key
+        if node.prev: # node.prev could be parent or sibling
+            # Cut node from its parent/sibling list
+            if node.prev.child == node: # node is first child
+                node.prev.child = node.sibling
+            else: # node is a sibling
+                node.prev.sibling = node.sibling
+            if node.sibling:
+                node.sibling.prev = node.prev
+            
+            node.prev = None
+            node.sibling = None
+            
+            # Merge the cut node with the main heap
+            self.root = self._merge_recursive(self.root, node)
+
+    def find_min(self):
+        return self.root.key if self.root else None
+
+    def merge(self, other_heap):
+        self.root = self._merge_recursive(self.root, other_heap.root)
+        other_heap.root = None # Other heap is now empty
+
+# Example Usage:
+# ph = PairingHeap()
+# node1 = ph.insert(10)
+# node2 = ph.insert(30)
+# node3 = ph.insert(5) # min
+# node4 = ph.insert(20)
+
+# print("Min:", ph.find_min()) # 5
+# ph.decrease_key(node2, 2) # Change 30 to 2
+# print("Min after decrease_key (30->2):", ph.find_min()) # 2
+
+# extracted = ph.extract_min() # Extract 2
+# print("Extracted:", extracted) # 2
+# print("Min after extract:", ph.find_min()) # 5
+</code></pre>
+
+    <pre data-lang="javascript"><code class="language-javascript">class PairingNode {
+    constructor(key) {
+        this.key = key;
+        this.child = null;
+        this.sibling = null;
+        this.prev = null;
+    }
+}
+
+class PairingHeap {
+    constructor() {
+        this.root = null;
+    }
+
+    _mergeRecursive(h1, h2) {
+        if (!h1) return h2;
+        if (!h2) return h1;
+        
+        if (h1.key > h2.key) {
+            [h1, h2] = [h2, h1];
+        }
+        
+        h2.prev = h1;
+        h2.sibling = h1.child;
+        if (h1.child) {
+            h1.child.prev = h2;
+        }
+        h1.child = h2;
+        
+        return h1;
+    }
+
+    insert(key) {
+        const newNode = new PairingNode(key);
+        this.root = this._mergeRecursive(this.root, newNode);
+        return newNode;
+    }
+
+    extractMin() {
+        if (!this.root) {
+            return null;
+        }
+        
+        const minKey = this.root.key;
+        
+        if (this.root.child) {
+            this.root.child.prev = null;
+            this.root = this._mergePairs(this.root.child);
+        } else {
+            this.root = null;
+        }
+        
+        return minKey;
+    }
+
+    _mergePairs(childListHead) {
+        if (!childListHead || !childListHead.sibling) {
+            return childListHead;
+        }
+        
+        const h1 = childListHead;
+        const h2 = childListHead.sibling;
+        const h3 = h2.sibling;
+        
+        h1.prev = null;
+        h2.prev = null;
+        h1.sibling = null;
+        h2.sibling = null;
+        
+        return this._mergeRecursive(this._mergeRecursive(h1, h2), this._mergePairs(h3));
+    }
+
+    decreaseKey(node, newKey) {
+        if (!node || newKey > node.key) {
+            throw new Error("New key is greater than current key or node is invalid.");
+        }
+        
+        node.key = newKey;
+        if (node.prev) {
+            if (node.prev.child === node) {
+                node.prev.child = node.sibling;
+            } else {
+                node.prev.sibling = node.sibling;
+            }
+            if (node.sibling) {
+                node.sibling.prev = node.prev;
+            }
+            
+            node.prev = null;
+            node.sibling = null;
+            
+            this.root = this._mergeRecursive(this.root, node);
+        }
+    }
+
+    findMin() {
+        return this.root ? this.root.key : null;
+    }
+
+    merge(otherHeap) {
+        this.root = this._mergeRecursive(this.root, otherHeap.root);
+        otherHeap.root = null;
+    }
+}
+
+// const ph = new PairingHeap();
+// const node1 = ph.insert(10);
+// const node2 = ph.insert(30);
+// const node3 = ph.insert(5); // min
+// const node4 = ph.insert(20);
+
+// console.log("Min:", ph.findMin()); // 5
+// ph.decreaseKey(node2, 2); // Change 30 to 2
+// console.log("Min after decrease_key (30->2):", ph.findMin()); // 2
+
+// const extracted = ph.extractMin(); // Extract 2
+// console.log("Extracted:", extracted); // 2
+// console.log("Min after extract:", ph.findMin()); // 5
+</code></pre>
+    <pre data-lang="typescript"><code class="language-typescript">class PairingNodeTS {
+    public key: number;
+    public child: PairingNodeTS | null;
+    public sibling: PairingNodeTS | null;
+    public prev: PairingNodeTS | null;
+
+    constructor(key: number) {
+        this.key = key;
+        this.child = null;
+        this.sibling = null;
+        this.prev = null;
+    }
+}
+
+class PairingHeapTS {
+    public root: PairingNodeTS | null = null;
+
+    private _mergeRecursive(h1: PairingNodeTS | null, h2: PairingNodeTS | null): PairingNodeTS | null {
+        if (!h1) return h2;
+        if (!h2) return h1;
+        
+        if (h1.key > h2.key) {
+            [h1, h2] = [h2, h1];
+        }
+        
+        h2.prev = h1;
+        h2.sibling = h1.child;
+        if (h1.child) {
+            h1.child.prev = h2;
+        }
+        h1.child = h2;
+        
+        return h1;
+    }
+
+    public insert(key: number): PairingNodeTS {
+        const newNode = new PairingNodeTS(key);
+        this.root = this._mergeRecursive(this.root, newNode);
+        return newNode;
+    }
+
+    public extractMin(): number | null {
+        if (!this.root) {
+            return null;
+        }
+        
+        const minKey = this.root.key;
+        
+        if (this.root.child) {
+            this.root.child.prev = null;
+            this.root = this._mergePairs(this.root.child);
+        } else {
+            this.root = null;
+        }
+        
+        return minKey;
+    }
+
+    private _mergePairs(childListHead: PairingNodeTS | null): PairingNodeTS | null {
+        if (!childListHead || !childListHead.sibling) {
+            return childListHead;
+        }
+        
+        const h1 = childListHead;
+        const h2 = childListHead.sibling;
+        const h3 = h2.sibling;
+        
+        h1.prev = null;
+        h2.prev = null;
+        h1.sibling = null;
+        h2.sibling = null;
+        
+        return this._mergeRecursive(this._mergeRecursive(h1, h2), this._mergePairs(h3));
+    }
+
+    public decreaseKey(node: PairingNodeTS, newKey: number): void {
+        if (!node || newKey > node.key) {
+            throw new Error("New key is greater than current key or node is invalid.");
+        }
+        
+        node.key = newKey;
+        if (node.prev) {
+            if (node.prev.child === node) {
+                node.prev.child = node.sibling;
+            } else {
+                node.prev.sibling = node.sibling;
+            }
+            if (node.sibling) {
+                node.sibling.prev = node.prev;
+            }
+            
+            node.prev = null;
+            node.sibling = null;
+            
+            this.root = this._mergeRecursive(this.root, node);
+        }
+    }
+
+    public findMin(): number | null {
+        return this.root ? this.root.key : null;
+    }
+
+    public merge(otherHeap: PairingHeapTS): void {
+        this.root = this._mergeRecursive(this.root, otherHeap.root);
+        otherHeap.root = null;
+    }
+}
+
+// const phTS = new PairingHeapTS();
+// const node1TS = phTS.insert(10);
+// const node2TS = phTS.insert(30);
+// const node3TS = phTS.insert(5);
+// const node4TS = phTS.insert(20);
+
+// console.log("Min:", phTS.findMin()); // 5
+// phTS.decreaseKey(node2TS, 2); // Change 30 to 2
+// console.log("Min after decrease_key (30->2):", phTS.findMin()); // 2
+
+// const extractedTS = phTS.extractMin(); // Extract 2
+// console.log("Extracted:", extractedTS); // 2
+// console.log("Min after extract:", phTS.findMin()); // 5
+</code></pre>
+    <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;algorithm&gt;
+#include &lt;stdexcept&gt;
+
+class PairingNode {
+public:
+    int key;
+    PairingNode <em>child;
+    PairingNode </em>sibling;
+    PairingNode <em>prev;
+
+    PairingNode(int k) : key(k), child(nullptr), sibling(nullptr), prev(nullptr) {}
+};
+
+class PairingHeap {
+public:
+    PairingNode</em> root;
+
+    PairingHeap() : root(nullptr) {}
+
+    PairingNode<em> mergeRecursive(PairingNode</em> h1, PairingNode<em> h2) {
+        if (!h1) return h2;
+        if (!h2) return h1;
+
+        if (h1->key > h2->key) {
+            std::swap(h1, h2);
+        }
+
+        h2->prev = h1;
+        h2->sibling = h1->child;
+        if (h1->child) {
+            h1->child->prev = h2;
+        }
+        h1->child = h2;
+        
+        return h1;
+    }
+
+    PairingNode</em> mergePairs(PairingNode<em> child_list_head) {
+        if (!child_list_head || !child_list_head->sibling) {
+            return child_list_head;
+        }
+        
+        PairingNode</em> h1 = child_list_head;
+        PairingNode<em> h2 = child_list_head->sibling;
+        PairingNode</em> h3 = h2->sibling;
+        
+        h1->prev = nullptr;
+        h2->prev = nullptr;
+        h1->sibling = nullptr;
+        h2->sibling = nullptr;
+        
+        return mergeRecursive(mergeRecursive(h1, h2), mergePairs(h3));
+    }
+
+    PairingNode<em> insert(int key) {
+        PairingNode</em> newNode = new PairingNode(key);
+        root = mergeRecursive(root, newNode);
+        return newNode;
+    }
+
+    int extractMin() {
+        if (!root) {
+            throw std::runtime_error("Heap is empty");
+        }
+        
+        int minKey = root->key;
+        PairingNode<em> oldRoot = root;
+        
+        if (root->child) {
+            root->child->prev = nullptr;
+            root = mergePairs(root->child);
+        } else {
+            root = nullptr;
+        }
+        
+        delete oldRoot;
+        return minKey;
+    }
+
+    void decreaseKey(PairingNode</em> node, int newKey) {
+        if (!node || newKey > node->key) {
+            throw std::runtime_error("New key is greater than current key or node is invalid.");
+        }
+        
+        node->key = newKey;
+        if (node->prev) {
+            if (node->prev->child == node) {
+                node->prev->child = node->sibling;
+            } else {
+                node->prev->sibling = node->sibling;
+            }
+            if (node->sibling) {
+                node->sibling->prev = node->prev;
+            }
+            
+            node->prev = nullptr;
+            node->sibling = nullptr;
+            
+            root = mergeRecursive(root, node);
+        }
+    }
+
+    int findMin() {
+        if (!root) {
+            throw std::runtime_error("Heap is empty");
+        }
+        return root->key;
+    }
+
+    void merge(PairingHeap& other_heap) {
+        root = mergeRecursive(root, other_heap.root);
+        other_heap.root = nullptr;
+    }
+};
+
+// int main() {
+//     PairingHeap ph;
+//     PairingNode<em> node1 = ph.insert(10);
+//     PairingNode</em> node2 = ph.insert(30);
+//     PairingNode<em> node3 = ph.insert(5); // min
+//     PairingNode</em> node4 = ph.insert(20);
+
+//     std::cout << "Min: " << ph.findMin() << std::endl; // 5
+//     ph.decreaseKey(node2, 2); // Change 30 to 2
+//     std::cout << "Min after decrease_key (30->2): " << ph.findMin() << std::endl; // 2
+
+//     int extracted = ph.extractMin(); // Extract 2
+//     std::cout << "Extracted: " << extracted << std::endl; // 2
+//     std::cout << "Min after extract: " << ph.findMin() << std::endl; // 5
+//     return 0;
+// }
+</code></pre>
+    <pre data-lang="go"><code class="language-go">package main
+
+import (
+    "fmt"
+)
+
+type PairingNode struct {
+    Key     int
+    Child   <em>PairingNode
+    Sibling </em>PairingNode
+    Prev    <em>PairingNode
+}
+
+func NewPairingNode(key int) </em>PairingNode {
+    return &PairingNode{Key: key}
+}
+
+type PairingHeap struct {
+    Root <em>PairingNode
+}
+
+func (ph </em>PairingHeap) mergeRecursive(h1, h2 <em>PairingNode) </em>PairingNode {
+    if h1 == nil {
+        return h2
+    }
+    if h2 == nil {
+        return h1
+    }
+
+    if h1.Key > h2.Key {
+        h1, h2 = h2, h1
+    }
+
+    h2.Prev = h1
+    h2.Sibling = h1.Child
+    if h1.Child != nil {
+        h1.Child.Prev = h2
+    }
+    h1.Child = h2
+
+    return h1
+}
+
+func (ph <em>PairingHeap) Insert(key int) </em>PairingNode {
+    newNode := NewPairingNode(key)
+    ph.Root = ph.mergeRecursive(ph.Root, newNode)
+    return newNode
+}
+
+func (ph <em>PairingHeap) ExtractMin() (int, error) {
+    if ph.Root == nil {
+        return 0, fmt.Errorf("heap is empty")
+    }
+
+    minKey := ph.Root.Key
+    
+    if ph.Root.Child != nil {
+        ph.Root.Child.Prev = nil
+        ph.Root = ph.mergePairs(ph.Root.Child)
+    } else {
+        ph.Root = nil
+    }
+
+    return minKey, nil
+}
+
+func (ph </em>PairingHeap) mergePairs(childListHead <em>PairingNode) </em>PairingNode {
+    if childListHead == nil || childListHead.Sibling == nil {
+        return childListHead
+    }
+
+    h1 := childListHead
+    h2 := childListHead.Sibling
+    h3 := h2.Sibling
+
+    h1.Prev = nil
+    h2.Prev = nil
+    h1.Sibling = nil
+    h2.Sibling = nil
+
+    return ph.mergeRecursive(ph.mergeRecursive(h1, h2), ph.mergePairs(h3))
+}
+
+func (ph <em>PairingHeap) DecreaseKey(node </em>PairingNode, newKey int) error {
+    if node == nil || newKey > node.Key {
+        return fmt.Errorf("new key is greater than current key or node is invalid")
+    }
+
+    node.Key = newKey
+    if node.Prev != nil {
+        if node.Prev.Child == node {
+            node.Prev.Child = node.Sibling
+        } else {
+            node.Prev.Sibling = node.Sibling
+        }
+        if node.Sibling != nil {
+            node.Sibling.Prev = node.Prev
+        }
+
+        node.Prev = nil
+        node.Sibling = nil
+
+        ph.Root = ph.mergeRecursive(ph.Root, node)
+    }
+    return nil
+}
+
+func (ph <em>PairingHeap) FindMin() (int, error) {
+    if ph.Root == nil {
+        return 0, fmt.Errorf("heap is empty")
+    }
+    return ph.Root.Key, nil
+}
+
+func (ph </em>PairingHeap) Merge(otherHeap *PairingHeap) {
+    ph.Root = ph.mergeRecursive(ph.Root, otherHeap.Root)
+    otherHeap.Root = nil
+}
+
+// func main() {
+//     ph := &PairingHeap{}
+//     node1 := ph.Insert(10)
+//     node2 := ph.Insert(30)
+//     node3 := ph.Insert(5) // min
+//     node4 := ph.Insert(20)
+
+//     minVal, _ := ph.FindMin()
+//     fmt.Println("Min:", minVal) // 5
+//     ph.DecreaseKey(node2, 2) // Change 30 to 2
+//     minVal, _ = ph.FindMin()
+//     fmt.Println("Min after DecreaseKey (30->2):", minVal) // 2
+
+//     extracted, _ := ph.ExtractMin() // Extract 2
+//     fmt.Println("Extracted:", extracted) // 2
+//     minVal, _ = ph.FindMin()
+//     fmt.Println("Min after extract:", minVal) // 5
+// }
+</code></pre>
+    <pre data-lang="d"><code class="language-d">import std.stdio;
+import std.algorithm;
+import std.conv;
+import std.string;
+
+class PairingNode {
+    int key;
+    PairingNode child;
+    PairingNode sibling;
+    PairingNode prev;
+
+    this(int k) {
+        key = k;
+        child = null;
+        sibling = null;
+        prev = null;
+    }
+}
+
+class PairingHeap {
+    PairingNode root;
+
+    this() {
+        root = null;
+    }
+
+private:
+    PairingNode mergeRecursive(PairingNode h1, PairingNode h2) {
+        if (h1 is null) return h2;
+        if (h2 is null) return h1;
+        
+        if (h1.key > h2.key) {
+            swap(h1, h2);
+        }
+        
+        h2.prev = h1;
+        h2.sibling = h1.child;
+        if (h1.child !is null) {
+            h1.child.prev = h2;
+        }
+        h1.child = h2;
+        
+        return h1;
+    }
+
+    PairingNode mergePairs(PairingNode child_list_head) {
+        if (child_list_head is null || child_list_head.sibling is null) {
+            return child_list_head;
+        }
+        
+        PairingNode h1 = child_list_head;
+        PairingNode h2 = child_list_head.sibling;
+        PairingNode h3 = h2.sibling;
+        
+        h1.prev = null;
+        h2.prev = null;
+        h1.sibling = null;
+        h2.sibling = null;
+        
+        return mergeRecursive(mergeRecursive(h1, h2), mergePairs(h3));
+    }
+
+public:
+    PairingNode insert(int key) {
+        PairingNode new_node = new PairingNode(key);
+        root = mergeRecursive(root, new_node);
+        return new_node;
+    }
+
+    int extractMin() {
+        if (root is null) {
+            throw new Exception("Heap is empty");
+        }
+        
+        int min_key = root.key;
+        PairingNode old_root = root;
+        
+        if (root.child !is null) {
+            root.child.prev = null;
+            root = mergePairs(root.child);
+        } else {
+            root = null;
+        }
+        
+        return min_key;
+    }
+
+    void decreaseKey(PairingNode node, int new_key) {
+        if (node is null || new_key > node.key) {
+            throw new Exception("New key is greater than current key or node is invalid.");
+        }
+        
+        node.key = new_key;
+        if (node.prev !is null) {
+            if (node.prev.child is node) {
+                node.prev.child = node.sibling;
+            } else {
+                node.prev.sibling = node.sibling;
+            }
+            if (node.sibling !is null) {
+                node.sibling.prev = node.prev;
+            }
+            
+            node.prev = null;
+            node.sibling = null;
+            
+            root = mergeRecursive(root, node);
+        }
+    }
+
+    int findMin() {
+        if (root is null) {
+            throw new Exception("Heap is empty");
+        }
+        return root.key;
+    }
+
+    void merge(PairingHeap other_heap) {
+        root = mergeRecursive(root, other_heap.root);
+        other_heap.root = null;
+    }
+}
+
+// void main() {
+//     auto ph = new PairingHeap();
+//     auto node1 = ph.insert(10);
+//     auto node2 = ph.insert(30);
+//     auto node3 = ph.insert(5); // min
+//     auto node4 = ph.insert(20);
+
+//     writefln("Min: %s", ph.findMin()); // 5
+//     ph.decreaseKey(node2, 2); // Change 30 to 2
+//     writefln("Min after decrease_key (30->2): %s", ph.findMin()); // 2
+
+//     auto extracted = ph.extractMin(); // Extract 2
+//     writefln("Extracted: %s", extracted); // 2
+//     writefln("Min after extract: %s", ph.findMin()); // 5
+// }
+</code></pre>
+    </div>
+    <p><code>Pairing Heaps</code> are often preferred over <code>Fibonacci Heaps</code> in practice because their simpler structure leads to smaller constant factors and often better real-world performance, despite <code>Fibonacci Heaps</code> having superior theoretical worst-case bounds for some operations.</p>
+</div>
+
+<div id="application-content"><div class="markdown-content">
+    <h3>Application</h3>
+    <p>Pairing Heaps are excellent general-purpose mergeable heaps, offering a good balance of theoretical efficiency and practical performance. They are particularly suited for applications requiring frequent <code>decrease-key</code> and <code>merge</code> operations.
+    <ul>
+        <li><strong>Graph Algorithms:</strong> Used in efficient implementations of <code>Dijkstra's shortest path algorithm</code> (especially with dense graphs) and <code>Prim's minimum spanning tree algorithm</code>, where <code>decrease-key</code> is a bottleneck for <code>binary heaps</code>.</li>
+        <li><strong>Event-Driven Simulations:</strong> Managing events with varying priorities, where events might be dynamically re-prioritized or event queues merged.</li>
+        <li><strong>Network Routing Protocols:</strong> Optimizing routing tables that involve dynamically changing costs and merging routing information.</li>
+        <li><strong>Anywhere efficient mergeable <code>priority queues</code> are needed:</strong> Providing a strong alternative to <code>Fibonacci Heaps</code> when practical speed matters more than the absolute theoretical worst-case guarantee.</li>
+    </ul>
+    </p>
+</div></div>

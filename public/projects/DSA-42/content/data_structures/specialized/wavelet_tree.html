@@ -1,0 +1,551 @@
+<div id="explanation-content">
+    <p>A <code>Wavelet Tree</code> is a compact data structure used to represent a sequence of symbols from a finite alphabet, enabling efficient solutions to a variety of string and sequence-related queries. It essentially stores a compressed representation of the sequence, allowing for fast <code>rank</code>, <code>select</code>, and <code>range</code> queries.</p>
+    <p>It's particularly useful in bioinformatics and text processing, where large sequences need to be analyzed efficiently. It can be seen as an extension of the idea of storing a <code>bit vector</code> to represent a sequence, but with a recursive structure that handles larger alphabets.</p>
+</div>
+
+<div id="expanded-explanation-content">
+    <h3>How it Works (Expanded)</h3>
+    <p>A <code>Wavelet Tree</code> is built over a sequence of symbols from an alphabet. The root <code>node</code> of the <code>tree</code> represents the entire sequence and the entire alphabet. It splits the alphabet into two halves and creates a <code>bit vector</code> where each bit indicates whether the corresponding symbol in the sequence belongs to the <code>left</code> or <code>right</code> half of the alphabet. The <code>tree</code> is then built recursively on these two sub-sequences.</p>
+    <div class="explanation-fence">
+Example: Build a Wavelet Tree for S = "banana" (alphabet {a,b,n})
+
+- Root (alphabet {a,b,n}):
+  - Splits alphabet into {a} (left) and {b,n} (right)
+  - Bit vector: b->1, a->0, n->1, a->0, n->1, a->0 -> [1,0,1,0,1,0]
+  - Left sub-sequence: [a,a,a]
+  - Right sub-sequence: [b,n,n]
+- Left child (for {a,a,a}) -> base case, leaf
+- Right child (for {b,n,n}):
+  - Splits alphabet into {b} (left) and {n} (right)
+  - Bit vector: b->0, n->1, n->1 -> [0,1,1]
+  - ... and so on.
+    </div>
+    <p>This recursive structure allows operations to be performed by traversing the <code>tree</code> from the <code>root</code>. Each <code>node</code>'s <code>bit vector</code> is often augmented with a data structure that supports fast <code>rank</code> queries (e.g., how many 1s are in the first <code>i</code> bits).</p>
+    <p><strong>Operations:</strong></p>
+    <ul>
+        <li><strong><code>Access(index)</code>:</strong> Returns the symbol at a given <code>index</code>. Traverse down the <code>tree</code>, using <code>rank</code> queries on <code>bit vectors</code> to decide which child to go to. <code>O(log |Σ|)</code> where <code>|Σ|</code> is the alphabet size.</li>
+        <li><strong><code>Rank(symbol, index)</code>:</strong> Counts how many times a <code>symbol</code> appears in the prefix of the sequence up to <code>index</code>. Traverse down the <code>tree</code>, updating the <code>index</code> based on <code>rank</code> queries on <code>bit vectors</code>. <code>O(log |Σ|)</code>.</li>
+        <li><strong><code>Select(symbol, k)</code>:</strong> Finds the <code>index</code> of the <code>k</code>-th occurrence of a <code>symbol</code>. Traverse up the <code>tree</code> from the <code>leaf</code> corresponding to the <code>symbol</code>, using <code>select</code> queries on <code>bit vectors</code> to reconstruct the <code>index</code>. <code>O(log |Σ|)</code>.</li>
+    </ul>
+    <p><strong>Time Complexity:</strong> Construction takes <code>O(N log |Σ|)</code>. <code>Access</code>, <code>rank</code>, and <code>select</code> queries take <code>O(log |Σ|)</code>.</p>
+    <p><strong>Space Complexity:</strong> <code>O(N log |Σ|)</code> to store the <code>bit vectors</code>. Can be reduced to <code>O(N)</code> with a <code>pointer-based</code> implementation.</p>
+</div>
+
+<div id="code-implementations">
+    <pre data-lang="python"><code class="language-python"># Conceptual Wavelet Tree in Python (simplified, full implementation is very complex)
+# This focuses on the Node structure and recursive build concept.
+
+class WaveletTreeNode:
+    def __init__(self, alphabet, bit_vector):
+        self.alphabet = alphabet
+        self.bit_vector = bit_vector
+        self.left_child = None
+        self.right_child = None
+        # In a real implementation, bit_vector would be a structure supporting fast rank/select.
+
+class WaveletTree:
+    def __init__(self):
+        self.root = None
+        self.alphabet = []
+
+    def build(self, sequence):
+        self.alphabet = sorted(list(set(sequence)))
+        if not self.alphabet:
+            return
+        
+        self.root = self._build_recursive(sequence, self.alphabet)
+
+    def _build_recursive(self, sequence, alphabet):
+        if not sequence or not alphabet or len(alphabet) == 1:
+            return None # Leaf node (or single-symbol sequence)
+
+        # Split alphabet
+        mid = len(alphabet) // 2
+        left_alphabet = alphabet[:mid]
+        right_alphabet = alphabet[mid:]
+        
+        # Create bit vector and sub-sequences
+        bit_vector = []
+        left_sequence = []
+        right_sequence = []
+        
+        for symbol in sequence:
+            if symbol in left_alphabet:
+                bit_vector.append(0)
+                left_sequence.append(symbol)
+            else:
+                bit_vector.append(1)
+                right_sequence.append(symbol)
+
+        node = WaveletTreeNode(alphabet, bit_vector)
+        node.left_child = self._build_recursive(left_sequence, left_alphabet)
+        node.right_child = self._build_recursive(right_sequence, right_alphabet)
+        return node
+    
+    # rank, select, and access methods are complex and omitted for this conceptual demo.
+    # They would involve traversing the tree and using rank/select on bit vectors.
+
+# Example Usage:
+# wt = WaveletTree()
+# wt.build("banana")
+# print("Root alphabet:", wt.root.alphabet)
+# print("Root bit vector:", wt.root.bit_vector)
+
+# # Expected root alphabet: ['a', 'b', 'n']
+# # Expected mid split: left={'a'}, right={'b','n'}
+# # 'b'->1, 'a'->0, 'n'->1, 'a'->0, 'n'->1, 'a'->0
+# # Expected root bit vector: [1, 0, 1, 0, 1, 0]
+</code></pre>
+
+    <pre data-lang="javascript"><code class="language-javascript">class WaveletTreeNode {
+    constructor(alphabet, bitVector) {
+        this.alphabet = alphabet;
+        this.bitVector = bitVector;
+        this.leftChild = null;
+        this.rightChild = null;
+        // In a real implementation, bitVector would be a structure supporting fast rank/select.
+    }
+}
+
+class WaveletTree {
+    constructor() {
+        this.root = null;
+        this.alphabet = [];
+    }
+
+    build(sequence) {
+        this.alphabet = [...new Set(sequence)].sort();
+        if (this.alphabet.length === 0) {
+            return;
+        }
+        
+        this.root = this._buildRecursive(sequence, this.alphabet);
+    }
+
+    _buildRecursive(sequence, alphabet) {
+        if (!sequence || sequence.length === 0 || alphabet.length <= 1) {
+            return null; // Leaf node (or single-symbol sequence)
+        }
+
+        // Split alphabet
+        const mid = Math.floor(alphabet.length / 2);
+        const leftAlphabet = alphabet.slice(0, mid);
+        const rightAlphabet = alphabet.slice(mid);
+        const leftAlphabetSet = new Set(leftAlphabet);
+        
+        // Create bit vector and sub-sequences
+        const bitVector = [];
+        const leftSequence = [];
+        const rightSequence = [];
+        
+        for (const symbol of sequence) {
+            if (leftAlphabetSet.has(symbol)) {
+                bitVector.push(0);
+                leftSequence.push(symbol);
+            } else {
+                bitVector.push(1);
+                rightSequence.push(symbol);
+            }
+        }
+
+        const node = new WaveletTreeNode(alphabet, bitVector);
+        node.leftChild = this._buildRecursive(leftSequence, leftAlphabet);
+        node.rightChild = this._buildRecursive(rightSequence, rightAlphabet);
+        return node;
+    }
+    
+    // rank, select, and access methods are complex and omitted for this conceptual demo.
+}
+
+// const wt = new WaveletTree();
+// wt.build("banana");
+// console.log("Root alphabet:", wt.root.alphabet);
+// console.log("Root bit vector:", wt.root.bitVector);
+
+// // Expected root alphabet: ['a', 'b', 'n']
+// // Expected mid split: left={'a'}, right={'b','n'}
+// // 'b'->1, 'a'->0, 'n'->1, 'a'->0, 'n'->1, 'a'->0
+// // Expected root bit vector: [1, 0, 1, 0, 1, 0]
+</code></pre>
+
+    <pre data-lang="typescript"><code class="language-typescript">class WaveletTreeNodeTS {
+    public alphabet: string[];
+    public bitVector: number[];
+    public leftChild: WaveletTreeNodeTS | null;
+    public rightChild: WaveletTreeNodeTS | null;
+
+    constructor(alphabet: string[], bitVector: number[]) {
+        this.alphabet = alphabet;
+        this.bitVector = bitVector;
+        this.leftChild = null;
+        this.rightChild = null;
+    }
+}
+
+class WaveletTreeTS {
+    public root: WaveletTreeNodeTS | null = null;
+    public alphabet: string[] = [];
+
+    public build(sequence: string): void {
+        this.alphabet = [...new Set(sequence)].sort();
+        if (this.alphabet.length === 0) {
+            return;
+        }
+        
+        this.root = this._buildRecursive(sequence, this.alphabet);
+    }
+
+    private _buildRecursive(sequence: string, alphabet: string[]): WaveletTreeNodeTS | null {
+        if (!sequence || sequence.length === 0 || alphabet.length <= 1) {
+            return null; // Leaf node (or single-symbol sequence)
+        }
+
+        // Split alphabet
+        const mid = Math.floor(alphabet.length / 2);
+        const leftAlphabet = alphabet.slice(0, mid);
+        const rightAlphabet = alphabet.slice(mid);
+        const leftAlphabetSet = new Set(leftAlphabet);
+        
+        // Create bit vector and sub-sequences
+        const bitVector: number[] = [];
+        let leftSequence = "";
+        let rightSequence = "";
+        
+        for (const symbol of sequence) {
+            if (leftAlphabetSet.has(symbol)) {
+                bitVector.push(0);
+                leftSequence += symbol;
+            } else {
+                bitVector.push(1);
+                rightSequence += symbol;
+            }
+        }
+
+        const node = new WaveletTreeNodeTS(alphabet, bitVector);
+        node.leftChild = this._buildRecursive(leftSequence, leftAlphabet);
+        node.rightChild = this._buildRecursive(rightSequence, rightAlphabet);
+        return node;
+    }
+    
+    // rank, select, and access methods are complex and omitted for this conceptual demo.
+}
+
+// const wtTS = new WaveletTreeTS();
+// wtTS.build("banana");
+// console.log("Root alphabet:", wtTS.root!.alphabet);
+// console.log("Root bit vector:", wtTS.root!.bitVector);
+</code></pre>
+    
+    <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+#include &lt;set&gt;
+#include &lt;algorithm&gt;
+#include &lt;map&gt;
+
+class WaveletTreeNode {
+public:
+    std::vector&lt;char&gt; alphabet;
+    std::vector&lt;bool&gt; bit_vector; // bool vector is space-efficient in C++
+    WaveletTreeNode<em> left_child;
+    WaveletTreeNode</em> right_child;
+
+    WaveletTreeNode(const std::vector&lt;char&gt;& alpha, const std::vector&lt;bool&gt;& bv)
+        : alphabet(alpha), bit_vector(bv), left_child(nullptr), right_child(nullptr) {}
+
+    ~WaveletTreeNode() {
+        delete left_child;
+        delete right_child;
+    }
+};
+
+class WaveletTree {
+public:
+    WaveletTreeNode<em> root;
+    std::vector&lt;char&gt; alphabet;
+
+    WaveletTree() : root(nullptr) {}
+    ~WaveletTree() {
+        delete root;
+    }
+
+    void build(const std::string& sequence) {
+        std::set&lt;char&gt; alpha_set(sequence.begin(), sequence.end());
+        alphabet.assign(alpha_set.begin(), alpha_set.end());
+        if (alphabet.empty()) {
+            return;
+        }
+        
+        root = _build_recursive(sequence, alphabet);
+    }
+
+private:
+    WaveletTreeNode</em> _build_recursive(const std::string& sequence, const std::vector&lt;char&gt;& current_alphabet) {
+        if (sequence.empty() || current_alphabet.size() <= 1) {
+            return nullptr;
+        }
+
+        // Split alphabet
+        int mid = current_alphabet.size() / 2;
+        std::vector&lt;char&gt; left_alphabet(current_alphabet.begin(), current_alphabet.begin() + mid);
+        std::vector&lt;char&gt; right_alphabet(current_alphabet.begin() + mid, current_alphabet.end());
+        std::set&lt;char&gt; left_alphabet_set(left_alphabet.begin(), left_alphabet.end());
+        
+        // Create bit vector and sub-sequences
+        std::vector&lt;bool&gt; bit_vector;
+        std::string left_sequence, right_sequence;
+        
+        for (char symbol : sequence) {
+            if (left_alphabet_set.count(symbol)) {
+                bit_vector.push_back(false); // 0
+                left_sequence += symbol;
+            } else {
+                bit_vector.push_back(true); // 1
+                right_sequence += symbol;
+            }
+        }
+
+        WaveletTreeNode<em> node = new WaveletTreeNode(current_alphabet, bit_vector);
+        node->left_child = _build_recursive(left_sequence, left_alphabet);
+        node->right_child = _build_recursive(right_sequence, right_alphabet);
+        return node;
+    }
+    
+    // rank, select, and access methods are complex and omitted for this conceptual demo.
+};
+
+// int main() {
+//     WaveletTree wt;
+//     wt.build("banana");
+//     if (wt.root) {
+//         std::cout << "Root bit vector: ";
+//         for (bool b : wt.root->bit_vector) {
+//             std::cout << b << " "; // 1 0 1 0 1 0
+//         }
+//         std::cout << std::endl;
+//     }
+//     return 0;
+// }
+</code></pre>
+    <pre data-lang="go"><code class="language-go">package main
+
+import (
+    "fmt"
+    "sort"
+    "strings"
+)
+
+type WaveletTreeNode struct {
+    Alphabet   []rune
+    BitVector  []bool
+    LeftChild  </em>WaveletTreeNode
+    RightChild <em>WaveletTreeNode
+}
+
+type WaveletTree struct {
+    Root     </em>WaveletTreeNode
+    Alphabet []rune
+}
+
+func (wt <em>WaveletTree) Build(sequence string) {
+    // Find unique characters for alphabet
+    charSet := make(map[rune]bool)
+    for _, char := range sequence {
+        charSet[char] = true
+    }
+    alphabet := make([]rune, 0, len(charSet))
+    for char := range charSet {
+        alphabet = append(alphabet, char)
+    }
+    sort.Slice(alphabet, func(i, j int) bool { return alphabet[i] < alphabet[j] })
+    wt.Alphabet = alphabet
+
+    if len(wt.Alphabet) == 0 {
+        return
+    }
+
+    wt.Root = wt.buildRecursive([]rune(sequence), wt.Alphabet)
+}
+
+func (wt </em>WaveletTree) buildRecursive(sequence []rune, alphabet []rune) *WaveletTreeNode {
+    if len(sequence) == 0 || len(alphabet) <= 1 {
+        return nil
+    }
+
+    // Split alphabet
+    mid := len(alphabet) / 2
+    leftAlphabet := alphabet[:mid]
+    rightAlphabet := alphabet[mid:]
+    leftAlphabetSet := make(map[rune]bool)
+    for _, char := range leftAlphabet {
+        leftAlphabetSet[char] = true
+    }
+
+    // Create bit vector and sub-sequences
+    bitVector := make([]bool, len(sequence))
+    leftSequence := []rune{}
+    rightSequence := []rune{}
+
+    for i, symbol := range sequence {
+        if leftAlphabetSet[symbol] {
+            bitVector[i] = false // 0
+            leftSequence = append(leftSequence, symbol)
+        } else {
+            bitVector[i] = true // 1
+            rightSequence = append(rightSequence, symbol)
+        }
+    }
+
+    node := &WaveletTreeNode{
+        Alphabet:   alphabet,
+        BitVector:  bitVector,
+    }
+    node.LeftChild = wt.buildRecursive(leftSequence, leftAlphabet)
+    node.RightChild = wt.buildRecursive(rightSequence, rightAlphabet)
+    return node
+}
+
+// func main() {
+//     wt := &WaveletTree{}
+//     wt.Build("banana")
+//     if wt.Root != nil {
+//         fmt.Println("Root bit vector:", wt.Root.BitVector)
+//         // Convert bool slice to int slice for easier display
+//         bitVectorInts := make([]int, len(wt.Root.BitVector))
+//         for i, b := range wt.Root.BitVector {
+//             if b {
+//                 bitVectorInts[i] = 1
+//             } else {
+//                 bitVectorInts[i] = 0
+//             }
+//         }
+//         fmt.Println("Root bit vector (as ints):", bitVectorInts) // [1 0 1 0 1 0]
+//     }
+// }
+</code></pre>
+    <pre data-lang="d"><code class="language-d">import std.stdio;
+import std.array;
+import std.algorithm;
+import std.container.array;
+import std.bitmanip; // For BitArray
+
+class WaveletTreeNode {
+    char[] alphabet;
+    BitArray bitVector;
+    WaveletTreeNode leftChild;
+    WaveletTreeNode rightChild;
+
+    this(char[] alpha, BitArray bv) {
+        this.alphabet = alpha;
+        this.bitVector = bv;
+        this.leftChild = null;
+        this.rightChild = null;
+    }
+}
+
+class WaveletTree {
+    WaveletTreeNode root;
+    char[] alphabet;
+
+    void build(string sequence) {
+        bool[char] charSet;
+        foreach (c; sequence) {
+            charSet[c] = true;
+        }
+        alphabet = charSet.keys.sort().array;
+
+        if (alphabet.length == 0) {
+            return;
+        }
+        
+        this.root = buildRecursive(sequence.dup, alphabet);
+    }
+
+private:
+    WaveletTreeNode buildRecursive(string sequence, char[] currentAlphabet) {
+        if (sequence.length == 0 || currentAlphabet.length <= 1) {
+            return null;
+        }
+
+        // Split alphabet
+        auto mid = currentAlphabet.length / 2;
+        auto leftAlphabet = currentAlphabet[0 .. mid];
+        auto rightAlphabet = currentAlphabet[mid .. $];
+        bool[char] leftAlphabetSet;
+        foreach (c; leftAlphabet) {
+            leftAlphabetSet[c] = true;
+        }
+        
+        // Create bit vector and sub-sequences
+        auto bitVector = BitArray(sequence.length);
+        string leftSequence, rightSequence;
+        
+        foreach (i, symbol; sequence) {
+            if (symbol in leftAlphabetSet) {
+                bitVector[i] = 0;
+                leftSequence ~= symbol;
+            } else {
+                bitVector[i] = 1;
+                rightSequence ~= symbol;
+            }
+        }
+
+        auto node = new WaveletTreeNode(currentAlphabet, bitVector);
+        node.leftChild = buildRecursive(leftSequence, leftAlphabet);
+        node.rightChild = buildRecursive(rightSequence, rightAlphabet);
+        return node;
+    }
+}
+
+// void main() {
+//     auto wt = new WaveletTree();
+//     wt.build("banana");
+//     if (wt.root !is null) {
+//         writefln("Root bit vector: %s", wt.root.bitVector); // 101010
+//     }
+// }
+</code></pre>
+</div>
+
+<div id="code-explanation-content"><div class="markdown-content">
+    <h3>Code Walkthrough</h3>
+    <p>A <code>Wavelet Tree</code> is built recursively. The provided conceptual code focuses on this recursive construction, which is the heart of the data structure.</p>
+    <div class="explanation-fence">
+<strong><code>WaveletTreeNode</code> Class:</strong> Represents a <code>node</code> in the <code>Wavelet Tree</code>.
+<ul>
+    <li><code>alphabet</code>: The subset of the alphabet this <code>node</code> is responsible for.</li>
+    <li><code>bit_vector</code>: A <code>list</code>/<code>vector</code> of bits, where <code>bit_vector[i]</code> is 0 if the <code>i</code>-th symbol in the sequence belongs to the <code>left</code> half of the alphabet, and 1 if it belongs to the <code>right</code> half.</li>
+    <li><code>left_child</code>, <code>right_child</code>: Pointers to child <code>WaveletTreeNode</code>s.</li>
+</ul>
+<br>
+<strong><code>WaveletTree</code> Class:</strong>
+<ul>
+    <li><code>root</code>: The <code>root node</code> of the <code>Wavelet Tree</code>.</li>
+    <li><code>alphabet</code>: The sorted, unique symbols from the original sequence.</li>
+    <li><strong><code>build(sequence)</code>:</strong> Initializes the alphabet and starts the recursive build process.</li>
+    <li><strong><code>_build_recursive(sequence, alphabet)</code>:</strong>
+        <ol>
+            <li>Handles the base case: if the sequence is empty or the alphabet has only one symbol, no further subdivision is needed, so return <code>null</code>.</li>
+            <li>Splits the current <code>alphabet</code> into two halves.</li>
+            <li>Creates a <code>bit_vector</code> by iterating through the current <code>sequence</code>. For each symbol, a 0 is appended if it belongs to the <code>left</code> half of the alphabet, and a 1 otherwise.</li>
+            <li>Simultaneously, two new subsequences (<code>left_sequence</code> and <code>right_sequence</code>) are created, containing the symbols corresponding to the 0s and 1s, respectively.</li>
+            <li>A new <code>WaveletTreeNode</code> is created with the current <code>alphabet</code> and the <code>bit_vector</code>.</li>
+            <li>Recursively calls <code>_build_recursive</code> for the <code>left_sequence</code> and <code>right_sequence</code> to create the children of the current <code>node</code>.</li>
+        </ol>
+    </li>
+</ul>
+    </div></div>
+    <p>A full-fledged implementation would replace the simple <code>bit_vector</code> array with a data structure that supports <code>O(1)</code> rank and select queries (like a bit vector with precomputed auxiliary tables), which is essential for achieving the <code>O(log |Σ|)</code> query performance.</p>
+</div>
+
+<div id="application-content"><div class="markdown-content">
+    <h3>Application</h3>
+    <p>Wavelet Trees are powerful data structures for compressing sequences while supporting fast queries. They are used in:
+    <ul>
+        <li><strong>Text Indexing and Search Engines:</strong> For <code>rank</code> (count occurrences of a character up to a position) and <code>select</code> (find the position of the k-th occurrence of a character) queries on large texts.</li>
+        <li><strong>Bioinformatics:</strong> For analyzing DNA and protein sequences, where rank/select operations are fundamental for many alignment and search algorithms.</li>
+        <li><strong>Data Compression:</strong> The bit vectors at each level can be compressed, leading to a compact representation of the original sequence.</li>
+        <li><strong>Computational Geometry:</strong> For solving certain problems on point grids.</li>
+    </ul>
+    </p>
+</div></div>

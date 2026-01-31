@@ -1,0 +1,216 @@
+<div id="explanation-content">
+    <p>Imagine organizing a massive library. You wouldn't put every book on a single, long shelf. Instead, you'd use a hierarchical system, like a card catalog, to quickly find what you're looking for. A Binary Search Tree (<code>BST</code>) works similarly, organizing data in a way that allows for efficient searching, insertion, and deletion.</p>
+    <p>It's a tree-like structure where each '<code>node</code>' has at most two children: a '<code>left</code>' child and a '<code>right</code>' child. The <code>key</code> property is that all values in the <code>left</code> subtree are less than the <code>node</code>'s <code>value</code>, and all values in the <code>right</code> subtree are greater.</p>
+</div>
+
+<div id="expanded-explanation-content">
+    <h3>How it Works (Expanded)</h3>
+    <p>A <code>BST</code> maintains elements in a sorted order, which is crucial for its performance. Here are the core rules:</p>
+    <ol>
+        <li>Each <code>node</code> has a <code>value</code>.</li>
+        <li>The <code>left</code> child's <code>value</code> (if it exists) is always less than the parent's <code>value</code>.</li>
+        <li>The <code>right</code> child's <code>value</code> (if it exists) is always greater than the parent's <code>value</code>.</li>
+    </ol>
+    <p>This recursive definition allows you to quickly navigate the tree:</p>
+    <div class="explanation-fence">
+    ( 10 )
+   /    \
+  ( 5 ) ( 15 )
+ / \   /  \
+( 2 )( 7 )( 12 )( 18 )
+    </div>
+    <p><strong>Searching:</strong> To find a <code>value</code>, start at the <code>root</code>. If the <code>value</code> is less than the current <code>node</code>'s <code>value</code>, go <code>left</code>; if greater, go <code>right</code>. Repeat until found or a <code>null</code> pointer is hit.</p>
+    <p><strong>Insertion:</strong> Similar to searching, but when you reach a <code>null</code> pointer, you insert the new <code>node</code> there.</p>
+    <p><strong>Deletion:</strong> This is the most complex operation, as it needs to maintain the <code>BST</code> property. Cases include deleting a leaf <code>node</code>, a <code>node</code> with one child, or a <code>node</code> with two children (requiring finding an in-order successor).</p>
+    <p><strong>Time Complexity:</strong> On average, search, insertion, and deletion are <code>O(log n)</code> (logarithmic time) due to halving the search space. In the worst case (a skewed tree, like a linked <code>list</code>), it degrades to <code>O(n)</code>.</p>
+</div>
+
+<div id="code-implementations">
+    <pre data-lang="python"><code class="language-python">class Node:
+    def __init__(self, key):
+        self.key = key
+        self.left = None
+        self.right = None
+
+class BST:
+    def __init__(self):
+        self.root = None
+
+    def insert(self, key):
+        self.root = self._insert_recursive(self.root, key)
+
+    def _insert_recursive(self, node, key):
+        if node is None:
+            return Node(key)
+        if key < node.key:
+            node.left = self._insert_recursive(node.left, key)
+        elif key > node.key:
+            node.right = self._insert_recursive(node.right, key)
+        return node
+
+    def search(self, key):
+        return self._search_recursive(self.root, key) is not None
+
+    def _search_recursive(self, node, key):
+        if node is None or node.key == key:
+            return node
+        if key < node.key:
+            return self._search_recursive(node.left, key)
+        return self._search_recursive(node.right, key)
+
+    def inorder_traversal(self):
+        elements = []
+        self._inorder_recursive(self.root, elements)
+        return elements
+
+    def _inorder_recursive(self, node, elements):
+        if node:
+            self._inorder_recursive(node.left, elements)
+            elements.append(node.key)
+            self._inorder_recursive(node.right, elements)
+</code></pre>
+
+    <pre data-lang="javascript"><code class="language-javascript">class Node {
+    constructor(key) {
+        this.key = key;
+        this.left = null;
+        this.right = null;
+    }
+}
+
+class BST {
+    constructor() {
+        this.root = null;
+    }
+
+    insert(key) {
+        this.root = this._insertRecursive(this.root, key);
+    }
+
+    _insertRecursive(node, key) {
+        if (node === null) {
+            return new Node(key);
+        }
+        if (key < node.key) {
+            node.left = this._insertRecursive(node.left, key);
+        } else if (key > node.key) {
+            node.right = this._insertRecursive(node.right, key);
+        }
+        return node;
+    }
+
+    search(key) {
+        return this._searchRecursive(this.root, key) !== null;
+    }
+
+    _searchRecursive(node, key) {
+        if (node === null || node.key === key) {
+            return node;
+        }
+        if (key < node.key) {
+            return this._searchRecursive(node.left, key);
+        }
+        return this._searchRecursive(node.right, key);
+    }
+
+    inorderTraversal() {
+        const elements = [];
+        this._inorderRecursive(this.root, elements);
+        return elements;
+    }
+
+    _inorderRecursive(node, elements) {
+        if (node) {
+            this._inorderRecursive(node.left, elements);
+            elements.push(node.key);
+            this._inorderRecursive(node.right, elements);
+        }
+    }
+}
+</code></pre>
+
+    <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+class Node {
+public:
+    int key;
+    Node <em>left, </em>right;
+
+    Node(int item) {
+        key = item;
+        left = right = nullptr;
+    }
+};
+
+class BST {
+public:
+    Node<em> root;
+
+    BST() {
+        root = nullptr;
+    }
+
+    // Insert operation
+    Node</em> insertRecursive(Node<em> node, int key) {
+        if (node == nullptr) {
+            return new Node(key);
+        }
+        if (key < node->key) {
+            node->left = insertRecursive(node->left, key);
+        } else if (key > node->key) {
+            node->right = insertRecursive(node->right, key);
+        }
+        return node;
+    }
+
+    void insert(int key) {
+        root = insertRecursive(root, key);
+    }
+
+    // Search operation
+    Node</em> searchRecursive(Node<em> node, int key) {
+        if (node == nullptr || node->key == key) {
+            return node;
+        }
+        if (key < node->key) {
+            return searchRecursive(node->left, key);
+        }
+        return searchRecursive(node->right, key);
+    }
+
+    bool search(int key) {
+        return searchRecursive(root, key) != nullptr;
+    }
+
+    // Inorder traversal (for printing sorted elements)
+    void inorderRecursive(Node</em> node) {
+        if (node) {
+            inorderRecursive(node->left);
+            std::cout &lt;&lt; node->key &lt;&lt; " ";
+            inorderRecursive(node->right);
+        }
+    }
+
+    void inorderTraversal() {
+        inorderRecursive(root);
+        std::cout &lt;&lt; std::endl;
+    }
+};
+</code></pre>
+</div>
+
+<div id="code-explanation-content"><div class="markdown-content">
+    <h3>Code Walkthrough</h3>
+    <p>A <code>BST</code> is typically implemented using custom <code>Node</code> objects and recursive functions for operations.</p>
+    <div class="explanation-fence">
+<strong><code>Node</code> Class:</strong> Each <code>Node</code> holds a <code>key</code> (the <code>value</code>) and two pointers, <code>left</code> and <code>right</code>, initially <code>null</code>.
+<br><br>
+<strong><code>BST</code> Class:</strong> Manages the tree, primarily through its <code>root</code> <code>node</code>.
+<ul>
+    <li><strong><code>insert(key)</code>:</strong> Public method that calls a private recursive helper. The helper finds the correct spot to insert the new <code>key</code> while maintaining the <code>BST</code> property.</li>
+    <li><strong><code>search(key)</code>:</strong> Public method calling a private recursive helper. The helper traverses the tree, going <code>left</code> or <code>right</code> based on the <code>key</code>'s <code>value</code> compared to the current <code>node</code>, until the <code>key</code> is found or a <code>null</code> <code>node</code> is reached.</li>
+    <li><strong><code>inorder_traversal()</code>:</strong> A common way to visit all <code>nodes</code>. It recursively visits the <code>left</code> subtree, then the current <code>node</code>, then the <code>right</code> subtree, resulting in an output of sorted elements.</li>
+</ul>
+    </div></div>
+    <p>Recursive implementations elegantly handle the tree's branching nature.</p>
+</div>

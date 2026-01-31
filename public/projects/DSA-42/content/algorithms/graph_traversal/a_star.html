@@ -1,0 +1,465 @@
+<div id="explanation-content">
+    <p>The <code>A<em> (A-Star) Search Algorithm</code> is a popular and widely used pathfinding and graph traversal algorithm, known for its performance and accuracy. It is an extension of <code>Dijkstra's Algorithm</code>, but it improves upon it by using a <code>heuristic</code> to guide its search towards the goal <code>node</code>. This makes it significantly faster for finding a single shortest path between two points.</p>
+    <p><code>A</em></code> achieves this by combining the cost to reach the current <code>node</code> (like Dijkstra's) with an estimated cost from the current <code>node</code> to the goal. This "informed search" strategy allows it to prioritize paths that are more likely to be optimal.</p>
+</div>
+
+<div id="expanded-explanation-content">
+    <h3>How it Works (Expanded)</h3>
+    <p><code>A<em></code> maintains a <code>priority queue</code> of nodes to visit, but it prioritizes them based on a function <code>f(n) = g(n) + h(n)</code>, where:</p>
+    <ul>
+        <li><code>g(n)</code> is the actual cost of the path from the start <code>node</code> to the current <code>node <code>n</code></code>.</li>
+        <li><code>h(n)</code> is the <strong>heuristic</strong> estimated cost from the current <code>node <code>n</code></code> to the goal <code>node</code>.</li>
+    </ul>
+    <p>The quality of the <code>heuristic</code> is crucial. For <code>A</em></code> to find the actual shortest path, the <code>heuristic</code> must be <strong>admissible</strong>, meaning it never overestimates the true cost. A common heuristic for grid-based pathfinding is the <strong>Euclidean distance</strong> or <strong>Manhattan distance</strong>.</p>
+    <div class="explanation-fence">
+Example: Pathfinding on a grid
+
+- Start at A, Goal at B.
+- g(n) = cost of path from A to n.
+- h(n) = straight-line distance from n to B.
+
+A<em> will prioritize exploring nodes that have both a low cost to reach (g(n)) and appear to be close to the goal (h(n)).
+    </div>
+    <p><strong>Steps:</strong></p>
+    <ol>
+        <li>Initialize an <code>openSet</code> (the <code>priority queue</code>) with the <code>start node</code>.</li>
+        <li>Initialize <code>gScore</code> (cost from start) for all nodes to infinity, except the <code>start node</code> (which is 0).</li>
+        <li>Initialize <code>fScore</code> (gScore + heuristic) for the <code>start node</code>.</li>
+        <li>While the <code>openSet</code> is not empty:
+            <ul>
+                <li>Get the <code>node</code> in <code>openSet</code> with the lowest <code>fScore</code> value. Let this be <code>currentNode</code>.</li>
+                <li>If <code>currentNode</code> is the <code>goal</code>, reconstruct and return the path.</li>
+                <li>Remove <code>currentNode</code> from <code>openSet</code>.</li>
+                <li>For each <code>neighbor</code> of <code>currentNode</code>:
+                    <ul>
+                        <li>Calculate a tentative <code>gScore</code> for the neighbor through <code>currentNode</code>.</li>
+                        <li>If this path to the neighbor is better than any previously found, update the neighbor's <code>gScore</code>, <code>fScore</code>, and record that we came from <code>currentNode</code>. Add the neighbor to the <code>openSet</code> if it's not already there.</li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+        <li>If the <code>openSet</code> is empty and the goal was not reached, no path exists.</li>
+    </ol>
+    <p><strong>Time Complexity:</strong> <code>O(E + V log V)</code> or <code>O(E)</code> depending on the priority queue implementation and the quality of the heuristic. In practice, a good heuristic can make it much faster than Dijkstra's.</p>
+    <p><strong>Space Complexity:</strong> <code>O(V)</code> to store the open set, scores, and visited nodes.</p>
+</div>
+
+<div id="code-implementations">
+    <pre data-lang="python"><code class="language-python">import heapq
+
+# This is a conceptual implementation. A full implementation would need
+# a graph representation (e.g., adjacency list) and a heuristic function.
+# Here, we assume a grid where nodes are (x, y) tuples.
+
+def heuristic(a, b):
+    # Manhattan distance on a grid
+    return abs(a[0] - b[0]) + abs(a[1] - b[1])
+
+def a_star(graph, start, goal):
+    """
+    Finds the shortest path from start to goal using A</em>.
+    <code>graph</code> is a dict of nodes with their neighbors.
+    """
+    open_set = [(0, start)]  # (f_score, node)
+    came_from = {}
+    
+    g_score = {node: float('infinity') for node in graph}
+    g_score[start] = 0
+    
+    f_score = {node: float('infinity') for node in graph}
+    f_score[start] = heuristic(start, goal)
+
+    while open_set:
+        _, current = heapq.heappop(open_set)
+
+        if current == goal:
+            # Reconstruct path
+            path = []
+            while current in came_from:
+                path.append(current)
+                current = came_from[current]
+            path.append(start)
+            return path[::-1]
+
+        for neighbor in graph[current]:
+            # Assume weight between neighbors is 1 for grid
+            tentative_g_score = g_score[current] + 1
+            
+            if tentative_g_score < g_score[neighbor]:
+                came_from[neighbor] = current
+                g_score[neighbor] = tentative_g_score
+                f_score[neighbor] = tentative_g_score + heuristic(neighbor, goal)
+                if neighbor not in [i[1] for i in open_set]:
+                    heapq.heappush(open_set, (f_score[neighbor], neighbor))
+    
+    return None # No path found
+
+# Example
+# grid_graph = {
+#     (0, 0): [(0, 1), (1, 0)],
+#     (0, 1): [(0, 0), (1, 1)],
+#     (1, 0): [(0, 0), (1, 1)],
+#     (1, 1): [(0, 1), (1, 0)]
+# }
+# start_node = (0, 0)
+# goal_node = (1, 1)
+# print(a_star(grid_graph, start_node, goal_node)) # e.g., [(0, 0), (0, 1), (1, 1)]
+</code></pre>
+
+    <pre data-lang="javascript"><code class="language-javascript">// Conceptual A<em> Search in JS. A proper PQ is needed for performance.
+
+function heuristic(a, b) {
+    // Manhattan distance
+    return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
+}
+
+function aStar(graph, start, goal) {
+    const openSet = [{ node: start, fScore: heuristic(start, goal) }];
+    const cameFrom = new Map();
+    
+    const gScore = new Map();
+    for (const nodeKey in graph) {
+        gScore.set(graph[nodeKey], Infinity);
+    }
+    gScore.set(start, 0);
+
+    while (openSet.length > 0) {
+        // Sort to simulate priority queue (inefficient)
+        openSet.sort((a, b) => a.fScore - b.fScore);
+        const current = openSet.shift().node;
+
+        if (current === goal) {
+            // Reconstruct path
+            const path = [current];
+            let temp = current;
+            while (cameFrom.has(temp)) {
+                temp = cameFrom.get(temp);
+                path.unshift(temp);
+            }
+            return path;
+        }
+
+        for (const neighbor of graph[current.id]) {
+            // Assuming weight is 1
+            const tentativeGScore = gScore.get(current) + 1;
+            
+            if (tentativeGScore < (gScore.get(neighbor) || Infinity)) {
+                cameFrom.set(neighbor, current);
+                gScore.set(neighbor, tentativeGScore);
+                const fScore = tentativeGScore + heuristic(neighbor, goal);
+                
+                if (!openSet.some(item => item.node === neighbor)) {
+                    openSet.push({ node: neighbor, fScore: fScore });
+                }
+            }
+        }
+    }
+    
+    return null; // No path found
+}
+</code></pre>
+
+    <pre data-lang="typescript"><code class="language-typescript">interface GridNode {
+    id: string;
+    x: number;
+    y: number;
+    neighbors: GridNode[];
+}
+
+function heuristicTS(a: GridNode, b: GridNode): number {
+    return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
+}
+
+function aStarTS(start: GridNode, goal: GridNode): GridNode[] | null {
+    const openSet: { node: GridNode; fScore: number }[] = [{ node: start, fScore: heuristicTS(start, goal) }];
+    const cameFrom: Map<GridNode, GridNode> = new Map();
+    
+    const gScore: Map<GridNode, number> = new Map();
+    gScore.set(start, 0);
+
+    while (openSet.length > 0) {
+        openSet.sort((a, b) => a.fScore - b.fScore);
+        const current = openSet.shift()!.node;
+
+        if (current === goal) {
+            const path = [current];
+            let temp = current;
+            while (cameFrom.has(temp)) {
+                temp = cameFrom.get(temp)!;
+                path.unshift(temp);
+            }
+            return path;
+        }
+
+        for (const neighbor of current.neighbors) {
+            const tentativeGScore = (gScore.get(current) ?? Infinity) + 1;
+            
+            if (tentativeGScore < (gScore.get(neighbor) ?? Infinity)) {
+                cameFrom.set(neighbor, current);
+                gScore.set(neighbor, tentativeGScore);
+                const fScore = tentativeGScore + heuristicTS(neighbor, goal);
+                
+                if (!openSet.some(item => item.node === neighbor)) {
+                    openSet.push({ node: neighbor, fScore: fScore });
+                }
+            }
+        }
+    }
+    
+    return null;
+}
+</code></pre>
+    
+    <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;queue&gt;
+#include &lt;map&gt;
+#include &lt;cmath&gt; // For abs
+#include &lt;algorithm&gt; // For std::reverse
+
+// Node for grid-based A</em>
+struct Node {
+    int y, x;
+    bool operator==(const Node& other) const { return y == other.y && x == other.x; }
+    bool operator<(const Node& other) const { // For map keys
+        return y < other.y || (y == other.y && x < other.x);
+    }
+};
+
+int heuristic(Node a, Node b) {
+    return std::abs(a.x - b.x) + std::abs(a.y - b.y);
+}
+
+std::vector&lt;Node&gt; aStar(const std::map&lt;Node, std::vector&lt;Node&gt;&gt;& graph, Node start, Node goal) {
+    using PQElement = std::pair<int, Node>;
+    std::priority_queue<PQElement, std::vector<PQElement>, std::greater<PQElement>> open_set;
+
+    std::map<Node, Node> came_from;
+    std::map<Node, int> g_score;
+    for(const auto& pair : graph) {
+        g_score[pair.first] = 1e9; // Infinity
+    }
+    g_score[start] = 0;
+
+    open_set.push({heuristic(start, goal), start});
+
+    while (!open_set.empty()) {
+        Node current = open_set.top().second;
+        open_set.pop();
+
+        if (current == goal) {
+            std::vector<Node> path;
+            while (came_from.count(current)) {
+                path.push_back(current);
+                current = came_from[current];
+            }
+            path.push_back(start);
+            std::reverse(path.begin(), path.end());
+            return path;
+        }
+
+        for (const auto& neighbor : graph.at(current)) {
+            int tentative_g_score = g_score[current] + 1; // Assume weight is 1
+            if (tentative_g_score < g_score[neighbor]) {
+                came_from[neighbor] = current;
+                g_score[neighbor] = tentative_g_score;
+                int f_score = tentative_g_score + heuristic(neighbor, goal);
+                open_set.push({f_score, neighbor});
+            }
+        }
+    }
+    return {}; // No path found
+}
+</code></pre>
+
+    <pre data-lang="go"><code class="language-go">package main
+
+import (
+    "container/heap"
+    "fmt"
+    "math"
+)
+
+// Node represents a point on a grid
+type Node struct {
+    X, Y int
+}
+
+// Item for the priority queue
+type AStarItem struct {
+    node   Node
+    fScore int
+    index  int
+}
+
+// AStarPriorityQueue implements heap.Interface
+type AStarPriorityQueue []<em>AStarItem
+
+func (pq AStarPriorityQueue) Len() int { return len(pq) }
+func (pq AStarPriorityQueue) Less(i, j int) bool { return pq[i].fScore < pq[j].fScore }
+func (pq AStarPriorityQueue) Swap(i, j int) {
+    pq[i], pq[j] = pq[j], pq[i]
+    pq[i].index = i
+    pq[j].index = j
+}
+func (pq </em>AStarPriorityQueue) Push(x interface{}) {
+    n := len(<em>pq)
+    item := x.(</em>AStarItem)
+    item.index = n
+    <em>pq = append(</em>pq, item)
+}
+func (pq <em>AStarPriorityQueue) Pop() interface{} {
+    old := </em>pq
+    n := len(old)
+    item := old[n-1]
+    <em>pq = old[0 : n-1]
+    return item
+}
+
+func heuristic(a, b Node) int {
+    return int(math.Abs(float64(a.X-b.X)) + math.Abs(float64(a.Y-b.Y)))
+}
+
+func aStar(graph map[Node][]Node, start, goal Node) []Node {
+    openSet := &AStarPriorityQueue{}
+    heap.Init(openSet)
+
+    cameFrom := make(map[Node]Node)
+    gScore := make(map[Node]int)
+    for node := range graph {
+        gScore[node] = math.MaxInt32
+    }
+    gScore[start] = 0
+
+    heap.Push(openSet, &AStarItem{node: start, fScore: heuristic(start, goal)})
+
+    for openSet.Len() > 0 {
+        current := heap.Pop(openSet).(</em>AStarItem).node
+
+        if current == goal {
+            path := []Node{current}
+            for {
+                prev, ok := cameFrom[current]
+                if !ok { break }
+                path = append([]Node{prev}, path...)
+                current = prev
+            }
+            return path
+        }
+
+        for _, neighbor := range graph[current] {
+            tentativeGScore := gScore[current] + 1 // Assume weight 1
+            if tentativeGScore < gScore[neighbor] {
+                cameFrom[neighbor] = current
+                gScore[neighbor] = tentativeGScore
+                fScore := tentativeGScore + heuristic(neighbor, goal)
+                heap.Push(openSet, &AStarItem{node: neighbor, fScore: fScore})
+            }
+        }
+    }
+    return nil // No path
+}
+</code></pre>
+    
+    <pre data-lang="d"><code class="language-d">import std.stdio;
+import std.container.binaryheap;
+import std.typecons;
+import std.math; // For abs
+
+struct Node {
+    int y, x;
+}
+
+int heuristic(Node a, Node b) {
+    return abs(a.x - b.x) + abs(a.y - b.y);
+}
+
+Node[] aStar(Node[][Node] graph, Node start, Node goal) {
+    alias PQElement = Tuple!(int, "fScore", Node, "node");
+    auto openSet = binaryHeap!PQElement((a, b) => a.fScore < b.fScore)();
+    
+    auto cameFrom = new Node[Node];
+    auto gScore = new int[Node];
+
+    foreach(node; graph.keys) {
+        gScore[node] = int.max;
+    }
+    gScore[start] = 0;
+
+    openSet.insert(PQElement(heuristic(start, goal), start));
+
+    while (!openSet.empty) {
+        auto current = openSet.front.node;
+        openSet.removeFront();
+
+        if (current == goal) {
+            Node[] path;
+            auto temp = current;
+            while(auto p = temp in cameFrom) {
+                path ~= temp;
+                temp = <em>p;
+            }
+            path ~= start;
+            return path.reverse.array;
+        }
+
+        foreach(neighbor; graph[current]) {
+            int tentativeGScore = gScore[current] + 1; // Assume weight 1
+            if (tentativeGScore < gScore.get(neighbor, int.max)) {
+                cameFrom[neighbor] = current;
+                gScore[neighbor] = tentativeGScore;
+                int fScore = tentativeGScore + heuristic(neighbor, goal);
+                openSet.insert(PQElement(fScore, neighbor));
+            }
+        }
+    }
+    return []; // No path found
+}
+</code></pre>
+</div>
+
+<div id="code-explanation-content"><div class="markdown-content">
+    <h3>Code Walkthrough</h3>
+    <p><code>A</em></code> is an "informed" search algorithm that builds on <code>Dijkstra's</code>. It uses a <code>heuristic</code> to prioritize nodes that seem closer to the goal.</p>
+    <div class="explanation-fence">
+<strong>Key Data Structures:</strong>
+<ul>
+    <li><strong><code>openSet</code> (Priority Queue):</strong> Stores nodes that have been discovered but not yet fully explored. Nodes are prioritized by their <code>fScore</code>.</li>
+    <li><strong><code>gScore</code> Map:</strong> Stores the cost of the cheapest path from the start node to each node found so far.</li>
+    <li><strong><code>cameFrom</code> Map:</strong> Stores the preceding node on the cheapest path to the current node. This is used to reconstruct the final path.</li>
+</ul>
+<br>
+<strong>Algorithm Steps:</strong>
+<ol>
+    <li>Initialize <code>gScore</code> for all nodes to infinity and <code>gScore[start]</code> to 0. Add the <code>start</code> node to the <code>openSet</code> with its initial <code>fScore</code> (which is just the heuristic cost).</li>
+    <li><strong>Main Loop:</strong> Continue as long as <code>openSet</code> is not empty.
+        <ul>
+            <li>Extract the node with the lowest <code>fScore</code> from <code>openSet</code>. This is <code>current</code>.</li>
+            <li>If <code>current</code> is the <code>goal</code>, the shortest path has been found. The path is reconstructed by backtracking using the <code>cameFrom</code> map.</li>
+            <li>For each <code>neighbor</code> of <code>current</code>:
+                <ul>
+                    <li>Calculate <code>tentative_gScore</code>, the cost to reach the <code>neighbor</code> via <code>current</code>.</li>
+                    <li>If this <code>tentative_gScore</code> is better (lower) than the <code>gScore</code> currently recorded for the <code>neighbor</code>, it means we've found a better path.</li>
+                    <li>Update the <code>neighbor</code>'s records: set <code>cameFrom</code> to <code>current</code>, update its <code>gScore</code>, and calculate its new <code>fScore</code>.</li>
+                    <li>Add the <code>neighbor</code> to the <code>openSet</code> so it can be explored later.</li>
+                </ul>
+            </li>
+        </ul>
+    </li>
+    <li>If the loop finishes without reaching the goal, no path exists.</li>
+</ol>
+    </div></div>
+</div>
+
+<div id="application-content"><div class="markdown-content">
+    <h3>Application</h3>
+    <p><code>A*</code> is the go-to algorithm for pathfinding in many applications, especially where the search space is large and a good heuristic is available.</p>
+    <ul>
+        <li><strong>Video Games:</strong> The most common use case is for character and AI navigation in games. It's used to find paths around obstacles on a grid or navigation mesh.</li>
+        <li><strong>Robotics and Autonomous Vehicles:</strong> Used for path planning, from warehouse robots to self-driving cars.</li>
+        <li><strong>Network Routing:</strong> Can be used for finding optimal paths in computer networks, though other algorithms like Dijkstra's are also common.</li>
+        <li><strong>Natural Language Processing:</strong> Used in some parsing and machine translation algorithms where finding the "best" sequence of operations is required.</li>
+        <li><strong>Computational Biology:</strong> For sequence alignment problems.</li>
+    </ul>
+    </p>
+</div></div>

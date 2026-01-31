@@ -1,0 +1,685 @@
+<div id="explanation-content">
+    <p>An <code>Interval Tree</code> is a tree data structure that efficiently stores intervals and allows for quick querying of all intervals that overlap with a given point or another interval. It is particularly useful when dealing with datasets that have many overlapping intervals, such as in scheduling applications, genomic data analysis, or event management.</p>
+    <p>It is typically built upon a balanced <code>binary search tree</code>, where each <code>node</code> is augmented with additional information about the <code>intervals</code> in its subtree to speed up queries.</p>
+</div>
+
+<div id="expanded-explanation-content">
+    <h3>How it Works (Expanded)</h3>
+    <p>An <code>Interval Tree</code> augments a balanced <code>BST</code> structure. Each <code>node</code> in the <code>tree</code> stores:</p>
+    <ol>
+        <li>A "center" point: The midpoint or endpoint of some interval.</li>
+        <li>A <code>list</code> of <code>intervals</code> that "stab" (contain) the center point.</li>
+        <li>A <code>left subtree</code> containing <code>intervals</code> completely to the <code>left</code> of the center point.</li>
+        <li>A <code>right subtree</code> containing <code>intervals</code> completely to the <code>right</code> of the center point.</li>
+    </ol>
+    <div class="explanation-fence">
+Example: Interval Tree for intervals [1,5], [2,6], [4,8], [9,12]
+
+Center 7: (for entire range [1,12])
+ Intervals: None stab 7
+ Left subtree (for [1,6]):
+  Center 4:
+   Intervals: [1,5], [2,6], [4,8] (all stab 4)
+   Left subtree (for [1,3]): ...
+   Right subtree (for [5,6]): ...
+ Right subtree (for [8,12]):
+  Center 10:
+   Intervals: [9,12] (stabs 10)
+   Left subtree (for [8,9]): ...
+   Right subtree (for [11,12]): ...
+    </div>
+    <p>More commonly, a <code>node</code> in an <code>Interval Tree</code> uses the midpoint of its <code>interval</code> as the pivot. The <code>node</code> then stores <code>intervals</code> that overlap this midpoint, and its children handle <code>intervals</code> that are entirely to the <code>left</code> or <code>right</code> of the midpoint.</p>
+    <p><strong>Operations:</strong></p>
+    <ul>
+        <li><strong><code>Insert(interval)</code>:</strong> Recursively traverse the <code>tree</code>. If the <code>interval</code> stabs the current <code>node</code>'s center, add it to the <code>node</code>'s list. Otherwise, insert it into the <code>left</code> or <code>right subtree</code>. Rebalancing (if built on an <code>AVL</code> or <code>Red-Black Tree</code>) is handled as usual.</li>
+        <li><strong><code>Query(point or interval)</code>:</strong>
+            <ol>
+                <li>Check the current <code>node</code>'s <code>list</code> of <code>intervals</code> that stab its center point. Add any that overlap the query point/interval to the result.</li>
+                <li>If the query point/interval is to the <code>left</code> of the current <code>node</code>'s center, recursively query the <code>left subtree</code>.</li>
+                <li>If the query point/interval is to the <code>right</code> of the current <code>node</code>'s center, recursively query the <code>right subtree</code>.</li>
+                <li>If the query interval spans the current <code>node</code>'s center, query both subtrees.</li>
+            </ol>
+        </li>
+    </ul>
+    <p><strong>Time Complexity:</strong> <code>O(log N)</code> for <code>insertion</code> and <code>deletion</code> (if using a balanced <code>BST</code> base), and <code>O(log N + K)</code> for <code>querying</code> (where <code>K</code> is the number of reported results). Each query can visit at most <code>O(log N)</code> <code>nodes</code>, and each <code>node</code> takes <code>O(K_node)</code> time to iterate its stabbing <code>list</code>.</p>
+    <p><strong>Space Complexity:</strong> <code>O(N)</code> to store the <code>intervals</code> and <code>tree structure</code>.</p>
+</div>
+
+<div id="code-implementations">
+    <pre data-lang="python"><code class="language-python">class Interval:
+    def __init__(self, start, end):
+        self.start = start
+        self.end = end
+
+    def overlaps(self, other_interval):
+        return self.start <= other_interval.end and self.end >= other_interval.start
+
+class IntervalTreeNode:
+    def __init__(self, center):
+        self.center = center
+        self.intervals_left = []  # Intervals that start left of center and end right of center
+        self.intervals_right = [] # Intervals that start left of center and end right of center
+                                  # Sorted by start point for intervals_left, by end point for intervals_right
+        self.left_child = None
+        self.right_child = None
+        # Max end point in this subtree, useful for optimizing queries
+        self.max_end = -float('inf') 
+
+class IntervalTree:
+    def __init__(self):
+        self.root = None
+
+    def insert(self, root, interval):
+        if not root:
+            # Pick the midpoint of the interval as the center for the root node
+            # For simplicity, we'll pick the start of the interval being inserted as the center
+            # A more robust approach would use a global median or a balanced BST
+            new_node = IntervalTreeNode(interval.start) 
+            new_node.max_end = interval.end
+            new_node.intervals_left.append(interval)
+            return new_node
+        
+        root.max_end = max(root.max_end, interval.end)
+
+        if interval.end < root.center:
+            root.left_child = self.insert(root.left_child, interval)
+        elif interval.start > root.center:
+            root.right_child = self.insert(root.right_child, interval)
+        else: # Interval overlaps the center
+            root.intervals_left.append(interval)
+            root.intervals_right.append(interval)
+            # Sorting these lists helps with query speed
+            root.intervals_left.sort(key=lambda i: i.start)
+            root.intervals_right.sort(key=lambda i: i.end, reverse=True)
+        return root
+
+    def query(self, root, query_interval):
+        if not root or query_interval.start > root.max_end: # Pruning optimization
+            return []
+        
+        results = []
+
+        # Query intervals_left (overlapping to the right of query_interval.start)
+        for interval in root.intervals_left:
+            if interval.overlaps(query_interval):
+                results.append(interval)
+            elif interval.start > query_interval.end: # Optimization: intervals_left sorted by start
+                break # No more overlaps possible in this direction
+        
+        if query_interval.start < root.center:
+            results.extend(self.query(root.left_child, query_interval))
+        
+        if query_interval.end > root.center:
+            results.extend(self.query(root.right_child, query_interval))
+            
+        return results
+
+# Example Usage:
+# tree = IntervalTree()
+# root_node = None
+# intervals = [
+#     Interval(1, 5), Interval(2, 6), Interval(4, 8),
+#     Interval(9, 12), Interval(10, 14), Interval(0, 3)
+# ]
+# for i in intervals:
+#     root_node = tree.insert(root_node, i)
+
+# query_int = Interval(3, 7)
+# overlaps = tree.query(root_node, query_int)
+# print(f"Intervals overlapping with [{query_int.start}, {query_int.end}]:")
+# for o in overlaps:
+#     print(f"[{o.start}, {o.end}]") # Expected: [1,5], [2,6], [4,8]
+</code></pre>
+
+    <pre data-lang="javascript"><code class="language-javascript">class Interval {
+    constructor(start, end) {
+        this.start = start;
+        this.end = end;
+    }
+
+    overlaps(otherInterval) {
+        return this.start <= otherInterval.end && this.end >= otherInterval.start;
+    }
+}
+
+class IntervalTreeNode {
+    constructor(center) {
+        this.center = center;
+        this.intervalsLeft = []; // Intervals that start left of center and end right of center
+        this.intervalsRight = []; // Intervals that start left of center and end right of center
+        this.leftChild = null;
+        this.rightChild = null;
+        this.maxEnd = -Infinity; // Max end point in this subtree, useful for optimizing queries
+    }
+}
+
+class IntervalTree {
+    constructor() {
+        this.root = null;
+    }
+
+    insert(root, interval) {
+        if (!root) {
+            const newNode = new IntervalTreeNode(interval.start);
+            newNode.maxEnd = interval.end;
+            newNode.intervalsLeft.push(interval);
+            return newNode;
+        }
+        
+        root.maxEnd = Math.max(root.maxEnd, interval.end);
+
+        if (interval.end < root.center) {
+            root.leftChild = this.insert(root.leftChild, interval);
+        } else if (interval.start > root.center) {
+            root.rightChild = this.insert(root.rightChild, interval);
+        } else { // Interval overlaps the center
+            root.intervalsLeft.push(interval);
+            root.intervalsRight.push(interval);
+            root.intervalsLeft.sort((a, b) => a.start - b.start);
+            root.intervalsRight.sort((a, b) => b.end - a.end); // Descending for faster overlap checks
+        }
+        return root;
+    }
+
+    query(root, queryInterval) {
+        if (!root || queryInterval.start > root.maxEnd) { // Pruning optimization
+            return [];
+        }
+        
+        let results = [];
+
+        // Query intervalsLeft
+        for (const interval of root.intervalsLeft) {
+            if (interval.overlaps(queryInterval)) {
+                results.push(interval);
+            } else if (interval.start > queryInterval.end) {
+                break; // Optimization: intervalsLeft sorted by start
+            }
+        }
+        
+        if (queryInterval.start < root.center) {
+            results = results.concat(this.query(root.leftChild, queryInterval));
+        }
+        
+        if (queryInterval.end > root.center) {
+            results = results.concat(this.query(root.rightChild, queryInterval));
+        }
+        
+        return results;
+    }
+}
+
+// const tree = new IntervalTree();
+// let rootNode = null;
+// const intervals = [
+//     new Interval(1, 5), new Interval(2, 6), new Interval(4, 8),
+//     new Interval(9, 12), new Interval(10, 14), new Interval(0, 3)
+// ];
+// for (const i of intervals) {
+//     rootNode = tree.insert(rootNode, i);
+// }
+
+// const queryInt = new Interval(3, 7);
+// const overlaps = tree.query(rootNode, queryInt);
+// console.log(<code>Intervals overlapping with [${queryInt.start}, ${queryInt.end}]:</code>);
+// for (const o of overlaps) {
+//     console.log(<code>[${o.start}, ${o.end}]</code>); // Expected: [1,5], [2,6], [4,8]
+// }
+</code></pre>
+
+    <pre data-lang="typescript"><code class="language-typescript">class IntervalTS {
+    constructor(public start: number, public end: number) {}
+
+    overlaps(otherInterval: IntervalTS): boolean {
+        return this.start <= otherInterval.end && this.end >= otherInterval.start;
+    }
+}
+
+class IntervalTreeNodeTS {
+    public center: number;
+    public intervalsLeft: IntervalTS[];
+    public intervalsRight: IntervalTS[];
+    public leftChild: IntervalTreeNodeTS | null = null;
+    public rightChild: IntervalTreeNodeTS | null = null;
+    public maxEnd: number;
+
+    constructor(center: number) {
+        this.center = center;
+        this.intervalsLeft = [];
+        this.intervalsRight = [];
+        this.maxEnd = -Infinity;
+    }
+}
+
+class IntervalTreeTS {
+    public root: IntervalTreeNodeTS | null = null;
+
+    public insert(rootNode: IntervalTreeNodeTS | null, interval: IntervalTS): IntervalTreeNodeTS {
+        if (!rootNode) {
+            const newNode = new IntervalTreeNodeTS(interval.start);
+            newNode.maxEnd = interval.end;
+            newNode.intervalsLeft.push(interval);
+            return newNode;
+        }
+        
+        rootNode.maxEnd = Math.max(rootNode.maxEnd, interval.end);
+
+        if (interval.end < rootNode.center) {
+            rootNode.leftChild = this.insert(rootNode.leftChild, interval);
+        } else if (interval.start > rootNode.center) {
+            rootNode.rightChild = this.insert(rootNode.rightChild, interval);
+        } else {
+            rootNode.intervalsLeft.push(interval);
+            rootNode.intervalsRight.push(interval);
+            rootNode.intervalsLeft.sort((a, b) => a.start - b.start);
+            rootNode.intervalsRight.sort((a, b) => b.end - a.end);
+        }
+        return rootNode;
+    }
+
+    public query(rootNode: IntervalTreeNodeTS | null, queryInterval: IntervalTS): IntervalTS[] {
+        if (!rootNode || queryInterval.start > rootNode.maxEnd) {
+            return [];
+        }
+        
+        let results: IntervalTS[] = [];
+
+        for (const interval of rootNode.intervalsLeft) {
+            if (interval.overlaps(queryInterval)) {
+                results.push(interval);
+            } else if (interval.start > queryInterval.end) {
+                break;
+            }
+        }
+        
+        if (queryInterval.start < rootNode.center) {
+            results = results.concat(this.query(rootNode.leftChild, queryInterval));
+        }
+        
+        if (queryInterval.end > rootNode.center) {
+            results = results.concat(this.query(rootNode.rightChild, queryInterval));
+        }
+        
+        return results;
+    }
+}
+
+// const treeTS = new IntervalTreeTS();
+// let rootNodeTS: IntervalTreeNodeTS | null = null;
+// const intervalsTS: IntervalTS[] = [
+//     new IntervalTS(1, 5), new IntervalTS(2, 6), new IntervalTS(4, 8),
+//     new IntervalTS(9, 12), new IntervalTS(10, 14), new IntervalTS(0, 3)
+// ];
+// for (const i of intervalsTS) {
+//     rootNodeTS = treeTS.insert(rootNodeTS, i);
+// }
+
+// const queryIntTS = new IntervalTS(3, 7);
+// const overlapsTS = treeTS.query(rootNodeTS, queryIntTS);
+// console.log(<code>Intervals overlapping with [${queryIntTS.start}, ${queryIntTS.end}]:</code>);
+// for (const o of overlapsTS) {
+//     console.log(<code>[${o.start}, ${o.end}]</code>); // Expected: [1,5], [2,6], [4,8]
+// }
+</code></pre>
+
+    <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;algorithm&gt; // For std::max, std::sort
+#include &lt;limits&gt;    // For std::numeric_limits
+
+class Interval {
+public:
+    int start;
+    int end;
+
+    Interval(int s, int e) : start(s), end(e) {}
+
+    bool overlaps(const Interval&amp; other_interval) const {
+        return start &lt;= other_interval.end &amp;&amp; end &gt;= other_interval.start;
+    }
+};
+
+class IntervalTreeNode {
+public:
+    int center;
+    std::vector&lt;Interval&gt; intervals_left; // Intervals that start left of center and end right of center
+    std::vector&lt;Interval&gt; intervals_right; // Intervals that start left of center and end right of center
+    IntervalTreeNode<em> left_child;
+    IntervalTreeNode</em> right_child;
+    int max_end; // Max end point in this subtree, useful for optimizing queries
+
+    IntervalTreeNode(int c) : center(c), left_child(nullptr), right_child(nullptr), max_end(std::numeric_limits&lt;int&gt;::min()) {}
+
+    ~IntervalTreeNode() {
+        delete left_child;
+        delete right_child;
+    }
+};
+
+class IntervalTree {
+public:
+    IntervalTreeNode<em> root;
+
+    IntervalTree() : root(nullptr) {}
+    ~IntervalTree() {
+        delete root;
+    }
+
+    IntervalTreeNode</em> insert(IntervalTreeNode<em> node, const Interval&amp; interval) {
+        if (node == nullptr) {
+            // For simplicity, pick the interval's start as center if node is null
+            // A more robust approach would dynamically pick a center
+            IntervalTreeNode</em> new_node = new IntervalTreeNode(interval.start);
+            new_node->max_end = interval.end;
+            new_node->intervals_left.push_back(interval);
+            return new_node;
+        }
+        
+        node->max_end = std::max(node->max_end, interval.end);
+
+        if (interval.end &lt; node->center) {
+            node->left_child = insert(node->left_child, interval);
+        } else if (interval.start &gt; node->center) {
+            node->right_child = insert(node->right_child, interval);
+        } else { // Interval overlaps the center
+            node->intervals_left.push_back(interval);
+            node->intervals_right.push_back(interval);
+            // Sorting these lists helps with query speed
+            std::sort(node->intervals_left.begin(), node->intervals_left.end(), 
+                      [](const Interval&amp; a, const Interval&amp; b){ return a.start &lt; b.start; });
+            std::sort(node->intervals_right.begin(), node->intervals_right.end(), 
+                      [](const Interval&amp; a, const Interval&amp; b){ return a.end &gt; b.end; }); // Descending
+        }
+        return node;
+    }
+
+    std::vector&lt;Interval&gt; query(IntervalTreeNode<em> node, const Interval&amp; query_interval) {
+        std::vector&lt;Interval&gt; results;
+        if (node == nullptr || query_interval.start &gt; node->max_end) { // Pruning optimization
+            return results;
+        }
+        
+        // Query intervals_left (overlapping to the right of query_interval.start)
+        for (const auto&amp; interval : node->intervals_left) {
+            if (interval.overlaps(query_interval)) {
+                results.push_back(interval);
+            } else if (interval.start &gt; query_interval.end) { // Optimization: intervals_left sorted by start
+                break; 
+            }
+        }
+        
+        if (query_interval.start &lt; node->center) {
+            std::vector&lt;Interval&gt; left_results = query(node->left_child, query_interval);
+            results.insert(results.end(), left_results.begin(), left_results.end());
+        }
+        
+        if (query_interval.end &gt; node->center) {
+            std::vector&lt;Interval&gt; right_results = query(node->right_child, query_interval);
+            results.insert(results.end(), right_results.begin(), right_results.end());
+        }
+        
+        return results;
+    }
+};
+
+// int main() {
+//     IntervalTree tree;
+//     std::vector&lt;Interval&gt; intervals_to_insert = {
+//         Interval(1, 5), Interval(2, 6), Interval(4, 8),
+//         Interval(9, 12), Interval(10, 14), Interval(0, 3)
+//     };
+//     for (const auto&amp; i : intervals_to_insert) {
+//         tree.root = tree.insert(tree.root, i);
+//     }
+
+//     Interval query_int(3, 7);
+//     std::vector&lt;Interval&gt; overlaps = tree.query(tree.root, query_int);
+//     std::cout &lt;&lt; "Intervals overlapping with [" &lt;&lt; query_int.start &lt;&lt; ", " &lt;&lt; query_int.end &lt;&lt; "]:
+";
+//     for (const auto&amp; o : overlaps) {
+//         std::cout &lt;&lt; "[" &lt;&lt; o.start &lt;&lt; ", " &lt;&lt; o.end &lt;&lt; "]" &lt;&lt; std::endl; // Expected: [1,5], [2,6], [4,8]
+//     }
+//     return 0;
+// }
+</code></pre>
+    <pre data-lang="go"><code class="language-go">package main
+
+import (
+    "fmt"
+    "math"
+    "sort"
+)
+
+type Interval struct {
+    Start int
+    End   int
+}
+
+func (i Interval) Overlaps(otherInterval Interval) bool {
+    return i.Start &lt;= otherInterval.End &amp;&amp; i.End &gt;= otherInterval.Start
+}
+
+type IntervalTreeNode struct {
+    Center        int
+    IntervalsLeft []Interval // Intervals that start left of center and end right of center
+    IntervalsRight []Interval // Intervals that start left of center and end right of center
+    LeftChild     </em>IntervalTreeNode
+    RightChild    <em>IntervalTreeNode
+    MaxEnd        int // Max end point in this subtree, useful for optimizing queries
+}
+
+func NewIntervalTreeNode(center int) </em>IntervalTreeNode {
+    return &amp;IntervalTreeNode{
+        Center:        center,
+        IntervalsLeft:  []Interval{},
+        IntervalsRight: []Interval{},
+        MaxEnd:        math.MinInt32,
+    }
+}
+
+type IntervalTree struct {
+    Root <em>IntervalTreeNode
+}
+
+func (t </em>IntervalTree) Insert(node <em>IntervalTreeNode, interval Interval) </em>IntervalTreeNode {
+    if node == nil {
+        newNode := NewIntervalTreeNode(interval.Start)
+        newNode.MaxEnd = interval.End
+        newNode.IntervalsLeft = append(newNode.IntervalsLeft, interval)
+        return newNode
+    }
+
+    node.MaxEnd = int(math.Max(float64(node.MaxEnd), float64(interval.End)))
+
+    if interval.End &lt; node.Center {
+        node.LeftChild = t.Insert(node.LeftChild, interval)
+    } else if interval.Start &gt; node.Center {
+        node.RightChild = t.Insert(node.RightChild, interval)
+    } else { // Interval overlaps the center
+        node.IntervalsLeft = append(node.IntervalsLeft, interval)
+        node.IntervalsRight = append(node.IntervalsRight, interval)
+        sort.Slice(node.IntervalsLeft, func(i, j int) bool {
+            return node.IntervalsLeft[i].Start &lt; node.IntervalsLeft[j].Start
+        })
+        sort.Slice(node.IntervalsRight, func(i, j int) bool {
+            return node.IntervalsRight[i].End &gt; node.IntervalsRight[j].End
+        }) // Descending
+    }
+    return node
+}
+
+func (t <em>IntervalTree) Query(node </em>IntervalTreeNode, queryInterval Interval) []Interval {
+    var results []Interval
+    if node == nil || queryInterval.Start &gt; node.MaxEnd {
+        return results
+    }
+
+    // Query IntervalsLeft
+    for _, interval := range node.IntervalsLeft {
+        if interval.Overlaps(queryInterval) {
+            results = append(results, interval)
+        } else if interval.Start &gt; queryInterval.End {
+            break // Optimization: IntervalsLeft sorted by Start
+        }
+    }
+
+    if queryInterval.Start &lt; node.Center {
+        results = append(results, t.Query(node.LeftChild, queryInterval)...)
+    }
+
+    if queryInterval.End &gt; node.Center {
+        results = append(results, t.Query(node.RightChild, queryInterval)...)
+    }
+
+    return results
+}
+
+// func main() {
+//     tree := &IntervalTree{}
+//     intervals := []Interval{
+//         {1, 5}, {2, 6}, {4, 8},
+//         {9, 12}, {10, 14}, {0, 3},
+//     }
+//     for _, i := range intervals {
+//         tree.Root = tree.Insert(tree.Root, i)
+//     }
+
+//     queryInt := Interval{3, 7}
+//     overlaps := tree.Query(tree.Root, queryInt)
+//     fmt.Printf("Intervals overlapping with [%d, %d]:\n", queryInt.Start, queryInt.End)
+//     for _, o := range overlaps {
+//         fmt.Printf("[%d, %d]\n", o.Start, o.End) // Expected: [1,5], [2,6], [4,8]
+//     }
+// }
+</code></pre>
+    <pre data-lang="d"><code class="language-d">import std.stdio;
+import std.algorithm;
+import std.array;
+import std.container.array;
+import std.math; // For real.max
+
+class Interval {
+    int start;
+    int end;
+
+    this(int s, int e) {
+        start = s;
+        end = e;
+    }
+
+    bool overlaps(Interval other_interval) {
+        return this.start &lt;= other_interval.end &amp;&amp; this.end &gt;= other_interval.start;
+    }
+}
+
+class IntervalTreeNode {
+    int center;
+    Interval[] intervals_left;  // Intervals that start left of center and end right of center
+    Interval[] intervals_right; // Intervals that start left of center and end right of center
+    IntervalTreeNode left_child;
+    IntervalTreeNode right_child;
+    int max_end; // Max end point in this subtree, useful for optimizing queries
+
+    this(int c) {
+        center = c;
+        intervals_left = [];
+        intervals_right = [];
+        left_child = null;
+        right_child = null;
+        max_end = int.min;
+    }
+}
+
+class IntervalTree {
+    IntervalTreeNode root;
+
+    this() {
+        root = null;
+    }
+
+    IntervalTreeNode insert(IntervalTreeNode node, Interval interval) {
+        if (node is null) {
+            // For simplicity, pick the interval's start as center if node is null
+            IntervalTreeNode new_node = new IntervalTreeNode(interval.start);
+            new_node.max_end = interval.end;
+            new_node.intervals_left ~= interval;
+            return new_node;
+        }
+        
+        node.max_end = max(node.max_end, interval.end);
+
+        if (interval.end &lt; node.center) {
+            node.left_child = insert(node.left_child, interval);
+        } else if (interval.start &gt; node.center) {
+            node.right_child = insert(node.right_child, interval);
+        } else { // Interval overlaps the center
+            node.intervals_left ~= interval;
+            node.intervals_right ~= interval;
+            node.intervals_left.sort!((a, b) =&gt; a.start &lt; b.start);
+            node.intervals_right.sort!((a, b) =&gt; a.end &gt; b.end); // Descending
+        }
+        return node;
+    }
+
+    Interval[] query(IntervalTreeNode node, Interval query_interval) {
+        Interval[] results = [];
+        if (node is null || query_interval.start &gt; node.max_end) {
+            return results;
+        }
+        
+        // Query intervals_left (overlapping to the right of query_interval.start)
+        foreach (interval; node.intervals_left) {
+            if (interval.overlaps(query_interval)) {
+                results ~= interval;
+            } else if (interval.start &gt; query_interval.end) {
+                break; // Optimization: intervals_left sorted by start
+            }
+        }
+        
+        if (query_interval.start &lt; node.center) {
+            results ~= query(node.left_child, query_interval);
+        }
+        
+        if (query_interval.end &gt; node.center) {
+            results ~= query(node.right_child, query_interval);
+        }
+        
+        return results;
+    }
+}
+
+// void main() {
+//     auto tree = new IntervalTree();
+//     Interval[] intervals_to_insert = [
+//         new Interval(1, 5), new Interval(2, 6), new Interval(4, 8),
+//         new Interval(9, 12), new Interval(10, 14), new Interval(0, 3)
+//     ];
+//     foreach (i; intervals_to_insert) {
+//         tree.root = tree.insert(tree.root, i);
+//     }
+
+//     Interval query_int = new Interval(3, 7);
+//     auto overlaps = tree.query(tree.root, query_int);
+//     writeln("Intervals overlapping with [%s, %s]:", query_int.start, query_int.end);
+//     foreach (o; overlaps) {
+//         writeln("[%s, %s]", o.start, o.end); // Expected: [1,5], [2,6], [4,8]
+//     }
+// }
+</code></pre>
+    </div>
+    <p>The construction and balancing of a full <code>Interval Tree</code> typically involve adapting <code>balanced BST</code> algorithms (like <code>AVL</code> or <code>Red-Black Trees</code>) to handle the additional <code>interval</code> data.</p>
+</div>
+
+<div id="application-content"><div class="markdown-content">
+    <h3>Application</h3>
+    <p>Interval Trees are powerful tools for managing and querying sets of intervals. Their applications include:
+    <ul>
+        <li><strong>Genomic Data Analysis:</strong> Finding overlapping genes, mutations, or regions in DNA sequences.</li>
+        <li><strong>Calendar and Scheduling Software:</strong> Efficiently finding all events that overlap with a particular time slot.</li>
+        <li><strong>Computational Geometry:</strong> Various problems involving intersections of line segments or rectangles.</li>
+        <li><strong>Event Management:</strong> Managing event timelines and finding concurrent events.</li>
+        <li><strong>Graphical User Interfaces (GUIs):</strong> For hit-testing, where you need to find all UI elements that overlap with a mouse click (point query) or a selection box (interval query).</li>
+        <li><strong>Database Systems:</strong> For handling queries on temporal data or ranges.</li>
+    </ul>
+    </p>
+</div></div>

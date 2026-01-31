@@ -1,0 +1,629 @@
+<div id="explanation-content">
+    <p>A <code>Segment Tree</code> is a tree data structure used for storing information about intervals or segments. It allows for efficient querying of ranges (e.g., sum, minimum, maximum) and updating elements in an <code>array</code>. It's particularly useful when these operations need to be performed many times on the same <code>array</code>.</p>
+    <p>Similar to a <code>Fenwick Tree</code>, it can handle both <code>range queries</code> and <code>point updates</code> (or even <code>range updates</code> with extensions) in <code>O(log N)</code> time, but often with more flexibility for different types of queries.</p>
+</div>
+
+<div id="expanded-explanation-content">
+    <h3>How it Works (Expanded)</h3>
+    <p>A <code>Segment Tree</code> is typically a <code>binary tree</code> used to represent an <code>array</code>. Each <code>node</code> in the <code>Segment Tree</code> represents an <code>interval</code> (or segment) of the <code>array</code>. The <code>root node</code> represents the entire <code>array</code> <code>interval</code>. Each internal <code>node</code>'s <code>interval</code> is the union of its children's <code>intervals</code>.</p>
+    <div class="explanation-fence">
+Example: Build a Segment Tree for Array A = [1, 3, 5, 7, 9, 11] for range sum.
+
+Original Array (leaves of the tree):
+  [1] [3] [5] [7] [9] [11]
+
+Level 1 (sums of two elements):
+  [1,3]=4  [5,7]=12  [9,11]=20
+
+Level 2 (sums of four elements):
+  [1,7]=16  [9,11]=20
+
+Level 3 (root, sum of all elements):
+  [1,11]=36
+
+Tree Structure (conceptual):
+
+                   [1,11] (36)
+                  /      \
+             [1,7](16)    [9,11](20)
+            /     \      /      \
+      [1,3](4)  [5,7](12) [9](9)  [11](11)
+      /   \   /    \
+    [1](1)[3](3) [5](5) [7](7)
+    </div>
+    <p>The construction typically works by recursively dividing the <code>array</code> into halves. For a <code>node</code> representing <code>interval [L, R]</code>, its <code>left child</code> represents <code>[L, (L+R)/2]</code> and its <code>right child</code> represents <code>[(L+R)/2 + 1, R]</code>.</p>
+    <p><strong>Operations:</strong></p>
+    <ul>
+        <li><strong><code>Build</code>:</strong> Recursively build the <code>tree</code> from bottom-up. Each <code>leaf node</code> (representing a single <code>element</code>) is initialized with the <code>element</code>'s value. Internal <code>nodes</code> store the aggregated value (sum, min, max, etc.) of their children. Time complexity: <code>O(N)</code>.</li>
+        <li><strong><code>Update (point_update(index, new_value))</code>:</strong> To update a single <code>element</code>, traverse from the <code>root</code> down to the corresponding <code>leaf node</code>. Update the <code>leaf node</code>'s value, then propagate this change up to its ancestors by recomputing their aggregated values. Time complexity: <code>O(log N)</code>.</li>
+        <li><strong><code>Query (range_query(left, right))</code>:</strong> To query an <code>interval [left, right]</code>, traverse the <code>tree</code>. If a <code>node</code>'s <code>interval</code> is completely contained within the query <code>interval</code>, return its aggregated value. If it partially overlaps, recursively query its children and combine their results. If it does not overlap, ignore it. Time complexity: <code>O(log N)</code>.</li>
+    </ul>
+    <p><strong>Time Complexity:</strong> <code>O(N)</code> for <code>build</code>, <code>O(log N)</code> for <code>update</code> and <code>query</code>.</p>
+    <p><strong>Space Complexity:</strong> <code>O(N)</code>, typically <code>2N</code> to <code>4N</code> depending on implementation (for a <code>tree</code> of <code>N</code> leaves, there are approximately <code>2N-1 nodes</code>).</p>
+</div>
+
+<div id="code-implementations">
+    <pre data-lang="python"><code class="language-python">class SegmentTree:
+    def __init__(self, arr, func=sum):
+        self.n = len(arr)
+        self.tree = [0] <em> (4 </em> self.n) # Tree size is approx 2<em>2</em>n, or 4n for safety
+        self.arr = arr # Keep original array for initial build reference
+        self.func = func # Operation to perform (e.g., sum, min, max)
+
+        self._build(0, 0, self.n - 1)
+
+    def _build(self, tree_idx, low, high):
+        if low == high:
+            self.tree[tree_idx] = self.arr[low]
+            return
+        
+        mid = (low + high) // 2
+        self._build(2 <em> tree_idx + 1, low, mid)
+        self._build(2 </em> tree_idx + 2, mid + 1, high)
+        self.tree[tree_idx] = self.func([self.tree[2 <em> tree_idx + 1], self.tree[2 </em> tree_idx + 2]])
+
+    def update(self, idx, val):
+        self.arr[idx] = val # Update original array (optional, but good for consistency)
+        self._update_tree(0, 0, self.n - 1, idx, val)
+
+    def _update_tree(self, tree_idx, low, high, arr_idx, val):
+        if low == high: # Leaf node
+            self.tree[tree_idx] = val
+            return
+        
+        mid = (low + high) // 2
+        if low <= arr_idx <= mid: # Element is in left child's range
+            self._update_tree(2 <em> tree_idx + 1, low, mid, arr_idx, val)
+        else: # Element is in right child's range
+            self._update_tree(2 </em> tree_idx + 2, mid + 1, high, arr_idx, val)
+        self.tree[tree_idx] = self.func([self.tree[2 <em> tree_idx + 1], self.tree[2 </em> tree_idx + 2]])
+
+    def query(self, q_low, q_high):
+        return self._query_tree(0, 0, self.n - 1, q_low, q_high)
+
+    def _query_tree(self, tree_idx, low, high, q_low, q_high):
+        # Case 1: Current segment is completely outside query range
+        if q_low > high or q_high < low:
+            if self.func == sum: return 0 # For sum, identity is 0
+            if self.func == min: return float('inf') # For min, identity is inf
+            if self.func == max: return float('-inf') # For max, identity is -inf
+        
+        # Case 2: Current segment is completely inside query range
+        if q_low <= low and high <= q_high:
+            return self.tree[tree_idx]
+        
+        # Case 3: Current segment partially overlaps query range
+        mid = (low + high) // 2
+        left_val = self._query_tree(2 <em> tree_idx + 1, low, mid, q_low, q_high)
+        right_val = self._query_tree(2 </em> tree_idx + 2, mid + 1, high, q_low, q_high)
+        
+        return self.func([left_val, right_val])
+
+# Example Usage (Sum Segment Tree)
+# arr = [1, 3, 5, 7, 9, 11]
+# st = SegmentTree(arr, func=sum) # For sum queries
+# print("Sum of [0, 5]:", st.query(0, 5)) # Expected: 36
+# print("Sum of [1, 3]:", st.query(1, 3)) # Expected: 3 + 5 + 7 = 15
+
+# st.update(2, 10) # Change arr[2] from 5 to 10. arr is now [1, 3, 10, 7, 9, 11]
+# print("Sum of [0, 5] after update:", st.query(0, 5)) # Expected: 41
+# print("Sum of [1, 3] after update:", st.query(1, 3)) # Expected: 3 + 10 + 7 = 20
+</code></pre>
+
+    <pre data-lang="javascript"><code class="language-javascript">class SegmentTree {
+    constructor(arr, func = (a, b) => a + b) { // Default to sum
+        this.n = arr.length;
+        this.tree = new Array(4 <em> this.n).fill(0); // Tree size approx 4n for safety
+        this.arr = arr;
+        this.func = func;
+
+        this._build(0, 0, this.n - 1);
+    }
+
+    _build(treeIdx, low, high) {
+        if (low === high) {
+            this.tree[treeIdx] = this.arr[low];
+            return;
+        }
+        
+        const mid = Math.floor((low + high) / 2);
+        this._build(2 </em> treeIdx + 1, low, mid);
+        this._build(2 <em> treeIdx + 2, mid + 1, high);
+        this.tree[treeIdx] = this.func(this.tree[2 </em> treeIdx + 1], this.tree[2 <em> treeIdx + 2]);
+    }
+
+    update(idx, val) {
+        this.arr[idx] = val; // Update original array
+        this._updateTree(0, 0, this.n - 1, idx, val);
+    }
+
+    _updateTree(treeIdx, low, high, arrIdx, val) {
+        if (low === high) { // Leaf node
+            this.tree[treeIdx] = val;
+            return;
+        }
+        
+        const mid = Math.floor((low + high) / 2);
+        if (low <= arrIdx && arrIdx <= mid) { // Element is in left child's range
+            this._updateTree(2 </em> treeIdx + 1, low, mid, arrIdx, val);
+        } else { // Element is in right child's range
+            this._updateTree(2 <em> treeIdx + 2, mid + 1, high, arrIdx, val);
+        }
+        this.tree[treeIdx] = this.func(this.tree[2 </em> treeIdx + 1], this.tree[2 <em> treeIdx + 2]);
+    }
+
+    query(qLow, qHigh) {
+        return this._queryTree(0, 0, this.n - 1, qLow, qHigh);
+    }
+
+    _queryTree(treeIdx, low, high, qLow, qHigh) {
+        // Case 1: Current segment is completely outside query range
+        if (qLow > high || qHigh < low) {
+            if (this.func === ((a, b) => a + b)) return 0; // Identity for sum
+            if (this.func === Math.min) return Infinity; // Identity for min
+            if (this.func === Math.max) return -Infinity; // Identity for max
+        }
+        
+        // Case 2: Current segment is completely inside query range
+        if (qLow <= low && high <= qHigh) {
+            return this.tree[treeIdx];
+        }
+        
+        // Case 3: Current segment partially overlaps query range
+        const mid = Math.floor((low + high) / 2);
+        const leftVal = this._queryTree(2 </em> treeIdx + 1, low, mid, qLow, qHigh);
+        const rightVal = this._queryTree(2 <em> treeIdx + 2, mid + 1, high, qLow, qHigh);
+        
+        return this.func(leftVal, rightVal);
+    }
+}
+
+// Example Usage (Sum Segment Tree)
+// const arr = [1, 3, 5, 7, 9, 11];
+// const st = new SegmentTree(arr); // For sum queries
+// console.log("Sum of [0, 5]:", st.query(0, 5)); // Expected: 36
+// console.log("Sum of [1, 3]:", st.query(1, 3)); // Expected: 3 + 5 + 7 = 15
+
+// st.update(2, 10); // Change arr[2] from 5 to 10. arr is now [1, 3, 10, 7, 9, 11]
+// console.log("Sum of [0, 5] after update:", st.query(0, 5)); // Expected: 41
+// console.log("Sum of [1, 3] after update:", st.query(1, 3)); // Expected: 3 + 10 + 7 = 20
+</code></pre>
+    <pre data-lang="typescript"><code class="language-typescript">type AggregationFunction = (a: number, b: number) => number;
+
+class SegmentTreeTS {
+    private n: number;
+    private tree: number[];
+    private arr: number[];
+    private func: AggregationFunction;
+
+    constructor(arr: number[], func: AggregationFunction = (a, b) => a + b) { // Default to sum
+        this.n = arr.length;
+        this.tree = new Array(4 </em> this.n).fill(0);
+        this.arr = arr;
+        this.func = func;
+
+        this._build(0, 0, this.n - 1);
+    }
+
+    private _build(treeIdx: number, low: number, high: number): void {
+        if (low === high) {
+            this.tree[treeIdx] = this.arr[low];
+            return;
+        }
+        
+        const mid = Math.floor((low + high) / 2);
+        this._build(2 <em> treeIdx + 1, low, mid);
+        this._build(2 </em> treeIdx + 2, mid + 1, high);
+        this.tree[treeIdx] = this.func(this.tree[2 <em> treeIdx + 1], this.tree[2 </em> treeIdx + 2]);
+    }
+
+    public update(idx: number, val: number): void {
+        this.arr[idx] = val;
+        this._updateTree(0, 0, this.n - 1, idx, val);
+    }
+
+    private _updateTree(treeIdx: number, low: number, high: number, arrIdx: number, val: number): void {
+        if (low === high) { // Leaf node
+            this.tree[treeIdx] = val;
+            return;
+        }
+        
+        const mid = Math.floor((low + high) / 2);
+        if (low <= arrIdx && arrIdx <= mid) { // Element is in left child's range
+            this._updateTree(2 <em> treeIdx + 1, low, mid, arrIdx, val);
+        } else { // Element is in right child's range
+            this._updateTree(2 </em> treeIdx + 2, mid + 1, high, arrIdx, val);
+        }
+        this.tree[treeIdx] = this.func(this.tree[2 <em> treeIdx + 1], this.tree[2 </em> treeIdx + 2]);
+    }
+
+    public query(qLow: number, qHigh: number): number {
+        return this._queryTree(0, 0, this.n - 1, qLow, qHigh);
+    }
+
+    private _queryTree(treeIdx: number, low: number, high: number, qLow: number, qHigh: number): number {
+        // Case 1: Current segment is completely outside query range
+        if (qLow > high || qHigh < low) {
+            // Return identity element for the aggregation function
+            if (this.func === ((a, b) => a + b)) return 0;
+            if (this.func === Math.min) return Infinity;
+            if (this.func === Math.max) return -Infinity;
+            return 0; // Default for unknown functions
+        }
+        
+        // Case 2: Current segment is completely inside query range
+        if (qLow <= low && high <= qHigh) {
+            return this.tree[treeIdx];
+        }
+        
+        // Case 3: Current segment partially overlaps query range
+        const mid = Math.floor((low + high) / 2);
+        const leftVal = this._queryTree(2 <em> treeIdx + 1, low, mid, qLow, qHigh);
+        const rightVal = this._queryTree(2 </em> treeIdx + 2, mid + 1, high, qLow, qHigh);
+        
+        return this.func(leftVal, rightVal);
+    }
+}
+
+// Example Usage (Sum Segment Tree)
+// const arrTS: number[] = [1, 3, 5, 7, 9, 11];
+// const stTS = new SegmentTreeTS(arrTS); // For sum queries
+// console.log("Sum of [0, 5]:", stTS.query(0, 5)); // Expected: 36
+// console.log("Sum of [1, 3]:", stTS.query(1, 3)); // Expected: 3 + 5 + 7 = 15
+
+// stTS.update(2, 10); // Change arr[2] from 5 to 10. arr is now [1, 3, 10, 7, 9, 11]
+// console.log("Sum of [0, 5] after update:", stTS.query(0, 5)); // Expected: 41
+// console.log("Sum of [1, 3] after update:", stTS.query(1, 3)); // Expected: 3 + 10 + 7 = 20
+</code></pre>
+    <pre data-lang="cpp"><code class="language-cpp">#include &lt;vector&gt;
+#include &lt;functional&gt; // For std::function
+#include &lt;limits&gt;     // For std::numeric_limits
+#include &lt;iostream&gt;   // For example usage
+
+// Define identity elements for common aggregation functions
+const int SUM_IDENTITY = 0;
+const int MIN_IDENTITY = std::numeric_limits&lt;int&gt;::max();
+const int MAX_IDENTITY = std::numeric_limits&lt;int&gt;::min();
+
+class SegmentTree {
+private:
+    std::vector&lt;int&gt; tree;
+    const std::vector&lt;int&gt;& original_arr; // Reference to original array
+    int n;
+    std::function&lt;int(int, int)&gt; func; // Aggregation function (e.g., sum, min, max)
+    int identity_element; // Identity element for the aggregation function
+
+    void _build(int tree_idx, int low, int high) {
+        if (low == high) {
+            tree[tree_idx] = original_arr[low];
+            return;
+        }
+        
+        int mid = low + (high - low) / 2;
+        _build(2 <em> tree_idx + 1, low, mid);
+        _build(2 </em> tree_idx + 2, mid + 1, high);
+        tree[tree_idx] = func(tree[2 <em> tree_idx + 1], tree[2 </em> tree_idx + 2]);
+    }
+
+    void _update_tree(int tree_idx, int low, int high, int arr_idx, int val) {
+        if (low == high) { // Leaf node
+            tree[tree_idx] = val;
+            return;
+        }
+        
+        int mid = low + (high - low) / 2;
+        if (low <= arr_idx && arr_idx <= mid) { // Element is in left child's range
+            _update_tree(2 <em> tree_idx + 1, low, mid, arr_idx, val);
+        } else { // Element is in right child's range
+            _update_tree(2 </em> tree_idx + 2, mid + 1, high, arr_idx, val);
+        }
+        tree[tree_idx] = func(tree[2 <em> tree_idx + 1], tree[2 </em> tree_idx + 2]);
+    }
+
+    int _query_tree(int tree_idx, int low, int high, int q_low, int q_high) {
+        // Case 1: Current segment is completely outside query range
+        if (q_low > high || q_high < low) {
+            return identity_element;
+        }
+        
+        // Case 2: Current segment is completely inside query range
+        if (q_low <= low && high <= q_high) {
+            return tree[tree_idx];
+        }
+        
+        // Case 3: Current segment partially overlaps query range
+        int mid = low + (high - low) / 2;
+        int left_val = _query_tree(2 <em> tree_idx + 1, low, mid, q_low, q_high);
+        int right_val = _query_tree(2 </em> tree_idx + 2, mid + 1, high, q_low, q_high);
+        
+        return func(left_val, right_val);
+    }
+
+public:
+    SegmentTree(const std::vector&lt;int&gt;& arr, std::function&lt;int(int, int)&gt; aggregation_func = [](int a, int b){ return a + b; }, int id_element = SUM_IDENTITY)
+        : original_arr(arr), n(arr.size()), func(aggregation_func), identity_element(id_element) {
+        tree.resize(4 <em> n); // Safe size
+        _build(0, 0, n - 1);
+    }
+
+    void update(int idx, int val) {
+        // Note: original_arr is const here, so we only update the tree
+        // For a mutable original_arr, you'd update original_arr[idx] = val;
+        _update_tree(0, 0, n - 1, idx, val);
+    }
+
+    int query(int q_low, int q_high) {
+        return _query_tree(0, 0, n - 1, q_low, q_high);
+    }
+};
+
+// int main() {
+//     std::vector&lt;int&gt; arr = {1, 3, 5, 7, 9, 11};
+
+//     // Sum Segment Tree
+//     SegmentTree sum_st(arr, [](int a, int b){ return a + b; }, SUM_IDENTITY);
+//     std::cout &lt;&lt; "Sum of [0, 5]: " &lt;&lt; sum_st.query(0, 5) &lt;&lt; std::endl; // Expected: 36
+//     std::cout &lt;&lt; "Sum of [1, 3]: " &lt;&lt; sum_st.query(1, 3) &lt;&lt; std::endl; // Expected: 15
+//     sum_st.update(2, 10); // Change arr[2] from 5 to 10
+//     std::cout &lt;&lt; "Sum of [0, 5] after update: " &lt;&lt; sum_st.query(0, 5) &lt;&lt; std::endl; // Expected: 41
+//     std::cout &lt;&lt; "Sum of [1, 3] after update: " &lt;&lt; sum_st.query(1, 3) &lt;&lt; std::endl; // Expected: 20
+
+//     std::cout &lt;&lt; "------------------" &lt;&lt; std::endl;
+
+//     // Min Segment Tree
+//     std::vector&lt;int&gt; min_arr = {10, 1, 5, 8, 3};
+//     SegmentTree min_st(min_arr, [](int a, int b){ return std::min(a, b); }, MIN_IDENTITY);
+//     std::cout &lt;&lt; "Min of [0, 4]: " &lt;&lt; min_st.query(0, 4) &lt;&lt; std::endl; // Expected: 1
+//     min_st.update(0, 0); // Change min_arr[0] to 0
+//     std::cout &lt;&lt; "Min of [0, 4] after update: " &lt;&lt; min_st.query(0, 4) &lt;&lt; std::endl; // Expected: 0
+//     return 0;
+// }
+</code></pre>
+    <pre data-lang="go"><code class="language-go">package main
+
+import (
+    "fmt"
+    "math"
+)
+
+// Define aggregation function type
+type AggregationFunc func(int, int) int
+
+// Identity elements for common aggregation functions
+const (
+    SumIdentity = 0
+    MinIdentity = math.MaxInt32
+    MaxIdentity = math.MinInt32
+)
+
+type SegmentTree struct {
+    tree            []int
+    originalArr     []int // Copy of original array
+    n               int
+    func            AggregationFunc
+    identityElement int
+}
+
+func (st </em>SegmentTree) build(treeIdx, low, high int) {
+    if low == high {
+        st.tree[treeIdx] = st.originalArr[low]
+        return
+    }
+
+    mid := low + (high-low)/2
+    st.build(2<em>treeIdx+1, low, mid)
+    st.build(2</em>treeIdx+2, mid+1, high)
+    st.tree[treeIdx] = st.func(st.tree[2<em>treeIdx+1], st.tree[2</em>treeIdx+2])
+}
+
+func (st <em>SegmentTree) updateTree(treeIdx, low, high, arrIdx, val int) {
+    if low == high { // Leaf node
+        st.tree[treeIdx] = val
+        return
+    }
+
+    mid := low + (high-low)/2
+    if low <= arrIdx && arrIdx <= mid { // Element is in left child's range
+        st.updateTree(2</em>treeIdx+1, low, mid, arrIdx, val)
+    } else { // Element is in right child's range
+        st.updateTree(2<em>treeIdx+2, mid+1, high, arrIdx, val)
+    }
+    st.tree[treeIdx] = st.func(st.tree[2</em>treeIdx+1], st.tree[2<em>treeIdx+2])
+}
+
+func (st </em>SegmentTree) queryTree(treeIdx, low, high, qLow, qHigh int) int {
+    // Case 1: Current segment is completely outside query range
+    if qLow > high || qHigh < low {
+        return st.identityElement
+    }
+
+    // Case 2: Current segment is completely inside query range
+    if qLow <= low && high <= qHigh {
+        return st.tree[treeIdx]
+    }
+
+    // Case 3: Current segment partially overlaps query range
+    mid := low + (high-low)/2
+    leftVal := st.queryTree(2<em>treeIdx+1, low, mid, qLow, qHigh)
+    rightVal := st.queryTree(2</em>treeIdx+2, mid+1, high, qLow, qHigh)
+
+    return st.func(leftVal, rightVal)
+}
+
+func NewSegmentTree(arr []int, aggregationFunc AggregationFunc, identityElement int) <em>SegmentTree {
+    st := &SegmentTree{
+        originalArr: make([]int, len(arr)),
+        n:           len(arr),
+        func:        aggregationFunc,
+        identityElement: identityElement,
+    }
+    copy(st.originalArr, arr) // Copy original array
+    st.tree = make([]int, 4</em>st.n)
+    st.build(0, 0, st.n-1)
+    return st
+}
+
+func (st <em>SegmentTree) Update(idx, val int) {
+    st.originalArr[idx] = val // Update original array copy
+    st.updateTree(0, 0, st.n-1, idx, val)
+}
+
+func (st </em>SegmentTree) Query(qLow, qHigh int) int {
+    return st.queryTree(0, 0, st.n-1, qLow, qHigh)
+}
+
+// func main() {
+//     arr := []int{1, 3, 5, 7, 9, 11}
+
+//     // Sum Segment Tree
+//     sumFunc := func(a, b int) int { return a + b }
+//     sumST := NewSegmentTree(arr, sumFunc, SumIdentity)
+//     fmt.Printf("Sum of [0, 5]: %d\n", sumST.Query(0, 5)) // Expected: 36
+//     fmt.Printf("Sum of [1, 3]: %d\n", sumST.Query(1, 3)) // Expected: 15
+//     sumST.Update(2, 10)
+//     fmt.Printf("Sum of [0, 5] after update: %d\n", sumST.Query(0, 5)) // Expected: 41
+//     fmt.Printf("Sum of [1, 3] after update: %d\n", sumST.Query(1, 3)) // Expected: 20
+
+//     fmt.Println("------------------")
+
+//     // Min Segment Tree
+//     minFunc := func(a, b int) int {
+//         if a < b {
+//             return a
+//         }
+//         return b
+//     }
+//     minArr := []int{10, 1, 5, 8, 3}
+//     minST := NewSegmentTree(minArr, minFunc, MinIdentity)
+//     fmt.Printf("Min of [0, 4]: %d\n", minST.Query(0, 4)) // Expected: 1
+//     minST.Update(0, 0)
+//     fmt.Printf("Min of [0, 4] after update: %d\n", minST.Query(0, 4)) // Expected: 0
+// }
+</code></pre>
+    <pre data-lang="d"><code class="language-d">import std.stdio;
+import std.array;
+import std.algorithm;
+import std.math;
+import std.traits; // For isCallable
+
+// Define identity elements for common aggregation functions
+enum int SUM_IDENTITY = 0;
+enum int MIN_IDENTITY = int.max;
+enum int MAX_IDENTITY = int.min;
+
+// Define aggregation function type
+alias AggregationFunc = int delegate(int, int);
+
+class SegmentTree {
+private:
+    int[] tree;
+    int[] originalArr; // Copy of original array
+    int n;
+    AggregationFunc func; // Aggregation function (e.g., sum, min, max)
+    int identityElement; // Identity element for the aggregation function
+
+    void _build(int treeIdx, int low, int high) {
+        if (low == high) {
+            tree[treeIdx] = originalArr[low];
+            return;
+        }
+        
+        int mid = low + (high - low) / 2;
+        _build(2 <em> treeIdx + 1, low, mid);
+        _build(2 </em> treeIdx + 2, mid + 1, high);
+        tree[treeIdx] = func(tree[2 <em> treeIdx + 1], tree[2 </em> treeIdx + 2]);
+    }
+
+    void _updateTree(int treeIdx, int low, int high, int arrIdx, int val) {
+        if (low == high) { // Leaf node
+            tree[treeIdx] = val;
+            return;
+        }
+        
+        int mid = low + (high - low) / 2;
+        if (low <= arrIdx && arrIdx <= mid) { // Element is in left child's range
+            _updateTree(2 <em> treeIdx + 1, low, mid, arrIdx, val);
+        } else { // Element is in right child's range
+            _updateTree(2 </em> treeIdx + 2, mid + 1, high, arrIdx, val);
+        }
+        tree[treeIdx] = func(tree[2 <em> treeIdx + 1], tree[2 </em> treeIdx + 2]);
+    }
+
+    int _queryTree(int treeIdx, int low, int high, int qLow, int qHigh) {
+        // Case 1: Current segment is completely outside query range
+        if (qLow > high || qHigh < low) {
+            return identityElement;
+        }
+        
+        // Case 2: Current segment is completely inside query range
+        if (qLow <= low && high <= qHigh) {
+            return tree[treeIdx];
+        }
+        
+        // Case 3: Current segment partially overlaps query range
+        int mid = low + (high - low) / 2;
+        int leftVal = _queryTree(2 <em> treeIdx + 1, low, mid, qLow, qHigh);
+        int rightVal = _queryTree(2 </em> treeIdx + 2, mid + 1, high, qLow, qHigh);
+        
+        return func(leftVal, rightVal);
+    }
+
+public:
+    this(int[] arr, AggregationFunc aggregationFunc, int idElement) {
+        this.originalArr = arr.dup; // Duplicate original array
+        this.n = arr.length;
+        this.func = aggregationFunc;
+        this.identityElement = idElement;
+        this.tree = new int[4 * n]; // Safe size
+        _build(0, 0, n - 1);
+    }
+
+    void update(int idx, int val) {
+        originalArr[idx] = val; // Update original array copy
+        _updateTree(0, 0, n - 1, idx, val);
+    }
+
+    int query(int qLow, int qHigh) {
+        return _queryTree(0, 0, n - 1, qLow, qHigh);
+    }
+}
+
+// void main() {
+//     int[] arr = [1, 3, 5, 7, 9, 11];
+
+//     // Sum Segment Tree
+//     AggregationFunc sumFunc = (a, b) => a + b;
+//     auto sumST = new SegmentTree(arr, sumFunc, SUM_IDENTITY);
+//     writefln("Sum of [0, 5]: %s", sumST.query(0, 5)); // Expected: 36
+//     writefln("Sum of [1, 3]: %s", sumST.query(1, 3)); // Expected: 15
+//     sumST.update(2, 10); // Change arr[2] from 5 to 10
+//     writefln("Sum of [0, 5] after update: %s", sumST.query(0, 5)); // Expected: 41
+//     writefln("Sum of [1, 3] after update: %s", sumST.query(1, 3)); // Expected: 20
+
+//     writefln("------------------");
+
+//     // Min Segment Tree
+//     AggregationFunc minFunc = (a, b) => min(a, b);
+//     int[] minArr = [10, 1, 5, 8, 3];
+//     auto minST = new SegmentTree(minArr, minFunc, MIN_IDENTITY);
+//     writefln("Min of [0, 4]: %s", minST.query(0, 4)); // Expected: 1
+//     minST.update(0, 0); // Change minArr[0] to 0
+//     writefln("Min of [0, 4] after update: %s", minST.query(0, 4)); // Expected: 0
+// }
+</code></pre>
+    
+    <p>The efficiency of <code>Segment Trees</code> comes from their ability to cover any query <code>range</code> with a logarithmic number of <code>tree nodes</code>, which means <code>O(log N)</code> operations for both <code>updates</code> and <code>queries</code>.</p>
+</div>
+
+<div id="application-content"><div class="markdown-content">
+    <h3>Application</h3>
+    <p>Segment Trees are highly versatile and widely used in competitive programming and applications requiring efficient range queries and updates. They are particularly useful for:
+    <ul>
+        <li><strong>Range Minimum/Maximum Query (RMQ):</strong> Finding the minimum or maximum element within a given range.</li>
+        <li><strong>Range Sum Query (RSQ):</strong> Calculating the sum of elements within a given range.</li>
+        <li><strong>Dynamic Range Queries:</strong> When the values in the array can change frequently, and you still need fast range queries.</li>
+        <li><strong>Game Development:</strong> For collision detection in 1D space or managing game objects along an axis.</li>
+        <li><strong>Data Visualization:</strong> To quickly aggregate data points within a visible window.</li>
+    </ul>
+    </p>
+</div></div>

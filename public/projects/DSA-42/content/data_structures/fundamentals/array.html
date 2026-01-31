@@ -1,0 +1,98 @@
+<div id="explanation-content">
+    <p>An array is the most fundamental data structure. Think of it as a numbered row of boxes, where each box can hold one piece of information. You can instantly access any box if you know its number (its <code>index</code>).</p>
+    <p>A <code>static array</code> has a fixed size. A <code>dynamic array</code> (like Python's <code>list</code> or C++'s <code>std::vector</code>) can automatically grow when it gets full, making it much more flexible.</p>
+</div>
+
+<div id="expanded-explanation-content">
+    <h3>How it Works (Expanded)</h3>
+    <p>Arrays store elements in a contiguous block of memory. This is their superpower and their main limitation.</p>
+    <div class="explanation-fence">
+Memory: | Box 0 | Box 1 | Box 2 | Box 3 | ...
+Index:      0       1       2       3
+Value:     'A'     'B'     'C'     'D'
+    </div>
+    <p>Because they are in a neat row, accessing an element by its index is extremely fast (<code>O(1)</code> time complexity). The computer can do a simple calculation to find the exact memory address of any box.</p>
+    <p>However, adding an element to a full <code>static array</code> is impossible. For a <code>dynamic array</code>, if it gets full and you add another element, it must perform a 'resize' operation: a new, larger block of memory is allocated, all existing elements are copied over, and the old block is freed. This can be slow if it happens often.</p>
+    <p><strong>Advantages:</strong> Fast random access (<code>O(1)</code>).</p>
+    <p><strong>Disadvantages:</strong> Slow insertion/deletion in the middle (<code>O(n)</code>), as subsequent elements must be shifted. Resizing a <code>dynamic array</code> can be costly.</p>
+</div>
+
+<div id="code-implementations">
+    <pre data-lang="python"><code class="language-python"># Python's list is a dynamic array by default.
+my_array = [10, 20, 30, 40]
+
+# Access (O(1))
+print(my_array[2])  # Output: 30
+
+# Append (Amortized O(1))
+my_array.append(50)
+print(my_array) # Output: [10, 20, 30, 40, 50]
+
+# Insert (O(n))
+my_array.insert(1, 15)
+print(my_array) # Output: [10, 15, 20, 30, 40, 50]
+
+# Delete (O(n))
+del my_array[3]
+print(my_array) # Output: [10, 15, 20, 40, 50]
+</code></pre>
+
+    <pre data-lang="javascript"><code class="language-javascript">// JavaScript's Array is a dynamic array.
+let myArray = [10, 20, 30, 40];
+
+// Access (O(1))
+console.log(myArray[2]); // Output: 30
+
+// Append (Amortized O(1))
+myArray.push(50);
+console.log(myArray); // Output: [10, 20, 30, 40, 50]
+
+// Insert at start (O(n))
+myArray.unshift(5);
+console.log(myArray); // Output: [5, 10, 20, 30, 40, 50]
+
+// Delete from middle (O(n))
+myArray.splice(3, 1); // Removes 1 element at index 3
+console.log(myArray); // Output: [5, 10, 20, 40, 50]
+</code></pre>
+
+    <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;vector&gt; // std::vector is C++'s dynamic array
+
+int main() {
+    std::vector&lt;int&gt; myArray = {10, 20, 30, 40};
+
+    // Access (O(1))
+    std::cout &lt;&lt; "Element at index 2: " &lt;&lt; myArray[2] &lt;&lt; std::endl;
+
+    // Append (Amortized O(1))
+    myArray.push_back(50);
+
+    // Insert (O(n))
+    myArray.insert(myArray.begin() + 1, 15);
+
+    // Delete (O(n))
+    myArray.erase(myArray.begin() + 3);
+
+    // Print all elements
+    for (int i : myArray) {
+        std::cout &lt;&lt; i &lt;&lt; " ";
+    }
+    std::cout &lt;&lt; std::endl;
+    // Expected output: 10 15 20 40 50 
+    return 0;
+}
+</code></pre>
+</div>
+
+<div id="code-explanation-content"><div class="markdown-content">
+    <h3>Code Walkthrough</h3>
+    <p>Most modern languages provide a built-in dynamic array.</p>
+    <div class="explanation-fence">
+<strong>Access:</strong> Using bracket notation <code>array[index]</code> is a direct memory offset calculation, making it incredibly fast.
+<br><br>
+<strong>Append:</strong> Adding to the end (<code>push_back</code>, <code>append</code>, <code>push</code>) is usually fast. The array keeps extra capacity. Only when that capacity is used up does it need to resize, which is a slow <code>O(n)</code> operation. This is called "amortized <code>O(1)</code>" time.
+<br><br>
+<strong>Insert/Delete:</b> Adding or removing from the middle or beginning is slow because it requires shifting all subsequent elements (<code>O(n)</code>).
+    </div></div>
+</div>

@@ -1,0 +1,356 @@
+<div id="explanation-content">
+    <p>The <code>Longest Palindromic Subsequence (LPS)</code> problem is a classic problem in <code>dynamic programming</code>. Given a string <code>S</code>, the goal is to find the longest <code>subsequence</code> of <code>S</code> that is also a <code>palindrome</code>. A <code>palindrome</code> is a sequence that reads the same forwards and backward (e.g., "racecar", "madam"). A <code>subsequence</code> is formed by deleting zero or more <code>elements</code> from a sequence without changing the order of the remaining <code>elements</code>.</p>
+    <p>For example, in the string <code>S = "BBABCBCAB"</code>, one <code>LPS</code> is <code>"BABCBAB"</code> with a length of 7.</p>
+</div>
+
+<div id="expanded-explanation-content">
+    <h3>How it Works (Expanded)</h3>
+    <p>The <code>LPS problem</code> can be efficiently solved using <code>dynamic programming</code>. We build a 2D table <code>dp</code> where <code>dp[i][j]</code> stores the length of the <code>Longest Palindromic Subsequence</code> of the substring <code>S[i...j]</code> (from <code>index i</code> to <code>index j</code>, inclusive).</p>
+    <div class="explanation-fence">
+Example: LPS of S = "BBABCBCAB"
+
+Initialize a DP table (matrix) of size n x n.
+
+dp[i][i] = 1 (single character is a palindrome of length 1)
+
+For a substring S[i...j]:
+- If S[i] == S[j]: dp[i][j] = 2 + dp[i+1][j-1]
+  (If characters match, they extend the LPS of the inner substring)
+- Else (S[i] != S[j]): dp[i][j] = max(dp[i][j-1], dp[i+1][j])
+  (If characters don't match, take the max LPS from excluding S[i] or S[j])
+
+The final dp[0][n-1] value will be the length of the LPS for the entire string.
+    </div>
+    <p><strong>Recurrence Relation:</strong></p>
+    <ul>
+        <li>Base case: <code>dp[i][i] = 1</code> (a single character is a palindrome of length 1).</li>
+        <li>For <code>i < j</code>:
+            <ul>
+                <li>If <code>S[i] == S[j]</code>:
+                    <code>dp[i][j] = 2 + dp[i+1][j-1]</code> (If <code>S[i+1...j-1]</code> is empty, <code>dp[i+1][j-1]</code> is 0. So, <code>2</code> for <code>S[i]</code> and <code>S[j]</code> themselves).</li>
+                <li>Else (<code>S[i] != S[j]</code>):
+                    <code>dp[i][j] = max(dp[i][j-1], dp[i+1][j])</code></li>
+            </ul>
+        </li>
+    </ul>
+    <p><strong>Algorithm Steps:</strong></p>
+    <ol>
+        <li>Create a 2D <code>dp</code> table of size <code>n x n</code>, where <code>n</code> is the length of the string <code>S</code>. Initialize all cells to 0.</li>
+        <li>Initialize the base cases: <code>dp[i][i] = 1</code> for all <code>i</code>.</li>
+        <li>Iterate <code>len</code> (the length of the substring being considered) from 2 to <code>n</code>.</li>
+        <li>For each <code>len</code>, iterate <code>i</code> (the starting <code>index</code> of the substring) from 0 to <code>n - len</code>.</li>
+        <li>Calculate <code>j = i + len - 1</code> (the ending <code>index</code> of the substring).</li>
+        <li>Apply the recurrence relation to fill <code>dp[i][j]</code>.</li>
+        <li>The final length of the <code>LPS</code> will be <code>dp[0][n-1]</code>.</li>
+    </ol>
+    <p><strong>Time Complexity:</strong> <code>O(N^2)</code>, where <code>N</code> is the length of the string. Each cell in the <code>N x N</code> DP table is computed in constant time.</p>
+    <p><strong>Space Complexity:</strong> <code>O(N^2)</code> for the <code>dp</code> table.</p>
+</div>
+
+<div id="code-implementations">
+    <pre data-lang="python"><code class="language-python">def longest_palindromic_subsequence(s):
+    n = len(s)
+
+    # dp[i][j] stores the length of LPS of substring s[i..j]
+    dp = [[0 for _ in range(n)] for _ in range(n)]
+
+    # Base case: Every single character is a palindrome of length 1
+    for i in range(n):
+        dp[i][i] = 1
+
+    # Fill dp table
+    # L is length of substring (from 2 to n)
+    for L in range(2, n + 1):
+        for i in range(n - L + 1):
+            j = i + L - 1
+            if s[i] == s[j]:
+                # Characters match, extend LPS from inner substring
+                dp[i][j] = 2 + dp[i + 1][j - 1]
+            else:
+                # Characters don't match, take max from excluding s[i] or s[j]
+                dp[i][j] = max(dp[i][j - 1], dp[i + 1][j])
+    
+    return dp[0][n - 1]
+
+# Example
+# s1 = "BBABCBCAB"
+# print(longest_palindromic_subsequence(s1)) # Expected: 7 (BABCBAB)
+
+# s2 = "GEEKSFORGEEKS"
+# print(longest_palindromic_subsequence(s2)) # Expected: 5 (EEKEE)
+</code></pre>
+
+    <pre data-lang="javascript"><code class="language-javascript">function longestPalindromicSubsequence(s) {
+    const n = s.length;
+
+    // dp[i][j] stores the length of LPS of substring s[i..j]
+    const dp = Array(n).fill(0).map(() => Array(n).fill(0));
+
+    // Base case: Every single character is a palindrome of length 1
+    for (let i = 0; i < n; i++) {
+        dp[i][i] = 1;
+    }
+
+    // Fill dp table
+    // L is length of substring (from 2 to n)
+    for (let L = 2; L <= n; L++) {
+        for (let i = 0; i <= n - L; i++) {
+            const j = i + L - 1;
+            if (s[i] === s[j]) {
+                // Characters match, extend LPS from inner substring
+                dp[i][j] = 2 + (L === 2 ? 0 : dp[i + 1][j - 1]);
+            } else {
+                // Characters don't match, take max from excluding s[i] or s[j]
+                dp[i][j] = Math.max(dp[i][j - 1], dp[i + 1][j]);
+            }
+        }
+    }
+    
+    return dp[0][n - 1];
+}
+
+// const s1 = "BBABCBCAB";
+// console.log(longestPalindromicSubsequence(s1)); // Expected: 7
+
+// const s2 = "GEEKSFORGEEKS";
+// console.log(longestPalindromicSubsequence(s2)); // Expected: 5
+</code></pre>
+
+    <pre data-lang="typescript"><code class="language-typescript">function longestPalindromicSubsequenceTS(s: string): number {
+    const n = s.length;
+
+    // dp[i][j] stores the length of LPS of substring s[i..j]
+    const dp: number[][] = Array(n).fill(0).map(() => Array(n).fill(0));
+
+    // Base case: Every single character is a palindrome of length 1
+    for (let i = 0; i < n; i++) {
+        dp[i][i] = 1;
+    }
+
+    // Fill dp table
+    // L is length of substring (from 2 to n)
+    for (let L = 2; L <= n; L++) {
+        for (let i = 0; i <= n - L; i++) {
+            const j = i + L - 1;
+            if (s[i] === s[j]) {
+                // Characters match, extend LPS from inner substring
+                dp[i][j] = 2 + (L === 2 ? 0 : dp[i + 1][j - 1]);
+            } else {
+                // Characters don't match, take max from excluding s[i] or s[j]
+                dp[i][j] = Math.max(dp[i][j - 1], dp[i + 1][j]);
+            }
+        }
+    }
+    
+    return dp[0][n - 1];
+}
+
+// const s1TS = "BBABCBCAB";
+// console.log(longestPalindromicSubsequenceTS(s1TS)); // Expected: 7
+
+// const s2TS = "GEEKSFORGEEKS";
+// console.log(longestPalindromicSubsequenceTS(s2TS)); // Expected: 5
+</code></pre>
+    
+    <pre data-lang="cpp"><code class="language-cpp">#include &lt;string&gt;
+#include &lt;vector&gt;
+#include &lt;iostream&gt;
+#include &lt;algorithm&gt; // For std::max
+
+int longestPalindromicSubsequence(const std::string& s) {
+    int n = s.length();
+
+    // dp[i][j] stores the length of LPS of substring s[i..j]
+    std::vector&lt;std::vector&lt;int&gt;&gt; dp(n, std::vector&lt;int&gt;(n, 0));
+
+    // Base case: Every single character is a palindrome of length 1
+    for (int i = 0; i < n; i++) {
+        dp[i][i] = 1;
+    }
+
+    // Fill dp table
+    // L is length of substring (from 2 to n)
+    for (int L = 2; L <= n; L++) {
+        for (int i = 0; i <= n - L; i++) {
+            int j = i + L - 1;
+            if (s[i] == s[j]) {
+                // Characters match, extend LPS from inner substring
+                // If L == 2, then dp[i+1][j-1] would be dp[i+1][i], which is 0 for length.
+                // It should be 0 because an empty string between two matching characters forms a LPS of length 2.
+                dp[i][j] = 2 + dp[i + 1][j - 1];
+            } else {
+                // Characters don't match, take max from excluding s[i] or s[j]
+                dp[i][j] = std::max(dp[i][j - 1], dp[i + 1][j]);
+            }
+        }
+    }
+    
+    return dp[0][n - 1];
+}
+
+// int main() {
+//     std::string s1 = "BBABCBCAB";
+//     std::cout << "LPS length for " << s1 << ": " << longestPalindromicSubsequence(s1) << std::endl; // 7
+
+//     std::string s2 = "GEEKSFORGEEKS";
+//     std::cout << "LPS length for " << s2 << ": " << longestPalindromicSubsequence(s2) << std::endl; // 5
+//     return 0;
+// }
+</code></pre>
+
+    <pre data-lang="go"><code class="language-go">package main
+
+import "fmt"
+
+func longestPalindromicSubsequence(s string) int {
+    n := len(s)
+
+    // dp[i][j] stores the length of LPS of substring s[i..j]
+    dp := make([][]int, n)
+    for i := range dp {
+        dp[i] = make([]int, n)
+    }
+
+    // Base case: Every single character is a palindrome of length 1
+    for i := 0; i < n; i++ {
+        dp[i][i] = 1
+    }
+
+    // Fill dp table
+    // L is length of substring (from 2 to n)
+    for L := 2; L <= n; L++ {
+        for i := 0; i <= n - L; i++ {
+            j := i + L - 1
+            if s[i] == s[j] {
+                // Characters match, extend LPS from inner substring
+                // If L == 2, then dp[i+1][j-1] would be dp[i+1][i], which is 0 for length.
+                // This correctly adds 2 for the two matching characters.
+                dp[i][j] = 2 + dp[i+1][j-1]
+            } else {
+                // Characters don't match, take max from excluding s[i] or s[j]
+                dp[i][j] = max(dp[i][j-1], dp[i+1][j])
+            }
+        }
+    }
+    
+    return dp[0][n-1]
+}
+
+func max(a, b int) int {
+    if a > b {
+        return a
+    }
+    return b
+}
+
+// func main() {
+//     s1 := "BBABCBCAB"
+//     fmt.Printf("LPS length for %s: %d\n", s1, longestPalindromicSubsequence(s1)) // 7
+
+//     s2 := "GEEKSFORGEEKS"
+//     fmt.Printf("LPS length for %s: %d\n", s2, longestPalindromicSubsequence(s2)) // 5
+// }
+</code></pre>
+    
+    <pre data-lang="d"><code class="language-d">import std.stdio;
+import std.array;
+import std.algorithm; // For std.algorithm.max
+
+int longestPalindromicSubsequence(string s) {
+    auto n = s.length;
+
+    // dp[i][j] stores the length of LPS of substring s[i..j]
+    auto dp = new int[n][n];
+
+    // Base case: Every single character is a palindrome of length 1
+    foreach (i; 0 .. n) {
+        dp[i][i] = 1;
+    }
+
+    // Fill dp table
+    // L is length of substring (from 2 to n)
+    foreach (L; 2 .. n + 1) {
+        foreach (i; 0 .. n - L + 1) {
+            auto j = i + L - 1;
+            if (s[i] == s[j]) {
+                // Characters match, extend LPS from inner substring
+                // dp[i+1][j-1] will be 0 if L == 2 (i.e., i+1 > j-1), which is correct
+                dp[i][j] = 2 + dp[i + 1][j - 1];
+            } else {
+                // Characters don't match, take max from excluding s[i] or s[j]
+                dp[i][j] = max(dp[i][j - 1], dp[i + 1][j]);
+            }
+        }
+    }
+    
+    return dp[0][n - 1];
+}
+
+// void main() {
+//     string s1 = "BBABCBCAB";
+//     writeln("LPS length for ", s1, ": ", longestPalindromicSubsequence(s1)); // 7
+
+//     string s2 = "GEEKSFORGEEKS";
+//     writeln("LPS length for ", s2, ": ", longestPalindromicSubsequence(s2)); // 5
+// }
+</code></pre>
+</div>
+
+<div id="code-explanation-content"><div class="markdown-content">
+    <h3>Code Walkthrough</h3>
+    <p>The <code>Longest Palindromic Subsequence</code> problem is solved using <code>dynamic programming</code> to fill a 2D table where <code>dp[i][j]</code> represents the <code>LPS</code> length for the substring <code>s[i...j]</code>.</p>
+    <div class="explanation-fence">
+<strong>Initialization:</strong>
+<ul>
+    <li><code>n</code>: The length of the input string <code>s</code>.</li>
+    <li>A 2D <code>dp</code> table (<code>n x n</code>) is created and initialized with zeros. <code>dp[i][j]</code> will store the length of the <code>LPS</code> for the substring <code>s[i...j]</code>.</li>
+    <li><strong>Base Case:</strong> All <code>dp[i][i]</code> (single-character substrings) are initialized to 1, as a single character is a palindrome of length 1.</li>
+</ul>
+<br>
+<strong>Filling the DP Table:</strong>
+<ul>
+    <li>The table is filled iteratively by considering substrings of increasing <code>length</code> (<code>L</code>). <code>L</code> goes from 2 to <code>n</code>.</li>
+    <li>For each <code>length L</code>, <code>i</code> (the starting <code>index</code>) iterates from 0 to <code>n - L</code>.</li>
+    <li><code>j</code> (the ending <code>index</code>) is calculated as <code>i + L - 1</code>.</li>
+    <li>For each substring <code>s[i...j]</code>:
+        <ul>
+            <li><strong>Case 1: <code>s[i] == s[j]</code></strong>
+                <ul>
+                    <li>If the characters at the ends of the substring match, they can be part of the <code>LPS</code>. The length of the <code>LPS</code> for <code>s[i...j]</code> is 2 (for <code>s[i]</code> and <code>s[j]</code>) plus the <code>LPS</code> length of the inner substring <code>s[i+1...j-1]</code> (<code>dp[i+1][j-1]</code>).</li>
+                    <li>If <code>L</code> is 2 (e.g., "aa"), <code>dp[i+1][j-1]</code> refers to <code>dp[i+1][i]</code>, which is 0 for an empty inner substring, correctly resulting in <code>2 + 0 = 2</code>.</li>
+                </ul>
+            </li>
+            <li><strong>Case 2: <code>s[i] != s[j]</code></strong>
+                <ul>
+                    <li>If the characters at the ends do not match, we cannot include both <code>s[i]</code> and <code>s[j]</code> in the <code>LPS</code>.</li>
+                    <li>We must choose the maximum <code>LPS</code> length from two options:
+                        <ul>
+                            <li>Excluding <code>s[i]</code>: <code>dp[i][j-1]</code> (LPS of <code>s[i...j-1]</code>).</li>
+                            <li>Excluding <code>s[j]</code>: <code>dp[i+1][j]</code> (LPS of <code>s[i+1...j]</code>).</li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </li>
+</ul>
+<br>
+<strong>Result:</strong>
+<ul>
+    <li>The final answer, the length of the <code>Longest Palindromic Subsequence</code> for the entire string, is stored in <code>dp[0][n-1]</code>.</li>
+</ul>
+    </div></div>
+</div>
+
+<div id="application-content"><div class="markdown-content">
+    <h3>Application</h3>
+    <p>The <code>Longest Palindromic Subsequence (LPS)</code> problem has several applications in various fields:</p>
+    <ul>
+        <li><strong>Bioinformatics:</strong> Analyzing DNA and protein sequences, where palindromic structures can indicate functional significance. Finding <code>LPS</code> can help identify regions with high symmetry.</li>
+        <li><strong>Text Compression:</strong> In some compression algorithms, identifying palindromic subsequences can help in representing data more compactly.</li>
+        <li><strong>Speech Recognition:</strong> Detecting palindromic patterns in speech signals.</li>
+        <li><strong>Pattern Recognition:</strong> Useful in generalized pattern matching tasks where identifying symmetric patterns in data is important.</li>
+        <li><strong>String Similarity:</strong> While not a direct measure of <code>edit distance</code>, the length of the <code>LPS</code> can provide insights into the structural similarity of a string to its reverse, or be a component in more complex string comparison metrics.</li>
+    </ul>
+    </p>
+</div></div>

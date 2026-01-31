@@ -1,0 +1,216 @@
+<div id="explanation-content">
+    <p><code>Bubble Sort</code> is a simple sorting algorithm that repeatedly steps through the list, compares adjacent elements, and swaps them if they are in the wrong order. The pass through the list is repeated until the list is sorted. The algorithm gets its name because smaller elements "bubble" to the top of the list.</p>
+    <p>While simple to understand and implement, <code>Bubble Sort</code> is too slow for most practical applications, with a time complexity of <code>O(N^2)</code>.</p>
+</div>
+
+<div id="expanded-explanation-content">
+    <h3>How it Works (Expanded)</h3>
+    <p><code>Bubble Sort</code> works by repeatedly comparing adjacent elements and swapping them if they are out of order. After the first pass, the largest element will have "bubbled up" to the very end of the array. After the second pass, the second-largest element will be in its correct position, and so on.</p>
+    <div class="explanation-fence">
+Example: Sort [5, 1, 4, 2, 8]
+
+Pass 1:
+( 5 1 4 2 8 ) -> ( 1 5 4 2 8 ) Swap 5 and 1
+( 1 5 4 2 8 ) -> ( 1 4 5 2 8 ) Swap 5 and 4
+( 1 4 5 2 8 ) -> ( 1 4 2 5 8 ) Swap 5 and 2
+( 1 4 2 5 8 ) -> ( 1 4 2 5 8 ) No swap (8 > 5)
+Result after Pass 1: [1, 4, 2, 5, 8] (Largest element, 8, is at the end)
+
+Pass 2:
+( 1 4 2 5 8 ) -> ( 1 4 2 5 8 ) No swap
+( 1 4 2 5 8 ) -> ( 1 2 4 5 8 ) Swap 4 and 2
+( 1 2 4 5 8 ) -> ( 1 2 4 5 8 ) No swap
+Result after Pass 2: [1, 2, 4, 5, 8] (Second largest, 5, is in place)
+
+... and so on, until no swaps are needed in a full pass.
+    </div>
+    <p>An optimization can be made: if a full pass through the array occurs with no swaps, it means the array is already sorted, and the algorithm can terminate early.</p>
+    <p><strong>Time Complexity:</strong> <code>O(N^2)</code> in the average and worst cases, as it requires nested loops to iterate through the array. In the best case (an already sorted array), it can be <code>O(N)</code> with the optimization.</p>
+    <p><strong>Space Complexity:</strong> <code>O(1)</code>, as it sorts the array in-place without requiring extra storage.</p>
+</div>
+
+<div id="code-implementations">
+    <pre data-lang="python"><code class="language-python">def bubble_sort(arr):
+    n = len(arr)
+    for i in range(n):
+        # Last i elements are already in place
+        swapped = False
+        for j in range(0, n - i - 1):
+            # Traverse the array from 0 to n-i-1
+            # Swap if the element found is greater than the next element
+            if arr[j] > arr[j + 1]:
+                arr[j], arr[j + 1] = arr[j + 1], arr[j]
+                swapped = True
+        # If no two elements were swapped by inner loop, then break
+        if not swapped:
+            break
+    return arr
+
+# Example
+# my_arr = [5, 1, 4, 2, 8]
+# print(bubble_sort(my_arr)) # [1, 2, 4, 5, 8]
+</code></pre>
+
+    <pre data-lang="javascript"><code class="language-javascript">function bubbleSort(arr) {
+    const n = arr.length;
+    for (let i = 0; i < n; i++) {
+        // Last i elements are already in place
+        let swapped = false;
+        for (let j = 0; j < n - i - 1; j++) {
+            // Traverse the array from 0 to n-i-1
+            // Swap if the element found is greater than the next element
+            if (arr[j] > arr[j + 1]) {
+                [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]]; // ES6 destructuring swap
+                swapped = true;
+            }
+        }
+        // If no two elements were swapped by inner loop, then break
+        if (!swapped) {
+            break;
+        }
+    }
+    return arr;
+}
+
+// const myArr = [5, 1, 4, 2, 8];
+// console.log(bubbleSort(myArr)); // [1, 2, 4, 5, 8]
+</code></pre>
+
+    <pre data-lang="typescript"><code class="language-typescript">function bubbleSortTS(arr: number[]): number[] {
+    const n = arr.length;
+    for (let i = 0; i < n; i++) {
+        // Last i elements are already in place
+        let swapped = false;
+        for (let j = 0; j < n - i - 1; j++) {
+            // Traverse the array from 0 to n-i-1
+            // Swap if the element found is greater than the next element
+            if (arr[j] > arr[j + 1]) {
+                [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
+                swapped = true;
+            }
+        }
+        // If no two elements were swapped by inner loop, then break
+        if (!swapped) {
+            break;
+        }
+    }
+    return arr;
+}
+
+// const myArrTS: number[] = [5, 1, 4, 2, 8];
+// console.log(bubbleSortTS(myArrTS)); // [1, 2, 4, 5, 8]
+</code></pre>
+    
+    <pre data-lang="cpp"><code class="language-cpp">#include &lt;vector&gt;
+#include &lt;utility&gt; // For std::swap
+
+void bubbleSort(std::vector&lt;int&gt;& arr) {
+    int n = arr.size();
+    for (int i = 0; i < n; ++i) {
+        // Last i elements are already in place
+        bool swapped = false;
+        for (int j = 0; j < n - i - 1; ++j) {
+            // Traverse the array from 0 to n-i-1
+            // Swap if the element found is greater than the next element
+            if (arr[j] > arr[j + 1]) {
+                std::swap(arr[j], arr[j + 1]);
+                swapped = true;
+            }
+        }
+        // If no two elements were swapped by inner loop, then break
+        if (!swapped) {
+            break;
+        }
+    }
+}
+
+// #include &lt;iostream&gt;
+// int main() {
+//     std::vector<int> myArr = {5, 1, 4, 2, 8};
+//     bubbleSort(myArr);
+//     for(int val : myArr) {
+//         std::cout << val << " "; // 1 2 4 5 8
+//     }
+//     std::cout << std::endl;
+// }
+</code></pre>
+
+    <pre data-lang="go"><code class="language-go">package main
+
+func bubbleSort(arr []int) []int {
+    n := len(arr)
+    for i := 0; i < n; i++ {
+        // Last i elements are already in place
+        swapped := false
+        for j := 0; j < n-i-1; j++ {
+            // Traverse the array from 0 to n-i-1
+            // Swap if the element found is greater than the next element
+            if arr[j] > arr[j+1] {
+                arr[j], arr[j+1] = arr[j+1], arr[j]
+                swapped = true
+            }
+        }
+        // If no two elements were swapped by inner loop, then break
+        if !swapped {
+            break
+        }
+    }
+    return arr
+}
+
+// import "fmt"
+// func main() {
+//     myArr := []int{5, 1, 4, 2, 8}
+//     fmt.Println(bubbleSort(myArr)) // [1 2 4 5 8]
+// }
+</code></pre>
+    
+    <pre data-lang="d"><code class="language-d">import std.algorithm;
+
+void bubbleSort(int[] arr) {
+    auto n = arr.length;
+    for (int i = 0; i < n; i++) {
+        // Last i elements are already in place
+        bool swapped = false;
+        for (int j = 0; j < n - i - 1; j++) {
+            // Traverse the array from 0 to n-i-1
+            // Swap if the element found is greater than the next element
+            if (arr[j] > arr[j + 1]) {
+                swap(arr[j], arr[j + 1]);
+                swapped = true;
+            }
+        }
+        // If no two elements were swapped by inner loop, then break
+        if (!swapped) {
+            break;
+        }
+    }
+}
+
+// import std.stdio;
+// void main() {
+//     auto myArr = [5, 1, 4, 2, 8];
+//     bubbleSort(myArr);
+//     writeln(myArr); // [1, 2, 4, 5, 8]
+// }
+</code></pre>
+</div>
+
+<div id="code-explanation-content"><div class="markdown-content">
+    <h3>Code Walkthrough</h3>
+    <p>The implementation of <code>Bubble Sort</code> uses two nested loops. The outer loop runs <code>N</code> times, and with each pass, it reduces the size of the inner loop's comparison range, since the largest elements are progressively moved to the end of the array.</p>
+    <div class="explanation-fence">
+<strong>Outer Loop (<code>i</code>):</strong> This loop controls the number of passes. After <code>i</code> passes, the last <code>i</code> elements of the array are guaranteed to be in their final sorted positions.
+<br><br>
+<strong>Inner Loop (<code>j</code>):</strong> This loop iterates from the beginning of the array up to <code>n-i-1</code>. It performs the core comparison and swap.
+<br><br>
+<strong>Swap Condition:</strong> If <code>arr[j]</code> is greater than its adjacent element <code>arr[j+1]</code>, their positions are swapped.
+<br><br>
+<strong>Optimization:</strong> A <code>swapped</code> flag is used. If the inner loop completes a full pass without making any swaps, it means the array is already sorted, and the outer loop can be terminated early using <code>break</code>. This gives <code>Bubble Sort</code> a best-case time complexity of <code>O(N)</code>.
+    </div></div>
+</div>
+
+<div id="application-content"><div class="markdown-content">
+    <h3>Application</h3>
+    <p>Due to its poor performance, <code>Bubble Sort</code> is almost never used in production code. Its primary use is educational: it is often one of the first sorting algorithms taught because of its simplicity and the straightforward nature of its logic. It serves as a good introduction to the concept of sorting and the analysis of algorithm complexity before moving on to more efficient algorithms like <code>Merge Sort</code> or <code>Quick Sort</code>.</p>
+</div></div>

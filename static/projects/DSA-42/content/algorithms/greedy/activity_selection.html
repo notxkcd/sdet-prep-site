@@ -1,0 +1,421 @@
+<div id="explanation-content">
+    <p>The <code>Activity Selection Problem</code> is a classic optimization problem that demonstrates the effectiveness of a <code>greedy approach</code>. Given a set of <code>activities</code>, each with a <code>start time</code> and a <code>finish time</code>, the goal is to select the maximum number of non-overlapping <code>activities</code> that can be performed by a single resource (e.g., a person, a machine, or a classroom). All activities are assumed to be sorted by their finish times.</p>
+    <p>The problem can be solved efficiently by repeatedly choosing the <code>activity</code> that finishes earliest among the remaining compatible activities, thus leaving the maximum time available for subsequent activities.</p>
+</div>
+
+<div id="expanded-explanation-content">
+    <h3>How it Works (Expanded)</h3>
+    <p>The <code>greedy choice</code> in the <code>Activity Selection Problem</code> is to always pick the <code>activity</code> that finishes earliest among the available options. This is a crucial step that needs to be proven correct for the <code>greedy approach</code> to work.</p>
+    <p><strong>Proof Sketch of Greedy Choice:</strong>
+    Suppose we have an optimal solution <code>OPT</code>. Let <code>a_1</code> be the activity in <code>OPT</code> with the earliest finish time. Let <code>a_k</code> be the activity with the earliest finish time in the entire set of activities <code>S</code>. If <code>a_1 = a_k</code>, then our greedy choice aligns with <code>OPT</code>. If <code>a_1 != a_k</code>, we can swap <code>a_1</code> with <code>a_k</code> to form a new solution <code>OPT'</code> that is still optimal (it has the same number of activities) and <code>a_k</code> is now included. This means there's always an optimal solution that contains the greedy choice.</p>
+    <div class="explanation-fence">
+Example: Activities = [ (1,4), (3,5), (0,6), (5,7), (3,9), (5,9), (6,10), (8,11), (8,12), (2,14), (12,16) ]
+
+1. Sort by finish times: (1,4), (3,5), (0,6), (5,7), (3,9), (5,9), (6,10), (8,11), (8,12), (2,14), (12,16)
+   Activities (Start, Finish):
+   A1: (1,4)
+   A2: (3,5)
+   A3: (0,6)
+   A4: (5,7)
+   A5: (3,9)
+   A6: (5,9)
+   A7: (6,10)
+   A8: (8,11)
+   A9: (8,12)
+   A10: (2,14)
+   A11: (12,16)
+
+2. Select activities:
+   - Pick A1 (1,4). Last finish time = 4.
+   - Next activity with start time >= 4 is A4 (5,7). Pick A4. Last finish time = 7.
+   - Next activity with start time >= 7 is A8 (8,11). Pick A8. Last finish time = 11.
+   - Next activity with start time >= 11 is A11 (12,16). Pick A11. Last finish time = 16.
+
+Selected Activities: (1,4), (5,7), (8,11), (12,16). Total 4 activities.
+    </div>
+    <p><strong>Algorithm Steps:</strong></p>
+    <ol>
+        <li>Sort the given set of <code>activities</code> by their <code>finish times</code> in non-decreasing order.</li>
+        <li>Select the first <code>activity</code> from the sorted list. Add it to the set of selected <code>activities</code>.</li>
+        <li>Initialize <code>last_finish_time</code> with the <code>finish time</code> of the selected <code>activity</code>.</li>
+        <li>Iterate through the remaining <code>activities</code> in the sorted list:
+            <ul>
+                <li>If the <code>start time</code> of the current <code>activity</code> is greater than or equal to <code>last_finish_time</code>:
+                    <ul>
+                        <li>Select this <code>activity</code>.</li>
+                        <li>Update <code>last_finish_time</code> with the <code>finish time</code> of this <code>activity</code>.</li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+        <li>The set of selected <code>activities</code> contains the maximum number of non-overlapping activities.</li>
+    </ol>
+    <p><strong>Time Complexity:</strong> <code>O(N log N)</code>, primarily due to the sorting step. If the activities are already sorted by finish times, the complexity is <code>O(N)</code>.</p>
+    <p><strong>Space Complexity:</strong> <code>O(N)</code> to store the activities and the selected set.</p>
+</div>
+
+<div id="code-implementations">
+    <pre data-lang="python"><code class="language-python">def activity_selection(activities):
+    """
+    Solves the Activity Selection Problem.
+    <code>activities</code>: a list of tuples, where each tuple is (start_time, finish_time).
+                  Assumes activities are already sorted by finish_time.
+    """
+    if not activities:
+        return []
+
+    # Sort activities by finish time (if not already sorted)
+    # activities.sort(key=lambda x: x[1])
+
+    selected_activities = []
+    
+    # Select the first activity
+    selected_activities.append(activities[0])
+    last_finish_time = activities[0][1]
+
+    # Iterate through the remaining activities
+    for i in range(1, len(activities)):
+        current_activity_start_time = activities[i][0]
+        current_activity_finish_time = activities[i][1]
+
+        # If this activity can be selected (doesn't overlap with the last selected one)
+        if current_activity_start_time >= last_finish_time:
+            selected_activities.append(activities[i])
+            last_finish_time = current_activity_finish_time
+            
+    return selected_activities
+
+# Example: Activities sorted by finish time
+# activities = [(1, 4), (3, 5), (0, 6), (5, 7), (3, 9), (5, 9), (6, 10), (8, 11), (8, 12), (2, 14), (12, 16)]
+# print(activity_selection(activities)) # Expected: [(1, 4), (5, 7), (8, 11), (12, 16)]
+</code></pre>
+
+    <pre data-lang="javascript"><code class="language-javascript">function activitySelection(activities) {
+    /*<em>
+     </em> Solves the Activity Selection Problem.
+     <em> <code>activities</code>: an array of objects, where each object is { start: number, finish: number }.
+     </em>               Assumes activities are already sorted by finish_time.
+     <em>/
+    if (activities.length === 0) {
+        return [];
+    }
+
+    // Sort activities by finish time (if not already sorted)
+    // activities.sort((a, b) => a.finish - b.finish);
+
+    const selectedActivities = [];
+    
+    // Select the first activity
+    selectedActivities.push(activities[0]);
+    let lastFinishTime = activities[0].finish;
+
+    // Iterate through the remaining activities
+    for (let i = 1; i < activities.length; i++) {
+        const currentActivity = activities[i];
+
+        // If this activity can be selected (doesn't overlap with the last selected one)
+        if (currentActivity.start >= lastFinishTime) {
+            selectedActivities.push(currentActivity);
+            lastFinishTime = currentActivity.finish;
+        }
+    }
+            
+    return selectedActivities;
+}
+
+// const activities = [
+//     { start: 1, finish: 4 }, { start: 3, finish: 5 }, { start: 0, finish: 6 },
+//     { start: 5, finish: 7 }, { start: 3, finish: 9 }, { start: 5, finish: 9 },
+//     { start: 6, finish: 10 }, { start: 8, finish: 11 }, { start: 8, finish: 12 },
+//     { start: 2, finish: 14 }, { start: 12, finish: 16 }
+// ];
+// console.log(activitySelection(activities)); 
+// Expected: [{start: 1, finish: 4}, {start: 5, finish: 7}, {start: 8, finish: 11}, {start: 12, finish: 16}]
+</code></pre>
+
+    <pre data-lang="typescript"><code class="language-typescript">interface Activity {
+    start: number;
+    finish: number;
+}
+
+function activitySelectionTS(activities: Activity[]): Activity[] {
+    /</em><em>
+     </em> Solves the Activity Selection Problem.
+     <em> <code>activities</code>: an array of objects, where each object is { start: number, finish: number }.
+     </em>               Assumes activities are already sorted by finish_time.
+     */
+    if (activities.length === 0) {
+        return [];
+    }
+
+    // Sort activities by finish time (if not already sorted)
+    // activities.sort((a, b) => a.finish - b.finish);
+
+    const selectedActivities: Activity[] = [];
+    
+    // Select the first activity
+    selectedActivities.push(activities[0]);
+    let lastFinishTime = activities[0].finish;
+
+    // Iterate through the remaining activities
+    for (let i = 1; i < activities.length; i++) {
+        const currentActivity = activities[i];
+
+        // If this activity can be selected (doesn't overlap with the last selected one)
+        if (currentActivity.start >= lastFinishTime) {
+            selectedActivities.push(currentActivity);
+            lastFinishTime = currentActivity.finish;
+        }
+    }
+            
+    return selectedActivities;
+}
+
+// const activitiesTS: Activity[] = [
+//     { start: 1, finish: 4 }, { start: 3, finish: 5 }, { start: 0, finish: 6 },
+//     { start: 5, finish: 7 }, { start: 3, finish: 9 }, { start: 5, finish: 9 },
+//     { start: 6, finish: 10 }, { start: 8, finish: 11 }, { start: 8, finish: 12 },
+//     { start: 2, finish: 14 }, { start: 12, finish: 16 }
+// ];
+// console.log(activitySelectionTS(activitiesTS)); 
+// Expected: [{start: 1, finish: 4}, {start: 5, finish: 7}, {start: 8, finish: 11}, {start: 12, finish: 16}]
+</code></pre>
+    
+    <pre data-lang="cpp"><code class="language-cpp">#include &lt;vector&gt;
+#include &lt;iostream&gt;
+#include &lt;algorithm&gt; // For std::sort
+
+// Struct to represent an activity
+struct Activity {
+    int start;
+    int finish;
+
+    // Custom comparator for sorting by finish time
+    bool operator&lt;(const Activity& other) const {
+        return finish < other.finish;
+    }
+};
+
+std::vector&lt;Activity&gt; activitySelection(std::vector&lt;Activity&gt; activities) {
+    if (activities.empty()) {
+        return {};
+    }
+
+    // Sort activities by finish time (if not already sorted)
+    std::sort(activities.begin(), activities.end());
+
+    std::vector&lt;Activity&gt; selected_activities;
+    
+    // Select the first activity
+    selected_activities.push_back(activities[0]);
+    int last_finish_time = activities[0].finish;
+
+    // Iterate through the remaining activities
+    for (size_t i = 1; i < activities.size(); ++i) {
+        const Activity& current_activity = activities[i];
+
+        // If this activity can be selected (doesn't overlap with the last selected one)
+        if (current_activity.start >= last_finish_time) {
+            selected_activities.push_back(current_activity);
+            last_finish_time = current_activity.finish;
+        }
+    }
+            
+    return selected_activities;
+}
+
+// int main() {
+//     std::vector<Activity> activities = {
+//         {1, 4}, {3, 5}, {0, 6}, {5, 7}, {3, 9}, {5, 9},
+//         {6, 10}, {8, 11}, {8, 12}, {2, 14}, {12, 16}
+//     };
+//     std::vector<Activity> result = activitySelection(activities);
+//     for (const auto& act : result) {
+//         std::cout << "(" << act.start << ", " << act.finish << ") ";
+//     }
+//     std::cout << std::endl;
+//     return 0;
+// }
+</code></pre>
+
+    <pre data-lang="go"><code class="language-go">package main
+
+import (
+    "fmt"
+    "sort"
+)
+
+type Activity struct {
+    Start  int
+    Finish int
+}
+
+// Implement sort.Interface for []Activity
+type ByFinishTime []Activity
+
+func (a ByFinishTime) Len() int           { return len(a) }
+func (a ByFinishTime) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a ByFinishTime) Less(i, j int) bool { return a[i].Finish < a[j].Finish }
+
+func activitySelection(activities []Activity) []Activity {
+    if len(activities) == 0 {
+        return nil
+    }
+
+    // Sort activities by finish time (if not already sorted)
+    sort.Sort(ByFinishTime(activities))
+
+    selectedActivities := []Activity{}
+    
+    // Select the first activity
+    selectedActivities = append(selectedActivities, activities[0])
+    lastFinishTime := activities[0].Finish
+
+    // Iterate through the remaining activities
+    for i := 1; i < len(activities); i++ {
+        currentActivity := activities[i]
+
+        // If this activity can be selected (doesn't overlap with the last selected one)
+        if currentActivity.Start >= lastFinishTime {
+            selectedActivities = append(selectedActivities, currentActivity)
+            lastFinishTime = currentActivity.Finish
+        }
+    }
+            
+    return selectedActivities
+}
+
+// func main() {
+//     activities := []Activity{
+//         {Start: 1, Finish: 4}, {Start: 3, Finish: 5}, {Start: 0, Finish: 6},
+//         {Start: 5, Finish: 7}, {Start: 3, Finish: 9}, {Start: 5, Finish: 9},
+//         {Start: 6, Finish: 10}, {Start: 8, Finish: 11}, {Start: 8, Finish: 12},
+//         {Start: 2, Finish: 14}, {Start: 12, Finish: 16},
+//     }
+//     result := activitySelection(activities)
+//     for _, act := range result {
+//         fmt.Printf("(%d, %d) ", act.Start, act.Finish)
+//     }
+//     fmt.Println()
+// }
+</code></pre>
+    
+    <pre data-lang="d"><code class="language-d">import std.stdio;
+import std.array;
+import std.algorithm; // For std.algorithm.sort
+
+// Struct to represent an activity
+struct Activity {
+    int start;
+    int finish;
+}
+
+// Custom comparator for sorting by finish time
+int compareActivitiesByFinishTime(const Activity a, const Activity b) {
+    return a.finish.cmp(b.finish);
+}
+
+Activity[] activitySelection(Activity[] activities) {
+    if (activities.empty) {
+        return [];
+    }
+
+    // Sort activities by finish time (if not already sorted)
+    activities.sort!compareActivitiesByFinishTime();
+
+    Activity[] selectedActivities;
+    
+    // Select the first activity
+    selectedActivities ~= activities[0];
+    int lastFinishTime = activities[0].finish;
+
+    // Iterate through the remaining activities
+    foreach (i; 1 .. activities.length) {
+        auto currentActivity = activities[i];
+
+        // If this activity can be selected (doesn't overlap with the last selected one)
+        if (currentActivity.start >= lastFinishTime) {
+            selectedActivities ~= currentActivity;
+            lastFinishTime = currentActivity.finish;
+        }
+    }
+            
+    return selectedActivities;
+}
+
+// void main() {
+//     Activity[] activities = [
+//         Activity(1, 4), Activity(3, 5), Activity(0, 6), Activity(5, 7),
+//         Activity(3, 9), Activity(5, 9), Activity(6, 10), Activity(8, 11),
+//         Activity(8, 12), Activity(2, 14), Activity(12, 16)
+//     ];
+//     auto result = activitySelection(activities);
+//     foreach (act; result) {
+//         writef("(%d, %d) ", act.start, act.finish);
+//     }
+//     writeln();
+// }
+</code></pre>
+</div>
+
+<div id="code-explanation-content"><div class="markdown-content">
+    <h3>Code Walkthrough</h3>
+    <p>The <code>Activity Selection Problem</code> demonstrates a simple yet effective greedy strategy. The key is to sort activities by their finish times.</p>
+    <div class="explanation-fence">
+<strong><code>Activity</code> Structure:</strong>
+<ul>
+    <li>Each <code>activity</code> is represented by a <code>start time</code> and a <code>finish time</code>.</li>
+</ul>
+<br>
+<strong><code>activity_selection(activities)</code> Function:</strong>
+<ul>
+    <li><code>activities</code>: A list of <code>activity</code> objects/tuples.</li>
+</ul>
+<br>
+<strong>Algorithm Steps:</strong>
+<ol>
+    <li><strong>Sort by Finish Time:</strong> The first crucial step is to sort the input <code>activities</code> in non-decreasing order of their <code>finish times</code>. This is typically done before calling the <code>activity_selection</code> function or as the first step within it. This sorting allows the greedy choice to be made effectively.</li>
+    <li><strong>Initialize:</strong>
+        <ul>
+            <li><code>selected_activities</code>: An empty list to store the activities chosen for the maximum set.</li>
+            <li>If the <code>activities</code> list is empty, return an empty list.</li>
+            <li>The first <code>activity</code> (which has the earliest finish time after sorting) is always selected and added to <code>selected_activities</code>.</li>
+            <li><code>last_finish_time</code>: Stores the finish time of the most recently selected <code>activity</code>. This helps in checking compatibility.</li>
+        </ul>
+    </li>
+    <li><strong>Iterate and Select:</strong> The algorithm then iterates through the remaining <code>activities</code> (from the second activity onwards).
+        <ul>
+            <li>For each <code>current_activity</code>:
+                <ul>
+                    <li>It checks if the <code>current_activity</code>'s <code>start time</code> is greater than or equal to <code>last_finish_time</code>. This condition ensures that the <code>current_activity</code> does not overlap with the <code>activity</code> that was last selected.</li>
+                    <li>If the condition is met (the <code>activities</code> are compatible):
+                        <ul>
+                            <li>The <code>current_activity</code> is added to <code>selected_activities</code>.</li>
+                            <li><code>last_finish_time</code> is updated to the <code>finish time</code> of the <code>current_activity</code>.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </li>
+</ol>
+<br>
+<strong>Result:</strong>
+<ul>
+    <li>The <code>selected_activities</code> list contains the maximum number of non-overlapping activities that can be performed.</li>
+</ul>
+    </div></div>
+</div>
+
+<div id="application-content"><div class="markdown-content">
+    <h3>Application</h3>
+    <p>The <code>Activity Selection Problem</code> has direct applications in various scheduling and resource allocation scenarios:</p>
+    <ul>
+        <li><strong>Meeting Scheduling:</strong> Maximizing the number of meetings that can be scheduled in a conference room without overlaps.</li>
+        <li><strong>Job Scheduling:</strong> Optimizing the number of jobs a single machine or processor can complete within their respective time windows.</li>
+        <li><strong>Resource Allocation:</strong> Allocating a single, limited resource (e.g., a classroom, a car, a piece of equipment) to serve the maximum number of requests/activities.</li>
+        <li><strong>Event Planning:</strong> Scheduling a maximum number of events in a venue where each event has a start and end time.</li>
+        <li><strong>Operating Systems:</strong> CPU scheduling where processes have start and finish times, and the goal is to maximize throughput by selecting non-overlapping processes.</li>
+    </ul>
+    </p>
+</div></div>

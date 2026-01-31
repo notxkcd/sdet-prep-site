@@ -1,0 +1,836 @@
+<div id="explanation-content">
+    <p>A <code>Red-Black Tree</code> is a self-balancing <code>binary search tree</code> (<code>BST</code>) data structure. Like <code>AVL Trees</code>, it guarantees that <code>search</code>, <code>insertion</code>, and <code>deletion</code> operations can be done in <code>O(log N)</code> time. It is a more relaxed form of balancing compared to <code>AVL Trees</code>, allowing for more insertions and deletions before requiring rebalancing operations.</p>
+    <p>The "<code>red-black</code>" property comes from assigning a color (red or black) to each <code>node</code>, along with a set of rules that maintain balance. It's widely used in practice, most famously in the implementations of <code>std::map</code> and <code>std::set</code> in C++, and <code>TreeMap</code> and <code>TreeSet</code> in Java.</p>
+</div>
+
+<div id="expanded-explanation-content">
+    <h3>How it Works (Expanded)</h3>
+    <p>A <code>Red-Black Tree</code> is a <code>BST</code> that adheres to five specific properties:</p>
+    <ol>
+        <li>Every <code>node</code> is either Red or Black.</li>
+        <li>The <code>root</code> is Black.</li>
+        <li>Every <code>leaf</code> (<code>NIL node</code>, which are usually represented as <code>null</code> children that are implicitly black) is Black.</li>
+        <li>If a <code>node</code> is Red, then both its children must be Black. (No two adjacent Red <code>nodes</code>).</li>
+        <li>For each <code>node</code>, all simple <code>paths</code> from the <code>node</code> to descendant <code>leaves</code> contain the same number of Black <code>nodes</code> (this is the "black height" property).</li>
+    </ol>
+    <div class="explanation-fence">
+Conceptual Red-Black Tree:
+
+        (B)10
+       /   \
+    (B)5   (B)15
+   /  \    /  \
+(R)2 (R)7 (R)12 (R)18
+    </div>
+    <p>These properties enforce a strict balancing act: no <code>path</code> from the <code>root</code> to a <code>leaf</code> can be more than twice as long as any other <code>path</code>. This guarantees <code>O(log N)</code> performance.</p>
+    <p><strong>Operations (Insertion & Deletion):</strong></p>
+    <p>When an element is <code>inserted</code> or <code>deleted</code>, the <code>tree</code> might violate one or more of these properties. To restore the <code>Red-Black</code> properties, a series of color changes and <code>tree rotations</code> are performed. The logic is more complex than for <code>AVL Trees</code> because multiple rotations might be needed, and specific cases depend on the colors of parents, grandparents, and siblings.</p>
+    <ul>
+        <li><strong><code>Insert</code>:</strong> Always insert a new <code>node</code> as Red. Then, fix violations by performing rotations and recoloring.</li>
+        <li><strong><code>Delete</code>:</strong> The most complex operation. It involves finding the successor, swapping <code>keys</code>, deleting the <code>node</code>, and then fixing violations by performing rotations and recoloring based on the deleted <code>node</code>'s color and its sibling's color.</li>
+    </ul>
+    <p><strong>Time Complexity:</strong> <code>O(log N)</code> for <code>search</code>, <code>insertion</code>, and <code>deletion</code> in all cases (best, average, worst).</p>
+    <p><strong>Space Complexity:</strong> <code>O(N)</code> to store the <code>nodes</code>.</p>
+</div>
+
+<div id="code-implementations">
+    <pre data-lang="python"><code class="language-python"># Conceptual Red-Black Tree in Python (simplified, full implementation is very complex)
+# This code provides the Node structure and core concepts, not a full working implementation.
+
+class RBNode:
+    RED = True
+    BLACK = False
+
+    def __init__(self, key, color=RED, parent=None, left=None, right=None):
+        self.key = key
+        self.color = color
+        self.parent = parent
+        self.left = left
+        self.right = right
+
+class RedBlackTree:
+    def __init__(self):
+        # NIL node represents external nodes (leaves) and is always black
+        self.NIL = RBNode(key=None, color=RBNode.BLACK)
+        self.root = self.NIL
+
+    def _insert_fixup(self, node):
+        # Logic to fix Red-Black Tree properties after insertion
+        # Involves rotations and recoloring. Very complex.
+        pass # Placeholder
+
+    def _delete_fixup(self, node):
+        # Logic to fix Red-Black Tree properties after deletion
+        # Involves rotations and recoloring. Even more complex.
+        pass # Placeholder
+
+    def insert(self, key):
+        new_node = RBNode(key=key, color=RBNode.RED)
+        new_node.left = self.NIL
+        new_node.right = self.NIL
+
+        y = None
+        x = self.root
+
+        while x != self.NIL:
+            y = x
+            if new_node.key < x.key:
+                x = x.left
+            else:
+                x = x.right
+        
+        new_node.parent = y
+        if new_node.parent == None:
+            self.root = new_node
+        elif new_node.key < y.key:
+            y.left = new_node
+        else:
+            y.right = new_node
+        
+        # Root must be black
+        if new_node.parent == None:
+            new_node.color = RBNode.BLACK
+            return
+        
+        # If grandparent is None, return
+        if new_node.parent.parent == None:
+            return
+        
+        self._insert_fixup(new_node) # This is where the magic happens
+        self.root.color = RBNode.BLACK
+
+    def search(self, key):
+        current = self.root
+        while current != self.NIL and key != current.key:
+            if key < current.key:
+                current = current.left
+            else:
+                current = current.right
+        return current if current != self.NIL else None
+
+# Example Usage (conceptual, full insert/delete fixup not implemented)
+# rbt = RedBlackTree()
+# keys = [10, 20, 30, 15, 25, 5]
+# for key in keys:
+#     rbt.insert(key)
+# print("Search for 25:", rbt.search(25).key if rbt.search(25) else "Not found")
+</code></pre>
+
+    <pre data-lang="javascript"><code class="language-javascript">// Conceptual Red-Black Tree in JavaScript (simplified)
+// This provides the Node structure and core concepts, not a full working implementation.
+
+class RBNode {
+    static RED = true;
+    static BLACK = false;
+
+    constructor(key, color = RBNode.RED, parent = null, left = null, right = null) {
+        this.key = key;
+        this.color = color;
+        this.parent = parent;
+        this.left = left;
+        this.right = right;
+    }
+}
+
+class RedBlackTree {
+    constructor() {
+        // NIL node represents external nodes (leaves) and is always black
+        this.NIL = new RBNode(null, RBNode.BLACK);
+        this.root = this.NIL;
+    }
+
+    _insertFixup(node) {
+        // Logic to fix Red-Black Tree properties after insertion
+        // Involves rotations and recoloring. Very complex.
+        // Omitted for conceptual simplicity.
+    }
+
+    _deleteFixup(node) {
+        // Logic to fix Red-Black Tree properties after deletion
+        // Involves rotations and recoloring. Even more complex.
+        // Omitted for conceptual simplicity.
+    }
+
+    insert(key) {
+        const newNode = new RBNode(key, RBNode.RED);
+        newNode.left = this.NIL;
+        newNode.right = this.NIL;
+
+        let y = null;
+        let x = this.root;
+
+        while (x !== this.NIL) {
+            y = x;
+            if (newNode.key < x.key) {
+                x = x.left;
+            } else {
+                x = x.right;
+            }
+        }
+        
+        newNode.parent = y;
+        if (y === null) {
+            this.root = newNode;
+        } else if (newNode.key < y.key) {
+            y.left = newNode;
+        } else {
+            y.right = newNode;
+        }
+        
+        // Root must be black
+        if (newNode.parent === null) {
+            newNode.color = RBNode.BLACK;
+            return;
+        }
+        
+        // If grandparent is null, return
+        if (newNode.parent.parent === null) {
+            return;
+        }
+        
+        this._insertFixup(newNode); // This is where the magic happens
+        this.root.color = RBNode.BLACK;
+    }
+
+    search(key) {
+        let current = this.root;
+        while (current !== this.NIL && key !== current.key) {
+            if (key < current.key) {
+                current = current.left;
+            } else {
+                current = current.right;
+            }
+        }
+        return current !== this.NIL ? current : null;
+    }
+}
+
+// const rbt = new RedBlackTree();
+// const keys = [10, 20, 30, 15, 25, 5];
+// for (const key of keys) {
+//     rbt.insert(key);
+// }
+// console.log("Search for 25:", rbt.search(25)?.key || "Not found");
+</code></pre>
+
+    <pre data-lang="typescript"><code class="language-typescript">// Conceptual Red-Black Tree in TypeScript (simplified)
+
+class RBNodeTS {
+    static readonly RED = true;
+    static readonly BLACK = false;
+
+    public key: number | null;
+    public color: boolean; // true for RED, false for BLACK
+    public parent: RBNodeTS | null;
+    public left: RBNodeTS;
+    public right: RBNodeTS;
+
+    constructor(
+        key: number | null,
+        color: boolean = RBNodeTS.RED,
+        parent: RBNodeTS | null = null,
+        left: RBNodeTS | null = null,
+        right: RBNodeTS | null = null
+    ) {
+        this.key = key;
+        this.color = color;
+        this.parent = parent;
+        // left and right will point to NIL nodes for leaves, so cannot be null here
+        this.left = left!;
+        this.right = right!;
+    }
+}
+
+class RedBlackTreeTS {
+    private readonly NIL: RBNodeTS;
+    public root: RBNodeTS;
+
+    constructor() {
+        this.NIL = new RBNodeTS(null, RBNodeTS.BLACK); // NIL node is always black
+        this.NIL.left = this.NIL;
+        this.NIL.right = this.NIL;
+        this.NIL.parent = this.NIL; // Point to self for circularity if needed, or null
+        this.root = this.NIL;
+    }
+
+    private _insertFixup(node: RBNodeTS): void {
+        // Logic to fix Red-Black Tree properties after insertion
+        // Involves rotations and recoloring. Very complex.
+        // Omitted for conceptual simplicity.
+    }
+
+    private _deleteFixup(node: RBNodeTS): void {
+        // Logic to fix Red-Black Tree properties after deletion
+        // Involves rotations and recoloring. Even more complex.
+        // Omitted for conceptual simplicity.
+    }
+
+    public insert(key: number): void {
+        const newNode = new RBNodeTS(key, RBNodeTS.RED);
+        newNode.left = this.NIL;
+        newNode.right = this.NIL;
+
+        let y: RBNodeTS | null = null;
+        let x: RBNodeTS = this.root;
+
+        while (x !== this.NIL) {
+            y = x;
+            if (newNode.key! < x.key!) {
+                x = x.left;
+            } else {
+                x = x.right;
+            }
+        }
+        
+        newNode.parent = y;
+        if (y === null) { // Tree was empty
+            this.root = newNode;
+        } else if (newNode.key! < y.key!) {
+            y.left = newNode;
+        } else {
+            y.right = newNode;
+        }
+        
+        if (newNode.parent === null) { // Root must be black
+            newNode.color = RBNodeTS.BLACK;
+            return;
+        }
+        
+        if (newNode.parent.parent === null) { // If grandparent is null, nothing to fix (only root and child)
+            return;
+        }
+        
+        this._insertFixup(newNode); // This is where the magic happens
+        this.root.color = RBNodeTS.BLACK;
+    }
+
+    public search(key: number): RBNodeTS | null {
+        let current: RBNodeTS = this.root;
+        while (current !== this.NIL && key !== current.key!) {
+            if (key < current.key!) {
+                current = current.left;
+            } else {
+                current = current.right;
+            }
+        }
+        return current !== this.NIL ? current : null;
+    }
+}
+
+// const rbtTS = new RedBlackTreeTS();
+// const keysTS: number[] = [10, 20, 30, 15, 25, 5];
+// for (const key of keysTS) {
+//     rbtTS.insert(key);
+// }
+// console.log("Search for 25:", rbtTS.search(25)?.key || "Not found");
+</code></pre>
+    <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;string&gt;
+
+enum Color { RED, BLACK };
+
+class RBNode {
+public:
+    int key;
+    Color color;
+    RBNode <em>parent;
+    RBNode </em>left;
+    RBNode <em>right;
+
+    RBNode(int k, Color c = RED, RBNode</em> p = nullptr, RBNode<em> l = nullptr, RBNode</em> r = nullptr)
+        : key(k), color(c), parent(p), left(l), right(r) {}
+};
+
+class RedBlackTree {
+public:
+    RBNode<em> root;
+    RBNode</em> NIL; // Sentinel node
+
+    RedBlackTree() {
+        NIL = new RBNode(0, BLACK); // Sentinel node is always black
+        NIL->left = NIL;
+        NIL->right = NIL;
+        NIL->parent = NIL; // Point to self for circularity if needed
+        root = NIL;
+    }
+
+    ~RedBlackTree() {
+        // Proper memory deallocation for a tree is complex.
+        // For simplicity in this conceptual demo, explicit recursive deletion is omitted.
+        // In real code, all nodes (including NIL if dynamically allocated) need to be deleted.
+    }
+
+private:
+    void leftRotate(RBNode<em> x) {
+        RBNode</em> y = x->right;
+        x->right = y->left;
+        if (y->left != NIL) {
+            y->left->parent = x;
+        }
+        y->parent = x->parent;
+        if (x->parent == NIL) {
+            root = y;
+        } else if (x == x->parent->left) {
+            x->parent->left = y;
+        } else {
+            x->parent->right = y;
+        }
+        y->left = x;
+        x->parent = y;
+    }
+
+    void rightRotate(RBNode<em> y) {
+        RBNode</em> x = y->left;
+        RBNode<em> T2 = x->right;
+
+        y->left = T2;
+        if (T2 != NIL) {
+            T2->parent = y;
+        }
+        x->parent = y->parent;
+        if (y->parent == NIL) {
+            root = x;
+        } else if (y == y->parent->left) {
+            y->parent->left = x;
+        } else {
+            y->parent->right = x;
+        }
+        x->right = y;
+        y->parent = x;
+    }
+
+    void insertFixup(RBNode</em> z) {
+        // This is a highly complex part of RBTree implementation.
+        // Involves multiple cases, rotations, and recoloring.
+        // Omitted for conceptual simplicity.
+        // Example logic:
+        // while (z->parent->color == RED) {
+        //     if (z->parent == z->parent->parent->left) {
+        //         RBNode<em> y = z->parent->parent->right; // Uncle
+        //         if (y->color == RED) { /</em> Case 1 <em>/ } 
+        //         else {
+        //             if (z == z->parent->right) { /</em> Case 2 <em>/ } 
+        //             /</em> Case 3 <em>/ 
+        //         }
+        //     } else { /</em> Symmetric cases for right child <em>/ }
+        // }
+        root->color = BLACK;
+    }
+
+public:
+    void insert(int key) {
+        RBNode</em> z = new RBNode(key, RED, NIL, NIL, NIL);
+        
+        RBNode<em> y = NIL;
+        RBNode</em> x = root;
+
+        while (x != NIL) {
+            y = x;
+            if (z->key < x->key) {
+                x = x.left;
+            } else {
+                x = x.right;
+            }
+        }
+        
+        z->parent = y;
+        if (y == NIL) {
+            root = z;
+        } else if (z->key < y->key) {
+            y->left = z;
+        } else {
+            y->right = z;
+        }
+
+        if (z->parent == NIL) { // Case 1: new node is root
+            z->color = BLACK;
+            return;
+        }
+
+        if (z->parent->parent == NIL) { // Case 2: parent is root
+            return;
+        }
+        
+        insertFixup(z); // Restore Red-Black properties
+    }
+
+    RBNode<em> search(int key) {
+        RBNode</em> current = root;
+        while (current != NIL && key != current->key) {
+            if (key < current->key) {
+                current = current->left;
+            } else {
+                current = current->right;
+            }
+        }
+        return current; // Returns NIL if not found
+    }
+};
+
+// int main() {
+//     RedBlackTree rbt;
+//     std::vector<int> keys = {10, 20, 30, 15, 25, 5};
+//     for (int key : keys) {
+//         rbt.insert(key);
+//     }
+//     
+//     RBNode<em> found = rbt.search(25);
+//     if (found != rbt.NIL) {
+//         std::cout << "Search for 25: Found (Key: " << found->key << ")" << std::endl;
+//     } else {
+//         std::cout << "Search for 25: Not found" << std::endl;
+//     }
+//     
+//     found = rbt.search(99);
+//     if (found != rbt.NIL) {
+//         std::cout << "Search for 99: Found (Key: " << found->key << ")" << std::endl;
+//     } else {
+//         std::cout << "Search for 99: Not found" << std::endl;
+//     }
+//     
+//     return 0;
+// }
+</code></pre>
+    <pre data-lang="go"><code class="language-go">package main
+
+import "fmt"
+
+type Color bool
+const (
+    RED Color = true
+    BLACK Color = false
+)
+
+type RBNode struct {
+    Key    int
+    Color  Color
+    Parent </em>RBNode
+    Left   <em>RBNode
+    Right  </em>RBNode
+}
+
+type RedBlackTree struct {
+    NIL  <em>RBNode // Sentinel node
+    Root </em>RBNode
+}
+
+func NewRedBlackTree() <em>RedBlackTree {
+    nilNode := &RBNode{Key: 0, Color: BLACK} // Key is arbitrary for NIL
+    nilNode.Left = nilNode
+    nilNode.Right = nilNode
+    nilNode.Parent = nilNode
+    return &RedBlackTree{
+        NIL:  nilNode,
+        Root: nilNode,
+    }
+}
+
+func (rbt </em>RedBlackTree) leftRotate(x <em>RBNode) {
+    y := x.Right
+    x.Right = y.Left
+    if y.Left != rbt.NIL {
+        y.Left.Parent = x
+    }
+    y.Parent = x.Parent
+    if x.Parent == rbt.NIL {
+        rbt.Root = y
+    } else if x == x.Parent.Left {
+        x.Parent.Left = y
+    } else {
+        x.Parent.Right = y
+    }
+    y.Left = x
+    x.Parent = y
+}
+
+func (rbt </em>RedBlackTree) rightRotate(y <em>RBNode) {
+    x := y.Left
+    T2 := x.Right
+
+    y.Left = T2
+    if T2 != rbt.NIL {
+        T2.Parent = y
+    }
+    x.Parent = y.Parent
+    if y.Parent == rbt.NIL {
+        rbt.Root = x
+    } else if y == y.Parent.Left {
+        y.Parent.Left = x
+    } else {
+        y.Parent.Right = x
+    }
+    x.Right = y
+    y.Parent = x
+}
+
+func (rbt </em>RedBlackTree) insertFixup(z <em>RBNode) {
+    // This is a highly complex part of RBTree implementation.
+    // Involves multiple cases, rotations, and recoloring.
+    // Omitted for conceptual simplicity.
+    // ... complex logic ...
+    rbt.Root.Color = BLACK
+}
+
+func (rbt </em>RedBlackTree) Insert(key int) {
+    z := &RBNode{Key: key, Color: RED, Left: rbt.NIL, Right: rbt.NIL}
+    
+    y := rbt.NIL
+    x := rbt.Root
+
+    for x != rbt.NIL {
+        y = x
+        if z.Key < x.Key {
+            x = x.Left
+        } else {
+            x = x.Right
+        }
+    }
+    
+    z.Parent = y
+    if y == rbt.NIL {
+        rbt.Root = z
+    } else if z.Key < y.Key {
+        y.Left = z
+    } else {
+        y.Right = z
+    }
+
+    if z.Parent == rbt.NIL { // Case 1: new node is root
+        z.Color = BLACK
+        return
+    }
+
+    if z.Parent.Parent == rbt.NIL { // Case 2: parent is root
+        return
+    }
+    
+    rbt.insertFixup(z) // Restore Red-Black properties
+}
+
+func (rbt <em>RedBlackTree) Search(key int) </em>RBNode {
+    current := rbt.Root
+    for current != rbt.NIL && key != current.Key {
+        if key < current.Key {
+            current = current.Left
+        } else {
+            current = current.Right
+        }
+    }
+    return current // Returns NIL if not found
+}
+
+// func main() {
+//     rbt := NewRedBlackTree()
+//     keys := []int{10, 20, 30, 15, 25, 5}
+//     for _, key := range keys {
+//         rbt.Insert(key)
+//     }
+//     
+//     found := rbt.Search(25)
+//     if found != rbt.NIL {
+//         fmt.Printf("Search for 25: Found (Key: %d)\n", found.Key)
+//     } else {
+//         fmt.Println("Search for 25: Not found")
+//     }
+//     
+//     found = rbt.Search(99)
+//     if found != rbt.NIL {
+//         fmt.Printf("Search for 99: Found (Key: %d)\n", found.Key)
+//     } else {
+//         fmt.Println("Search for 99: Not found")
+//     }
+// }
+</code></pre>
+    <pre data-lang="d"><code class="language-d">import std.stdio;
+import std.string;
+import std.vector;
+
+enum Color { RED, BLACK }
+
+class RBNode {
+    int key;
+    Color color;
+    RBNode parent;
+    RBNode left;
+    RBNode right;
+
+    this(int k, Color c = Color.RED, RBNode p = null, RBNode l = null, RBNode r = null) {
+        key = k;
+        color = c;
+        parent = p;
+        left = l;
+        right = r;
+    }
+}
+
+class RedBlackTree {
+    RBNode root;
+    RBNode NIL; // Sentinel node
+
+    this() {
+        NIL = new RBNode(0, Color.BLACK); // Key is arbitrary for NIL
+        NIL.left = NIL;
+        NIL.right = NIL;
+        NIL.parent = NIL;
+        root = NIL;
+    }
+
+    // Rotations (simplified from actual implementation for conceptual clarity)
+    private void leftRotate(RBNode x) {
+        RBNode y = x.right;
+        x.right = y.left;
+        if (y.left !is NIL) {
+            y.left.parent = x;
+        }
+        y.parent = x.parent;
+        if (x.parent is NIL) {
+            root = y;
+        } else if (x is x.parent.left) {
+            x.parent.left = y;
+        } else {
+            x.parent.right = y;
+        }
+        y.left = x;
+        x.parent = y;
+    }
+
+    private void rightRotate(RBNode y) {
+        RBNode x = y.left;
+        RBNode T2 = x.right;
+
+        y.left = T2;
+        if (T2 !is NIL) {
+            T2.parent = y;
+        }
+        x.parent = y.parent;
+        if (y.parent is NIL) {
+            root = x;
+        } else if (y is y.parent.left) {
+            y.parent.left = x;
+        } else {
+            y.parent.right = x;
+        }
+        x.right = y;
+        y.parent = x;
+    }
+
+    private void insertFixup(RBNode z) {
+        // This is a highly complex part of RBTree implementation.
+        // Involves multiple cases, rotations, and recoloring.
+        // Omitted for conceptual simplicity.
+        // ... complex logic ...
+        root.color = Color.BLACK;
+    }
+
+    void insert(int key) {
+        RBNode z = new RBNode(key, Color.RED, NIL, NIL, NIL);
+        
+        RBNode y = NIL;
+        RBNode x = root;
+
+        while (x !is NIL) {
+            y = x;
+            if (z.key < x.key) {
+                x = x.left;
+            } else {
+                x = x.right;
+            }
+        }
+        
+        z.parent = y;
+        if (y is NIL) {
+            root = z;
+        } else if (z.key < y.key) {
+            y.left = z;
+        } else {
+            y.right = z;
+        }
+
+        if (z.parent is NIL) { // Case 1: new node is root
+            z.color = Color.BLACK;
+            return;
+        }
+
+        if (z.parent.parent is NIL) { // Case 2: parent is root
+            return;
+        }
+        
+        insertFixup(z); // Restore Red-Black properties
+    }
+
+    RBNode search(int key) {
+        RBNode current = root;
+        while (current !is NIL && key != current.key) {
+            if (key < current.key) {
+                current = current.left;
+            } else {
+                current = current.right;
+            }
+        }
+        return current; // Returns NIL if not found
+    }
+}
+
+// void main() {
+//     auto rbt = new RedBlackTree();
+//     int[] keys = [10, 20, 30, 15, 25, 5];
+//     foreach (key; keys) {
+//         rbt.insert(key);
+//     }
+//     
+//     auto found = rbt.search(25);
+//     if (found !is rbt.NIL) {
+//         writefln("Search for 25: Found (Key: %d)", found.key);
+//     } else {
+//         writefln("Search for 25: Not found");
+//     }
+//     
+//     found = rbt.search(99);
+//     if (found !is rbt.NIL) {
+//         writefln("Search for 99: Found (Key: %d)", found.key);
+//     } else {
+//         writefln("Search for 99: Not found");
+//     }
+// }
+</code></pre>
+    </div>
+    <div class="explanation-fence">
+<strong><code>RBNode</code> Class:</strong> Represents a <code>node</code> in the <code>Red-Black Tree</code>.
+<ul>
+    <li><code>key</code>: The value stored in the <code>node</code>.</li>
+    <li><code>color</code>: Either <code>RED</code> or <code>BLACK</code>.</li>
+    <li><code>parent</code>, <code>left</code>, <code>right</code>: Pointers to parent and child <code>nodes</code>.</li>
+</ul>
+<br>
+<strong><code>RedBlackTree</code> Class:</strong>
+<ul>
+    <li><code>NIL</code>: A special <code>sentinel node</code> (always <code>BLACK</code>) that represents all <code>null</code> children (external <code>nodes</code>). This simplifies boundary conditions in the algorithms.</li>
+    <li><code>root</code>: The <code>root node</code> of the <code>tree</code>.</li>
+    <li><strong><code>leftRotate(x)</code> and <code>rightRotate(y)</code>:</strong> These are standard <code>tree rotation</code> operations used to restructure the <code>tree</code> while maintaining <code>BST properties</code>. They update <code>parent</code> and child <code>pointers</code> correctly.</li>
+    <li><strong><code>insert(key)</code>:</strong>
+        <ol>
+            <li>Inserts a new <code>node</code> as in a standard <code>BST</code>. The new <code>node</code> is always initially colored <code>RED</code>. Its children are set to <code>NIL</code>.</li>
+            <li>After the basic <code>BST insertion</code>, if the new <code>node</code>'s <code>parent</code> is <code>RED</code> (violating Property 4), the <code>_insertFixup</code> method is called.</li>
+            <li>Ensures the <code>root</code> remains <code>BLACK</code> (Property 2).</li>
+        </ol>
+    </li>
+    <li><strong><code>insertFixup(z)</code>:</strong> This complex function takes the newly inserted <code>node z</code> and performs a series of <code>rotations</code> and <code>recoloring</code> operations to restore all <code>Red-Black Tree</code> properties. There are typically three main cases to handle, each with symmetric counterparts.</li>
+    <li><strong><code>search(key)</code>:</strong> Same as a standard <code>BST search</code>. It traverses the <code>tree</code> until the <code>key</code> is found or a <code>NIL node</code> is reached.</li>
+</ul>
+    </div>
+    <p>The strength of <code>Red-Black Trees</code> lies in their guaranteed <code>O(log N)</code> worst-case performance for all major operations, which makes them very reliable in practice.</p>
+</div>
+
+<div id="application-content"><div class="markdown-content">
+    <h3>Application</h3>
+    <p>Red-Black Trees are one of the most widely used self-balancing binary search trees in real-world systems due to their excellent worst-case time complexity for all major operations (search, insert, delete). They offer a good balance between strict balance (like AVL trees) and fewer rebalancing operations, making them faster in practice for frequently updated trees.
+    <ul>
+        <li><strong>Standard Library Implementations:</strong> C++'s <code>std::map</code>, <code>std::set</code>, <code>std::multimap</code>, and <code>std::multiset</code> are typically implemented using Red-Black Trees. Java's <code>TreeMap</code> and <code>TreeSet</code> also use them.</li>
+        <li><strong>Database Indexing:</strong> Used in some database systems for indexing, though B-Trees are more common for disk-based databases.</li>
+        <li><strong>Operating System Schedulers:</strong> To manage processes based on their priority or other scheduling criteria.</li>
+        <li><strong>Networking:</strong> For managing routing tables and other data structures requiring ordered key-value storage.</li>
+        <li><strong>Computational Geometry:</strong> In algorithms that need to maintain ordered collections of points or line segments.</li>
+    </ul>
+    </p>
+</div></div>

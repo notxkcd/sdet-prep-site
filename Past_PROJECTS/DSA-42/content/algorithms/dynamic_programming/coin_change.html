@@ -1,0 +1,353 @@
+<div id="explanation-content">
+    <p>The <code>Coin Change Problem</code> is a classic problem in <code>dynamic programming</code> that asks for the minimum number of coins needed to make a given amount of change. Given a set of coin denominations and a target amount, the goal is to find the fewest coins that sum up to that amount.</p>
+    <p>This problem assumes an infinite supply of each coin denomination. If a specific amount cannot be made, the algorithm should indicate that (e.g., return -1 or infinity).</p>
+</div>
+
+<div id="expanded-explanation-content">
+    <h3>How it Works (Expanded)</h3>
+    <p>The <code>Coin Change Problem</code> exhibits optimal substructure and overlapping subproblems, making it well-suited for <code>dynamic programming</code>. We build a 1D <code>DP array</code> where <code>dp[i]</code> stores the minimum number of coins required to make the amount <code>i</code>.</p>
+    <div class="explanation-fence">
+Example: Coins = [1, 2, 5], Amount = 11
+
+dp array of size (Amount + 1), initialized with infinity, dp[0] = 0.
+dp = [0, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf, inf]
+
+Iterate for each amount 'i' from 1 to 11:
+  Iterate for each coin 'c' in coins:
+    If c <= i:
+      dp[i] = min(dp[i], 1 + dp[i - c])
+
+Trace:
+- dp[1]: coins[1] = 1 -> min(inf, 1 + dp[0]) = 1
+- dp[2]: coins[1] = 1 -> min(inf, 1 + dp[1]) = 2
+         coins[2] = 2 -> min(2, 1 + dp[0]) = 1
+- dp[3]: coins[1] = 1 -> min(inf, 1 + dp[2]) = 2
+         coins[2] = 2 -> min(2, 1 + dp[1]) = 2
+- ...
+- dp[11]: coins[1]=1 -> 1+dp[10]=1+2=3
+          coins[2]=2 -> 1+dp[9]=1+2=3
+          coins[5]=5 -> 1+dp[6]=1+2=3
+
+Final dp[11] = 3 (e.g., 5+5+1 or 5+2+2+2 or ...)
+    </div>
+    <p><strong>Recurrence Relation:</strong></p>
+    <ul>
+        <li><code>dp[i]</code> = minimum number of coins to make amount <code>i</code>.</li>
+        <li>Base case: <code>dp[0] = 0</code> (0 coins needed for amount 0).</li>
+        <li>For <code>i > 0</code>:
+            <code>dp[i] = min(1 + dp[i - coin_denomination])</code> for all <code>coin_denomination <= i</code>.
+            Initialize <code>dp[i]</code> to infinity initially.</li>
+    </ul>
+    <p><strong>Algorithm Steps:</strong></p>
+    <ol>
+        <li>Create a 1D <code>dp array</code> of size <code>amount + 1</code>. Initialize <code>dp[0]</code> to 0 and all other <code>dp[i]</code> to infinity (or a very large number).</li>
+        <li>Iterate <code>i</code> from 1 to <code>amount</code>:
+            <ul>
+                <li>For each <code>coin</code> in the given <code>coin denominations</code>:</li>
+                <li>If <code>coin <= i</code>:
+                    <code>dp[i] = min(dp[i], 1 + dp[i - coin])</code></li>
+            </ul>
+        </li>
+        <li>If <code>dp[amount]</code> is still infinity after filling the table, it means the amount cannot be made. Otherwise, <code>dp[amount]</code> contains the minimum number of coins.</li>
+    </ol>
+    <p><strong>Time Complexity:</strong> <code>O(amount <em> num_coins)</code>. Each cell in the <code>dp array</code> is computed by iterating through all <code>coin</code> denominations.</p>
+    <p><strong>Space Complexity:</strong> <code>O(amount)</code> for the <code>dp array</code>.</p>
+</div>
+
+<div id="code-implementations">
+    <pre data-lang="python"><code class="language-python">def coin_change_min_coins(coins, amount):
+    # dp[i] will be storing the minimum number of coins
+    # required for amount i.
+    dp = [float('inf')] </em> (amount + 1)
+    
+    # Base case: 0 coins needed for amount 0
+    dp[0] = 0
+
+    # Fill dp table for all amounts from 1 to amount
+    for i in range(1, amount + 1):
+        # For each amount, iterate through all coins
+        for coin in coins:
+            # If current coin can be used
+            if coin <= i:
+                # Update dp[i] with the minimum of its current value
+                # and 1 (for the current coin) + dp[i - coin]
+                dp[i] = min(dp[i], 1 + dp[i - coin])
+                
+    # If dp[amount] is still infinity, it means amount cannot be made
+    return dp[amount] if dp[amount] != float('inf') else -1
+
+# Example
+# coins = [1, 2, 5]
+# amount = 11
+# print(coin_change_min_coins(coins, amount)) # Expected: 3 (5+5+1)
+
+# coins2 = [2]
+# amount2 = 3
+# print(coin_change_min_coins(coins2, amount2)) # Expected: -1
+</code></pre>
+
+    <pre data-lang="javascript"><code class="language-javascript">function coinChangeMinCoins(coins, amount) {
+    // dp[i] will be storing the minimum number of coins
+    // required for amount i.
+    const dp = Array(amount + 1).fill(Infinity);
+    
+    // Base case: 0 coins needed for amount 0
+    dp[0] = 0;
+
+    // Fill dp table for all amounts from 1 to amount
+    for (let i = 1; i <= amount; i++) {
+        // For each amount, iterate through all coins
+        for (const coin of coins) {
+            // If current coin can be used
+            if (coin <= i) {
+                // Update dp[i] with the minimum of its current value
+                // and 1 (for the current coin) + dp[i - coin]
+                dp[i] = Math.min(dp[i], 1 + dp[i - coin]);
+            }
+        }
+    }
+    
+    // If dp[amount] is still infinity, it means amount cannot be made
+    return dp[amount] === Infinity ? -1 : dp[amount];
+}
+
+// const coins = [1, 2, 5];
+// const amount = 11;
+// console.log(coinChangeMinCoins(coins, amount)); // Expected: 3
+
+// const coins2 = [2];
+// const amount2 = 3;
+// console.log(coinChangeMinCoins(coins2, amount2)); // Expected: -1
+</code></pre>
+
+    <pre data-lang="typescript"><code class="language-typescript">function coinChangeMinCoinsTS(coins: number[], amount: number): number {
+    // dp[i] will be storing the minimum number of coins
+    // required for amount i.
+    const dp: number[] = Array(amount + 1).fill(Infinity);
+    
+    // Base case: 0 coins needed for amount 0
+    dp[0] = 0;
+
+    // Fill dp table for all amounts from 1 to amount
+    for (let i = 1; i <= amount; i++) {
+        // For each amount, iterate through all coins
+        for (const coin of coins) {
+            // If current coin can be used
+            if (coin <= i) {
+                // Update dp[i] with the minimum of its current value
+                // and 1 (for the current coin) + dp[i - coin]
+                dp[i] = Math.min(dp[i], 1 + dp[i - coin]);
+            }
+        }
+    }
+    
+    // If dp[amount] is still infinity, it means amount cannot be made
+    return dp[amount] === Infinity ? -1 : dp[amount];
+}
+
+// const coinsTS = [1, 2, 5];
+// const amountTS = 11;
+// console.log(coinChangeMinCoinsTS(coinsTS, amountTS)); // Expected: 3
+
+// const coins2TS = [2];
+// const amount2TS = 3;
+// console.log(coinChangeMinCoinsTS(coins2TS, amount2TS)); // Expected: -1
+</code></pre>
+    
+    <pre data-lang="cpp"><code class="language-cpp">#include &lt;vector&gt;
+#include &lt;iostream&gt;
+#include &lt;algorithm&gt; // For std::min
+#include &lt;limits&gt;    // For std::numeric_limits
+
+int coinChangeMinCoins(const std::vector&lt;int&gt;& coins, int amount) {
+    // dp[i] will be storing the minimum number of coins
+    // required for amount i.
+    std::vector&lt;int&gt; dp(amount + 1, std::numeric_limits&lt;int&gt;::max());
+    
+    // Base case: 0 coins needed for amount 0
+    dp[0] = 0;
+
+    // Fill dp table for all amounts from 1 to amount
+    for (int i = 1; i <= amount; i++) {
+        // For each amount, iterate through all coins
+        for (int coin : coins) {
+            // If current coin can be used
+            if (coin <= i) {
+                // Ensure dp[i - coin] is not infinity before adding 1
+                if (dp[i - coin] != std::numeric_limits&lt;int&gt;::max()) {
+                    // Update dp[i] with the minimum of its current value
+                    // and 1 (for the current coin) + dp[i - coin]
+                    dp[i] = std::min(dp[i], 1 + dp[i - coin]);
+                }
+            }
+        }
+    }
+    
+    // If dp[amount] is still infinity, it means amount cannot be made
+    return dp[amount] == std::numeric_limits&lt;int&gt;::max() ? -1 : dp[amount];
+}
+
+// int main() {
+//     std::vector<int> coins = {1, 2, 5};
+//     int amount = 11;
+//     std::cout << "Min coins for 11: " << coinChangeMinCoins(coins, amount) << std::endl; // 3
+
+//     std::vector<int> coins2 = {2};
+//     int amount2 = 3;
+//     std::cout << "Min coins for 3: " << coinChangeMinCoins(coins2, amount2) << std::endl; // -1
+//     return 0;
+// }
+</code></pre>
+
+    <pre data-lang="go"><code class="language-go">package main
+
+import (
+    "fmt"
+    "math"
+)
+
+func coinChangeMinCoins(coins []int, amount int) int {
+    // dp[i] will be storing the minimum number of coins
+    // required for amount i.
+    dp := make([]int, amount+1)
+    for i := range dp {
+        dp[i] = math.MaxInt32 // Represents infinity
+    }
+    
+    // Base case: 0 coins needed for amount 0
+    dp[0] = 0
+
+    // Fill dp table for all amounts from 1 to amount
+    for i := 1; i <= amount; i++ {
+        // For each amount, iterate through all coins
+        for _, coin := range coins {
+            // If current coin can be used
+            if coin <= i {
+                // Ensure dp[i - coin] is not MaxInt32 before adding 1
+                if dp[i-coin] != math.MaxInt32 {
+                    // Update dp[i] with the minimum of its current value
+                    // and 1 (for the current coin) + dp[i - coin]
+                    dp[i] = min(dp[i], 1 + dp[i-coin])
+                }
+            }
+        }
+    }
+    
+    // If dp[amount] is still MaxInt32, it means amount cannot be made
+    if dp[amount] == math.MaxInt32 {
+        return -1
+    }
+    return dp[amount]
+}
+
+func min(a, b int) int {
+    if a < b {
+        return a
+    }
+    return b
+}
+
+// func main() {
+//     coins := []int{1, 2, 5}
+//     amount := 11
+//     fmt.Println("Min coins for 11:", coinChangeMinCoins(coins, amount)) // 3
+
+//     coins2 := []int{2}
+//     amount2 := 3
+//     fmt.Println("Min coins for 3:", coinChangeMinCoins(coins2, amount2)) // -1
+// }
+</code></pre>
+    
+    <pre data-lang="d"><code class="language-d">import std.stdio;
+import std.array;
+import std.algorithm; // For std.algorithm.min
+import std.traits; // For isInfinity
+
+int coinChangeMinCoins(int[] coins, int amount) {
+    // dp[i] will be storing the minimum number of coins
+    // required for amount i.
+    auto dp = new int[amount + 1];
+    dp[] = int.max; // Represents infinity
+    
+    // Base case: 0 coins needed for amount 0
+    dp[0] = 0;
+
+    // Fill dp table for all amounts from 1 to amount
+    foreach (i; 1 .. amount + 1) {
+        // For each amount, iterate through all coins
+        foreach (coin; coins) {
+            // If current coin can be used
+            if (coin <= i) {
+                // Ensure dp[i - coin] is not int.max before adding 1
+                if (dp[i - coin] != int.max) {
+                    // Update dp[i] with the minimum of its current value
+                    // and 1 (for the current coin) + dp[i - coin]
+                    dp[i] = min(dp[i], 1 + dp[i - coin]);
+                }
+            }
+        }
+    }
+    
+    // If dp[amount] is still int.max, it means amount cannot be made
+    return dp[amount] == int.max ? -1 : dp[amount];
+}
+
+// void main() {
+//     auto coins = [1, 2, 5];
+//     int amount = 11;
+//     writeln("Min coins for 11: ", coinChangeMinCoins(coins, amount)); // 3
+
+//     auto coins2 = [2];
+//     int amount2 = 3;
+//     writeln("Min coins for 3: ", coinChangeMinCoins(coins2, amount2)); // -1
+// }
+</code></pre>
+</div>
+
+<div id="code-explanation-content"><div class="markdown-content">
+    <h3>Code Walkthrough</h3>
+    <p>The <code>Coin Change Problem</code> (minimum coins variant) is solved using a 1D <code>dynamic programming</code> array, where each element represents the minimum coins needed for a specific amount.</p>
+    <div class="explanation-fence">
+<strong>Initialization:</strong>
+<ul>
+    <li><code>amount</code>: The target amount for which to make change.</li>
+    <li><code>coins</code>: An array of available coin denominations.</li>
+    <li>A 1D <code>dp</code> array of size <code>amount + 1</code> is created. <code>dp[i]</code> will store the minimum number of coins to make amount <code>i</code>.</li>
+    <li><code>dp[0]</code> is initialized to 0 (no coins needed for amount 0).</li>
+    <li>All other <code>dp[i]</code> values are initialized to infinity (or a very large number) to signify that they are currently unreachable.</li>
+</ul>
+<br>
+<strong>Filling the DP Table:</strong>
+<ul>
+    <li>The <code>dp</code> table is filled iteratively for <code>i</code> from 1 to <code>amount</code>. Each <code>i</code> represents a sub-amount for which we are trying to find the minimum coins.</li>
+    <li>For each <code>amount i</code>, the algorithm iterates through all available <code>coin denominations</code>.</li>
+    <li><strong>Condition:</strong> If <code>coin <= i</code> (meaning the current <code>coin</code> can be used to make up <code>amount i</code>):
+        <ul>
+            <li>We consider using the current <code>coin</code>. If we use this <code>coin</code>, the remaining amount is <code>i - coin</code>.</li>
+            <li>The minimum coins needed for <code>amount i</code> would then be <code>1</code> (for the current <code>coin</code>) plus <code>dp[i - coin]</code> (the minimum coins needed for the remaining amount).</li>
+            <li>We update <code>dp[i]</code> with the minimum of its current value and <code>(1 + dp[i - coin])</code>. This ensures <code>dp[i]</code> always holds the minimum.</li>
+            <li>A check <code>if dp[i - coin] != infinity</code> is important to avoid <code>infinity + 1</code> issues, ensuring we only consider valid previous states.</li>
+        </ul>
+    </li>
+</ul>
+<br>
+<strong>Result:</strong>
+<ul>
+    <li>After filling the entire <code>dp</code> table, <code>dp[amount]</code> will contain the minimum number of coins required to make the target <code>amount</code>.</li>
+    <li>If <code>dp[amount]</code> is still <code>infinity</code>, it means the target <code>amount</code> cannot be made with the given <code>coin</code> denominations, and -1 is returned.</li>
+</ul>
+    </div></div>
+</div>
+
+<div id="application-content"><div class="markdown-content">
+    <h3>Application</h3>
+    <p>The <code>Coin Change Problem</code>, especially the minimum coins variant, has practical applications beyond just currency:</p>
+    <ul>
+        <li><strong>Financial Systems:</strong> Optimizing change-making processes in vending machines, cash registers, or for currency exchange.</li>
+        <li><strong>Resource Optimization:</strong> In scenarios where you need to combine discrete units (like containers of different sizes, standard parts) to reach a target quantity while minimizing the number of units used.</li>
+        <li><strong>Inventory Management:</strong> Determining the minimum number of different product packages to fulfill an order of a specific quantity.</li>
+        <li><strong>Network Packet Optimization:</strong> In some networking contexts, assembling data packets of various fixed sizes to efficiently transmit a total amount of data.</li>
+        <li><strong>Combinatorial Problems:</strong> Serves as a fundamental building block or a subproblem in more complex combinatorial optimization challenges.</li>
+    </ul>
+    </p>
+</div></div>

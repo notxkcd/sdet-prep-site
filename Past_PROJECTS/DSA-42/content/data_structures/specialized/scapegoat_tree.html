@@ -1,0 +1,166 @@
+<code></code>`
+import std.stdio;
+import std.array;
+import std.algorithm;
+import std.math;
+
+class ScapegoatTreeNode {
+    int key;
+    ScapegoatTreeNode left;
+    ScapegoatTreeNode right;
+    int size; // Number of nodes in subtree rooted at this node
+
+    this(int k) {
+        key = k;
+        left = null;
+        right = null;
+        size = 1;
+    }
+}
+
+class ScapegoatTree {
+    ScapegoatTreeNode root;
+    double alpha; // Balance factor, 0.5 < alpha < 1
+    int n; // Current number of nodes in the tree
+    int maxNodesSinceRebuild; // N_max for size check
+
+    this(double alpha_val = 0.7) {
+        root = null;
+        alpha = alpha_val;
+        n = 0;
+        maxNodesSinceRebuild = 0;
+    }
+
+private:
+    int _size(ScapegoatTreeNode node) {
+        return node ? node.size : 0;
+    }
+
+    void _updateSize(ScapegoatTreeNode node) {
+        if (node) {
+            node.size = 1 + _size(node.left) + _size(node.right);
+        }
+    }
+
+    void _toSortedArray(ScapegoatTreeNode node, ref int[] arr) {
+        if (node is null) {
+            return;
+        }
+        _toSortedArray(node.left, arr);
+        arr ~= node.key;
+        _toSortedArray(node.right, arr);
+    }
+
+    ScapegoatTreeNode _buildBalancedBST(int[] arr, int low, int high) {
+        if (low > high) {
+            return null;
+        }
+        int mid = low + (high - low) / 2;
+        ScapegoatTreeNode node = new ScapegoatTreeNode(arr[mid]);
+        node.left = _buildBalancedBST(arr, low, mid - 1);
+        node.right = _buildBalancedBST(arr, mid + 1, high);
+        _updateSize(node);
+        return node;
+    }
+
+public:
+    void insert(int key) {
+        ScapegoatTreeNode newNode = new ScapegoatTreeNode(key);
+        if (root is null) {
+            root = newNode;
+            n = 1;
+            maxNodesSinceRebuild = 1;
+            return;
+        }
+        
+        ScapegoatTreeNode[] path; // To track path to inserted node
+        ScapegoatTreeNode current = root;
+        ScapegoatTreeNode parent = null;
+        int depth = 0;
+
+        while (current !is null) {
+            path ~= current;
+            parent = current;
+            if (key < current.key) {
+                current = current.left;
+            } else if (key > current.key) {
+                current = current.right;
+            } else { // Key already exists
+                return;
+            }
+            depth++;
+        }
+        
+        if (key < parent.key) {
+            parent.left = newNode;
+        } else {
+            parent.right = newNode;
+        }
+        
+        // Update sizes along the path
+        for (int i = cast(int)path.length - 1; i >= 0; i--) {
+            _updateSize(path[i]);
+        }
+        
+        n++;
+        
+        // Check for imbalance and rebuild
+        if (cast(double)depth > log(cast(double)n) / log(1.0 / alpha)) {
+            // Find scapegoat
+            ScapegoatTreeNode scapegoatParent = null;
+            ScapegoatTreeNode scapegoatNode = null;
+            for (int i = cast(int)path.length - 1; i >= 0; i--) {
+                ScapegoatTreeNode node = path[i];
+                if ((_size(node.left) > alpha <em> _size(node)) ||
+                    (_size(node.right) > alpha </em> _size(node))) {
+                    scapegoatParent = (i > 0) ? path[i-1] : null;
+                    scapegoatNode = node;
+                    break;
+                }
+            }
+            
+            if (scapegoatNode !is null) {
+                int[] arrToRebuild;
+                _toSortedArray(scapegoatNode, arrToRebuild);
+                ScapegoatTreeNode newBalancedSubtree = _buildBalancedBST(arrToRebuild, 0, cast(int)arrToRebuild.length - 1);
+
+                if (scapegoatParent !is null) {
+                    if (scapegoatParent.left is scapegoatNode) {
+                        scapegoatParent.left = newBalancedSubtree;
+                    } else {
+                        scapegoatParent.right = newBalancedSubtree;
+                    }
+                } else { // Scapegoat was root
+                    root = newBalancedSubtree;
+                }
+                
+                maxNodesSinceRebuild = n;
+            }
+        }
+    }
+    
+    ScapegoatTreeNode search(int key) {
+        ScapegoatTreeNode current = root;
+        while (current !is null) {
+            if (key == current.key) {
+                return current;
+            } else if (key < current.key) {
+                current = current.left;
+            } else {
+                current = current.right;
+            }
+        }
+        return null;
+    }
+}
+
+// void main() {
+//     auto sgt = new ScapegoatTree(0.7);
+//     int[] keys = [50, 30, 70, 20, 40, 60, 80, 10, 5, 25, 35, 45, 55, 65, 75, 85, 90, 95, 100];
+//     foreach (k; keys) {
+//         sgt.insert(k);
+//     }
+//     writefln("Search for 70: %s", sgt.search(70) ? text(sgt.search(70).key) : "Not Found");
+//     writefln("Search for 1: %s", sgt.search(1) ? text(sgt.search(1).key) : "Not Found");
+// }
+</code>

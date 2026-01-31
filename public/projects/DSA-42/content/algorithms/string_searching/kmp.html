@@ -1,0 +1,455 @@
+<div id="explanation-content">
+    <p>The <code>Knuth-Morris-Pratt (KMP)</code> algorithm is a highly efficient string searching algorithm that finds the occurrences of a "<code>pattern</code>" within a "<code>text</code>". It is famous for its ability to avoid re-comparing characters that were already matched. When a mismatch occurs, it uses a precomputed table (often called a "<code>prefix function</code>" or "<code>LPS array</code>") to intelligently shift the pattern, rather than naively shifting by one position.</p>
+    <p>This preprocessing step allows the main search phase to run in <code>O(N)</code> time, where <code>N</code> is the length of the text, resulting in a total time complexity of <code>O(N + M)</code>, where <code>M</code> is the length of the pattern. This is a significant improvement over the naive <code>O(N<em>M)</code> approach.</p>
+</div>
+
+<div id="expanded-explanation-content">
+    <h3>How it Works (Expanded)</h3>
+    <p>The core idea of <code>KMP</code> is the "<code>Longest Proper Prefix that is also a Suffix</code>" (LPS) array. A "proper prefix" is any prefix of a string other than the string itself. The <code>LPS</code> array tells us, for each position in the pattern, the length of the longest proper prefix of the pattern's substring <code>pattern[0...i]</code> that is also a suffix of that substring.</p>
+    <div class="explanation-fence">
+Example: LPS array for pattern "ababaca"
+
+- "a":       LPS = 0
+- "ab":      LPS = 0
+- "aba":     LPS = 1 ("a")
+- "abab":    LPS = 2 ("ab")
+- "ababa":   LPS = 3 ("aba")
+- "ababac":  LPS = 0
+- "ababaca": LPS = 1 ("a")
+
+LPS Array: [0, 0, 1, 2, 3, 0, 1]
+
+How it's used: If a mismatch occurs at <code>pattern[i]</code> while comparing against <code>text</code>, we don't have to go back in the <code>text</code>. We can consult <code>LPS[i-1]</code> to know how many characters we can "skip" in the pattern, as they are guaranteed to match.
+    </div>
+    <p><strong>Algorithm Steps:</strong></p>
+    <ol>
+        <li><strong>Preprocessing (Compute LPS Array):</strong>
+            <ul>
+                <li>Create an <code>LPS</code> array of the same size as the <code>pattern</code>.</li>
+                <li>Iterate through the <code>pattern</code> with two pointers to build the <code>LPS</code> values. This step takes <code>O(M)</code> time.</li>
+            </ul>
+        </li>
+        <li><strong>Searching:</strong>
+            <ul>
+                <li>Iterate through the <code>text</code> with a pointer <code>i</code> and through the <code>pattern</code> with a pointer <code>j</code>.</li>
+                <li>If <code>text[i]</code> and <code>pattern[j]</code> match, increment both pointers.</li>
+                <li>If <code>j</code> reaches the end of the <code>pattern</code>, a match is found. Reset <code>j</code> using the <code>LPS</code> array to continue searching for more matches.</li>
+                <li>If a mismatch occurs (<code>text[i] != pattern[j]</code>):
+                    <ul>
+                        <li>If <code>j</code> is not 0, look at <code>LPS[j-1]</code>. This value tells you where the new <code>j</code> should be. It's the length of the prefix that we know already matches the <code>text</code> ending at <code>i-1</code>.</li>
+                        <li>If <code>j</code> is 0, just increment <code>i</code> to move to the next character in the <code>text</code>.</li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+    </ol>
+    <p><strong>Time Complexity:</strong> <code>O(N + M)</code>, where <code>N</code> is the length of the text and <code>M</code> is the length of the pattern. The preprocessing takes <code>O(M)</code>, and the search phase takes <code>O(N)</code>.</p>
+    <p><strong>Space Complexity:</strong> <code>O(M)</code> to store the <code>LPS</code> array.</p>
+</div>
+
+<div id="code-implementations">
+    <pre data-lang="python"><code class="language-python">def compute_lps_array(pattern):
+    m = len(pattern)
+    lps = [0] </em> m
+    length = 0  # Length of the previous longest prefix suffix
+    i = 1
+
+    while i < m:
+        if pattern[i] == pattern[length]:
+            length += 1
+            lps[i] = length
+            i += 1
+        else:
+            if length != 0:
+                length = lps[length - 1]
+            else:
+                lps[i] = 0
+                i += 1
+    return lps
+
+def kmp_search(text, pattern):
+    n = len(text)
+    m = len(pattern)
+    lps = compute_lps_array(pattern)
+    i = 0  # index for text
+    j = 0  # index for pattern
+    results = []
+
+    while i < n:
+        if pattern[j] == text[i]:
+            i += 1
+            j += 1
+
+        if j == m:
+            results.append(i - j)
+            j = lps[j - 1]
+        elif i < n and pattern[j] != text[i]:
+            if j != 0:
+                j = lps[j - 1]
+            else:
+                i += 1
+    return results
+
+# Example
+# text = "ABABDABACDABABCABAB"
+# pattern = "ABABCABAB"
+# print(kmp_search(text, pattern)) # [10]
+</code></pre>
+
+    <pre data-lang="javascript"><code class="language-javascript">function computeLPSArray(pattern) {
+    const m = pattern.length;
+    const lps = new Array(m).fill(0);
+    let length = 0;
+    let i = 1;
+
+    while (i < m) {
+        if (pattern[i] === pattern[length]) {
+            length++;
+            lps[i] = length;
+            i++;
+        } else {
+            if (length !== 0) {
+                length = lps[length - 1];
+            } else {
+                lps[i] = 0;
+                i++;
+            }
+        }
+    }
+    return lps;
+}
+
+function kmpSearch(text, pattern) {
+    const n = text.length;
+    const m = pattern.length;
+    if (m === 0) return [];
+    
+    const lps = computeLPSArray(pattern);
+    let i = 0; // index for text
+    let j = 0; // index for pattern
+    const results = [];
+
+    while (i < n) {
+        if (pattern[j] === text[i]) {
+            i++;
+            j++;
+        }
+
+        if (j === m) {
+            results.push(i - j);
+            j = lps[j - 1];
+        } else if (i < n && pattern[j] !== text[i]) {
+            if (j !== 0) {
+                j = lps[j - 1];
+            } else {
+                i++;
+            }
+        }
+    }
+    return results;
+}
+
+// const text = "ABABDABACDABABCABAB";
+// const pattern = "ABABCABAB";
+// console.log(kmpSearch(text, pattern)); // [10]
+</code></pre>
+
+    <pre data-lang="typescript"><code class="language-typescript">function computeLPSArrayTS(pattern: string): number[] {
+    const m = pattern.length;
+    const lps: number[] = new Array(m).fill(0);
+    let length = 0;
+    let i = 1;
+
+    while (i < m) {
+        if (pattern[i] === pattern[length]) {
+            length++;
+            lps[i] = length;
+            i++;
+        } else {
+            if (length !== 0) {
+                length = lps[length - 1];
+            } else {
+                lps[i] = 0;
+                i++;
+            }
+        }
+    }
+    return lps;
+}
+
+function kmpSearchTS(text: string, pattern: string): number[] {
+    const n = text.length;
+    const m = pattern.length;
+    if (m === 0) return [];
+    
+    const lps = computeLPSArrayTS(pattern);
+    let i = 0; // index for text
+    let j = 0; // index for pattern
+    const results: number[] = [];
+
+    while (i < n) {
+        if (pattern[j] === text[i]) {
+            i++;
+            j++;
+        }
+
+        if (j === m) {
+            results.push(i - j);
+            j = lps[j - 1];
+        } else if (i < n && pattern[j] !== text[i]) {
+            if (j !== 0) {
+                j = lps[j - 1];
+            } else {
+                i++;
+            }
+        }
+    }
+    return results;
+}
+
+// const textTS = "ABABDABACDABABCABAB";
+// const patternTS = "ABABCABAB";
+// console.log(kmpSearchTS(textTS, patternTS)); // [10]
+</code></pre>
+    
+    <pre data-lang="cpp"><code class="language-cpp">#include &lt;vector&gt;
+#include &lt;string&gt;
+#include &lt;iostream&gt;
+
+std::vector<int> computeLPSArray(const std::string& pattern) {
+    int m = pattern.length();
+    std::vector<int> lps(m, 0);
+    int length = 0;
+    int i = 1;
+
+    while (i < m) {
+        if (pattern[i] == pattern[length]) {
+            length++;
+            lps[i] = length;
+            i++;
+        } else {
+            if (length != 0) {
+                length = lps[length - 1];
+            } else {
+                lps[i] = 0;
+                i++;
+            }
+        }
+    }
+    return lps;
+}
+
+std::vector<int> kmpSearch(const std::string& text, const std::string& pattern) {
+    int n = text.length();
+    int m = pattern.length();
+    if (m == 0) return {};
+    
+    std::vector<int> lps = computeLPSArray(pattern);
+    int i = 0; // index for text
+    int j = 0; // index for pattern
+    std::vector<int> results;
+
+    while (i < n) {
+        if (pattern[j] == text[i]) {
+            i++;
+            j++;
+        }
+
+        if (j == m) {
+            results.push_back(i - j);
+            j = lps[j - 1];
+        } else if (i < n && pattern[j] != text[i]) {
+            if (j != 0) {
+                j = lps[j - 1];
+            } else {
+                i++;
+            }
+        }
+    }
+    return results;
+}
+
+// int main() {
+//     std::string text = "ABABDABACDABABCABAB";
+//     std::string pattern = "ABABCABAB";
+//     std::vector<int> result = kmpSearch(text, pattern);
+//     for(int pos : result) {
+//         std::cout << "Pattern found at index " << pos << std::endl; // 10
+//     }
+// }
+</code></pre>
+
+    <pre data-lang="go"><code class="language-go">package main
+
+import "fmt"
+
+func computeLPSArray(pattern string) []int {
+    m := len(pattern)
+    lps := make([]int, m)
+    length := 0
+    i := 1
+
+    for i < m {
+        if pattern[i] == pattern[length] {
+            length++
+            lps[i] = length
+            i++
+        } else {
+            if length != 0 {
+                length = lps[length-1]
+            } else {
+                lps[i] = 0
+                i++
+            }
+        }
+    }
+    return lps
+}
+
+func kmpSearch(text, pattern string) []int {
+    n := len(text)
+    m := len(pattern)
+    if m == 0 {
+        return nil
+    }
+
+    lps := computeLPSArray(pattern)
+    i := 0 // index for text
+    j := 0 // index for pattern
+    results := []int{}
+
+    for i < n {
+        if pattern[j] == text[i] {
+            i++
+            j++
+        }
+
+        if j == m {
+            results = append(results, i-j)
+            j = lps[j-1]
+        } else if i < n && pattern[j] != text[i] {
+            if j != 0 {
+                j = lps[j-1]
+            } else {
+                i++
+            }
+        }
+    }
+    return results
+}
+
+// func main() {
+//     text := "ABABDABACDABABCABAB"
+//     pattern := "ABABCABAB"
+//     fmt.Println(kmpSearch(text, pattern)) // [10]
+// }
+</code></pre>
+    
+    <pre data-lang="d"><code class="language-d">import std.stdio;
+import std.array;
+
+int[] computeLPSArray(string pattern) {
+    auto m = pattern.length;
+    auto lps = new int[m];
+    int length = 0;
+    int i = 1;
+
+    while (i < m) {
+        if (pattern[i] == pattern[length]) {
+            length++;
+            lps[i] = length;
+            i++;
+        } else {
+            if (length != 0) {
+                length = lps[length - 1];
+            } else {
+                lps[i] = 0;
+                i++;
+            }
+        }
+    }
+    return lps;
+}
+
+int[] kmpSearch(string text, string pattern) {
+    auto n = text.length;
+    auto m = pattern.length;
+    if (m == 0) return [];
+
+    auto lps = computeLPSArray(pattern);
+    int i = 0; // index for text
+    int j = 0; // index for pattern
+    int[] results;
+
+    while (i < n) {
+        if (pattern[j] == text[i]) {
+            i++;
+            j++;
+        }
+
+        if (j == m) {
+            results ~= (i - j);
+            j = lps[j - 1];
+        } else if (i < n && pattern[j] != text[i]) {
+            if (j != 0) {
+                j = lps[j - 1];
+            } else {
+                i++;
+            }
+        }
+    }
+    return results;
+}
+
+// void main() {
+//     string text = "ABABDABACDABABCABAB";
+//     string pattern = "ABABCABAB";
+//     writeln(kmpSearch(text, pattern)); // [10]
+// }
+</code></pre>
+</div>
+
+<div id="code-explanation-content"><div class="markdown-content">
+    <h3>Code Walkthrough</h3>
+    <p>The KMP algorithm is a two-stage process: preprocessing the pattern and then searching the text.</p>
+    <div class="explanation-fence">
+<strong><code>computeLPSArray(pattern)</code> Function:</strong>
+<ol>
+    <li>Creates an <code>LPS</code> array, <code>lps</code>, filled with zeros.</li>
+    <li>Uses two pointers: <code>length</code> (tracks the length of the current longest prefix-suffix) and <code>i</code> (iterates through the pattern).</li>
+    <li>If <code>pattern[i]</code> and <code>pattern[length]</code> match, it means we've extended the current prefix-suffix. We increment <code>length</code>, store it in <code>lps[i]</code>, and move to the next character <code>i</code>.</li>
+    <li>If they don't match:
+        <ul>
+            <li>If <code>length</code> is not zero, we "fall back" by looking at the LPS value of the previous character (<code>length = lps[length - 1]</code>). This effectively tries a shorter prefix-suffix.</li>
+            <li>If <code>length</code> is zero, it means there's no proper prefix-suffix to fall back on, so <code>lps[i]</code> is 0, and we move to the next character <code>i</code>.</li>
+        </ul>
+    </li>
+</ol>
+<br>
+<strong><code>kmpSearch(text, pattern)</code> Function:</strong>
+<ol>
+    <li>Uses two pointers: <code>i</code> for the <code>text</code> and <code>j</code> for the <code>pattern</code>.</li>
+    <li>If <code>text[i]</code> and <code>pattern[j]</code> match, increment both pointers.</li>
+    <li>If <code>j</code> reaches the end of the pattern (<code>j == m</code>), a full match is found. We record the starting index (<code>i - j</code>) and then update <code>j</code> using the <code>LPS</code> array (<code>j = lps[j-1]</code>) to continue searching for the next possible match.</li>
+    <li>If there's a mismatch:
+        <ul>
+            <li>If <code>j</code> is not at the start of the pattern, we consult <code>lps[j-1]</code> to find the length of the prefix we can skip. We update <code>j</code> to this value without incrementing <code>i</code>. This is the "magic shift" of KMP.</li>
+            <li>If <code>j</code> is already at the start, we can't shift the pattern further, so we just move to the next character in the <code>text</code> by incrementing <code>i</code>.</li>
+        </ul>
+    </li>
+</ol>
+    </div></div>
+</div>
+
+<div id="application-content"><div class="markdown-content">
+    <h3>Application</h3>
+    <p>The KMP algorithm is a fundamental string-searching algorithm used in various applications where efficiency is critical.</p>
+    <ul>
+        <li><strong>Text Editors:</strong> Used in "find and replace" functionality.</li>
+        <li><strong>Bioinformatics:</strong> Searching for specific gene sequences within a larger DNA strand.</li>
+        <li><strong>Data Loss Prevention (DLP):</strong> Scanning documents or network traffic for sensitive data patterns (like credit card numbers or social security numbers).</li>
+        <li><strong>Intrusion Detection Systems (IDS):</strong> Searching for known malicious patterns or signatures in network packets.</li>
+        <li><strong>Plagiarism Detection:</strong> Finding instances of a smaller document (the "pattern") within a larger corpus of documents (the "text").</li>
+    </ul>
+    </p>
+</div></div>

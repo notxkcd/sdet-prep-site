@@ -1,0 +1,117 @@
+<div id="explanation-content">
+    <p>Imagine a network of cities connected by roads, or a social network where people are connected by friendships. A <code>Graph</code> data structure is a way to model such relationships between objects.</p>
+    <p>It consists of a set of '<code>nodes</code>' (also called <code>vertices</code>) and a set of '<code>edges</code>' that connect pairs of <code>nodes</code>. <code>Graphs</code> are incredibly versatile and are used to solve a vast range of real-world problems.</p>
+</div>
+
+<div id="expanded-explanation-content">
+    <h3>How it Works (Expanded)</h3>
+    <p><code>Graphs</code> can be either directed (<code>edges</code> have a specific flow, like one-way streets) or undirected (<code>edges</code> go both ways, like two-way roads). They can also be weighted (<code>edges</code> have a cost, like distance or time) or unweighted.</p>
+    <div class="explanation-fence">
+Undirected Graph:   A --- B
+                    |  \  |
+                    C --- D
+
+Directed Graph:     A --> B
+                    ^     |
+                    |     v
+                    C <-- D
+    </div>
+    <p><strong>Common Representations:</strong></p>
+    <ul>
+        <li><strong><code>Adjacency Matrix</code>:</strong> A 2D array where <code>matrix[i][j]</code> is 1 if there's an <code>edge</code> between <code>node</code> <code>i</code> and <code>node</code> <code>j</code>, and 0 otherwise. Good for dense <code>graphs</code> (many <code>edges</code>), but uses more space for sparse <code>graphs</code>.</li>
+        <li><strong><code>Adjacency List</code>:</strong> An array of <code>lists</code>/<code>vectors</code> where <code>list[i]</code> contains all <code>nodes</code> adjacent to <code>node</code> <code>i</code>. More space-efficient for sparse <code>graphs</code>, but checking for an <code>edge</code> between two specific <code>nodes</code> takes longer.</li>
+    </ul>
+    <p><strong>Common Operations:</strong> Traversal (<code>BFS</code>, <code>DFS</code>), finding shortest paths (<code>Dijkstra's</code>, <code>Bellman-Ford</code>), finding minimum spanning trees (<code>Prim's</code>, <code>Kruskal's</code>).</p>
+    <p><strong>Time Complexity:</strong> Varies greatly depending on the operation and representation. Often expressed in terms of <code>V</code> (number of <code>vertices</code>) and <code>E</code> (number of <code>edges</code>).</p>
+</div>
+
+<div id="code-implementations">
+    <pre data-lang="python"><code class="language-python"># Adjacency List representation
+class Graph:
+    def __init__(self, vertices):
+        self.V = vertices
+        self.graph = {i: [] for i in range(vertices)} # Adjacency list
+
+    def add_edge(self, u, v, weight=1):
+        self.graph[u].append((v, weight))
+        # For undirected graph, add: self.graph[v].append((u, weight))
+
+    def print_graph(self):
+        for i in range(self.V):
+            print(f"Vertex {i}:", end="")
+            for neighbor, weight in self.graph[i]:
+                print(f" -> ({neighbor}, {weight})", end="")
+            print()
+</code></pre>
+
+    <pre data-lang="javascript"><code class="language-javascript">// Adjacency List representation
+class Graph {
+    constructor(vertices) {
+        this.vertices = vertices;
+        this.adjacencyList = new Map();
+
+        for (let i = 0; i < vertices; i++) {
+            this.adjacencyList.set(i, []);
+        }
+    }
+
+    addEdge(u, v, weight = 1) {
+        this.adjacencyList.get(u).push({ node: v, weight: weight });
+        // For undirected graph, add: this.adjacencyList.get(v).push({ node: u, weight: weight });
+    }
+
+    printGraph() {
+        for (let [vertex, neighbors] of this.adjacencyList) {
+            let connections = neighbors.map(n => <code>(${n.node}, ${n.weight})</code>).join(" -> ");
+            console.log(<code>Vertex ${vertex}: ${connections}</code>);
+        }
+    }
+}
+</code></pre>
+
+    <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;list&gt; // For adjacency list
+
+class Graph {
+public:
+    int V; // Number of vertices
+    std::vector&lt;std::list&lt;std::pair&lt;int, int&gt;&gt;&gt; adj; // Adjacency list
+
+    Graph(int vertices) {
+        V = vertices;
+        adj.resize(V);
+    }
+
+    void addEdge(int u, int v, int weight = 1) {
+        adj[u].push_back({v, weight});
+        // For undirected graph, add: adj[v].push_back({u, weight});
+    }
+
+    void printGraph() {
+        for (int i = 0; i < V; ++i) {
+            std::cout &lt;&lt; "Vertex " &lt;&lt; i &lt;&lt; ":";
+            for (auto const& edge : adj[i]) {
+                std::cout &lt;&lt; " -> (" &lt;&lt; edge.first &lt;&lt; ", " &lt;&lt; edge.second &lt;&lt; ")";
+            }
+            std::cout &lt;&lt; std::endl;
+        }
+    }
+};
+</code></pre>
+</div>
+
+<div id="code-explanation-content"><div class="markdown-content">
+    <h3>Code Walkthrough</h3>
+    <p><code>Graphs</code> are abstract, so their implementation focuses on how to represent connections between <code>nodes</code>.</p>
+    <div class="explanation-fence">
+<strong><code>Adjacency List</code> (Python, JavaScript, C++):</strong>
+<ul>
+    <li>Uses a <code>list</code> (Python, JS) or <code>vector</code> (C++) where each <code>index</code> represents a <code>vertex</code>.</li>
+    <li>At each <code>index</code>, another <code>list</code> (or <code>std::list</code> in C++) stores the neighbors of that <code>vertex</code>, often as pairs of <code>(neighbor_node, weight)</code>.</li>
+    <li><code>add_edge(u, v, weight)</code>: Appends the new <code>edge</code> to the <code>adjacency list</code> of <code>vertex</code> <code>u</code>. For undirected <code>graphs</code>, an <code>edge</code> from <code>v</code> to <code>u</code> is also added.</li>
+    <li><code>print_graph()</code>: Iterates through each <code>vertex</code> and its <code>list</code> of neighbors to display the connections.</li>
+</ul>
+    </div></div>
+    <p><code>Adjacency lists</code> are generally preferred for sparse <code>graphs</code>, while <code>adjacency matrices</code> are better for dense <code>graphs</code>.</p>
+</div>

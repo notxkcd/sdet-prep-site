@@ -1,0 +1,472 @@
+<div id="explanation-content">
+    <p>The <code>Fractional Knapsack Problem</code> is an optimization problem that can be solved using a <code>greedy approach</code>. Given a set of <code>items</code>, each with a specific <code>weight</code> and <code>value</code>, and a <code>knapsack</code> with a maximum <code>weight capacity</code>, the goal is to choose a subset of <code>items</code> (or fractions of <code>items</code>) to put into the <code>knapsack</code> such that the total <code>value</code> is maximized, and the total <code>weight</code> does not exceed the <code>capacity</code>.</p>
+    <p>Unlike the <code>0/1 Knapsack Problem</code> where items must be taken whole or not at all, the "<code>fractional</code>" aspect means we can take portions of items. This crucial difference allows for a simpler, greedy solution rather than a <code>dynamic programming</code> approach.</p>
+</div>
+
+<div id="expanded-explanation-content">
+    <h3>How it Works (Expanded)</h3>
+    <p>Because we can take fractions of items, the optimal strategy for the <code>Fractional Knapsack Problem</code> is to prioritize items that give the most <code>value per unit of weight</code> (i.e., the highest <code>value/weight ratio</code>). This greedy choice always leads to the optimal solution.</p>
+    <div class="explanation-fence">
+Example: Items = [(W=10, V=60), (W=20, V=100), (W=30, V=120)], Capacity = 50
+
+1. Calculate Value/Weight Ratio:
+   - Item 1: 60/10 = 6
+   - Item 2: 100/20 = 5
+   - Item 3: 120/30 = 4
+
+2. Sort items by Value/Weight Ratio (descending):
+   - [(W=10, V=60, Ratio=6), (W=20, V=100, Ratio=5), (W=30, V=120, Ratio=4)]
+
+3. Fill knapsack greedily:
+   - Take Item 1 (10kg, 60 value). Remaining capacity = 50 - 10 = 40. Total value = 60.
+   - Take Item 2 (20kg, 100 value). Remaining capacity = 40 - 20 = 20. Total value = 60 + 100 = 160.
+   - For Item 3 (30kg, 120 value), only 20kg capacity left. Take (20/30) fraction.
+     - Value from fraction = (20/30) <em> 120 = 80.
+     - Remaining capacity = 20 - 20 = 0. Total value = 160 + 80 = 240.
+
+Maximum value = 240.
+    </div>
+    <p><strong>Algorithm Steps:</strong></p>
+    <ol>
+        <li>For each <code>item</code>, calculate its <code>value/weight ratio</code>.</li>
+        <li>Sort the <code>items</code> in descending order based on their <code>value/weight ratio</code>.</li>
+        <li>Initialize <code>total_value = 0</code> and <code>current_weight = 0</code>.</li>
+        <li>Iterate through the sorted <code>items</code>:
+            <ul>
+                <li>If adding the entire current <code>item</code> does not exceed the <code>knapsack capacity</code>:
+                    <ul>
+                        <li>Add the <code>item</code>'s full <code>weight</code> to <code>current_weight</code>.</li>
+                        <li>Add the <code>item</code>'s full <code>value</code> to <code>total_value</code>.</li>
+                    </ul>
+                </li>
+                <li>Else (adding the entire <code>item</code> would exceed <code>capacity</code>):
+                    <ul>
+                        <li>Calculate the <code>fraction</code> of the <code>item</code> that can be taken to fill the remaining <code>capacity</code>.</li>
+                        <li>Add the <code>fraction</code> of the <code>item</code>'s <code>value</code> to <code>total_value</code>.</li>
+                        <li>Break the loop (knapsack is full).</li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+        <li>The <code>total_value</code> will be the maximum possible <code>value</code>.</li>
+    </ol>
+    <p><strong>Time Complexity:</strong> <code>O(N log N)</code>, primarily due to the sorting step of items by <code>value/weight ratio</code>. If items are already sorted, it's <code>O(N)</code>.</p>
+    <p><strong>Space Complexity:</strong> <code>O(N)</code> to store the <code>items</code> and their ratios.</p>
+</div>
+
+<div id="code-implementations">
+    <pre data-lang="python"><code class="language-python">def fractional_knapsack(capacity, items):
+    """
+    Solves the Fractional Knapsack Problem.
+    <code>capacity</code>: maximum weight capacity of the knapsack.
+    <code>items</code>: a list of tuples, where each tuple is (weight, value).
+    """
+    if not items or capacity <= 0:
+        return 0.0
+
+    # 1. Calculate value/weight ratio for each item and sort in descending order
+    # item_with_ratios = [(weight, value, value/weight)]
+    items_with_ratios = []
+    for w, v in items:
+        items_with_ratios.append((w, v, v / w))
+    
+    # Sort by ratio in descending order
+    items_with_ratios.sort(key=lambda x: x[2], reverse=True)
+
+    total_value = 0.0
+    current_weight = 0
+
+    # 2. Iterate through sorted items and fill knapsack greedily
+    for weight, value, ratio in items_with_ratios:
+        if current_weight + weight <= capacity:
+            # Take the whole item
+            current_weight += weight
+            total_value += value
+        else:
+            # Take a fraction of the item
+            remaining_capacity = capacity - current_weight
+            fraction = remaining_capacity / weight
+            total_value += fraction </em> value
+            current_weight += remaining_capacity # Knapsack is full
+            break # Knapsack is full
+
+    return total_value
+
+# Example
+# capacity = 50
+# items = [(10, 60), (20, 100), (30, 120)] # (weight, value)
+# print(fractional_knapsack(capacity, items)) # Expected: 240.0
+# (Take 10kg of item1, 20kg of item2, and 20kg of item3 (2/3 of item3))
+</code></pre>
+
+    <pre data-lang="javascript"><code class="language-javascript">function fractionalKnapsack(capacity, items) {
+    /*<em>
+     </em> Solves the Fractional Knapsack Problem.
+     <em> <code>capacity</code>: maximum weight capacity of the knapsack.
+     </em> <code>items</code>: an array of objects, where each object is { weight: number, value: number }.
+     <em>/
+    if (items.length === 0 || capacity <= 0) {
+        return 0.0;
+    }
+
+    // 1. Calculate value/weight ratio for each item and sort in descending order
+    // Add ratio to each item object
+    const itemsWithRatios = items.map(item => ({
+        ...item,
+        ratio: item.value / item.weight
+    }));
+    
+    // Sort by ratio in descending order
+    itemsWithRatios.sort((a, b) => b.ratio - a.ratio);
+
+    let totalValue = 0.0;
+    let currentWeight = 0;
+
+    // 2. Iterate through sorted items and fill knapsack greedily
+    for (const item of itemsWithRatios) {
+        if (currentWeight + item.weight <= capacity) {
+            // Take the whole item
+            currentWeight += item.weight;
+            totalValue += item.value;
+        } else {
+            // Take a fraction of the item
+            const remainingCapacity = capacity - currentWeight;
+            const fraction = remainingCapacity / item.weight;
+            totalValue += fraction </em> item.value;
+            currentWeight += remainingCapacity; // Knapsack is full
+            break; // Knapsack is full
+        }
+    }
+
+    return totalValue;
+}
+
+// const capacity = 50;
+// const items = [
+//     { weight: 10, value: 60 },
+//     { weight: 20, value: 100 },
+//     { weight: 30, value: 120 }
+// ];
+// console.log(fractionalKnapsack(capacity, items)); // Expected: 240.0
+</code></pre>
+
+    <pre data-lang="typescript"><code class="language-typescript">interface Item {
+    weight: number;
+    value: number;
+}
+
+interface ItemWithRatio extends Item {
+    ratio: number;
+}
+
+function fractionalKnapsackTS(capacity: number, items: Item[]): number {
+    if (items.length === 0 || capacity <= 0) {
+        return 0.0;
+    }
+
+    // 1. Calculate value/weight ratio for each item and sort in descending order
+    // Add ratio to each item object
+    const itemsWithRatios: ItemWithRatio[] = items.map(item => ({
+        ...item,
+        ratio: item.value / item.weight
+    }));
+    
+    // Sort by ratio in descending order
+    itemsWithRatios.sort((a, b) => b.ratio - a.ratio);
+
+    let totalValue = 0.0;
+    let currentWeight = 0;
+
+    // 2. Iterate through sorted items and fill knapsack greedily
+    for (const item of itemsWithRatios) {
+        if (currentWeight + item.weight <= capacity) {
+            // Take the whole item
+            currentWeight += item.weight;
+            totalValue += item.value;
+        } else {
+            // Take a fraction of the item
+            const remainingCapacity = capacity - currentWeight;
+            const fraction = remainingCapacity / item.weight;
+            totalValue += fraction <em> item.value;
+            currentWeight += remainingCapacity; // Knapsack is full
+            break; // Knapsack is full
+        }
+    }
+
+    return totalValue;
+}
+
+// const capacityTS = 50;
+// const itemsTS: Item[] = [
+//     { weight: 10, value: 60 },
+//     { weight: 20, value: 100 },
+//     { weight: 30, value: 120 }
+// ];
+// console.log(fractionalKnapsackTS(capacityTS, itemsTS)); // Expected: 240.0
+</code></pre>
+    
+    <pre data-lang="cpp"><code class="language-cpp">#include &lt;vector&gt;
+#include &lt;iostream&gt;
+#include &lt;algorithm&gt; // For std::sort
+#include &lt;numeric&gt;   // For std::iota
+
+// Struct to represent an item with its weight, value, and ratio
+struct Item {
+    int weight;
+    int value;
+    double ratio;
+
+    // Constructor to calculate ratio
+    Item(int w, int v) : weight(w), value(v) {
+        ratio = static_cast&lt;double&gt;(value) / weight;
+    }
+
+    // Custom comparator for sorting by ratio in descending order
+    bool operator&lt;(const Item& other) const {
+        return ratio > other.ratio; // Sort in descending order of ratio
+    }
+};
+
+double fractionalKnapsack(int capacity, std::vector&lt;Item&gt; items) {
+    if (items.empty() || capacity <= 0) {
+        return 0.0;
+    }
+
+    // 1. Sort items by value/weight ratio in descending order
+    std::sort(items.begin(), items.end());
+
+    double total_value = 0.0;
+    int current_weight = 0;
+
+    // 2. Iterate through sorted items and fill knapsack greedily
+    for (const auto& item : items) {
+        if (current_weight + item.weight <= capacity) {
+            // Take the whole item
+            current_weight += item.weight;
+            total_value += item.value;
+        } else {
+            // Take a fraction of the item
+            int remaining_capacity = capacity - current_weight;
+            double fraction = static_cast&lt;double&gt;(remaining_capacity) / item.weight;
+            total_value += fraction </em> item.value;
+            current_weight += remaining_capacity; // Knapsack is full
+            break; // Knapsack is full
+        }
+    }
+
+    return total_value;
+}
+
+// int main() {
+//     int capacity = 50;
+//     std::vector<Item> items = {
+//         Item(10, 60),
+//         Item(20, 100),
+//         Item(30, 120)
+//     };
+//     std::cout << "Max value: " << fractionalKnapsack(capacity, items) << std::endl; // 240.0
+//     return 0;
+// }
+</code></pre>
+
+    <pre data-lang="go"><code class="language-go">package main
+
+import (
+    "fmt"
+    "sort"
+)
+
+type FractionalKnapsackItem struct {
+    Weight int
+    Value  int
+    Ratio  float64
+}
+
+// Implement sort.Interface for []FractionalKnapsackItem
+type ByRatio []FractionalKnapsackItem
+
+func (a ByRatio) Len() int           { return len(a) }
+func (a ByRatio) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a ByRatio) Less(i, j int) bool { return a[i].Ratio > a[j].Ratio } // Descending order
+
+func fractionalKnapsack(capacity int, items []FractionalKnapsackItem) float64 {
+    if len(items) == 0 || capacity <= 0 {
+        return 0.0
+    }
+
+    // 1. Calculate value/weight ratio for each item and sort in descending order
+    // (Ratios are calculated and added to the struct in main for simplicity of passing)
+    sort.Sort(ByRatio(items))
+
+    totalValue := 0.0
+    currentWeight := 0
+
+    // 2. Iterate through sorted items and fill knapsack greedily
+    for _, item := range items {
+        if currentWeight+item.Weight <= capacity {
+            // Take the whole item
+            currentWeight += item.Weight
+            totalValue += float64(item.Value)
+        } else {
+            // Take a fraction of the item
+            remainingCapacity := capacity - currentWeight
+            fraction := float64(remainingCapacity) / float64(item.Weight)
+            totalValue += fraction <em> float64(item.Value)
+            currentWeight += remainingCapacity // Knapsack is full
+            break // Knapsack is full
+        }
+    }
+
+    return totalValue
+}
+
+// func main() {
+//     capacity := 50
+//     items := []FractionalKnapsackItem{
+//         {Weight: 10, Value: 60},
+//         {Weight: 20, Value: 100},
+//         {Weight: 30, Value: 120},
+//     }
+
+//     // Calculate ratios manually for demonstration, in a real scenario this would be done dynamically
+//     for i := range items {
+//         items[i].Ratio = float64(items[i].Value) / float64(items[i].Weight)
+//     }
+
+//     fmt.Println("Max value:", fractionalKnapsack(capacity, items)) // 240.0
+// }
+</code></pre>
+    
+    <pre data-lang="d"><code class="language-d">import std.stdio;
+import std.array;
+import std.algorithm; // For std.algorithm.sort
+
+// Struct to represent an item with its weight, value, and ratio
+struct Item {
+    int weight;
+    int value;
+    double ratio;
+
+    this(int w, int v) {
+        weight = w;
+        value = v;
+        ratio = cast(double)value / weight;
+    }
+
+    // Custom comparator for sorting by ratio in descending order
+    int opCmp(const Item other) const {
+        if (this.ratio > other.ratio) return 1;
+        if (this.ratio < other.ratio) return -1;
+        return 0;
+    }
+}
+
+double fractionalKnapsack(int capacity, Item[] items) {
+    if (items.empty || capacity <= 0) {
+        return 0.0;
+    }
+
+    // 1. Calculate value/weight ratio for each item and sort in descending order
+    // (Ratios are calculated in constructor or can be done here)
+    items.sort!((a, b) => a.ratio > b.ratio); // Sort in descending order of ratio
+
+    double totalValue = 0.0;
+    int currentWeight = 0;
+
+    // 2. Iterate through sorted items and fill knapsack greedily
+    foreach (item; items) {
+        if (currentWeight + item.weight <= capacity) {
+            // Take the whole item
+            currentWeight += item.weight;
+            totalValue += item.value;
+        } else {
+            // Take a fraction of the item
+            int remainingCapacity = capacity - currentWeight;
+            double fraction = cast(double)remainingCapacity / item.weight;
+            totalValue += fraction </em> item.value;
+            currentWeight += remainingCapacity; // Knapsack is full
+            break; // Knapsack is full
+        }
+    }
+
+    return totalValue;
+}
+
+// void main() {
+//     int capacity = 50;
+//     Item[] items = [
+//         Item(10, 60),
+//         Item(20, 100),
+//         Item(30, 120)
+//     ];
+
+//     writeln("Max value: ", fractionalKnapsack(capacity, items)); // 240.0
+// }
+</code></pre>
+</div>
+
+<div id="code-explanation-content"><div class="markdown-content">
+    <h3>Code Walkthrough</h3>
+    <p>The <code>Fractional Knapsack Problem</code> is solvable with a straightforward <code>greedy approach</code> because items can be broken into fractions.</p>
+    <div class="explanation-fence">
+<strong><code>Item</code> Structure:</strong>
+<ul>
+    <li>Each <code>item</code> is typically represented by its <code>weight</code>, <code>value</code>, and a calculated <code>value/weight ratio</code>.</li>
+</ul>
+<br>
+<strong><code>fractional_knapsack(capacity, items)</code> Function:</strong>
+<ul>
+    <li><code>capacity</code>: The maximum <code>weight</code> the <code>knapsack</code> can hold.</li>
+    <li><code>items</code>: A list of <code>item</code> objects/tuples.</li>
+</ul>
+<br>
+<strong>Algorithm Steps:</strong>
+<ol>
+    <li><strong>Calculate Ratios:</strong> For each <code>item</code>, its <code>value/weight ratio</code> is calculated. This ratio indicates how much <code>value</code> each unit of <code>weight</code> provides.</li>
+    <li><strong>Sort Items:</strong> The <code>items</code> are then sorted in descending order based on this <code>value/weight ratio</code>. This is the crucial greedy step.</li>
+    <li><strong>Initialize:</strong>
+        <ul>
+            <li><code>total_value</code>: Stores the maximum <code>value</code> accumulated so far, initialized to 0.0.</li>
+            <li><code>current_weight</code>: Stores the current <code>weight</code> in the <code>knapsack</code>, initialized to 0.</li>
+        </ul>
+    </li>
+    <li><strong>Fill Knapsack Greedily:</strong> The algorithm iterates through the <code>items</code> in their sorted order (highest <code>ratio</code> first).
+        <ul>
+            <li>For each <code>item</code>:
+                <ul>
+                    <li><strong>If <code>current_weight + item.weight <= capacity</code>:</strong> The entire <code>item</code> can be added without exceeding <code>capacity</code>. The <code>item</code>'s <code>weight</code> and <code>value</code> are added to <code>current_weight</code> and <code>total_value</code> respectively.</li>
+                    <li><strong>Else (the <code>item</code> cannot be taken whole):</strong>
+                        <ul>
+                            <li>The <code>knapsack</code> can only accommodate a <code>fraction</code> of the <code>item</code>.</li>
+                            <li>The <code>remaining_capacity</code> is calculated.</li>
+                            <li>The <code>fraction</code> of the <code>item</code> that can be taken is <code>remaining_capacity / item.weight</code>.</li>
+                            <li>This <code>fraction</code> of the <code>item</code>'s <code>value</code> is added to <code>total_value</code>.</li>
+                            <li>The <code>current_weight</code> is set to <code>capacity</code> (the <code>knapsack</code> is now full).</li>
+                            <li>The loop breaks because the <code>knapsack</code> is full.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </li>
+</ol>
+<br>
+<strong>Result:</strong>
+<ul>
+    <li>The <code>total_value</code> will be the maximum possible <code>value</code> that can be obtained.</li>
+</ul>
+    </div></div>
+</div>
+
+<div id="application-content"><div class="markdown-content">
+    <h3>Application</h3>
+    <p>The <code>Fractional Knapsack Problem</code> and its greedy solution have various practical applications in resource allocation and optimization scenarios:</p>
+    <ul>
+        <li><strong>Resource Allocation:</strong> Deciding how to allocate a limited budget to different projects or investments, where each project has a cost and a potential return, and partial investment is possible.</li>
+        <li><strong>Loading Cargo:</strong> Optimizing the loading of a ship, truck, or airplane with various goods to maximize the total value, assuming goods can be split or poured.</li>
+        <li><strong>Cutting Stock Problems:</strong> Determining how to cut raw materials (e.g., fabric, metal sheets) into smaller pieces of different values to maximize profit from a limited supply.</li>
+        <li><strong>Fluid/Gas Transport:</strong> Optimizing the transport of different types of fluids or gases through a pipeline system with limited capacity, where each fluid has a value per unit volume.</li>
+        <li><strong>Agricultural Planning:</strong> Allocating land to different crops to maximize yield or profit, considering varying needs and returns per unit area.</li>
+    </ul>
+    </p>
+</div></div>

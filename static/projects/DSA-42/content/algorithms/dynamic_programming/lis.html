@@ -1,0 +1,339 @@
+<div id="explanation-content">
+    <p>The <code>Longest Increasing Subsequence (LIS)</code> problem is a classic problem in <code>dynamic programming</code>. Given an <code>array</code> of <code>numbers</code>, the goal is to find the length of the longest <code>subsequence</code> such that all <code>elements</code> of the <code>subsequence</code> are in increasing order. A <code>subsequence</code> is a sequence that can be derived from another sequence by deleting some or no <code>elements</code> without changing the order of the remaining <code>elements</code>.</p>
+    <p>For example, in the <code>array</code> <code>[3, 10, 2, 1, 20]</code>, the <code>LIS</code> is <code>[3, 10, 20]</code> with a length of 3.</p>
+</div>
+
+<div id="expanded-explanation-content">
+    <h3>How it Works (Expanded)</h3>
+    <p>There are multiple ways to solve the <code>LIS</code> problem. The most straightforward approach uses <code>dynamic programming</code> with a time complexity of <code>O(N^2)</code>. A more optimized approach uses <code>dynamic programming</code> with <code>binary search</code>, achieving <code>O(N log N)</code> time complexity.</p>
+    <div class="explanation-fence">
+Example (O(N^2) DP): Array = [3, 10, 2, 1, 20]
+
+dp array will store the length of LIS ending at each index.
+- dp[0] for 3:  [3] -> length 1. dp = [1]
+- dp[1] for 10: [3, 10] -> length 2. dp = [1, 2]
+- dp[2] for 2:  [2] -> length 1. dp = [1, 2, 1]
+- dp[3] for 1:  [1] -> length 1. dp = [1, 2, 1, 1]
+- dp[4] for 20: [3, 10, 20] or [2, 20] or [1, 20] -> length 3. dp = [1, 2, 1, 1, 3]
+
+Maximum value in dp array is the length of LIS.
+
+Example (O(N log N) with Binary Search): Array = [3, 10, 2, 1, 20]
+
+tails array will store the smallest tail of all increasing subsequences of length i+1.
+- [3]: tails = [3]
+- [3, 10]: tails = [3, 10]
+- [2]: 2 < 3. Replace 3 with 2. tails = [2, 10]
+- [1]: 1 < 2. Replace 2 with 1. tails = [1, 10]
+- [1, 20]: 20 > 10. Append 20. tails = [1, 10, 20]
+
+Length of LIS is tails.length = 3.
+    </div>
+    <p><strong><code>O(N^2)</code> Dynamic Programming Approach:</strong></p>
+    <ol>
+        <li>Create a <code>dp array</code> of the same size as the input <code>array</code>, initialized with all 1s (each <code>element</code> itself is an <code>increasing subsequence</code> of length 1).</li>
+        <li>Iterate <code>i</code> from 1 to <code>N-1</code> (the end of the array):
+            <ul>
+                <li>For each <code>i</code>, iterate <code>j</code> from 0 to <code>i-1</code>:</li>
+                <li>If <code>arr[i] > arr[j]</code> (meaning <code>arr[i]</code> can extend the subsequence ending at <code>arr[j]</code>):
+                    <code>dp[i] = max(dp[i], 1 + dp[j])</code></li>
+            </ul>
+        </li>
+        <li>The maximum value in the <code>dp array</code> is the length of the <code>LIS</code>.</li>
+    </ol>
+    <p><strong><code>O(N log N)</code> Dynamic Programming with Binary Search Approach:</strong></p>
+    <ol>
+        <li>Create a <code>tails array</code>. <code>tails[k]</code> stores the smallest tail of all <code>increasing subsequences</code> of length <code>k+1</code>. This array will always be sorted.</li>
+        <li>Iterate through each <code>number</code> in the input <code>array</code>:
+            <ul>
+                <li>If the <code>number</code> is greater than the last <code>element</code> in <code>tails</code>, append it to <code>tails</code> (extending the <code>LIS</code>).</li>
+                <li>Else, find the smallest <code>element</code> in <code>tails</code> that is greater than or equal to the <code>number</code> (using <code>binary search</code>). Replace that <code>element</code> with the <code>number</code>. This effectively allows us to form an <code>increasing subsequence</code> of the same length but with a smaller tail, which is always a better option.</li>
+            </ul>
+        </li>
+        <li>The final length of the <code>tails array</code> is the length of the <code>LIS</code>.</li>
+    </ol>
+    <p><strong>Time Complexity:</strong>
+    <ul>
+        <li><code>O(N^2)</code> for the basic DP approach.</li>
+        <li><code>O(N log N)</code> for the DP with binary search approach.</li>
+    </ul>
+    </p>
+    <p><strong>Space Complexity:</strong> <code>O(N)</code> for both approaches.</p>
+</div>
+
+<div id="code-implementations">
+    <pre data-lang="python"><code class="language-python">import bisect
+
+def longest_increasing_subsequence_n_log_n(arr):
+    if not arr:
+        return 0
+
+    tails = [] # tails[k] is the smallest tail of all increasing subsequences of length k+1
+
+    for num in arr:
+        # If num is greater than any tail, it can extend the longest subsequence
+        if not tails or num > tails[-1]:
+            tails.append(num)
+        else:
+            # Find the smallest tail that is greater than or equal to num
+            # Use bisect_left for binary search: returns insertion point
+            idx = bisect.bisect_left(tails, num)
+            tails[idx] = num # Replace that tail with num
+
+    return len(tails)
+
+# Example
+# arr1 = [3, 10, 2, 1, 20]
+# print(longest_increasing_subsequence_n_log_n(arr1)) # Expected: 3 ([3, 10, 20] or [2, 20] or [1, 20])
+
+# arr2 = [0, 8, 4, 12, 2, 10, 6, 14, 1, 9, 5, 13, 3, 11, 7, 15]
+# print(longest_increasing_subsequence_n_log_n(arr2)) # Expected: 6 ([0, 2, 6, 9, 11, 15] etc.)
+</code></pre>
+
+    <pre data-lang="javascript"><code class="language-javascript">function longestIncreasingSubsequenceNLogN(arr) {
+    if (arr.length === 0) {
+        return 0;
+    }
+
+    const tails = []; // tails[k] is the smallest tail of all increasing subsequences of length k+1
+
+    for (const num of arr) {
+        if (tails.length === 0 || num > tails[tails.length - 1]) {
+            tails.push(num);
+        } else {
+            // Find the smallest tail that is greater than or equal to num
+            // Binary search to find the index to replace
+            let low = 0;
+            let high = tails.length - 1;
+            let idx = -1;
+
+            while (low <= high) {
+                const mid = Math.floor((low + high) / 2);
+                if (tails[mid] >= num) {
+                    idx = mid;
+                    high = mid - 1;
+                } else {
+                    low = mid + 1;
+                }
+            }
+            if (idx !== -1) {
+                tails[idx] = num;
+            }
+        }
+    }
+
+    return tails.length;
+}
+
+// const arr1 = [3, 10, 2, 1, 20];
+// console.log(longestIncreasingSubsequenceNLogN(arr1)); // Expected: 3
+
+// const arr2 = [0, 8, 4, 12, 2, 10, 6, 14, 1, 9, 5, 13, 3, 11, 7, 15];
+// console.log(longestIncreasingSubsequenceNLogN(arr2)); // Expected: 6
+</code></pre>
+
+    <pre data-lang="typescript"><code class="language-typescript">function longestIncreasingSubsequenceNLogNTS(arr: number[]): number {
+    if (arr.length === 0) {
+        return 0;
+    }
+
+    const tails: number[] = []; // tails[k] is the smallest tail of all increasing subsequences of length k+1
+
+    for (const num of arr) {
+        if (tails.length === 0 || num > tails[tails.length - 1]) {
+            tails.push(num);
+        } else {
+            // Find the smallest tail that is greater than or equal to num
+            // Binary search to find the index to replace
+            let low = 0;
+            let high = tails.length - 1;
+            let idx = -1;
+
+            while (low <= high) {
+                const mid = Math.floor((low + high) / 2);
+                if (tails[mid] >= num) {
+                    idx = mid;
+                    high = mid - 1;
+                } else {
+                    low = mid + 1;
+                }
+            }
+            if (idx !== -1) {
+                tails[idx] = num;
+            }
+        }
+    }
+
+    return tails.length;
+}
+
+// const arr1TS = [3, 10, 2, 1, 20];
+// console.log(longestIncreasingSubsequenceNLogNTS(arr1TS)); // Expected: 3
+
+// const arr2TS = [0, 8, 4, 12, 2, 10, 6, 14, 1, 9, 5, 13, 3, 11, 7, 15];
+// console.log(longestIncreasingSubsequenceNLogNTS(arr2TS)); // Expected: 6
+</code></pre>
+    
+    <pre data-lang="cpp"><code class="language-cpp">#include &lt;vector&gt;
+#include &lt;iostream&gt;
+#include &lt;algorithm&gt; // For std::lower_bound
+
+int longestIncreasingSubsequenceNLogN(const std::vector&lt;int&gt;& arr) {
+    if (arr.empty()) {
+        return 0;
+    }
+
+    std::vector&lt;int&gt; tails; // tails[k] is the smallest tail of all increasing subsequences of length k+1
+
+    for (int num : arr) {
+        // If num is greater than any tail, it can extend the longest subsequence
+        if (tails.empty() || num > tails.back()) {
+            tails.push_back(num);
+        } else {
+            // Find the smallest tail that is greater than or equal to num
+            // std::lower_bound returns an iterator to the first element not less than num
+            auto it = std::lower_bound(tails.begin(), tails.end(), num);
+            <em>it = num; // Replace that tail with num
+        }
+    }
+
+    return tails.size();
+}
+
+// int main() {
+//     std::vector<int> arr1 = {3, 10, 2, 1, 20};
+//     std::cout << "LIS length for arr1: " << longestIncreasingSubsequenceNLogN(arr1) << std::endl; // 3
+
+//     std::vector<int> arr2 = {0, 8, 4, 12, 2, 10, 6, 14, 1, 9, 5, 13, 3, 11, 7, 15};
+//     std::cout << "LIS length for arr2: " << longestIncreasingSubsequenceNLogN(arr2) << std::endl; // 6
+//     return 0;
+// }
+</code></pre>
+
+    <pre data-lang="go"><code class="language-go">package main
+
+import (
+    "fmt"
+    "sort"
+)
+
+func longestIncreasingSubsequenceNLogN(arr []int) int {
+    if len(arr) == 0 {
+        return 0
+    }
+
+    tails := []int{} // tails[k] is the smallest tail of all increasing subsequences of length k+1
+
+    for _, num := range arr {
+        if len(tails) == 0 || num > tails[len(tails)-1] {
+            tails = append(tails, num)
+        } else {
+            // Find the smallest tail that is greater than or equal to num
+            // using binary search (sort.SearchInts returns the index to insert)
+            idx := sort.SearchInts(tails, num)
+            tails[idx] = num // Replace that tail with num
+        }
+    }
+
+    return len(tails)
+}
+
+// func main() {
+//     arr1 := []int{3, 10, 2, 1, 20}
+//     fmt.Println("LIS length for arr1:", longestIncreasingSubsequenceNLogN(arr1)) // 3
+
+//     arr2 := []int{0, 8, 4, 12, 2, 10, 6, 14, 1, 9, 5, 13, 3, 11, 7, 15}
+//     fmt.Println("LIS length for arr2:", longestIncreasingSubsequenceNLogN(arr2)) // 6
+// }
+</code></pre>
+    
+    <pre data-lang="d"><code class="language-d">import std.stdio;
+import std.array;
+import std.algorithm; // For std.algorithm.lowerBound
+
+int longestIncreasingSubsequenceNLogN(int[] arr) {
+    if (arr.empty) {
+        return 0;
+    }
+
+    int[] tails; // tails[k] is the smallest tail of all increasing subsequences of length k+1
+
+    foreach (num; arr) {
+        // If num is greater than any tail, it can extend the longest subsequence
+        if (tails.empty || num > tails.back) {
+            tails ~= num;
+        } else {
+            // Find the smallest tail that is greater than or equal to num
+            // lowerBound returns an iterator to the first element not less than num
+            auto it = tails.lowerBound(num);
+            if (it != tails.end) { // Ensure element found
+                </em>it = num; // Replace that tail with num
+            }
+        }
+    }
+
+    return cast(int)tails.length;
+}
+
+// void main() {
+//     auto arr1 = [3, 10, 2, 1, 20];
+//     writeln("LIS length for arr1: ", longestIncreasingSubsequenceNLogN(arr1)); // 3
+
+//     auto arr2 = [0, 8, 4, 12, 2, 10, 6, 14, 1, 9, 5, 13, 3, 11, 7, 15];
+//     writeln("LIS length for arr2: ", longestIncreasingSubsequenceNLogN(arr2)); // 6
+// }
+</code></pre>
+</div>
+
+<div id="code-explanation-content"><div class="markdown-content">
+    <h3>Code Walkthrough</h3>
+    <p>The <code>Longest Increasing Subsequence</code> problem can be solved in <code>O(N log N)</code> time using a combination of <code>dynamic programming</code> and <code>binary search</code>. This is a significant optimization over the <code>O(N^2)</code> DP approach.</p>
+    <div class="explanation-fence">
+<strong>Key Idea (<code>tails</code> array):</strong>
+<ul>
+    <li>We maintain a <code>tails array</code> (or <code>list</code>). <code>tails[k]</code> stores the smallest <em>ending element</em> of all <code>increasing subsequences</code> of <code>length k+1</code> found so far.</li>
+    <li>It's crucial to understand that the <code>tails</code> array itself is not an <code>increasing subsequence</code>. Instead, its length is the <code>length</code> of the <code>LIS</code>, and its elements are just the smallest tails.</li>
+    <li>The <code>tails</code> array will always be sorted in <code>increasing order</code>.</li>
+</ul>
+<br>
+<strong>Algorithm Steps:</strong>
+<ol>
+    <li>Initialize an empty <code>tails</code> array.</li>
+    <li>Iterate through each <code>num</code> in the input <code>array</code>:
+        <ul>
+            <li><strong>Case 1: <code>tails</code> is empty or <code>num</code> is greater than the last element of <code>tails</code>.</strong>
+                <ul>
+                    <li>If this is true, <code>num</code> can extend the longest <code>increasing subsequence</code> found so far. We append <code>num</code> to <code>tails</code>.</li>
+                </ul>
+            </li>
+            <li><strong>Case 2: <code>num</code> is not greater than the last element of <code>tails</code>.</strong>
+                <ul>
+                    <li>This means <code>num</code> cannot extend the <code>LIS</code> to a new longer length immediately. However, it might be able to form an <code>increasing subsequence</code> of the <em>same length</em> but with a <em>smaller tail</em>. A smaller tail is always better, as it allows more numbers to extend the subsequence later.</li>
+                    <li>We use <code>binary search</code> (<code>bisect_left</code> in Python, <code>lower_bound</code> in C++, <code>sort.SearchInts</code> in Go) to find the smallest <code>element</code> in <code>tails</code> that is greater than or equal to <code>num</code>.</li>
+                    <li>We replace that <code>element</code> with <code>num</code>. This operation maintains the sorted property of <code>tails</code> and ensures that <code>tails[k]</code> always holds the smallest tail for <code>LIS</code> of length <code>k+1</code>.</li>
+                </ul>
+            </li>
+        </ul>
+    </li>
+</ol>
+<br>
+<strong>Result:</strong>
+<ul>
+    <li>The final length of the <code>tails</code> array is the length of the <code>Longest Increasing Subsequence</code>.</li>
+</ul>
+    </div></div>
+</div>
+
+<div id="application-content"><div class="markdown-content">
+    <h3>Application</h3>
+    <p>The <code>Longest Increasing Subsequence (LIS)</code> problem has applications in various fields:</p>
+    <ul>
+        <li><strong>Bioinformatics:</strong> Used in analyzing DNA or protein sequences to identify common patterns or structures.</li>
+        <li><strong>Data Mining:</strong> Finding patterns or trends in sequential data, such as stock prices or sensor readings.</li>
+        <li><strong>Job Scheduling:</strong> Optimizing the order of tasks to maximize efficiency, where tasks have dependencies.</li>
+        <li><strong>File Versioning:</strong> Comparing different versions of a file to find out how they evolved, or to reconstruct a sequence of changes.</li>
+        <li><strong>Card Games:</strong> In certain card games, finding the <code>LIS</code> can be part of strategy optimization.</li>
+        <li><strong>Compiler Optimization:</strong> In some cases, instruction reordering can be optimized by finding the <code>LIS</code> to improve cache performance or reduce dependencies.</li>
+    </ul>
+    </p>
+</div></div>

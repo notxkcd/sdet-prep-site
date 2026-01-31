@@ -1,0 +1,1576 @@
+:root {
+    --bg-color: #1a1a1a;
+    --text-color: #e0e0e0;
+    --primary-color: #00ff99;
+    --secondary-color: #333;
+    --error-color: #ff4d4d;
+    --font-family: 'Courier New', Courier, monospace;
+}
+
+body {
+
+    margin: 0;
+
+    font-family: var(--font-family);
+
+    background-color: var(--bg-color);
+
+    color: var(--text-color);
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: flex-start; /* Align to top */
+
+    min-height: 100vh;
+
+    padding-top: 5vh; /* Give some space from the top */
+
+    text-align: center;
+
+}
+
+
+
+.screen {
+
+
+
+    width: 800px;
+
+
+
+    max-width: 95%;
+
+
+
+    padding: 40px;
+
+
+
+    display: flex;
+
+
+
+    flex-direction: column;
+
+
+
+    /* Let content define the height */
+
+
+
+    /* min-height: 500px; */
+
+
+
+    border: 1px solid var(--secondary-color);
+
+
+
+    box-shadow: 0 0 20px rgba(0, 255, 153, 0.1);
+
+
+
+    text-align: center; /* Revert to center for home screen */
+
+
+
+}
+
+
+
+
+
+
+
+#home-screen {
+
+
+
+    text-align: center;
+
+
+
+}
+
+
+
+
+
+
+
+/* On content screen, force left alignment */
+
+
+
+#content-screen {
+
+
+
+    text-align: left;
+
+
+
+}
+
+
+
+
+
+
+
+.hidden {
+
+
+
+    display: none;
+
+
+
+}
+
+
+
+
+
+
+
+h1, h2 {
+
+
+
+    color: var(--primary-color);
+
+
+
+    letter-spacing: 3px;
+
+
+
+    text-transform: uppercase;
+
+
+
+    text-align: center;
+
+
+
+}
+
+
+
+
+
+
+
+h3 {
+
+
+
+    color: var(--primary-color);
+
+
+
+    margin-top: 30px;
+
+
+
+    border-bottom: 1px solid var(--secondary-color);
+
+
+
+    padding-bottom: 10px;
+
+
+
+}
+
+
+
+
+
+
+
+p {
+
+
+
+
+
+
+
+    line-height: 1.8; /* Increased line height for better readability */
+
+
+
+
+
+
+
+    margin-bottom: 1.2em; /* More space between paragraphs */
+
+
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ul {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /* text-align: center; Removed global centering */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    margin: 20px 0;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    list-style-type: none; /* Keep bullets off for cleaner button list on home screen */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    padding-left: 20px; /* Default padding for all ul */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Specific styling for lists within the main content explanations */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#content-screen ul {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    text-align: left; /* Ensure text in content lists is left-aligned */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    list-style-type: disc; /* Re-enable bullets for explanation lists */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    padding-left: 40px; /* More padding for nested lists */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#content-screen ol {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    text-align: left; /* Ensure text in content ordered lists is left-aligned */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    padding-left: 40px; /* More padding for ordered lists */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#content-screen li {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    text-align: left; /* Ensure text in content list items is left-aligned */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    margin-bottom: 0.8em; /* Increased margin for better separation between list items */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Styles for the home screen lists, to keep them centered */
+
+
+
+
+
+
+
+#home-screen ul {
+
+
+
+
+
+
+
+    text-align: center;
+
+
+
+
+
+
+
+    padding-left: 0; /* No padding for centered home screen buttons */
+
+
+
+
+
+
+
+}
+
+
+
+
+
+
+
+#home-screen li {
+
+
+
+
+
+
+
+    text-align: center;
+
+
+
+
+
+
+
+}
+
+
+
+
+
+
+
+button {
+
+
+
+    background-color: transparent;
+
+
+
+    color: var(--primary-color);
+
+
+
+    border: 1px solid var(--primary-color);
+
+
+
+    padding: 10px 20px;
+
+
+
+    font-family: var(--font-family);
+
+
+
+    font-size: 1rem;
+
+
+
+    cursor: pointer;
+
+
+
+    transition: background-color 0.3s, color 0.3s;
+
+
+
+    margin: 10px 5px 0 5px;
+
+
+
+}
+
+
+
+
+
+
+
+#back-button {
+
+
+
+
+
+
+
+    display: block;
+
+
+
+
+
+
+
+    margin: -10px 0 20px 0; /* Position top left-ish */
+
+
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.code-controls {
+
+
+
+
+
+
+
+    display: flex;
+
+
+
+
+
+
+
+    justify-content: space-between;
+
+
+
+
+
+
+
+    align-items: center;
+
+
+
+
+
+
+
+    margin-bottom: 10px;
+
+
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#language-selector {
+
+
+
+
+
+
+
+    flex-grow: 1;
+
+
+
+
+
+
+
+    margin-right: 10px; /* Add some space between the dropdown and the button */
+
+
+
+
+
+
+
+    margin-bottom: 0; /* Remove bottom margin as it's handled by the container */
+
+
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#copy-button {
+
+
+
+
+
+
+
+    padding: 10px 15px;
+
+
+
+
+
+
+
+    font-size: 0.9rem;
+
+
+
+
+
+
+
+    margin: 0; /* Reset margin */
+
+
+
+
+
+
+
+    background-color: var(--secondary-color);
+
+
+
+
+
+
+
+    border-color: var(--secondary-color);
+
+
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#copy-button:hover {
+
+
+
+
+
+
+
+    background-color: var(--primary-color);
+
+
+
+
+
+
+
+    color: var(--bg-color);
+
+
+
+
+
+
+
+    border-color: var(--primary-color);
+
+
+
+
+
+
+
+}
+
+
+
+
+
+button:hover {
+
+    background-color: var(--primary-color);
+
+    color: var(--bg-color);
+
+}
+
+
+
+/* Style for the language dropdown */
+
+select {
+
+    background-color: var(--secondary-color);
+
+    color: var(--text-color);
+
+    border: 1px solid var(--primary-color);
+
+    padding: 10px;
+
+    font-family: var(--font-family);
+
+    font-size: 1rem;
+
+    margin-bottom: 10px;
+
+    width: 100%;
+
+    cursor: pointer;
+
+}
+
+
+
+select:focus {
+
+    outline: none;
+
+    border-color: var(--primary-color);
+
+    box-shadow: 0 0 10px rgba(0, 255, 153, 0.2);
+
+}
+
+
+
+
+
+/* Styles for the code block */
+
+pre {
+
+    background-color: #0d0d0d;
+
+    border: 1px solid var(--secondary-color);
+
+    padding: 15px;
+
+    overflow-x: auto; /* Allow horizontal scrolling */
+
+    white-space: pre;
+
+    word-wrap: normal;
+
+    font-size: 0.9rem;
+
+    color: #f8f8f2; /* Light text for code */
+
+}
+
+
+
+code {
+
+
+
+
+
+
+
+    font-family: 'Fira Code', 'Courier New', Courier, monospace; /* Fira Code is great for dev stuff */
+
+
+
+
+
+
+
+}
+
+
+
+
+
+
+
+/* Styling for inline code snippets */
+
+
+
+
+
+
+
+p code, li code {
+
+
+
+
+
+
+
+    background-color: var(--secondary-color); /* Slightly lighter than main background, darker than block fences */
+
+
+
+
+
+
+
+    color: var(--primary-color); /* Bright green for contrast */
+
+
+
+
+
+
+
+    padding: 0.2em 0.4em;
+
+
+
+
+
+
+
+    border-radius: 3px;
+
+
+
+
+
+
+
+    font-size: 0.9em; /* Slightly smaller than surrounding text */
+
+
+
+
+
+
+
+    white-space: nowrap; /* Prevent breaking inline code */
+
+
+
+
+
+
+
+}
+
+
+
+
+
+
+
+/* Style for application content blocks */
+
+
+
+
+
+
+
+#application-content {
+
+
+
+
+
+
+
+    margin-top: 30px;
+
+
+
+
+
+
+
+    padding: 15px;
+
+
+
+
+
+
+
+    border: 1px solid var(--secondary-color);
+
+
+
+
+
+
+
+    border-radius: 5px;
+
+
+
+
+
+
+
+    background-color: #2a2a2a;
+
+
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Style for fenced explanation blocks */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.explanation-fence {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    background-color: var(--secondary-color);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    border: 1px solid var(--primary-color);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    border-radius: 5px;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    padding: 15px;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    margin: 20px 0;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    font-family: 'Courier New', Courier, monospace;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    white-space: pre-wrap; /* Keep formatting but wrap text */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.markdown-content {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    white-space: normal;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Unused styles from original file */
+
+
+
+input[type="text"], input[type="password"] {
+
+
+
+    background-color: var(--secondary-color);
+
+
+
+    border: 1px solid var(--text-color);
+
+    color: var(--text-color);
+
+    font-family: var(--font-family);
+
+    padding: 10px;
+
+    font-size: 1rem;
+
+    width: 250px;
+
+    text-align: center;
+
+    margin: 5px;
+
+}
+
+
+
+input[type="text"]:focus, input[type="password"]:focus {
+
+    outline: none;
+
+    border-color: var(--primary-color);
+
+}
+
+
+
+.login-buttons, .game-options {
+
+    display: flex;
+
+    justify-content: center;
+
+    gap: 10px;
+
+    margin-top: 15px;
+
+}
+
+
+
+.error-message {
+
+    color: var(--error-color);
+
+    min-height: 24px; /* Reserve space so layout doesn't jump */
+
+    margin-bottom: 10px;
+
+    font-size: 0.9rem;
+
+}
+
+
+
+/* Flash feedback animations */
+
+.error-flash {
+
+    animation: flash-error 0.5s ease;
+
+}
+
+
+
+@keyframes flash-error {
+
+    0%, 100% { border-color: var(--primary-color); }
+
+    50% { border-color: var(--error-color); box-shadow: 0 0 15px var(--error-color); }
+
+}
+
+
+
+.success-flash {
+
+    animation: flash-success 0.5s ease;
+
+}
+
+
+
+@keyframes flash-success {
+
+    0%, 100% { background-color: var(--bg-color); }
+
+    50% { background-color: rgba(0, 255, 153, 0.2); }
+
+}

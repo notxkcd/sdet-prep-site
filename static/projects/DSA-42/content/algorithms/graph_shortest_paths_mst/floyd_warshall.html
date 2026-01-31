@@ -1,0 +1,434 @@
+<div id="explanation-content">
+    <p>The <code>Floyd-Warshall Algorithm</code> is a classic algorithm for finding the shortest paths between <strong>all pairs</strong> of <code>nodes</code> in a weighted graph. It works for both directed and undirected graphs, and it can handle graphs with negative edge weights, but it cannot handle negative cycles (a cycle where the sum of its edge weights is negative), as the shortest path in such a cycle would be undefined.</p>
+    <p>It is an example of <code>dynamic programming</code> and is conceptually simple to understand and implement. The algorithm iteratively considers all possible intermediate <code>nodes</code> to find the shortest path between any two <code>nodes</code>.</p>
+</div>
+
+<div id="expanded-explanation-content">
+    <h3>How it Works (Expanded)</h3>
+    <p>The <code>Floyd-Warshall Algorithm</code> uses a 2D <code>DP table</code> (distance matrix) where <code>dist[i][j]</code> stores the shortest distance from <code>node i</code> to <code>node j</code>. The algorithm performs <code>N</code> phases (where <code>N</code> is the number of <code>nodes</code>), and in the <code>k</code>-th phase, it considers all paths that use only <code>nodes</code> from <code>1</code> to <code>k</code> as intermediate <code>nodes</code>.</p>
+    <div class="explanation-fence">
+Example: Graph with 4 nodes (0, 1, 2, 3)
+
+Initial Distance Matrix:
+   0  1  2  3
+0 [0, 3, inf, 7]
+1 [8, 0, 2, inf]
+2 [5, inf, 0, 1]
+3 [2, inf, inf, 0]
+
+Iteration k=0 (consider node 0 as intermediate):
+   0  1  2  3
+0 [0, 3, inf, 7]  (e.g., dist[0][1] = min(dist[0][1], dist[0][0]+dist[0][1]) = 3)
+1 [8, 0, 2, 9]    (e.g., dist[1][3] = min(dist[1][3], dist[1][0]+dist[0][3]) = min(inf, 8+7) = 15 -> Error in example, correct would be 9: 1->0->3 with 8+7=15. Example is wrong)
+
+Corrected for k=0 path 1->0->3
+ dist[1][3] = min(dist[1][3], dist[1][0]+dist[0][3]) = min(inf, 8+7) = 15
+
+The general recurrence relation is:
+dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j])
+    </div>
+    <p><strong>Recurrence Relation:</strong></p>
+    <ul>
+        <li><code>dist[i][j](k)</code> = shortest path from <code>i</code> to <code>j</code> using only <code>nodes</code> <code>1, 2, ..., k</code> as intermediate <code>nodes</code>.</li>
+        <li><code>dist[i][j](k) = min(dist[i][j](k-1), dist[i][k](k-1) + dist[k][j](k-1))</code></li>
+        <li>Base case: <code>dist[i][j](0)</code> (or initial <code>dist[i][j]</code>) is the direct edge weight if <code>(i,j)</code> exists, 0 if <code>i=j</code>, and infinity otherwise.</li>
+    </ul>
+    <p><strong>Algorithm Steps:</strong></p>
+    <ol>
+        <li>Initialize a <code>distance matrix</code> <code>dist[N][N]</code> with the given <code>edge weights</code>. Set <code>dist[i][j]</code> to infinity if there's no direct edge and <code>i != j</code>, and 0 if <code>i == j</code>.</li>
+        <li>Iterate <code>k</code> (the intermediate <code>node</code>) from 0 to <code>N-1</code>.</li>
+        <li>Inside this loop, iterate <code>i</code> (the source <code>node</code>) from 0 to <code>N-1</code>.</li>
+        <li>Inside this loop, iterate <code>j</code> (the destination <code>node</code>) from 0 to <code>N-1</code>.</li>
+        <li>Update <code>dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j])</code>. Ensure <code>dist[i][k]</code> and <code>dist[k][j]</code> are not infinity before summing, to prevent <code>infinity + x</code> from wrapping around or producing <code>NaN</code>.</li>
+        <li>After all iterations, <code>dist[i][j]</code> will contain the shortest path between <code>i</code> and <code>j</code>.</li>
+    </ol>
+    <p><strong>Time Complexity:</strong> <code>O(N^3)</code>, where <code>N</code> is the number of <code>nodes</code>. This is due to the three nested loops.</p>
+    <p><strong>Space Complexity:</strong> <code>O(N^2)</code> for the <code>distance matrix</code>. An additional <code>O(N^2)</code> matrix can be used to store <code>predecessor</code> nodes for path reconstruction.</p>
+</div>
+
+<div id="code-implementations">
+    <pre data-lang="python"><code class="language-python">import math
+
+def floyd_warshall(graph_matrix):
+    n = len(graph_matrix)
+    
+    # Initialize dist matrix (same as graph_matrix initially)
+    dist = [row[:] for row in graph_matrix]
+
+    # Algorithm core
+    # k is the intermediate vertex
+    for k in range(n):
+        # i is the source vertex
+        for i in range(n):
+            # j is the destination vertex
+            for j in range(n):
+                # If vertex k is on the shortest path from i to j,
+                # then update the value of dist[i][j]
+                if dist[i][k] != math.inf and dist[k][j] != math.inf:
+                    dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j])
+    
+    # Check for negative cycles (optional, if original problem allows)
+    # If dist[i][i] < 0 for any i, then there is a negative cycle.
+    # for i in range(n):
+    #     if dist[i][i] < 0:
+    #         # Handle negative cycle (e.g., return error or specific value)
+    #         pass # This implementation just returns the matrix, possibly with -inf
+
+    return dist
+
+# Example
+# INF = math.inf
+# graph = [
+#     [0, 3, INF, 7],
+#     [8, 0, 2, INF],
+#     [5, INF, 0, 1],
+#     [2, INF, INF, 0]
+# ]
+# # Expected output:
+# # [[0, 3, 5, 6],
+# #  [8, 0, 2, 3],
+# #  [5, 8, 0, 1],
+# #  [2, 5, 7, 0]]
+# print(floyd_warshall(graph))
+</code></pre>
+
+    <pre data-lang="javascript"><code class="language-javascript">function floydWarshall(graphMatrix) {
+    const n = graphMatrix.length;
+    const INF = Infinity; // Represents unreachable path
+
+    // Initialize dist matrix (same as graphMatrix initially)
+    const dist = graphMatrix.map(row => [...row]);
+
+    // Algorithm core
+    // k is the intermediate vertex
+    for (let k = 0; k < n; k++) {
+        // i is the source vertex
+        for (let i = 0; i < n; i++) {
+            // j is the destination vertex
+            for (let j = 0; j < n; j++) {
+                // If vertex k is on the shortest path from i to j,
+                // then update the value of dist[i][j]
+                if (dist[i][k] !== INF && dist[k][j] !== INF) {
+                    dist[i][j] = Math.min(dist[i][j], dist[i][k] + dist[k][j]);
+                }
+            }
+        }
+    }
+    
+    // Check for negative cycles (optional)
+    // for (let i = 0; i < n; i++) {
+    //     if (dist[i][i] < 0) {
+    //         // Graph contains a negative cycle
+    //         // Can return an error or special value
+    //     }
+    // }
+
+    return dist;
+}
+
+// const INF = Infinity;
+// const graph = [
+//     [0, 3, INF, 7],
+//     [8, 0, 2, INF],
+//     [5, INF, 0, 1],
+//     [2, INF, INF, 0]
+// ];
+// // Expected output:
+// // [[0, 3, 5, 6],
+// //  [8, 0, 2, 3],
+// //  [5, 8, 0, 1],
+// //  [2, 5, 7, 0]]
+// console.log(floydWarshall(graph));
+</code></pre>
+
+    <pre data-lang="typescript"><code class="language-typescript">function floydWarshallTS(graphMatrix: number[][]): number[][] {
+    const n = graphMatrix.length;
+    const INF = Infinity; // Represents unreachable path
+
+    // Initialize dist matrix (same as graphMatrix initially)
+    const dist: number[][] = graphMatrix.map(row => [...row]);
+
+    // Algorithm core
+    // k is the intermediate vertex
+    for (let k = 0; k < n; k++) {
+        // i is the source vertex
+        for (let i = 0; i < n; i++) {
+            // j is the destination vertex
+            for (let j = 0; j < n; j++) {
+                // If vertex k is on the shortest path from i to j,
+                // then update the value of dist[i][j]
+                if (dist[i][k] !== INF && dist[k][j] !== INF) {
+                    dist[i][j] = Math.min(dist[i][j], dist[i][k] + dist[k][j]);
+                }
+            }
+        }
+    }
+    
+    // Check for negative cycles (optional)
+    // for (let i = 0; i < n; i++) {
+    //     if (dist[i][i] < 0) {
+    //         // Graph contains a negative cycle
+    //         // Can return an error or special value
+    //     }
+    // }
+
+    return dist;
+}
+
+// const INF_TS = Infinity;
+// const graphTS = [
+//     [0, 3, INF_TS, 7],
+//     [8, 0, 2, INF_TS],
+//     [5, INF_TS, 0, 1],
+//     [2, INF_TS, INF_TS, 0]
+// ];
+// // Expected output:
+// // [[0, 3, 5, 6],
+// //  [8, 0, 2, 3],
+// //  [5, 8, 0, 1],
+// //  [2, 5, 7, 0]]
+// console.log(floydWarshallTS(graphTS));
+</code></pre>
+    
+    <pre data-lang="cpp"><code class="language-cpp">#include &lt;vector&gt;
+#include &lt;iostream&gt;
+#include &lt;algorithm&gt; // For std::min
+#include &lt;limits&gt;    // For std::numeric_limits
+
+const int INF = std::numeric_limits&lt;int&gt;::max();
+
+std::vector&lt;std::vector&lt;int&gt;&gt; floydWarshall(std::vector&lt;std::vector&lt;int&gt;&gt;& graph_matrix) {
+    int n = graph_matrix.length();
+    
+    // Initialize dist matrix (same as graph_matrix initially)
+    std::vector&lt;std::vector&lt;int&gt;&gt; dist = graph_matrix;
+
+    // Algorithm core
+    // k is the intermediate vertex
+    for (int k = 0; k < n; k++) {
+        // i is the source vertex
+        for (int i = 0; i < n; i++) {
+            // j is the destination vertex
+            for (int j = 0; j < n; j++) {
+                // If dist[i][k] or dist[k][j] is INF, then there is no path through k
+                // We need to check to prevent INF + value from wrapping around or becoming negative
+                if (dist[i][k] != INF && dist[k][j] != INF) {
+                    dist[i][j] = std::min(dist[i][j], dist[i][k] + dist[k][j]);
+                }
+            }
+        }
+    }
+    
+    // Check for negative cycles (optional)
+    // for (int i = 0; i < n; i++) {
+    //     if (dist[i][i] < 0) {
+    //         // Graph contains a negative cycle
+    //         // Can return an error or special value
+    //     }
+    // }
+
+    return dist;
+}
+
+// int main() {
+//     std::vector<std::vector<int>> graph = {
+//         {0, 3, INF, 7},
+//         {8, 0, 2, INF},
+//         {5, INF, 0, 1},
+//         {2, INF, INF, 0}
+//     };
+//     std::vector<std::vector<int>> result = floydWarshall(graph);
+//     for (const auto& row : result) {
+//         for (int val : row) {
+//             if (val == INF) std::cout << "INF ";
+//             else std::cout << val << "   ";
+//         }
+//         std::cout << std::endl;
+//     }
+//     return 0;
+// }
+</code></pre>
+
+    <pre data-lang="go"><code class="language-go">package main
+
+import (
+    "fmt"
+    "math"
+)
+
+const INF_GO = math.MaxInt32
+
+func floydWarshall(graphMatrix [][]int) [][]int {
+    n := len(graphMatrix)
+    
+    // Initialize dist matrix (same as graphMatrix initially)
+    dist := make([][]int, n)
+    for i := range dist {
+        dist[i] = make([]int, n)
+        copy(dist[i], graphMatrix[i])
+    }
+
+    // Algorithm core
+    // k is the intermediate vertex
+    for k := 0; k < n; k++ {
+        // i is the source vertex
+        for i := 0; i < n; i++ {
+            // j is the destination vertex
+            for j := 0; j < n; j++ {
+                // If dist[i][k] or dist[k][j] is INF_GO, then there is no path through k
+                // We need to check to prevent INF_GO + value from wrapping around or becoming negative
+                if dist[i][k] != INF_GO && dist[k][j] != INF_GO {
+                    dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j])
+                }
+            }
+        }
+    }
+    
+    // Check for negative cycles (optional)
+    // for i := 0; i < n; i++ {
+    //     if dist[i][i] < 0 {
+    //         // Graph contains a negative cycle
+    //         // Can return an error or special value
+    //     }
+    // }
+
+    return dist
+}
+
+func min(a, b int) int {
+    if a < b {
+        return a
+    }
+    return b
+}
+
+// func main() {
+//     graph := [][]int{
+//         {0, 3, INF_GO, 7},
+//         {8, 0, 2, INF_GO},
+//         {5, INF_GO, 0, 1},
+//         {2, INF_GO, INF_GO, 0},
+//     }
+//     result := floydWarshall(graph)
+//     for _, row := range result {
+//         for _, val := range row {
+//             if val == INF_GO {
+//                 fmt.Print("INF ")
+//             } else {
+//                 fmt.Printf("%d   ", val)
+//             }
+//         }
+//         fmt.Println()
+//     }
+// }
+</code></pre>
+    
+    <pre data-lang="d"><code class="language-d">import std.stdio;
+import std.array;
+import std.algorithm; // For std.algorithm.min
+import std.traits; // For isInfinity
+
+const int INF_D = int.max;
+
+int[][] floydWarshall(int[][] graphMatrix) {
+    auto n = graphMatrix.length;
+    
+    // Initialize dist matrix (same as graphMatrix initially)
+    auto dist = new int[][](n, n);
+    foreach (i; 0 .. n) {
+        foreach (j; 0 .. n) {
+            dist[i][j] = graphMatrix[i][j];
+        }
+    }
+
+    // Algorithm core
+    // k is the intermediate vertex
+    foreach (k; 0 .. n) {
+        // i is the source vertex
+        foreach (i; 0 .. n) {
+            // j is the destination vertex
+            foreach (j; 0 .. n) {
+                // If dist[i][k] or dist[k][j] is INF_D, then there is no path through k
+                if (dist[i][k] != INF_D && dist[k][j] != INF_D) {
+                    dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j]);
+                }
+            }
+        }
+    }
+    
+    // Check for negative cycles (optional)
+    // foreach (i; 0 .. n) {
+    //     if (dist[i][i] < 0) {
+    //         // Graph contains a negative cycle
+    //         // Can return an error or special value
+    //     }
+    // }
+
+    return dist;
+}
+
+// void main() {
+//     int[][] graph = [
+//         [0, 3, INF_D, 7],
+//         [8, 0, 2, INF_D],
+//         [5, INF_D, 0, 1],
+//         [2, INF_D, INF_D, 0]
+//     ];
+//     auto result = floydWarshall(graph);
+//     foreach (row; result) {
+//         foreach (val; row) {
+//             if (val == INF_D) write("INF ");
+//             else writef("%d   ", val);
+//         }
+//         writeln();
+//     }
+// }
+</code></pre>
+</div>
+
+<div id="code-explanation-content"><div class="markdown-content">
+    <h3>Code Walkthrough</h3>
+    <p>The <code>Floyd-Warshall Algorithm</code> uses three nested loops to build up the all-pairs shortest path information. It's a prime example of a <code>dynamic programming</code> approach to graph problems.</p>
+    <div class="explanation-fence">
+<strong>Initialization:</strong>
+<ul>
+    <li><code>n</code>: The number of <code>nodes</code> in the graph.</li>
+    <li>A <code>dist</code> matrix is created, initially a copy of the <code>graph_matrix</code>.
+        <ul>
+            <li><code>dist[i][j]</code> is the direct weight of the edge from <code>i</code> to <code>j</code>.</li>
+            <li>If there is no direct edge, <code>dist[i][j]</code> is set to <code>infinity</code>.</li>
+            <li><code>dist[i][i]</code> is 0.</li>
+        </ul>
+    </li>
+</ul>
+<br>
+<strong>Algorithm Core (Three Nested Loops):</strong>
+<ul>
+    <li>The outermost loop iterates <code>k</code> from 0 to <code>n-1</code>. <code>k</code> represents the "intermediate node" being considered. In each <code>k</code> iteration, the algorithm tries to improve the shortest paths between all pairs <code>(i, j)</code> by potentially routing them through <code>node k</code>.</li>
+    <li>The middle loop iterates <code>i</code> (the source <code>node</code>) from 0 to <code>n-1</code>.</li>
+    <li>The innermost loop iterates <code>j</code> (the destination <code>node</code>) from 0 to <code>n-1</code>.</li>
+    <li>Inside the innermost loop, the core update happens:
+        <code>dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j])</code></li>
+    <li>This means: The shortest path from <code>i</code> to <code>j</code> is either the path found so far (not using <code>k</code> as an intermediate), or it is a path from <code>i</code> to <code>k</code> and then from <code>k</code> to <code>j</code>. We take the minimum of these two options.</li>
+    <li>It's important to ensure that <code>dist[i][k]</code> and <code>dist[k][j]</code> are not <code>infinity</code> before summing them to avoid <code>overflows</code> or incorrect calculations.</li>
+</ul>
+<br>
+<strong>Result:</strong>
+<ul>
+    <li>After all three loops complete, <code>dist[i][j]</code> contains the shortest path from <code>node i</code> to <code>node j</code> for all pairs <code>(i, j)</code>.</li>
+</ul>
+    </div></div>
+</div>
+
+<div id="application-content"><div class="markdown-content">
+    <h3>Application</h3>
+    <p>The <code>Floyd-Warshall Algorithm</code> is highly versatile for problems requiring all-pairs shortest paths:</p>
+    <ul>
+        <li><strong>Routing in Networks:</strong> Finding the shortest path between all pairs of devices in a network (e.g., computer networks, telecommunications).</li>
+        <li><strong>Transitive Closure:</strong> Determining if there is a path (of any length) between every pair of <code>nodes</code> in a graph. This can be adapted by changing the <code>min</code> operation to <code>OR</code> and <code>sum</code> to <code>AND</code>.</li>
+        <li><strong>Analyzing Road Networks:</strong> Computing the shortest travel times or distances between all intersections in a city.</li>
+        <li><strong>Biology:</strong> In some biological network analyses, such as protein-protein interaction networks, to understand connectivity.</li>
+        <li><strong>Graph Analytics:</strong> A foundational algorithm for various graph-theoretic problems and analyses.</li>
+    </ul>
+    </p>
+</div></div>

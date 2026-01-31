@@ -1,0 +1,401 @@
+<div id="explanation-content">
+    <p>A <code>Fenwick Tree</code>, also known as a <code>Binary Indexed Tree (BIT)</code>, is a data structure that can efficiently update <code>elements</code> and calculate <code>prefix sums</code> (the sum of <code>elements</code> from the beginning of an <code>array</code> up to a given <code>index</code>) in a <code>table</code> of numbers.</p>
+    <p>It achieves <code>O(log N)</code> time complexity for both <code>updates</code> and <code>prefix sum queries</code>, making it much faster than a naive approach (<code>O(N)</code> for each <code>query</code> or <code>update</code>) and competitive with <code>Segment Trees</code> for these specific operations, often with less memory and simpler implementation.</p>
+</div>
+
+<div id="expanded-explanation-content">
+    <h3>How it Works (Expanded)</h3>
+    <p>The core idea of a <code>Fenwick Tree</code> is to represent an <code>array</code> as a <code>tree</code>-like structure where each <code>node</code> stores the sum of a certain range of <code>elements</code>. The magic lies in how these ranges are determined. Each <code>node</code> at <code>index i</code> in the <code>Fenwick Tree</code> stores the sum of <code>elements</code> from <code>index (i - (i & -i) + 1)</code> to <code>index i</code>.</p>
+    <div class="explanation-fence">
+Example: Array A = [1, 2, 3, 4, 5, 6, 7, 8]
+Fenwick Tree (BIT) for Prefix Sums:
+
+Indices:  1  2  3  4  5  6  7  8  (1-indexed for BIT)
+Elements: A1 A2 A3 A4 A5 A6 A7 A8
+
+BIT[1] stores A1
+BIT[2] stores A1 + A2
+BIT[3] stores A3
+BIT[4] stores A1 + A2 + A3 + A4
+BIT[5] stores A5
+BIT[6] stores A5 + A6
+BIT[7] stores A7
+BIT[8] stores A1 + A2 + A3 + A4 + A5 + A6 + A7 + A8
+
+The key insight is <code>i & -i</code>, which isolates the rightmost set bit in the binary representation of <code>i</code>.
+This value represents the size of the range covered by <code>BIT[i]</code>.
+    </div>
+    <p><strong>Operations:</strong></p>
+    <ul>
+        <li><strong><code>Update (add(index, delta))</code>:</strong> To update the value at a specific <code>index</code> in the original <code>array</code> by <code>delta</code>, you traverse up the <code>tree</code>. You start at the given <code>index</code> and add <code>delta</code> to the <code>Fenwick Tree node</code> at that <code>index</code>. Then, you find the next <code>node</code> to update by adding <code>i & -i</code> to the current <code>index</code>, and repeat until you go beyond the <code>array size</code>.</li>
+        <li><strong><code>Query (prefix_sum(index))</code>:</strong> To get the sum of <code>elements</code> from <code>index 1</code> to <code>index</code> (inclusive), you traverse down the <code>tree</code>. You start at the given <code>index</code> and add the value of the <code>Fenwick Tree node</code> at that <code>index</code> to your sum. Then, you find the next <code>node</code> to query by subtracting <code>i & -i</code> from the current <code>index</code>, and repeat until the <code>index</code> becomes 0.</li>
+    </ul>
+    <p><strong>Time Complexity:</strong> Both <code>update</code> and <code>query</code> operations take <code>O(log N)</code> time, where <code>N</code> is the size of the <code>array</code>. This is because each operation involves traversing a path in the implicit <code>tree</code> that has a maximum <code>height</code> of <code>log N</code>.</p>
+    <p><strong>Space Complexity:</strong> <code>O(N)</code> to store the <code>Fenwick Tree array</code>, which is the same as the original <code>array</code>.</p>
+</div>
+
+<div id="code-implementations">
+    <pre data-lang="python"><code class="language-python">class FenwickTree:
+    def __init__(self, size):
+        self.bit = [0] <em> (size + 1) # Fenwick Tree is 1-indexed
+        self.size = size
+
+    def update(self, index, delta):
+        """Adds delta to element at index."""
+        # Fenwick Tree is 1-indexed, so adjust index
+        index += 1 
+        while index <= self.size:
+            self.bit[index] += delta
+            index += index & (-index) # Move to parent
+
+    def query(self, index):
+        """Returns the sum of elements from index 0 up to index (inclusive)."""
+        # Fenwick Tree is 1-indexed, so adjust index
+        index += 1
+        total_sum = 0
+        while index > 0:
+            total_sum += self.bit[index]
+            index -= index & (-index) # Move to parent
+        return total_sum
+
+    def range_query(self, left, right):
+        """Returns sum of elements from index left to right (inclusive)."""
+        return self.query(right) - self.query(left - 1)
+
+# Example Usage:
+# arr = [1, 2, 3, 4, 5]
+# ft = FenwickTree(len(arr))
+
+# # Initialize Fenwick Tree with array elements
+# for i, val in enumerate(arr):
+#     ft.update(i, val)
+
+# print("Prefix sum up to index 2 (0-indexed) [1,2,3]:", ft.query(2)) # Expected: 6
+# print("Value at index 3 (0-indexed) [4]:", ft.range_query(3, 3)) # Expected: 4
+
+# ft.update(0, 5) # arr becomes [6, 2, 3, 4, 5] (add 5 to arr[0])
+# print("Prefix sum up to index 2 after update [6,2,3]:", ft.query(2)) # Expected: 11
+</code></pre>
+
+    <pre data-lang="javascript"><code class="language-javascript">class FenwickTree {
+    constructor(size) {
+        this.bit = new Array(size + 1).fill(0); // Fenwick Tree is 1-indexed
+        this.size = size;
+    }
+
+    update(index, delta) {
+        /</em><em> Adds delta to element at index. </em>/
+        // Fenwick Tree is 1-indexed, so adjust index
+        index += 1; 
+        while (index <= this.size) {
+            this.bit[index] += delta;
+            index += index & (-index); // Move to parent
+        }
+    }
+
+    query(index) {
+        /*<em> Returns the sum of elements from index 0 up to index (inclusive). </em>/
+        // Fenwick Tree is 1-indexed, so adjust index
+        index += 1;
+        let totalSum = 0;
+        while (index > 0) {
+            totalSum += this.bit[index];
+            index -= index & (-index); // Move to parent
+        }
+        return totalSum;
+    }
+
+    rangeQuery(left, right) {
+        /*<em> Returns sum of elements from index left to right (inclusive). </em>/
+        return this.query(right) - this.query(left - 1);
+    }
+}
+
+// Example Usage:
+// const arr = [1, 2, 3, 4, 5];
+// const ft = new FenwickTree(arr.length);
+
+// // Initialize Fenwick Tree with array elements
+// for (let i = 0; i < arr.length; i++) {
+//     ft.update(i, arr[i]);
+// }
+
+// console.log("Prefix sum up to index 2 (0-indexed) [1,2,3]:", ft.query(2)); // Expected: 6
+// console.log("Value at index 3 (0-indexed) [4]:", ft.rangeQuery(3, 3)); // Expected: 4
+
+// ft.update(0, 5); // arr becomes [6, 2, 3, 4, 5] (add 5 to arr[0])
+// console.log("Prefix sum up to index 2 after update [6,2,3]:", ft.query(2)); // Expected: 11
+</code></pre>
+
+    <pre data-lang="typescript"><code class="language-typescript">class FenwickTreeTS {
+    private bit: number[];
+    private size: number;
+
+    constructor(size: number) {
+        this.bit = new Array(size + 1).fill(0); // Fenwick Tree is 1-indexed
+        this.size = size;
+    }
+
+    update(index: number, delta: number): void {
+        /*<em> Adds delta to element at index. </em>/
+        // Fenwick Tree is 1-indexed, so adjust index
+        index += 1; 
+        while (index <= this.size) {
+            this.bit[index] += delta;
+            index += index & (-index); // Move to parent
+        }
+    }
+
+    query(index: number): number {
+        /*<em> Returns the sum of elements from index 0 up to index (inclusive). </em>/
+        // Fenwick Tree is 1-indexed, so adjust index
+        index += 1;
+        let totalSum = 0;
+        while (index > 0) {
+            totalSum += this.bit[index];
+            index -= index & (-index); // Move to parent
+        }
+        return totalSum;
+    }
+
+    rangeQuery(left: number, right: number): number {
+        /*<em> Returns sum of elements from index left to right (inclusive). </em>/
+        return this.query(right) - this.query(left - 1);
+    }
+}
+
+// Example Usage:
+// const arrTS = [1, 2, 3, 4, 5];
+// const ftTS = new FenwickTreeTS(arrTS.length);
+
+// // Initialize Fenwick Tree with array elements
+// for (let i = 0; i < arrTS.length; i++) {
+//     ftTS.update(i, arrTS[i]);
+// }
+
+// console.log("Prefix sum up to index 2 (0-indexed) [1,2,3]:", ftTS.query(2)); // Expected: 6
+// console.log("Value at index 3 (0-indexed) [4]:", ftTS.rangeQuery(3, 3)); // Expected: 4
+
+// ftTS.update(0, 5); // arr becomes [6, 2, 3, 4, 5] (add 5 to arr[0])
+// console.log("Prefix sum up to index 2 after update [6,2,3]:", ftTS.query(2)); // Expected: 11
+</code></pre>
+
+    <pre data-lang="cpp"><code class="language-cpp">#include &lt;vector&gt;
+#include &lt;numeric&gt; // For std::accumulate (if needed for initial array sum)
+#include &lt;iostream&gt;
+
+class FenwickTree {
+private:
+    std::vector&lt;int&gt; bit; // Fenwick Tree is 1-indexed
+    int size;
+
+public:
+    FenwickTree(int s) : size(s) {
+        bit.resize(size + 1, 0);
+    }
+
+    void update(int index, int delta) {
+        /*<em> Adds delta to element at index. </em>/
+        // Fenwick Tree is 1-indexed, so adjust index
+        index += 1; 
+        while (index <= size) {
+            bit[index] += delta;
+            index += index & (-index); // Move to parent
+        }
+    }
+
+    int query(int index) {
+        /*<em> Returns the sum of elements from index 0 up to index (inclusive). </em>/
+        // Fenwick Tree is 1-indexed, so adjust index
+        index += 1;
+        int total_sum = 0;
+        while (index > 0) {
+            total_sum += bit[index];
+            index -= index & (-index); // Move to parent
+        }
+        return total_sum;
+    }
+
+    int range_query(int left, int right) {
+        /*<em> Returns sum of elements from index left to right (inclusive). </em>/
+        return query(right) - query(left - 1);
+    }
+};
+
+// Example Usage:
+// int main() {
+//     std::vector<int> arr = {1, 2, 3, 4, 5};
+//     FenwickTree ft(arr.size());
+
+//     // Initialize Fenwick Tree with array elements
+//     for (int i = 0; i < arr.size(); ++i) {
+//         ft.update(i, arr[i]);
+//     }
+
+//     std::cout << "Prefix sum up to index 2 (0-indexed) [1,2,3]: " << ft.query(2) << std::endl; // Expected: 6
+//     std::cout << "Value at index 3 (0-indexed) [4]: " << ft.range_query(3, 3) << std::endl; // Expected: 4
+
+//     ft.update(0, 5); // arr becomes conceptually [6, 2, 3, 4, 5] (add 5 to arr[0])
+//     std::cout << "Prefix sum up to index 2 after update [6,2,3]: " << ft.query(2) << std::endl; // Expected: 11
+//     return 0;
+// }
+</code></pre>
+
+    <pre data-lang="go"><code class="language-go">package main
+
+import "fmt"
+
+type FenwickTree struct {
+    bit  []int // Fenwick Tree is 1-indexed
+    size int
+}
+
+func NewFenwickTree(size int) <em>FenwickTree {
+    return &FenwickTree{
+        bit:  make([]int, size+1),
+        size: size,
+    }
+}
+
+func (ft </em>FenwickTree) Update(index, delta int) {
+    /*<em> Adds delta to element at index. </em>/
+    // Fenwick Tree is 1-indexed, so adjust index
+    index += 1 
+    for index <= ft.size {
+        ft.bit[index] += delta
+        index += index & (-index) // Move to parent
+    }
+}
+
+func (ft <em>FenwickTree) Query(index int) int {
+    /</em><em> Returns the sum of elements from index 0 up to index (inclusive). </em>/
+    // Fenwick Tree is 1-indexed, so adjust index
+    index += 1
+    totalSum := 0
+    for index > 0 {
+        totalSum += ft.bit[index]
+        index -= index & (-index) // Move to parent
+    }
+    return totalSum
+}
+
+func (ft <em>FenwickTree) RangeQuery(left, right int) int {
+    /</em><em> Returns sum of elements from index left to right (inclusive). </em>/
+    return ft.Query(right) - ft.Query(left-1)
+}
+
+// func main() {
+//     arr := []int{1, 2, 3, 4, 5}
+//     ft := NewFenwickTree(len(arr))
+
+//     // Initialize Fenwick Tree with array elements
+//     for i, val := range arr {
+//         ft.Update(i, val)
+//     }
+
+//     fmt.Println("Prefix sum up to index 2 (0-indexed) [1,2,3]:", ft.Query(2)) // Expected: 6
+//     fmt.Println("Value at index 3 (0-indexed) [4]:", ft.RangeQuery(3, 3))    // Expected: 4
+
+//     ft.Update(0, 5) // arr becomes conceptually [6, 2, 3, 4, 5] (add 5 to arr[0])
+//     fmt.Println("Prefix sum up to index 2 after update [6,2,3]:", ft.Query(2)) // Expected: 11
+// }
+</code></pre>
+
+    <pre data-lang="d"><code class="language-d">import std.stdio;
+import std.array;
+import std.sum;
+
+class FenwickTree {
+    private int[] bit; // Fenwick Tree is 1-indexed
+    private int _size;
+
+    this(int size) {
+        this._size = size;
+        this.bit = new int[size + 1]; // Initialize with zeros
+    }
+
+    void update(int index, int delta) {
+        /*<em> Adds delta to element at index. </em>/
+        // Fenwick Tree is 1-indexed, so adjust index
+        index += 1; 
+        while (index <= _size) {
+            this.bit[index] += delta;
+            index += index & (-index); // Move to parent
+        }
+    }
+
+    int query(int index) {
+        /*<em> Returns the sum of elements from index 0 up to index (inclusive). </em>/
+        // Fenwick Tree is 1-indexed, so adjust index
+        index += 1;
+        int totalSum = 0;
+        while (index > 0) {
+            totalSum += this.bit[index];
+            index -= index & (-index); // Move to parent
+        }
+        return totalSum;
+    }
+
+    int rangeQuery(int left, int right) {
+        /*<em> Returns sum of elements from index left to right (inclusive). </em>/
+        return this.query(right) - this.query(left - 1);
+    }
+}
+
+// void main() {
+//     int[] arr = [1, 2, 3, 4, 5];
+//     auto ft = new FenwickTree(arr.length);
+
+//     // Initialize Fenwick Tree with array elements
+//     foreach (i, val; arr) {
+//         ft.update(cast(int)i, val);
+//     }
+
+//     writefln("Prefix sum up to index 2 (0-indexed) [1,2,3]: %s", ft.query(2)); // Expected: 6
+//     writefln("Value at index 3 (0-indexed) [4]: %s", ft.rangeQuery(3, 3));    // Expected: 4
+
+//     ft.update(0, 5); // arr becomes conceptually [6, 2, 3, 4, 5] (add 5 to arr[0])
+//     writefln("Prefix sum up to index 2 after update [6,2,3]: %s", ft.query(2)); // Expected: 11
+// }
+</code></pre>
+</div>
+
+<div id="code-explanation-content"><div class="markdown-content">
+    <h3>Code Walkthrough</h3>
+    <p>A <code>Fenwick Tree</code> is implemented as an <code>array</code>, but with an unconventional way of storing sums that allows for efficient <code>updates</code> and <code>queries</code>. It often uses 1-based indexing internally for simpler bitwise operations.</p>
+    <div class="explanation-fence">
+<strong><code>FenwickTree</code> Class:</strong>
+<ul>
+    <li><code>bit</code>: The underlying <code>array</code> that stores the computed sums. Its size is <code>N+1</code> for 1-based indexing.</li>
+    <li><code>size</code>: The size of the original <code>array</code> that the <code>Fenwick Tree</code> represents.</li>
+    <li><strong><code>update(index, delta)</code>:</strong>
+        <ol>
+            <li>Takes a 0-indexed <code>index</code> and a <code>delta</code> value to add to the <code>element</code> at that <code>index</code>.</li>
+            <li>Converts the <code>index</code> to 1-based.</li>
+            <li>It then iterates, adding <code>delta</code> to <code>bit[index]</code>, and moves to the next <code>node</code> to update by adding <code>index & (-index)</code> to the current <code>index</code>. This effectively propagates the <code>delta</code> up the implicit <code>tree</code>.</li>
+        </ol>
+    </li>
+    <li><strong><code>query(index)</code>:</strong>
+        <ol>
+            <li>Takes a 0-indexed <code>index</code>.</li>
+            <li>Converts the <code>index</code> to 1-based.</li>
+            <li>It iterates, adding <code>bit[index]</code> to a <code>total sum</code>, and moves to the next <code>node</code> to query by subtracting <code>index & (-index)</code> from the current <code>index</code>. This effectively sums up the relevant ranges down the implicit <code>tree</code>.</li>
+        </ol>
+    </li>
+    <li><strong><code>range_query(left, right)</code>:</strong> Uses the <code>prefix sum</code> property to find the sum of <code>elements</code> within a given <code>range [left, right]</code> by calculating <code>query(right) - query(left - 1)</code>.</li>
+</ul>
+    </div></div>
+    <p>The bitwise operation <code>index & (-index)</code> is crucial. It efficiently finds the value of the least significant bit (LSB) of <code>index</code>, which is used to navigate the implicit tree structure upwards during updates and downwards during queries.</p>
+</div>
+
+<div id="application-content"><div class="markdown-content">
+    <h3>Application</h3>
+    <p>Fenwick Trees are a versatile tool in competitive programming and any application requiring efficient <strong>dynamic prefix sums</strong> and single-element updates. They are used in:
+    <ul>
+        <li><strong>Data Analysis:</strong> For quickly calculating running totals or sums of intervals in data streams that are frequently updated.</li>
+        <li><strong>Financial Applications:</strong> For tracking cumulative values over time or across various segments, where both updates and sum queries need to be fast.</li>
+        <li><strong>Image Processing:</strong> For certain operations involving summing pixel values in rectangular regions.</li>
+        <li><strong>Online Gaming Leaderboards:</strong> If players' scores are constantly updating and you need to query rank ranges efficiently.</li>
+    </ul>
+    </p>
+</div></div>

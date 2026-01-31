@@ -1,0 +1,439 @@
+<div id="explanation-content">
+    <p>The <code>Z-Algorithm</code> is a linear-time string searching algorithm that is often used as a preprocessing step for other string algorithms. For a given string <code>S</code>, it constructs a "<code>Z-array</code>" (also known as a "<code>Z-function</code>") where <code>Z[i]</code> is the length of the longest substring starting at <code>S[i]</code> that is also a prefix of <code>S</code>.</p>
+    <p>This array provides insights into the structure of the string <code>S</code> and can be used to efficiently find all occurrences of a <code>pattern P</code> within a <code>text T</code> in <code>O(N + M)</code> time, where <code>N</code> is the length of the text and <code>M</code> is the length of the pattern.</p>
+</div>
+
+<div id="expanded-explanation-content">
+    <h3>How it Works (Expanded)</h3>
+    <p>The core idea of the <code>Z-Algorithm</code> is to compute the <code>Z-array</code> efficiently. <code>Z[0]</code> is typically defined as <code>0</code> or <code>N</code> (the length of the string), as the entire string is a prefix of itself starting at <code>S[0]</code>.</p>
+    <div class="explanation-fence">
+Example: Z-array for string S = "abacaba"
+
+- S[0] = "abacaba" (prefix "abacaba") -> Z[0] = 7 (or 0)
+- S[1] = "bacaba"  (no prefix match) -> Z[1] = 0
+- S[2] = "acaba"   (prefix "aba") -> Z[2] = 3
+- S[3] = "caba"    (no prefix match) -> Z[3] = 0
+- S[4] = "aba"     (prefix "aba") -> Z[4] = 3
+- S[5] = "ba"      (no prefix match) -> Z[5] = 0
+- S[6] = "a"       (prefix "a") -> Z[6] = 1
+
+Z-array: [7, 0, 3, 0, 3, 0, 1]
+
+How to find a pattern P in text T using Z-Algorithm:
+1. Construct a new string S = P + "$" + T (where "$" is a unique delimiter not in P or T).
+2. Compute the Z-array for S.
+3. Any Z[i] that equals the length of P indicates an occurrence of P in T.
+    </div>
+    <p>The <code>Z-array</code> is built iteratively. It maintains a <code>Z-box</code> (a <code>[L, R]</code> range) which is the longest substring starting at <code>L</code> that is also a prefix of <code>S</code> and extends furthest to the right. When computing <code>Z[i]</code>, it leverages the information from <code>Z-values</code> within the current <code>Z-box</code> to avoid re-comparing characters.</p>
+    <p><strong>Algorithm Steps (for computing Z-array):</strong></p>
+    <ol>
+        <li>Initialize <code>Z[0] = N</code> (or 0).</li>
+        <li>Initialize <code>L = R = 0</code>.</li>
+        <li>Iterate <code>i</code> from 1 to <code>N-1</code>:
+            <ul>
+                <li>If <code>i > R</code>, no <code>Z-box</code> covers <code>i</code>. Compute <code>Z[i]</code> by brute-force comparison <code>S[0...]</code> with <code>S[i...]</code>. Update <code>L=i</code> and <code>R=i + Z[i] - 1</code>.</li>
+                <li>If <code>i <= R</code>, <code>i</code> is inside a <code>Z-box</code>. Let <code>k = i - L</code>.
+                    <ul>
+                        <li>If <code>Z[k] < R - i + 1</code>, then <code>Z[i] = Z[k]</code>.</li>
+                        <li>Else (<code>Z[k] >= R - i + 1</code>), <code>Z[i]</code> might extend beyond <code>R</code>. Compute <code>Z[i]</code> by brute-force comparison starting from <code>R - i + 1</code>. Update <code>L=i</code> and <code>R=i + Z[i] - 1</code>.</li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+    </ol>
+    <p><strong>Time Complexity:</strong> <code>O(N)</code> for computing the Z-array for a string of length <code>N</code>. If used for pattern searching (with <code>S = P + "$" + T</code>), the total time is <code>O(|P| + |T|)</code>.</p>
+    <p><strong>Space Complexity:</strong> <code>O(N)</code> to store the <code>Z-array</code>.</p>
+</div>
+
+<div id="code-implementations">
+    <pre data-lang="python"><code class="language-python">def compute_z_array(s):
+    n = len(s)
+    z = [0] * n
+    l, r = 0, 0
+
+    # Z[0] can be n, or 0 depending on convention. Here we use 0, and handle later.
+    # The actual algorithm usually means Z[i] is the length of the longest
+    # substring starting at s[i] that is also a prefix of s.
+    # z[0] is typically not part of this definition or is set to 0.
+
+    for i in range(1, n):
+        if i <= r:
+            # i is inside the current Z-box [L, R]
+            z[i] = min(r - i + 1, z[i - l])
+        
+        # Extend z[i] by brute force if necessary (or if i > R)
+        while i + z[i] < n and s[z[i]] == s[i + z[i]]:
+            z[i] += 1
+        
+        # If z[i] extends beyond R, update Z-box [L, R]
+        if i + z[i] - 1 > r:
+            l = i
+            r = i + z[i] - 1
+    
+    z[0] = n # Convention: Z[0] is the length of the string itself
+
+    return z
+
+def z_algorithm_search(text, pattern):
+    """
+    Finds all occurrences of pattern in text using the Z-Algorithm.
+    """
+    n = len(text)
+    m = len(pattern)
+    if m == 0: return []
+    if n == 0: return []
+
+    combined_string = pattern + "$" + text # "$" is a unique delimiter
+    z_array = compute_z_array(combined_string)
+    
+    results = []
+    # Any Z[i] that equals the length of P indicates an occurrence
+    for i in range(m + 1, len(combined_string)): # Start search after pattern + delimiter
+        if z_array[i] == m:
+            results.append(i - (m + 1)) # Adjust index back to original text
+            
+    return results
+
+# Example
+# text = "abacaba"
+# pattern = "aba"
+# print(z_algorithm_search(text, pattern)) # [0, 4]
+</code></pre>
+
+    <pre data-lang="javascript"><code class="language-javascript">function computeZArray(s) {
+    const n = s.length;
+    const z = new Array(n).fill(0);
+    let l = 0, r = 0;
+
+    // z[0] is typically not part of this definition or is set to 0.
+    // We set it to n at the end for pattern searching convention.
+
+    for (let i = 1; i < n; i++) {
+        if (i <= r) {
+            z[i] = Math.min(r - i + 1, z[i - l]);
+        }
+        
+        while (i + z[i] < n && s[z[i]] === s[i + z[i]]) {
+            z[i]++;
+        }
+        
+        if (i + z[i] - 1 > r) {
+            l = i;
+            r = i + z[i] - 1;
+        }
+    }
+    
+    z[0] = n; // Convention for pattern searching
+
+    return z;
+}
+
+function zAlgorithmSearch(text, pattern) {
+    const n = text.length;
+    const m = pattern.length;
+    if (m === 0) return [];
+    if (n === 0) return [];
+
+    const combinedString = pattern + "$" + text;
+    const zArray = computeZArray(combinedString);
+    
+    const results = [];
+    for (let i = m + 1; i < combinedString.length; i++) {
+        if (zArray[i] === m) {
+            results.push(i - (m + 1));
+        }
+    }
+    return results;
+}
+
+// const text = "abacaba";
+// const pattern = "aba";
+// console.log(zAlgorithmSearch(text, pattern)); // [0, 4]
+</code></pre>
+
+    <pre data-lang="typescript"><code class="language-typescript">function computeZArrayTS(s: string): number[] {
+    const n = s.length;
+    const z: number[] = new Array(n).fill(0);
+    let l = 0, r = 0;
+
+    for (let i = 1; i < n; i++) {
+        if (i <= r) {
+            z[i] = Math.min(r - i + 1, z[i - l]);
+        }
+        
+        while (i + z[i] < n && s[z[i]] === s[i + z[i]]) {
+            z[i]++;
+        }
+        
+        if (i + z[i] - 1 > r) {
+            l = i;
+            r = i + z[i] - 1;
+        }
+    }
+    
+    z[0] = n; // Convention for pattern searching
+
+    return z;
+}
+
+function zAlgorithmSearchTS(text: string, pattern: string): number[] {
+    const n = text.length;
+    const m = pattern.length;
+    if (m === 0) return [];
+    if (n === 0) return [];
+
+    const combinedString = pattern + "$" + text;
+    const zArray = computeZArrayTS(combinedString);
+    
+    const results: number[] = [];
+    for (let i = m + 1; i < combinedString.length; i++) {
+        if (zArray[i] === m) {
+            results.push(i - (m + 1));
+        }
+    }
+    return results;
+}
+
+// const textTS = "abacaba";
+// const patternTS = "aba";
+// console.log(zAlgorithmSearchTS(textTS, patternTS)); // [0, 4]
+</code></pre>
+    
+    <pre data-lang="cpp"><code class="language-cpp">#include &lt;vector&gt;
+#include &lt;string&gt;
+#include &lt;iostream&gt;
+#include &lt;algorithm&gt; // For std::min
+
+std::vector<int> computeZArray(const std::string& s) {
+    int n = s.length();
+    std::vector<int> z(n);
+    int l = 0, r = 0;
+
+    z[0] = n; // Convention: Z[0] is the length of the string itself
+
+    for (int i = 1; i < n; ++i) {
+        if (i <= r) {
+            z[i] = std::min(r - i + 1, z[i - l]);
+        }
+        
+        while (i + z[i] < n && s[z[i]] == s[i + z[i]]) {
+            z[i]++;
+        }
+        
+        if (i + z[i] - 1 > r) {
+            l = i;
+            r = i + z[i] - 1;
+        }
+    }
+    return z;
+}
+
+std::vector<int> zAlgorithmSearch(const std::string& text, const std::string& pattern) {
+    int n = text.length();
+    int m = pattern.length();
+    if (m == 0) return {};
+    if (n == 0) return {};
+
+    std::string combined_string = pattern + "$" + text;
+    std::vector<int> z_array = computeZArray(combined_string);
+    
+    std::vector<int> results;
+    // Any Z[i] that equals the length of P indicates an occurrence
+    for (int i = m + 1; i < combined_string.length(); ++i) { // Start search after pattern + delimiter
+        if (z_array[i] == m) {
+            results.push_back(i - (m + 1)); // Adjust index back to original text
+        }
+    }
+    return results;
+}
+
+// int main() {
+//     std::string text = "abacaba";
+//     std::string pattern = "aba";
+//     std::vector<int> matches = zAlgorithmSearch(text, pattern);
+//     for (int pos : matches) {
+//         std::cout << "Pattern found at index " << pos << std::endl; // 0, 4
+//     }
+//     return 0;
+// }
+</code></pre>
+
+    <pre data-lang="go"><code class="language-go">package main
+
+import (
+    "fmt"
+    "strings"
+)
+
+func computeZArray(s string) []int {
+    n := len(s)
+    z := make([]int, n)
+    l, r := 0, 0
+
+    // z[0] is typically not part of this definition or is set to 0.
+    // We set it to n at the end for pattern searching convention.
+
+    for i := 1; i < n; i++ {
+        if i <= r {
+            z[i] = min(r - i + 1, z[i - l])
+        }
+        
+        for i + z[i] < n && s[z[i]] == s[i + z[i]] {
+            z[i]++
+        }
+        
+        if i + z[i] - 1 > r {
+            l = i
+            r = i + z[i] - 1
+        }
+    }
+    
+    z[0] = n // Convention for pattern searching
+
+    return z
+}
+
+func min(a, b int) int {
+    if a < b {
+        return a
+    }
+    return b
+}
+
+func zAlgorithmSearch(text, pattern string) []int {
+    n := len(text)
+    m := len(pattern)
+    if m == 0 { return []int{} }
+    if n == 0 { return []int{} }
+
+    combinedString := pattern + "$" + text
+    zArray := computeZArray(combinedString)
+    
+    results := []int{}
+    // Any Z[i] that equals the length of P indicates an occurrence
+    for i := m + 1; i < len(combinedString); i++ { // Start search after pattern + delimiter
+        if zArray[i] == m {
+            results = append(results, i - (m + 1)) // Adjust index back to original text
+        }
+    }
+    return results
+}
+
+// func main() {
+//     text := "abacaba"
+//     pattern := "aba"
+//     fmt.Println(zAlgorithmSearch(text, pattern)) // [0 4]
+// }
+</code></pre>
+    
+    <pre data-lang="d"><code class="language-d">import std.stdio;
+import std.array;
+import std.string;
+import std.algorithm; // For std.algorithm.min
+
+int[] computeZArray(string s) {
+    auto n = s.length;
+    auto z = new int[n];
+    int l = 0, r = 0;
+
+    // z[0] is typically not part of this definition or is set to 0.
+    // We set it to n at the end for pattern searching convention.
+
+    foreach (i; 1..n) {
+        if (i <= r) {
+            z[i] = min(r - i + 1, z[i - l]);
+        }
+        
+        while (i + z[i] < n && s[z[i]] == s[i + z[i]]) {
+            z[i]++;
+        }
+        
+        if (i + z[i] - 1 > r) {
+            l = i;
+            r = i + z[i] - 1;
+        }
+    }
+    
+    z[0] = n; // Convention for pattern searching
+
+    return z;
+}
+
+int[] zAlgorithmSearch(string text, string pattern) {
+    auto n = text.length;
+    auto m = pattern.length;
+    if (m == 0) return [];
+    if (n == 0) return [];
+
+    auto combinedString = pattern ~ "$" ~ text; // "$" is a unique delimiter
+    auto zArray = computeZArray(combinedString);
+    
+    int[] results;
+    // Any Z[i] that equals the length of P indicates an occurrence
+    foreach (i; m + 1 .. combinedString.length) { // Start search after pattern + delimiter
+        if (zArray[i] == m) {
+            results ~= (i - (m + 1)); // Adjust index back to original text
+        }
+    }
+    return results;
+}
+
+// void main() {
+//     string text = "abacaba";
+//     string pattern = "aba";
+//     writeln(zAlgorithmSearch(text, pattern)); // [0, 4]
+// }
+</code></pre>
+</div>
+
+<div id="code-explanation-content"><div class="markdown-content">
+    <h3>Code Walkthrough</h3>
+    <p>The <code>Z-Algorithm</code> is primarily known for its efficient computation of the <code>Z-array</code>. This array is then used to find pattern occurrences.</p>
+    <div class="explanation-fence">
+<strong><code>computeZArray(s)</code> Function:</strong>
+<ul>
+    <li><code>n</code>: The length of the input string <code>s</code>.</li>
+    <li><code>z</code>: The <code>Z-array</code> to be computed.</li>
+    <li><code>l</code>, <code>r</code>: Pointers defining the current <code>Z-box</code> <code>[L, R]</code>, which is the longest substring starting at <code>L</code> that is also a prefix of <code>S</code> and extends furthest to the right.</li>
+</ul>
+<br>
+<strong>Algorithm for Z-array:</strong>
+<ol>
+    <li><code>Z[0]</code> is typically defined as <code>n</code> for pattern searching, as the entire string <code>S</code> matches <code>S</code> starting at <code>index 0</code>.</li>
+    <li>The loop iterates from <code>i = 1</code> to <code>n-1</code>.</li>
+    <li><strong>Case 1: <code>i</code> is outside the current <code>Z-box</code> (<code>i > r</code>).</strong>
+        <ul>
+            <li>No prefix information can be reused. <code>Z[i]</code> is computed by brute-force comparison of <code>S[i...]</code> with <code>S[0...]</code>.</li>
+            <li>If a new <code>Z-box</code> is found (i.e., <code>Z[i] > 0</code>), update <code>L = i</code> and <code>R = i + Z[i] - 1</code>.</li>
+        </ul>
+    </li>
+    <li><strong>Case 2: <code>i</code> is inside the current <code>Z-box</code> (<code>i <= r</code>).</strong>
+        <ul>
+            <li>Let <code>k = i - L</code>. This <code>Z[k]</code> value is for a string that is a substring of the current <code>Z-box</code>.</li>
+            <li>If <code>Z[k]</code> is strictly less than the remaining length of the current <code>Z-box</code> (<code>r - i + 1</code>), then <code>Z[i]</code> can simply be set to <code>Z[k]</code>.</li>
+            <li>If <code>Z[k]</code> is greater than or equal to <code>r - i + 1</code>, it means <code>Z[i]</code> might extend beyond <code>R</code>. We can reuse the <code>Z[k]</code> value up to <code>R</code>, and then extend by brute-force comparison beyond <code>R</code>. Update <code>L=i</code> and <code>R=i + Z[i] - 1</code>.</li>
+        </ul>
+    </li>
+</ol>
+<br>
+<strong><code>zAlgorithmSearch(text, pattern)</code> Function:</strong>
+<ol>
+    <li>Constructs a new <code>combined_string</code> by concatenating <code>pattern</code>, a unique delimiter (like <code>$</code>), and <code>text</code>.</li>
+    <li>Computes the <code>Z-array</code> for this <code>combined_string</code>.</li>
+    <li>Any <code>Z[i]</code> value in the <code>Z-array</code> that is equal to the length of the <code>pattern</code> <code>m</code>, and whose <code>index i</code> is past the delimiter, indicates an occurrence of the <code>pattern</code> in the <code>text</code>. The corresponding <code>index</code> in the original <code>text</code> is <code>i - (m + 1)</code>.</li>
+</ol>
+    </div></div>
+</div>
+
+<div id="application-content"><div class="markdown-content">
+    <h3>Application</h3>
+    <p>The <code>Z-Algorithm</code> is a versatile string matching algorithm often favored for its simplicity in implementation and linear time complexity.</p>
+    <ul>
+        <li><strong>Pattern Searching:</strong> Finds all occurrences of a <code>pattern</code> in a <code>text</code> in linear time, competing with KMP.</li>
+        <li><strong>Longest Common Prefix for Suffixes:</strong> The <code>Z-array</code> itself gives insights into how well various suffixes match the original string's prefix, which is useful in certain string algorithms.</li>
+        <li><strong>String Periodicity:</strong> Can be used to efficiently determine the periodicity of a string.</li>
+        <li><strong>Shortest Unique Substring:</strong> Useful in finding the shortest substring that uniquely identifies a larger string within a set.</li>
+        <li><strong>Bioinformatics:</strong> Utilized in sequence analysis and alignment, particularly in scenarios where finding repetitions and overlaps quickly is important.</li>
+    </ul>
+    </p>
+</div></div>

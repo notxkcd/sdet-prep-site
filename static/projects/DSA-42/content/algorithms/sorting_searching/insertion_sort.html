@@ -1,0 +1,197 @@
+<div id="explanation-content">
+    <p><code>Insertion Sort</code> is a simple sorting algorithm that builds the final sorted <code>array</code> one <code>item</code> at a time. It iterates through an input <code>list</code> and removes one <code>element</code> per iteration, finds the location it belongs in the sorted part of the <code>list</code>, and inserts it there.</p>
+    <p>It is much less efficient on large <code>lists</code> than more advanced algorithms such as <code>quicksort</code>, <code>heapsort</code>, or <code>merge sort</code>, with a time complexity of <code>O(N^2)</code>. However, it is efficient for small datasets and is adaptive, meaning it is efficient for datasets that are already substantially sorted.</p>
+</div>
+
+<div id="expanded-explanation-content">
+    <h3>How it Works (Expanded)</h3>
+    <p><code>Insertion Sort</code> works by dividing the <code>array</code> into a sorted and an unsorted part. It iterates from the second <code>element</code> (<code>index 1</code>) to the end of the <code>array</code>. In each iteration, it takes the current <code>element</code> and "inserts" it into its correct position within the already sorted part of the <code>array</code> (which is to the left of the current <code>element</code>).</p>
+    <div class="explanation-fence">
+Example: Sort [5, 2, 4, 6, 1, 3]
+
+1. [5] | [2, 4, 6, 1, 3]  (Sorted | Unsorted)
+   - Take 2. Compare with 5. 2 < 5. Shift 5 right. Insert 2.
+   - Result: [2, 5] | [4, 6, 1, 3]
+
+2. [2, 5] | [4, 6, 1, 3]
+   - Take 4. Compare with 5. 4 < 5. Shift 5 right. Compare with 2. 4 > 2. Insert 4.
+   - Result: [2, 4, 5] | [6, 1, 3]
+
+3. [2, 4, 5] | [6, 1, 3]
+   - Take 6. Compare with 5. 6 > 5. No shift needed. Insert 6.
+   - Result: [2, 4, 5, 6] | [1, 3]
+
+... and so on.
+    </div>
+    <p>The algorithm effectively "grows" the sorted portion of the <code>array</code> from left to right, ensuring that at the end of the <code>i</code>-th iteration, the first <code>i</code> elements are sorted.</p>
+    <p><strong>Time Complexity:</strong> <code>O(N^2)</code> in the average and worst cases (e.g., a reverse-sorted _array_). In the best case (an already sorted <code>array</code>), it is <code>O(N)</code> because the inner loop condition will never be met.</p>
+    <p><strong>Space Complexity:</strong> <code>O(1)</code>, as it is an in-place sorting algorithm.</p>
+</div>
+
+<div id="code-implementations">
+    <pre data-lang="python"><code class="language-python">def insertion_sort(arr):
+    # Traverse through 1 to len(arr)
+    for i in range(1, len(arr)):
+        key = arr[i]
+        # Move elements of arr[0..i-1], that are greater than key,
+        # to one position ahead of their current position
+        j = i - 1
+        while j >= 0 and key < arr[j]:
+            arr[j + 1] = arr[j]
+            j -= 1
+        arr[j + 1] = key
+    return arr
+
+# Example
+# my_arr = [5, 2, 4, 6, 1, 3]
+# print(insertion_sort(my_arr)) # [1, 2, 3, 4, 5, 6]
+</code></pre>
+
+    <pre data-lang="javascript"><code class="language-javascript">function insertionSort(arr) {
+    const n = arr.length;
+    for (let i = 1; i < n; i++) {
+        let key = arr[i];
+        let j = i - 1;
+        
+        // Move elements of arr[0..i-1], that are greater than key,
+        // to one position ahead of their current position
+        while (j >= 0 && arr[j] > key) {
+            arr[j + 1] = arr[j];
+            j--;
+        }
+        arr[j + 1] = key;
+    }
+    return arr;
+}
+
+// const myArr = [5, 2, 4, 6, 1, 3];
+// console.log(insertionSort(myArr)); // [1, 2, 3, 4, 5, 6]
+</code></pre>
+
+    <pre data-lang="typescript"><code class="language-typescript">function insertionSortTS(arr: number[]): number[] {
+    const n = arr.length;
+    for (let i = 1; i < n; i++) {
+        let key = arr[i];
+        let j = i - 1;
+        
+        // Move elements of arr[0..i-1], that are greater than key,
+        // to one position ahead of their current position
+        while (j >= 0 && arr[j] > key) {
+            arr[j + 1] = arr[j];
+            j--;
+        }
+        arr[j + 1] = key;
+    }
+    return arr;
+}
+
+// const myArrTS: number[] = [5, 2, 4, 6, 1, 3];
+// console.log(insertionSortTS(myArrTS)); // [1, 2, 3, 4, 5, 6]
+</code></pre>
+    
+    <pre data-lang="cpp"><code class="language-cpp">#include &lt;vector&gt;
+#include &lt;utility&gt; // For std::move
+
+void insertionSort(std::vector&lt;int&gt;& arr) {
+    for (int i = 1; i < arr.size(); ++i) {
+        int key = arr[i];
+        int j = i - 1;
+        
+        // Move elements of arr[0..i-1], that are greater than key,
+        // to one position ahead of their current position
+        while (j >= 0 && arr[j] > key) {
+            arr[j + 1] = arr[j];
+            j--;
+        }
+        arr[j + 1] = key;
+    }
+}
+
+// #include &lt;iostream&gt;
+// int main() {
+//     std::vector<int> myArr = {5, 2, 4, 6, 1, 3};
+//     insertionSort(myArr);
+//     for(int val : myArr) {
+//         std::cout << val << " "; // 1 2 3 4 5 6
+//     }
+//     std::cout << std::endl;
+// }
+</code></pre>
+
+    <pre data-lang="go"><code class="language-go">package main
+
+func insertionSort(arr []int) []int {
+    n := len(arr)
+    for i := 1; i < n; i++ {
+        key := arr[i]
+        j := i - 1
+        
+        // Move elements of arr[0..i-1], that are greater than key,
+        // to one position ahead of their current position
+        for j >= 0 && arr[j] > key {
+            arr[j+1] = arr[j]
+            j--
+        }
+        arr[j+1] = key
+    }
+    return arr
+}
+
+// import "fmt"
+// func main() {
+//     myArr := []int{5, 2, 4, 6, 1, 3}
+//     fmt.Println(insertionSort(myArr)) // [1 2 3 4 5 6]
+// }
+</code></pre>
+    
+    <pre data-lang="d"><code class="language-d">import std.algorithm;
+
+void insertionSort(int[] arr) {
+    for (int i = 1; i < arr.length; i++) {
+        int key = arr[i];
+        int j = i - 1;
+        
+        // Move elements of arr[0..i-1], that are greater than key,
+        // to one position ahead of their current position
+        while (j >= 0 && arr[j] > key) {
+            arr[j + 1] = arr[j];
+            j--;
+        }
+        arr[j + 1] = key;
+    }
+}
+
+// import std.stdio;
+// void main() {
+//     auto myArr = [5, 2, 4, 6, 1, 3];
+//     insertionSort(myArr);
+//     writeln(myArr); // [1, 2, 3, 4, 5, 6]
+// }
+</code></pre>
+</div>
+
+<div id="code-explanation-content"><div class="markdown-content">
+    <h3>Code Walkthrough</h3>
+    <p><code>Insertion Sort</code>'s logic involves an outer loop that selects an <code>element</code> and an inner loop that shifts other <code>elements</code> to make space for it.</p>
+    <div class="explanation-fence">
+<strong>Outer Loop (<code>i</code>):</strong> Iterates from the second <code>element</code> (<code>index 1</code>) to the end of the <code>array</code>. <code>i</code> is the <code>index</code> of the current <code>element</code> (the <code>key</code>) to be inserted into the sorted portion.
+<br><br>
+<strong>The <code>key</code>:</strong> <code>arr[i]</code> is stored in a <code>key</code> variable. This is the <code>element</code> we are trying to place correctly.
+<br><br>
+<strong>Inner Loop (<code>j</code>):</strong> Starts from <code>i-1</code> and moves backward. It compares the <code>key</code> with each <code>element</code> in the sorted portion (<code>arr[0...i-1]</code>). As long as it finds an <code>element</code> <code>arr[j]</code> that is greater than the <code>key</code>, it shifts <code>arr[j]</code> one position to the right (<code>arr[j+1] = arr[j]</code>).
+<br><br>
+<strong>Placement:</strong> The inner loop stops when it finds an <code>element</code> smaller than or equal to the <code>key</code>, or when it reaches the beginning of the <code>array</code> (<code>j < 0</code>). The <code>key</code> is then placed at <code>arr[j+1]</code>, which is the first position where the <code>key</code> is not smaller than the <code>element</code> to its left.
+    </div></div>
+</div>
+
+<div id="application-content"><div class="markdown-content">
+    <h3>Application</h3>
+    <p>Despite its <code>O(N^2)</code> complexity, <code>Insertion Sort</code> has some practical advantages:
+    <ul>
+        <li><strong>Small Datasets:</strong> It is one of the fastest algorithms for sorting very small arrays, often faster than "fast" algorithms like <code>Quicksort</code> or <code>Merge Sort</code> due to lower overhead.</li>
+        <li><strong>Adaptive:</strong> It is highly efficient for datasets that are already substantially sorted. If the input array is almost sorted, <code>Insertion Sort</code>'s performance approaches <code>O(N)</code>.</li>
+        <li><strong>Online Sorting:</strong> It can sort a list as it receives it.</li>
+        <li><strong>Hybrid Sorts:</strong> Because of its efficiency on small lists, <code>Insertion Sort</code> is often used as the final step in more complex sorting algorithms, such as <code>Timsort</code> (Python's default sort) and <code>Introsort</code>, which switch to <code>Insertion Sort</code> when the sub-array size becomes small.</li>
+    </ul>
+    </p>
+</div></div>

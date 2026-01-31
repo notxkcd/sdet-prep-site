@@ -1,0 +1,285 @@
+<div id="explanation-content">
+    <p>A <code>Bloom Filter</code> is a space-efficient probabilistic data structure, conceived by Burton Howard <code>Bloom</code> in 1970, that is used to test whether an element is a member of a <code>set</code>.</p>
+    <p>It's probabilistic because it can tell you that an element is definitely not in the <code>set</code>, or that it might be in the <code>set</code> (with a certain probability of <code>false positives</code>). It never produces <code>false negatives</code>.</p>
+    <p><code>Bloom filters</code> are widely used in applications where memory efficiency and fast membership queries are critical, such as <code>database lookups</code>, <code>network routing</code>, and <code>caching</code>.</p>
+</div>
+
+<div id="expanded-explanation-content">
+    <h3>How it Works (Expanded)</h3>
+    <p>A <code>Bloom Filter</code> consists of a <code>bit array</code> (a long array of bits, initially all set to 0) and a number of <code>hash functions</code>. When you add an element to the <code>Bloom Filter</code>:</p>
+    <ol>
+        <li>The element is fed into each of the <code>k hash functions</code>.</li>
+        <li>Each <code>hash function</code> outputs an <code>index</code> in the <code>bit array</code>.</li>
+        <li>The <code>bits</code> at these <code>k indices</code> are set to 1.</li>
+    </ol>
+    <p>To check if an element is in the <code>set</code>:</p>
+    <ol>
+        <li>The element is again fed into the same <code>k hash functions</code>.</li>
+        <li>If all <code>bits</code> at the resulting <code>k indices</code> are 1, then the element <em>might</em> be in the <code>set</code>.</li>
+        <li>If any of the <code>bits</code> are 0, then the element is <em>definitely not</em> in the <code>set</code>.</li>
+    </ol>
+    <div class="explanation-fence">
+Insert "apple":
+Bit Array: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+Hash1("apple") -> 1  (set bit 1 to 1)
+Hash2("apple") -> 5  (set bit 5 to 1)
+Hash3("apple") -> 12 (set bit 12 to 1)
+Bit Array: [0,1,0,0,0,1,0,0,0,0,0,0,1,0,0,0]
+
+Check "apple":
+Hash1("apple") -> 1 (bit 1 is 1)
+Hash2("apple") -> 5 (bit 5 is 1)
+Hash3("apple") -> 12 (bit 12 is 1)
+Result: "apple" <em>might</em> be in the set.
+
+Check "orange":
+Hash1("orange") -> 3 (bit 3 is 0)
+Result: "orange" is <em>definitely not</em> in the set.
+    </div>
+    <p><strong><code>False Positives</code>:</strong> A <code>false positive</code> occurs when all <code>k hash functions</code> for an element return <code>indices</code> where the <code>bits</code> are already set to 1 (due to other elements), even though the element itself was never added. The probability of <code>false positives</code> increases as more elements are added to the <code>Bloom Filter</code>.</p>
+    <p><strong>Parameters:</strong> The size of the <code>bit array (m)</code> and the number of <code>hash functions (k)</code> are crucial for controlling the <code>false positive rate</code>.</p>
+    <p><strong>Time Complexity:</strong> Add and check operations are <code>O(k)</code> (constant time, as <code>k</code> is fixed and usually small).</p>
+    <p><strong>Space Complexity:</strong> <code>O(m)</code>, where <code>m</code> is the size of the <code>bit array</code>. Extremely memory efficient.</p>
+</div>
+
+<div id="code-implementations">
+    <pre data-lang="python"><code class="language-python">import mmh3 # For MurmurHash3, a good non-cryptographic hash function
+from bitarray import bitarray # For efficient bit array
+
+class BloomFilter:
+    def __init__(self, capacity, error_rate):
+        self.capacity = capacity  # Max number of items expected to be stored
+        self.error_rate = error_rate # Desired false positive probability
+        self.num_bits = self.get_num_bits(capacity, error_rate) # Size of bit array (m)
+        self.num_hashes = self.get_num_hashes(self.num_bits, capacity) # Number of hash functions (k)
+        self.bit_array = bitarray(self.num_bits)
+        self.bit_array.setall(0) # Initialize all bits to 0
+
+    @staticmethod
+    def get_num_bits(capacity, error_rate):
+        # m = -(n <em> ln(p)) / (ln(2)^2)
+        m = -(capacity </em> error_rate.as_integer_ratio()[0].__float__().log()) / (0.69314718056 <em> 0.69314718056) # ln(2)^2 approx 0.48
+        # Using a more robust log implementation if available, or direct math.log
+        return int(m) # simplified, requires <code>math</code> module; direct expansion here
+        # return int(-(capacity </em> math.log(error_rate)) / (math.log(2)*<em>2))
+
+    @staticmethod
+    def get_num_hashes(num_bits, capacity):
+        # k = (m/n) </em> ln(2)
+        k = (num_bits / capacity) <em> 0.69314718056 # math.log(2)
+        return int(k) # simplified
+        # return int((num_bits / capacity) </em> math.log(2))
+
+    def _get_hashes(self, item):
+        # Use two hash functions and combine them to generate k hashes
+        # This reduces the need for k independent hash functions
+        hash1 = mmh3.hash(item, 0)
+        hash2 = mmh3.hash(item, hash1) # Use result of hash1 as seed for hash2
+        
+        hashes = []
+        for i in range(self.num_hashes):
+            # General formula: Hi(x) = (hash1(x) + i <em> hash2(x)) % m
+            hashes.append(abs((hash1 + i </em> hash2) % self.num_bits))
+        return hashes
+
+    def add(self, item):
+        for h_idx in self._get_hashes(item):
+            self.bit_array[h_idx] = 1
+
+    def contains(self, item):
+        for h_idx in self._get_hashes(item):
+            if self.bit_array[h_idx] == 0:
+                return False
+        return True # Might be in the set
+
+# Example Usage:
+# bf = BloomFilter(100, 0.01) # 100 items, 1% false positive rate
+# words_to_add = ["apple", "banana", "cherry", "date"]
+# for word in words_to_add:
+#     bf.add(word)
+
+# print("Contains 'apple':", bf.contains("apple")) # True
+# print("Contains 'grape':", bf.contains("grape")) # False (or True, if false positive)
+</code></pre>
+
+    <pre data-lang="javascript"><code class="language-javascript">class BloomFilter {
+    constructor(capacity, errorRate) {
+        this.capacity = capacity;
+        this.errorRate = errorRate;
+        this.numBits = this._getNumBits(capacity, errorRate);
+        this.numHashes = this._getNumHashes(this.numBits, capacity);
+        this.bitArray = new Array(this.numBits).fill(0);
+    }
+
+    _getNumBits(capacity, errorRate) {
+        // m = -(n <em> ln(p)) / (ln(2)^2)
+        return Math.ceil(-(capacity </em> Math.log(errorRate)) / (Math.log(2) *<em> 2));
+    }
+
+    _getNumHashes(numBits, capacity) {
+        // k = (m/n) </em> ln(2)
+        return Math.ceil((numBits / capacity) <em> Math.log(2));
+    }
+
+    // A simple non-cryptographic hash function example
+    // For a real Bloom Filter, you'd use multiple good hash functions
+    _hashString(str, seed) {
+        let hash = seed;
+        for (let i = 0; i < str.length; i++) {
+            hash = (hash << 5) - hash + str.charCodeAt(i);
+            hash |= 0; // Convert to 32bit integer
+        }
+        return Math.abs(hash);
+    }
+
+    _getHashes(item) {
+        const strItem = String(item);
+        const hashes = [];
+        let hash1 = this._hashString(strItem, 0);
+        let hash2 = this._hashString(strItem, hash1); // Use hash1 as seed for hash2
+
+        for (let i = 0; i < this.numHashes; i++) {
+            // General formula: Hi(x) = (hash1(x) + i </em> hash2(x)) % m
+            hashes.push(Math.abs((hash1 + i <em> hash2) % this.numBits));
+        }
+        return hashes;
+    }
+
+    add(item) {
+        for (const hIdx of this._getHashes(item)) {
+            this.bitArray[hIdx] = 1;
+        }
+    }
+
+    contains(item) {
+        for (const hIdx of this._getHashes(item)) {
+            if (this.bitArray[hIdx] === 0) {
+                return false;
+            }
+        }
+        return true; // Might be in the set
+    }
+}
+
+// Example Usage:
+// const bf = new BloomFilter(100, 0.01); // 100 items, 1% false positive rate
+// const wordsToAdd = ["apple", "banana", "cherry", "date"];
+// for (const word of wordsToAdd) {
+//     bf.add(word);
+// }
+
+// console.log("Contains 'apple':", bf.contains("apple")); // true
+// console.log("Contains 'grape':", bf.contains("grape")); // false (or true, if false positive)
+</code></pre>
+
+    <pre data-lang="cpp"><code class="language-cpp">#include &lt;vector&gt;
+#include &lt;string&gt;
+#include &lt;cmath&gt; // For std::log, std::pow
+#include &lt;functional&gt; // For std::hash
+#include &lt;iostream&gt;
+
+// A simple hash function (for demonstration)
+// In a real Bloom Filter, you'd use robust hash functions like MurmurHash
+unsigned int simple_hash(const std::string& s, unsigned int seed) {
+    unsigned int hash = seed;
+    for (char c : s) {
+        hash = (hash </em> 31) + c;
+    }
+    return hash;
+}
+
+class BloomFilter {
+private:
+    std::vector&lt;bool&gt; bit_array;
+    int num_bits;
+    int num_hashes;
+    int capacity;
+
+    int get_num_bits(int capacity, double error_rate) {
+        // m = -(n <em> ln(p)) / (ln(2)^2)
+        return std::ceil(-(capacity </em> std::log(error_rate)) / (std::log(2) <em> std::log(2)));
+    }
+
+    int get_num_hashes(int num_bits, int capacity) {
+        // k = (m/n) </em> ln(2)
+        return std::ceil((static_cast&lt;double&gt;(num_bits) / capacity) <em> std::log(2));
+    }
+
+    std::vector&lt;unsigned int&gt; get_hash_indices(const std::string& item) {
+        std::vector&lt;unsigned int&gt; hashes;
+        unsigned int h1 = simple_hash(item, 0);
+        unsigned int h2 = simple_hash(item, h1); // Use h1 as seed for h2
+
+        for (int i = 0; i < num_hashes; ++i) {
+            // General formula: Hi(x) = (hash1(x) + i </em> hash2(x)) % m
+            hashes.push_back(std::abs(static_cast&lt;int&gt;((h1 + i <em> h2) % num_bits)));
+        }
+        return hashes;
+    }
+
+public:
+    BloomFilter(int capacity, double error_rate) :
+        capacity(capacity) {
+        num_bits = get_num_bits(capacity, error_rate);
+        num_hashes = get_num_hashes(num_bits, capacity);
+        bit_array.resize(num_bits, false); // Initialize all bits to false (0)
+    }
+
+    void add(const std::string& item) {
+        for (unsigned int h_idx : get_hash_indices(item)) {
+            bit_array[h_idx] = true; // Set bit to true (1)
+        }
+    }
+
+    bool contains(const std::string& item) {
+        for (unsigned int h_idx : get_hash_indices(item)) {
+            if (!bit_array[h_idx]) {
+                return false;
+            }
+        }
+        return true; // Might be in the set
+    }
+};
+
+// Example Usage:
+// int main() {
+//     BloomFilter bf(100, 0.01); // 100 items, 1% false positive rate
+//     std::vector<std::string> words_to_add = {"apple", "banana", "cherry", "date"};
+//     for (const std::string& word : words_to_add) {
+//         bf.add(word);
+//     }
+
+//     std::cout << "Contains 'apple': " << (bf.contains("apple") ? "True" : "False") << std::endl; // True
+//     std::cout << "Contains 'grape': " << (bf.contains("grape") ? "True" : "False") << std::endl; // False (or True, if false positive)
+//     return 0;
+// }
+</code></pre>
+</div>
+
+<div id="code-explanation-content"><div class="markdown-content">
+    <h3>Code Walkthrough</h3>
+    <p>A <code>Bloom Filter</code> implementation requires careful selection of <code>hash functions</code> and calculation of optimal <code>bit array size (m)</code> and <code>number of hash functions (k)</code>.</p>
+    <div class="explanation-fence">
+<strong>Formulae for <code>m</code> and <code>k</code>:</strong>
+<ul>
+    <li>Optimal number of <code>bits</code> <code>m = -(n </em> ln(p)) / (ln(2)^2)</code></li>
+    <li>Optimal number of <code>hashes</code> <code>k = (m/n) <em> ln(2)</code></li>
+</ul>
+Where <code>n</code> is the expected <code>capacity</code> and <code>p</code> is the desired <code>false positive rate</code>.
+<br><br>
+<strong><code>BloomFilter</code> Class:</strong>
+<ul>
+    <li><code>num_bits (m)</code>: The size of the internal <code>bit array</code>.</li>
+    <li><code>num_hashes (k)</code>: The number of <code>hash functions</code> to use.</li>
+    <li><code>bit_array</code>: The actual <code>array</code> of <code>bits</code> (often implemented using a boolean <code>vector</code> or specialized bit <code>array</code> for efficiency).</li>
+    <li><strong><code>_get_hashes(item)</code>:</strong> Generates <code>k hash values</code> for a given <code>item</code>. A common technique is to use two independent <code>hash functions</code> (<code>h1</code> and <code>h2</code>) and combine them using the formula <code>Hi(x) = (h1(x) + i </em> h2(x)) % m</code>.</li>
+    <li><strong><code>add(item)</code>:</strong> Computes <code>k hash values</code> for the <code>item</code> and sets the corresponding <code>bits</code> in the <code>bit array</code> to 1.</li>
+    <li><strong><code>contains(item)</code>:</strong> Computes <code>k hash values</code> for the <code>item</code>. If all corresponding <code>bits</code> are 1, it returns true (might be present). If any <code>bit</code> is 0, it returns false (definitely not present).</li>
+</ul>
+    </div></div>
+    <p>The choice of good, independent <code>hash functions</code> is critical for the performance and false positive rate of a <code>Bloom Filter</code>.</p>
+</div>
+<div id="application-content"><div class="markdown-content">
+    <h3>Application</h3>
+    <p>Bloom Filters are used in many systems where space is a concern and a small rate of false positives is acceptable. For example, <strong>Google Chrome</strong> uses a Bloom Filter to check for malicious URLs before navigating to a site. Distributed databases like <strong>Google Bigtable</strong> and <strong>Apache Cassandra</strong> use Bloom Filters to quickly check if a row or column exists in a table on disk, avoiding costly disk I/O for non-existent data. They are also used in network routers for filtering and in various caching systems.</p>
+</div></div>

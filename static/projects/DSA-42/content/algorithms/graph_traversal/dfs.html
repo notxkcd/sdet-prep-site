@@ -1,0 +1,419 @@
+<div id="explanation-content">
+    <p><code>Depth-First Search (DFS)</code> is a fundamental graph traversal algorithm that explores as far as possible along each branch before backtracking. Starting from a source <code>node</code>, it explores one of its neighbors, then that neighbor's neighbor, and so on, going deeper and deeper into the graph until it hits a <code>node</code> with no unvisited neighbors. It then backtracks to the previous 
+<code>node</code> and explores another path.</p>
+    <p>The algorithm can be implemented using recursion (which implicitly uses a stack) or an explicit <code>stack</code> data structure. This "deep dive" approach gives it a different set of properties and applications compared to the "layer by layer" approach of <code>BFS</code>.</p>
+</div>
+
+<div id="expanded-explanation-content">
+    <h3>How it Works (Expanded)</h3>
+    <p><code>DFS</code> maintains a set of <code>visited</code> nodes to avoid cycles. Unlike <code>BFS</code>'s <code>queue</code>, <code>DFS</code> uses a <code>stack</code> (either the program's call stack via recursion or an explicit stack data structure) to keep track of the path it is currently exploring.</p>
+    <div class="explanation-fence">
+Example: Traverse a simple graph
+Graph: A -> B, A -> C, B -> D
+
+1. Start at A. Push A to stack. Stack: [A]. Visited: {A}.
+2. Pop A. Visit its neighbor B. Push B. Stack: [B]. Visited: {A, B}.
+3. Pop B. Visit its neighbor D. Push D. Stack: [D]. Visited: {A, B, D}.
+4. Pop D. No unvisited neighbors. Backtrack. Stack: [].
+5. No more neighbors for B. Backtrack to A.
+6. Visit A's other neighbor C. Push C. Stack: [C]. Visited: {A, B, D, C}.
+7. Pop C. No unvisited neighbors. Backtrack.
+8. Stack is empty. Search is complete.
+
+Traversal Order (can vary): A, B, D, C
+    </div>
+    <p><strong>Steps (Recursive Version):</strong></p>
+    <ol>
+        <li>Create a <code>dfs</code> helper function that takes the current <code>node</code> and a <code>visited</code> set.</li>
+        <li>Mark the current <code>node</code> as <code>visited</code> and process it.</li>
+        <li>For each of the current <code>node</code>'s unvisited neighbors:
+            <ul>
+                <li>Recursively call the <code>dfs</code> function on the neighbor.</li>
+            </ul>
+        </li>
+    </ol>
+    <p><strong>Steps (Iterative Version with Stack):</strong></p>
+    <ol>
+        <li>Initialize a <code>stack</code> and add the starting <code>node</code> to it.</li>
+        <li>Initialize a <code>visited</code> set.</li>
+        <li>While the <code>stack</code> is not empty:
+            <ul>
+                <li>Pop the current <code>node</code> from the <code>stack</code>.</li>
+                <li>If the <code>node</code> has not been <code>visited</code>, mark it as <code>visited</code> and process it.</li>
+                <li>For each of the current <code>node</code>'s neighbors, push them onto the <code>stack</code>.</li>
+            </ul>
+        </li>
+    </ol>
+    <p><strong>Time Complexity:</strong> <code>O(V + E)</code>, where <code>V</code> is the number of vertices and <code>E</code> is the number of edges, as every vertex and edge is visited once.</p>
+    <p><strong>Space Complexity:</strong> <code>O(H)</code>, where <code>H</code> is the maximum height (or depth) of the graph. In the worst case (a long, chain-like graph), this can be <code>O(V)</code>.</p>
+</div>
+
+<div id="code-implementations">
+    <pre data-lang="python"><code class="language-python"># Recursive DFS Implementation
+def dfs_recursive(graph, start_node, visited=None):
+    if visited is None:
+        visited = set()
+    
+    visited.add(start_node)
+    traversal_order = [start_node]
+
+    for neighbor in graph.get(start_node, []):
+        if neighbor not in visited:
+            traversal_order.extend(dfs_recursive(graph, neighbor, visited))
+            
+    return traversal_order
+
+# Iterative DFS Implementation
+def dfs_iterative(graph, start_node):
+    if start_node not in graph:
+        return []
+
+    visited = set()
+    stack = [start_node]
+    traversal_order = []
+
+    while stack:
+        current_node = stack.pop()
+        
+        if current_node not in visited:
+            visited.add(current_node)
+            traversal_order.append(current_node)
+            
+            # Add neighbors to the stack in reverse order to visit them alphabetically
+            for neighbor in reversed(graph.get(current_node, [])):
+                if neighbor not in visited:
+                    stack.append(neighbor)
+                    
+    return traversal_order
+
+# Example
+# graph = {
+#     'A': ['B', 'C'],
+#     'B': ['D'],
+#     'C': [],
+#     'D': []
+# }
+# print("Recursive:", dfs_recursive(graph, 'A')) # ['A', 'B', 'D', 'C']
+# print("Iterative:", dfs_iterative(graph, 'A')) # ['A', 'B', 'D', 'C']
+</code></pre>
+
+    <pre data-lang="javascript"><code class="language-javascript">function dfsRecursive(graph, startNode, visited = new Set()) {
+    visited.add(startNode);
+    let traversalOrder = [startNode];
+
+    const neighbors = graph[startNode] || [];
+    for (const neighbor of neighbors) {
+        if (!visited.has(neighbor)) {
+            traversalOrder = traversalOrder.concat(dfsRecursive(graph, neighbor, visited));
+        }
+    }
+    return traversalOrder;
+}
+
+function dfsIterative(graph, startNode) {
+    if (!graph[startNode]) {
+        return [];
+    }
+
+    const visited = new Set();
+    const stack = [startNode];
+    const traversalOrder = [];
+
+    while (stack.length > 0) {
+        const currentNode = stack.pop();
+        
+        if (!visited.has(currentNode)) {
+            visited.add(currentNode);
+            traversalOrder.push(currentNode);
+
+            const neighbors = graph[currentNode] || [];
+            // Add neighbors to the stack in reverse order
+            for (let i = neighbors.length - 1; i >= 0; i--) {
+                const neighbor = neighbors[i];
+                if (!visited.has(neighbor)) {
+                    stack.push(neighbor);
+                }
+            }
+        }
+    }
+    return traversalOrder;
+}
+
+// const graph = { 'A': ['B', 'C'], 'B': ['D'], 'C': [], 'D': [] };
+// console.log("Recursive:", dfsRecursive(graph, 'A')); // ['A', 'B', 'D', 'C']
+// console.log("Iterative:", dfsIterative(graph, 'A')); // ['A', 'B', 'D', 'C']
+</code></pre>
+
+    <pre data-lang="typescript"><code class="language-typescript">function dfsRecursiveTS(graph: Record&lt;string, string[]&gt;, startNode: string, visited: Set<string> = new Set()): string[] {
+    visited.add(startNode);
+    let traversalOrder: string[] = [startNode];
+
+    const neighbors = graph[startNode] || [];
+    for (const neighbor of neighbors) {
+        if (!visited.has(neighbor)) {
+            traversalOrder = traversalOrder.concat(dfsRecursiveTS(graph, neighbor, visited));
+        }
+    }
+    return traversalOrder;
+}
+
+function dfsIterativeTS(graph: Record&lt;string, string[]&gt;, startNode: string): string[] {
+    if (!graph[startNode]) {
+        return [];
+    }
+
+    const visited = new Set<string>();
+    const stack: string[] = [startNode];
+    const traversalOrder: string[] = [];
+
+    while (stack.length > 0) {
+        const currentNode = stack.pop()!;
+        
+        if (!visited.has(currentNode)) {
+            visited.add(currentNode);
+            traversalOrder.push(currentNode);
+
+            const neighbors = graph[currentNode] || [];
+            // Add neighbors to the stack in reverse order
+            for (let i = neighbors.length - 1; i >= 0; i--) {
+                const neighbor = neighbors[i];
+                if (!visited.has(neighbor)) {
+                    stack.push(neighbor);
+                }
+            }
+        }
+    }
+    return traversalOrder;
+}
+
+// const graphTS: Record&lt;string, string[]&gt; = { 'A': ['B', 'C'], 'B': ['D'], 'C': [], 'D': [] };
+// console.log("Recursive:", dfsRecursiveTS(graphTS, 'A')); // ['A', 'B', 'D', 'C']
+// console.log("Iterative:", dfsIterativeTS(graphTS, 'A')); // ['A', 'B', 'D', 'C']
+</code></pre>
+    
+    <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;stack&gt;
+#include &lt;map&gt;
+#include &lt;set&gt;
+#include &lt;algorithm&gt; // For std::reverse
+
+// Recursive DFS
+void dfsRecursiveHelper(const std::map&lt;char, std::vector&lt;char&gt;&gt;& graph, char node, std::set&lt;char&gt;& visited, std::vector&lt;char&gt;& order) {
+    visited.insert(node);
+    order.push_back(node);
+
+    auto it = graph.find(node);
+    if (it != graph.end()) {
+        for (char neighbor : it->second) {
+            if (visited.find(neighbor) == visited.end()) {
+                dfsRecursiveHelper(graph, neighbor, visited, order);
+            }
+        }
+    }
+}
+
+std::vector&lt;char&gt; dfsRecursive(const std::map&lt;char, std::vector&lt;char&gt;&gt;& graph, char startNode) {
+    std::vector&lt;char&gt; order;
+    std::set&lt;char&gt; visited;
+    dfsRecursiveHelper(graph, startNode, visited, order);
+    return order;
+}
+
+// Iterative DFS
+std::vector&lt;char&gt; dfsIterative(const std::map&lt;char, std::vector&lt;char&gt;&gt;& graph, char startNode) {
+    if (graph.find(startNode) == graph.end()) return {};
+
+    std::set&lt;char&gt; visited;
+    std::stack&lt;char&gt; s;
+    std::vector&lt;char&gt; order;
+
+    s.push(startNode);
+
+    while (!s.empty()) {
+        char currentNode = s.top();
+        s.pop();
+
+        if (visited.find(currentNode) == visited.end()) {
+            visited.insert(currentNode);
+            order.push_back(currentNode);
+
+            auto it = graph.find(currentNode);
+            if (it != graph.end()) {
+                // Push neighbors in reverse order to visit them alphabetically
+                std::vector&lt;char&gt; neighbors = it->second;
+                std::reverse(neighbors.begin(), neighbors.end());
+                for (char neighbor : neighbors) {
+                    if (visited.find(neighbor) == visited.end()) {
+                        s.push(neighbor);
+                    }
+                }
+            }
+        }
+    }
+    return order;
+}
+
+// int main() {
+//     std::map&lt;char, std::vector&lt;char&gt;&gt; graph = {{'A', {'B', 'C'}}, {'B', {'D'}}, {'C', {}}, {'D', {}}};
+//     // ... test functions
+// }
+</code></pre>
+
+    <pre data-lang="go"><code class="language-go">package main
+
+import "fmt"
+
+// Recursive DFS
+func dfsRecursive(graph map[string][]string, startNode string, visited map[string]bool) []string {
+    if visited == nil {
+        visited = make(map[string]bool)
+    }
+    
+    visited[startNode] = true
+    order := []string{startNode}
+
+    for _, neighbor := range graph[startNode] {
+        if !visited[neighbor] {
+            order = append(order, dfsRecursive(graph, neighbor, visited)...)
+        }
+    }
+    return order
+}
+
+// Iterative DFS
+func dfsIterative(graph map[string][]string, startNode string) []string {
+    if _, ok := graph[startNode]; !ok {
+        return nil
+    }
+
+    visited := make(map[string]bool)
+    stack := []string{startNode}
+    order := []string{}
+
+    for len(stack) > 0 {
+        node := stack[len(stack)-1]
+        stack = stack[:len(stack)-1] // Pop
+
+        if !visited[node] {
+            visited[node] = true
+            order = append(order, node)
+
+            // Push neighbors in reverse to approximate recursive order
+            neighbors := graph[node]
+            for i := len(neighbors) - 1; i >= 0; i-- {
+                neighbor := neighbors[i]
+                if !visited[neighbor] {
+                    stack = append(stack, neighbor) // Push
+                }
+            }
+        }
+    }
+    return order
+}
+
+// func main() {
+//     graph := map[string][]string{"A": {"B", "C"}, "B": {"D"}, "C": {}, "D": {}}
+//     fmt.Println("Recursive:", dfsRecursive(graph, "A", nil)) // [A B D C]
+//     fmt.Println("Iterative:", dfsIterative(graph, "A"))   // [A B D C]
+// }
+</code></pre>
+    
+    <pre data-lang="d"><code class="language-d">import std.stdio;
+import std.collections;
+import std.algorithm;
+
+// Recursive DFS
+void dfsRecursiveHelper(string[][string] graph, string node, ref bool[string] visited, ref string[] order) {
+    visited[node] = true;
+    order ~= node;
+
+    if (auto neighbors = node in graph) {
+        foreach (neighbor; <em>neighbors) {
+            if (neighbor !in visited) {
+                dfsRecursiveHelper(graph, neighbor, visited, order);
+            }
+        }
+    }
+}
+
+string[] dfsRecursive(string[][string] graph, string startNode) {
+    string[] order;
+    bool[string] visited;
+    dfsRecursiveHelper(graph, startNode, visited, order);
+    return order;
+}
+
+// Iterative DFS
+string[] dfsIterative(string[][string] graph, string startNode) {
+    if (startNode !in graph) return [];
+
+    bool[string] visited;
+    string[] stack = [startNode];
+    string[] order;
+
+    while (!stack.empty) {
+        string node = stack.back;
+        stack.popBack();
+
+        if (node !in visited) {
+            visited[node] = true;
+            order ~= node;
+
+            if (auto pNeighbors = node in graph) {
+                // Push neighbors in reverse
+                foreach_reverse (neighbor; </em>pNeighbors) {
+                    if (neighbor !in visited) {
+                        stack ~= neighbor;
+                    }
+                }
+            }
+        }
+    }
+    return order;
+}
+
+// void main() {
+//     auto graph = ["A": ["B", "C"], "B": ["D"], "C": [], "D": []];
+//     writeln("Recursive:", dfsRecursive(graph, "A")); // ["A", "B", "D", "C"]
+//     writeln("Iterative:", dfsIterative(graph, "A")); // ["A", "B", "D", "C"]
+// }
+</code></pre>
+</div>
+
+<div id="code-explanation-content"><div class="markdown-content">
+    <h3>Code Walkthrough</h3>
+    <p><code>DFS</code> can be implemented elegantly with recursion or iteratively with a <code>stack</code>. Both approaches achieve the same goal of exploring a branch completely before backtracking.</p>
+    <div class="explanation-fence">
+<strong>Recursive Implementation:</strong>
+<ol>
+    <li>The main function initializes a <code>visited</code> set.</li>
+    <li>A helper function <code>dfsRecursiveHelper</code> is called with the starting <code>node</code>.</li>
+    <li>Inside the helper, the current <code>node</code> is marked as <code>visited</code> and added to the result.</li>
+    <li>It then iterates through its neighbors. If a neighbor has not been <code>visited</code>, the helper function calls itself with the neighbor as the new <code>node</code>.</li>
+    <li>This creates a call stack that naturally handles the "go deep, then backtrack" logic.</li>
+</ol>
+<br>
+<strong>Iterative Implementation:</strong>
+<ol>
+    <li>A <code>stack</code> is initialized with the <code>startNode</code>.</li>
+    <li>A <code>visited</code> set is used to track <code>nodes</code> whose neighbors have been pushed to the <code>stack</code>.</li>
+    <li>The loop continues while the <code>stack</code> is not empty.</li>
+    <li>A <code>node</code> is popped from the <code>stack</code>. If it hasn't been processed, it's marked as <code>visited</code>, and its neighbors are pushed onto the <code>stack</code>.</li>
+    <li>Pushing neighbors in reverse order (as shown in the code) ensures that the traversal order more closely mimics the typical recursive implementation (e.g., visiting 'B' before 'C' if <code>graph['A'] = ['B', 'C']</code>).</li>
+</ol>
+    </div></div>
+</div>
+
+<div id="application-content"><div class="markdown-content">
+    <h3>Application</h3>
+    <p>The "deep dive" nature of <code>DFS</code> makes it suitable for problems where you need to explore a path to its conclusion before trying another.</p>
+    <ul>
+        <li><strong>Topological Sorting:</strong> <code>DFS</code> is the basis for Kahn's algorithm and other methods for topologically sorting a directed acyclic graph (DAG), which is used in scheduling tasks with dependencies.</li>
+        <li><strong>Finding Connected Components:</strong> Similar to <code>BFS</code>, <code>DFS</code> can be used to find all nodes connected to a source node.</li>
+        <li><strong>Pathfinding and Mazes:</strong> Finding a path between two nodes in a maze or a graph. While <code>BFS</code> is guaranteed to find the shortest path in an unweighted graph, <code>DFS</code> is simpler to implement and can find <em>a</em> path very quickly.</li>
+        <li><strong>Detecting Cycles:</strong> By keeping track of the nodes currently in the recursion stack, <code>DFS</code> can be adapted to detect cycles in a graph.</li>
+        <li><strong>Solving Puzzles:</strong> Many puzzles that can be represented as a state graph (like Sudoku or finding a way out of a maze) can be solved with a <code>DFS</code>-based backtracking approach.</li>
+    </ul>
+    </p>
+</div></div>

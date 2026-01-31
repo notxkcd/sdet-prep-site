@@ -1,0 +1,353 @@
+<div id="explanation-content">
+    <p>A <code>Trie</code> (pronounced "try" or "tree", from retrieval) is a tree-like data structure used to store a dynamic set or associative array where the <code>keys</code> are usually strings. Unlike a <code>binary search tree</code>, <code>nodes</code> in a <code>Trie</code> do not store the <code>key</code>s themselves. Instead, their position in the <code>Trie</code> defines the <code>key</code> with which they are associated.</p>
+    <p><code>Tries</code> are particularly useful for problems involving strings, such as autocomplete features, spell checkers, and IP routing.</p>
+</div>
+
+<div id="expanded-explanation-content">
+    <h3>How it Works (Expanded)</h3>
+    <p>Each <code>node</code> in a <code>Trie</code> represents a prefix of a <code>key</code>. The <code>root node</code> represents the empty string. Each child <code>node</code> represents an additional character in the <code>key</code>. Paths from the <code>root</code> to other <code>nodes</code> represent <code>keys</code>. A special flag (e.g., a boolean <code>is_end_of_word</code>) in a <code>node</code> marks the end of a complete <code>word</code>.</p>
+    <div class="explanation-fence">
+Example Trie for words: "apple", "app", "apricot", "banana"
+
+       (root)
+       /    \
+      a      b
+     /|\     |
+    p l e    a
+   /  |      |
+  p   r      n
+ /    |      |
+l     i      a
+|     |
+ e     c      n
+      |      |
+      o      a
+      |
+      t
+    </div>
+    <p><strong>Operations:</strong></p>
+    <ul>
+        <li><strong><code>Insert</code>:</strong> To insert a <code>word</code>, traverse the <code>Trie</code> character by character. If a <code>node</code> for a character doesn't exist, create it. Mark the last <code>node</code> of the <code>word</code> as <code>is_end_of_word = true</code>.</li>
+        <li><strong><code>Search</code>:</strong> To search for a <code>word</code>, traverse the <code>Trie</code> character by character. If at any point a character's <code>node</code> doesn't exist, the <code>word</code> is not in the <code>Trie</code>. If the end of the <code>word</code> is reached and the <code>node</code> is marked as <code>is_end_of_word = true</code>, the <code>word</code> is found.</li>
+        <li><strong><code>Prefix Search (Autocomplete)</code>:</strong> To find all <code>words</code> with a given <code>prefix</code>, traverse to the <code>node</code> representing the <code>prefix</code>. Then, perform a <code>Depth-First Search (DFS)</code> from that <code>node</code> to collect all complete <code>words</code> in its subtree.</li>
+    </ul>
+    <p><strong>Time Complexity:</strong> For <code>insert</code>, <code>search</code>, and <code>prefix search</code> (to find the <code>prefix node</code>), the time complexity is <code>O(L)</code>, where <code>L</code> is the length of the <code>key</code> or <code>prefix</code>. This is often much faster than <code>O(L log N)</code> for <code>BSTs</code> or <code>O(L)</code> worst-case for <code>hash tables</code> (where <code>L</code> is included in the <code>hash function</code> calculation).</p>
+</div>
+
+<div id="code-implementations">
+    <pre data-lang="python"><code class="language-python">class TrieNode:
+    def __init__(self):
+        self.children = {}
+        self.is_end_of_word = False
+
+class Trie:
+    def __init__(self):
+        self.root = TrieNode()
+
+    def insert(self, word: str) -> None:
+        node = self.root
+        for char in word:
+            if char not in node.children:
+                node.children[char] = TrieNode()
+            node = node.children[char]
+        node.is_end_of_word = True
+
+    def search(self, word: str) -> bool:
+        node = self.root
+        for char in word:
+            if char not in node.children:
+                return False
+            node = node.children[char]
+        return node.is_end_of_word
+
+    def starts_with(self, prefix: str) -> bool:
+        node = self.root
+        for char in prefix:
+            if char not in node.children:
+                return False
+            node = node.children[char]
+        return True
+
+    def _collect_all_words(self, node, prefix, words):
+        if node.is_end_of_word:
+            words.append(prefix)
+        for char, child_node in node.children.items():
+            self._collect_all_words(child_node, prefix + char, words)
+
+    def autocomplete(self, prefix: str) -> list[str]:
+        node = self.root
+        for char in prefix:
+            if char not in node.children:
+                return []
+            node = node.children[char]
+        
+        words = []
+        self._collect_all_words(node, prefix, words)
+        return words
+
+# Example Usage:
+# trie = Trie()
+# trie.insert("apple")
+# trie.insert("app")
+# trie.insert("apricot")
+# trie.insert("banana")
+
+# print(trie.search("apple"))      # True
+# print(trie.search("app"))        # True
+# print(trie.search("ap"))         # False (not a complete word)
+# print(trie.starts_with("app"))   # True
+# print(trie.autocomplete("ap"))   # ['apple', 'app', 'apricot']
+# print(trie.autocomplete("ban"))  # ['banana']
+# print(trie.autocomplete("bat"))  # []
+</code></pre>
+
+    <pre data-lang="javascript"><code class="language-javascript">class TrieNode {
+    constructor() {
+        this.children = new Map();
+        this.isEndOfWord = false;
+    }
+}
+
+class Trie {
+    constructor() {
+        this.root = new TrieNode();
+    }
+
+    insert(word) {
+        let node = this.root;
+        for (const char of word) {
+            if (!node.children.has(char)) {
+                node.children.set(char, new TrieNode());
+            }
+            node = node.children.get(char);
+        }
+        node.isEndOfWord = true;
+    }
+
+    search(word) {
+        let node = this.root;
+        for (const char of word) {
+            if (!node.children.has(char)) {
+                return false;
+            }
+            node = node.children.get(char);
+        }
+        return node.isEndOfWord;
+    }
+
+    startsWith(prefix) {
+        let node = this.root;
+        for (const char of prefix) {
+            if (!node.children.has(char)) {
+                return false;
+            }
+            node = node.children.get(char);
+        }
+        return true;
+    }
+
+    _collectAllWords(node, prefix, words) {
+        if (node.isEndOfWord) {
+            words.push(prefix);
+        }
+        for (const [char, childNode] of node.children) {
+            this._collectAllWords(childNode, prefix + char, words);
+        }
+    }
+
+    autocomplete(prefix) {
+        let node = this.root;
+        for (const char of prefix) {
+            if (!node.children.has(char)) {
+                return [];
+            }
+            node = node.children.get(char);
+        }
+        
+        const words = [];
+        this._collectAllWords(node, prefix, words);
+        return words;
+    }
+}
+
+// Example Usage:
+// const trie = new Trie();
+// trie.insert("apple");
+// trie.insert("app");
+// trie.insert("apricot");
+// trie.insert("banana");
+
+// console.log(trie.search("apple"));      // true
+// console.log(trie.search("app"));        // true
+// console.log(trie.search("ap"));         // false
+// console.log(trie.startsWith("app"));   // true
+// console.log(trie.autocomplete("ap"));   // ['apple', 'app', 'apricot']
+// console.log(trie.autocomplete("ban"));  // ['banana']
+// console.log(trie.autocomplete("bat"));  // []
+</code></pre>
+
+    <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+#include &lt;map&gt; // For std::map to store children
+
+class TrieNode {
+public:
+    std::map&lt;char, TrieNode<em>&gt; children;
+    bool isEndOfWord;
+
+    TrieNode() : isEndOfWord(false) {}
+
+    ~TrieNode() {
+        for (auto const& [key, val] : children) {
+            delete val;
+        }
+    }
+};
+
+class Trie {
+public:
+    TrieNode</em> root;
+
+    Trie() {
+        root = new TrieNode();
+    }
+
+    ~Trie() {
+        delete root;
+    }
+
+    void insert(const std::string& word) {
+        TrieNode<em> node = root;
+        for (char ch : word) {
+            if (node->children.find(ch) == node->children.end()) {
+                node->children[ch] = new TrieNode();
+            }
+            node = node->children[ch];
+        }
+        node->isEndOfWord = true;
+    }
+
+    bool search(const std::string& word) {
+        TrieNode</em> node = root;
+        for (char ch : word) {
+            if (node->children.find(ch) == node->children.end()) {
+                return false;
+            }
+            node = node->children[ch];
+        }
+        return node->isEndOfWord;
+    }
+
+    bool startsWith(const std::string& prefix) {
+        TrieNode<em> node = root;
+        for (char ch : prefix) {
+            if (node->children.find(ch) == node->children.end()) {
+                return false;
+            }
+            node = node->children[ch];
+        }
+        return true;
+    }
+
+private:
+    void _collectAllWords(TrieNode</em> node, std::string currentPrefix, std::vector&lt;std::string&gt;& words) {
+        if (node->isEndOfWord) {
+            words.push_back(currentPrefix);
+        }
+        for (auto const& [ch, childNode] : node->children) {
+            _collectAllWords(childNode, currentPrefix + ch, words);
+        }
+    }
+
+public:
+    std::vector&lt;std::string&gt; autocomplete(const std::string& prefix) {
+        TrieNode* node = root;
+        for (char ch : prefix) {
+            if (node->children.find(ch) == node->children.end()) {
+                return {};
+            }
+            node = node->children[ch];
+        }
+        
+        std::vector&lt;std::string&gt; words;
+        _collectAllWords(node, prefix, words);
+        return words;
+    }
+};
+
+// Example Usage:
+// int main() {
+//     Trie trie;
+//     trie.insert("apple");
+//     trie.insert("app");
+//     trie.insert("apricot");
+//     trie.insert("banana");
+
+//     std::cout << "Search 'apple': " << (trie.search("apple") ? "True" : "False") << std::endl; // True
+//     std::cout << "Search 'app': " << (trie.search("app") ? "True" : "False") << std::endl;     // True
+//     std::cout << "Search 'ap': " << (trie.search("ap") ? "True" : "False") << std::endl;       // False
+//     std::cout << "Starts with 'app': " << (trie.startsWith("app") ? "True" : "False") << std::endl; // True
+
+//     std::vector<std::string> words_ap = trie.autocomplete("ap");
+//     std::cout << "Autocomplete 'ap': ";
+//     for (const std::string& word : words_ap) {
+//         std::cout << word << " ";
+//     }
+//     std::cout << std::endl; // apple app apricot
+
+//     std::vector<std::string> words_ban = trie.autocomplete("ban");
+//     std::cout << "Autocomplete 'ban': ";
+//     for (const std::string& word : words_ban) {
+//         std::cout << word << " ";
+//     }
+//     std::cout << std::endl; // banana
+
+//     return 0;
+// }
+</code></pre>
+</div>
+
+<div id="code-explanation-content"><div class="markdown-content">
+    <h3>Code Walkthrough</h3>
+    <p>A Trie is typically implemented using nested hash maps (or arrays) to represent the <code>children</code> of each <code>TrieNode</code>.</p>
+    <div class="explanation-fence">
+<strong><code>TrieNode</code> Class:</strong>
+<ul>
+    <li><code>children</code>: A dictionary/map where <code>keys</code> are characters and <code>values</code> are pointers to child <code>TrieNode</code>s.</li>
+    <li><code>is_end_of_word</code>: A boolean flag, true if this <code>node</code> marks the end of a valid <code>word</code>.</li>
+</ul>
+<br>
+<strong><code>Trie</code> Class:</strong>
+<ul>
+    <li><code>root</code>: A pointer to the <code>root TrieNode</code>.</li>
+    <li><strong><code>insert(word)</code>:</strong>
+        <ol>
+            <li>Starts from the <code>root</code>.</li>
+            <li>For each <code>character</code> in the <code>word</code>, it checks if a child <code>node</code> for that <code>character</code> exists. If not, it creates a new <code>TrieNode</code>.</li>
+            <li>Moves to the child <code>node</code>.</li>
+            <li>Once all <code>characters</code> are processed, it sets the <code>is_end_of_word</code> flag of the final <code>node</code> to true.</li>
+        </ol>
+    </li>
+    <li><strong><code>search(word)</code>:</strong>
+        <ol>
+            <li>Traverses the <code>Trie</code> similar to <code>insert</code>.</li>
+            <li>If any <code>character</code> path doesn't exist, returns false.</li>
+            <li>If the end of the <code>word</code> is reached, returns the <code>is_end_of_word</code> flag of the current <code>node</code>.</li>
+        </ol>
+    </li>
+    <li><strong><code>startsWith(prefix)</code>:</strong> Similar to <code>search</code>, but only checks if the <code>prefix</code> path exists, without checking the <code>is_end_of_word</code> flag.</li>
+    <li><strong><code>autocomplete(prefix)</code>:</strong>
+        <ol>
+            <li>Finds the <code>node</code> corresponding to the given <code>prefix</code>.</li>
+            <li>Performs a recursive helper function (<code>_collectAllWords</code>) starting from that <code>node</code> to gather all <code>words</code> that extend the <code>prefix</code>. This is essentially a <code>DFS</code> traversal from the <code>prefix node</code>.</li>
+        </ol>
+    </li>
+</ul>
+    </div></div>
+    <p><code>Tries</code> are powerful because they allow sharing common <code>prefixes</code>, leading to space efficiency for datasets with many similar <code>words</code>, and fast prefix-based operations.</p>
+</div>
+<div id="application-content"><div class="markdown-content">
+    <h3>Application</h3>
+    <p>Tries are the standard data structure for any application that involves processing prefixes of strings. Their most common use case is in implementing <strong>autocomplete</strong> features in search engines, code editors, and mobile keyboards. They are also used in <strong>spell checkers</strong> to efficiently suggest corrections for misspelled words. In networking, Tries are used to store <strong>IP routing tables</strong>, where the longest prefix match algorithm can be implemented efficiently to find the best route for a given IP address.</p>
+</div></div>

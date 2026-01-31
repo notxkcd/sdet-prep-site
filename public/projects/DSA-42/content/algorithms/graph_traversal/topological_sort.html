@@ -1,0 +1,495 @@
+<div id="explanation-content">
+    <p><code>Topological Sort</code> is a linear ordering of <code>nodes</code> such that for every directed <code>edge</code> from <code>node u</code> to <code>node v</code>, <code>u</code> comes before <code>v</code> in the ordering. It is applicable only to <strong>Directed Acyclic Graphs (DAGs)</strong>. If a graph contains a <code>cycle</code>, a <code>topological sort</code> is not possible.</p>
+    <p>This algorithm is widely used in scheduling problems where tasks have dependencies, such as course prerequisites, build systems, or task queues. The result of a <code>topological sort</code> is one of many possible valid orderings.</p>
+</div>
+
+<div id="expanded-explanation-content">
+    <h3>How it Works (Expanded)</h3>
+    <p>A common and intuitive way to implement <code>Topological Sort</code> is <strong>Kahn's Algorithm</strong>, which uses a <code>queue</code>-based approach. It works by identifying <code>nodes</code> with no incoming <code>edges</code> ("in-degree" of 0) and adding them to the sorted list. As these <code>nodes</code> are processed, their outgoing <code>edges</code> are conceptually "removed", and the <code>in-degrees</code> of their neighboring <code>nodes</code> are decremented. If a neighbor's <code>in-degree</code> becomes 0, it is added to the <code>queue</code> to be processed.</p>
+    <div class="explanation-fence">
+Example: Graph representing course prerequisites
+(0->1, 0->2, 1->3, 2->3, 3->4)
+
+1. Calculate in-degrees:
+   - 0: 0
+   - 1: 1 (from 0)
+   - 2: 1 (from 0)
+   - 3: 2 (from 1, 2)
+   - 4: 1 (from 3)
+
+2. Initialize queue with nodes with in-degree 0:
+   - Queue: [0]
+
+3. Process queue:
+   - Dequeue 0. Add to sorted list. List: [0].
+   - "Remove" edges from 0:
+     - Decrement in-degree of 1. In-degree(1) becomes 0. Enqueue 1.
+     - Decrement in-degree of 2. In-degree(2) becomes 0. Enqueue 2.
+     - Queue: [1, 2].
+   - Dequeue 1. Add to sorted list. List: [0, 1].
+   - "Remove" edges from 1:
+     - Decrement in-degree of 3. In-degree(3) becomes 1.
+     - Queue: [2].
+   - Dequeue 2. Add to sorted list. List: [0, 1, 2].
+   - "Remove" edges from 2:
+     - Decrement in-degree of 3. In-degree(3) becomes 0. Enqueue 3.
+     - Queue: [3].
+   - ... and so on.
+
+Final Sorted Order (one possibility): [0, 1, 2, 3, 4]
+    </div>
+    <p><strong>Algorithm Steps (Kahn's Algorithm):</strong></p>
+    <ol>
+        <li>Compute the "in-degree" (number of incoming edges) for each <code>vertex</code> in the graph.</li>
+        <li>Initialize a <code>queue</code> with all <code>vertices</code> that have an in-degree of 0.</li>
+        <li>Initialize a <code>count</code> of visited <code>vertices</code> to 0 and a list <code>topological_order</code> to store the result.</li>
+        <li>While the <code>queue</code> is not empty:
+            <ul>
+                <li>Dequeue a <code>vertex u</code>. Add <code>u</code> to <code>topological_order</code>.</li>
+                <li>Increment <code>count</code>.</li>
+                <li>For each <code>neighbor v</code> of <code>u</code>:
+                    <ul>
+                        <li>Decrement the in-degree of <code>v</code>.</li>
+                        <li>If the in-degree of <code>v</code> becomes 0, enqueue <code>v</code>.</li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+        <li>If <code>count</code> is not equal to the total number of <code>vertices</code>, the graph has a <code>cycle</code>, and a <code>topological sort</code> is not possible. Otherwise, <code>topological_order</code> contains a valid sorted sequence.</li>
+    </ol>
+    <p><strong>Time Complexity:</strong> <code>O(V + E)</code>, where <code>V</code> is the number of vertices and <code>E</code> is the number of edges. This is because computing in-degrees takes <code>O(E)</code>, initializing the <code>queue</code> takes <code>O(V)</code>, and the main loop processes each <code>vertex</code> and <code>edge</code> exactly once.</p>
+    <p><strong>Space Complexity:</strong> <code>O(V)<code> for the </code>in-degree<code> array and the </code>queue`.</p>
+</div>
+
+<div id="code-implementations">
+    <pre data-lang="python"><code class="language-python">from collections import deque
+
+def topological_sort(graph):
+    """
+    Performs a topological sort on a directed acyclic graph (DAG) using Kahn's algorithm.
+    <code>graph</code> is an adjacency list: {node: [neighbor1, neighbor2, ...]}
+    """
+    n = len(graph)
+    if n == 0:
+        return []
+
+    in_degree = {i: 0 for i in graph}
+    for u in graph:
+        for v in graph[u]:
+            in_degree[v] += 1
+    
+    # Initialize queue with nodes having an in-degree of 0
+    queue = deque([u for u in graph if in_degree[u] == 0])
+    
+    topological_order = []
+    
+    while queue:
+        u = queue.popleft()
+        topological_order.append(u)
+        
+        # For each neighbor of the dequeued node, decrement its in-degree
+        for v in graph[u]:
+            in_degree[v] -= 1
+            if in_degree[v] == 0:
+                queue.append(v)
+    
+    # If the number of nodes in the topological order is not equal to the
+    # total number of nodes, there is a cycle.
+    if len(topological_order) != n:
+        return "Graph has a cycle, topological sort not possible"
+    
+    return topological_order
+
+# Example:
+# graph = {
+#     0: [1, 2],
+#     1: [3],
+#     2: [3],
+#     3: [4],
+#     4: []
+# }
+# print(topological_sort(graph)) # Expected: [0, 1, 2, 3, 4] or [0, 2, 1, 3, 4]
+
+# graph_with_cycle = {
+#     0: [1],
+#     1: [2],
+#     2: [0]
+# }
+# print(topological_sort(graph_with_cycle)) # "Graph has a cycle..."
+</code></pre>
+
+    <pre data-lang="javascript"><code class="language-javascript">function topologicalSort(graph) {
+    const n = Object.keys(graph).length;
+    if (n === 0) {
+        return [];
+    }
+
+    const inDegree = {};
+    for (const u in graph) {
+        inDegree[u] = 0;
+    }
+    
+    for (const u in graph) {
+        for (const v of graph[u]) {
+            inDegree[v]++;
+        }
+    }
+    
+    const queue = [];
+    for (const u in inDegree) {
+        if (inDegree[u] === 0) {
+            queue.push(u);
+        }
+    }
+    
+    const topologicalOrder = [];
+    
+    while (queue.length > 0) {
+        const u = queue.shift();
+        topologicalOrder.push(u);
+        
+        // For each neighbor, decrement its in-degree
+        for (const v of graph[u]) {
+            inDegree[v]--;
+            if (inDegree[v] === 0) {
+                queue.push(v);
+            }
+        }
+    }
+    
+    if (topologicalOrder.length !== n) {
+        return "Graph has a cycle, topological sort not possible";
+    }
+    
+    return topologicalOrder;
+}
+
+// const graph = {
+//     '0': ['1', '2'],
+//     '1': ['3'],
+//     '2': ['3'],
+//     '3': ['4'],
+//     '4': []
+// };
+// console.log(topologicalSort(graph)); // e.g., ['0', '1', '2', '3', '4']
+
+// const graphWithCycle = {
+//     '0': ['1'],
+//     '1': ['2'],
+//     '2': ['0']
+// };
+// console.log(topologicalSort(graphWithCycle)); // "Graph has a cycle..."
+</code></pre>
+
+    <pre data-lang="typescript"><code class="language-typescript">function topologicalSortTS(graph: Record&lt;string, string[]&gt;): string[] | string {
+    const n = Object.keys(graph).length;
+    if (n === 0) {
+        return [];
+    }
+
+    const inDegree: Record<string, number> = {};
+    for (const u in graph) {
+        inDegree[u] = 0;
+    }
+    
+    for (const u in graph) {
+        for (const v of graph[u]) {
+            inDegree[v]++;
+        }
+    }
+    
+    const queue: string[] = [];
+    for (const u in inDegree) {
+        if (inDegree[u] === 0) {
+            queue.push(u);
+        }
+    }
+    
+    const topologicalOrder: string[] = [];
+    
+    while (queue.length > 0) {
+        const u = queue.shift()!;
+        topologicalOrder.push(u);
+        
+        // For each neighbor, decrement its in-degree
+        for (const v of graph[u]) {
+            inDegree[v]--;
+            if (inDegree[v] === 0) {
+                queue.push(v);
+            }
+        }
+    }
+    
+    if (topologicalOrder.length !== n) {
+        return "Graph has a cycle, topological sort not possible";
+    }
+    
+    return topologicalOrder;
+}
+
+// const graphTS: Record<string, string[]> = {
+//     '0': ['1', '2'],
+//     '1': ['3'],
+//     '2': ['3'],
+//     '3': ['4'],
+//     '4': []
+// };
+// console.log(topologicalSortTS(graphTS)); // e.g., ['0', '1', '2', '3', '4']
+</code></pre>
+    
+    <pre data-lang="cpp"><code class="language-cpp">#include &lt;vector&gt;
+#include &lt;queue&gt;
+#include &lt;map&gt;
+#include &lt;iostream&gt;
+
+using GraphAdjList = std::map&lt;int, std::vector&lt;int&gt;&gt;;
+
+std::vector<int> topologicalSort(const GraphAdjList& graph) {
+    int n = graph.size();
+    if (n == 0) {
+        return {};
+    }
+
+    std::map<int, int> in_degree;
+    for(const auto& pair : graph) {
+        in_degree[pair.first] = 0;
+    }
+
+    for (const auto& pair : graph) {
+        for (int v : pair.second) {
+            in_degree[v]++;
+        }
+    }
+    
+    std::queue<int> q;
+    for (const auto& pair : in_degree) {
+        if (pair.second == 0) {
+            q.push(pair.first);
+        }
+    }
+    
+    std::vector<int> topological_order;
+    
+    while (!q.empty()) {
+        int u = q.front();
+        q.pop();
+        topological_order.push_back(u);
+        
+        // For each neighbor, decrement its in-degree
+        auto it = graph.find(u);
+        if (it != graph.end()) {
+            for (int v : it->second) {
+                in_degree[v]--;
+                if (in_degree[v] == 0) {
+                    q.push(v);
+                }
+            }
+        }
+    }
+    
+    if (topological_order.size() != n) {
+        // Graph has a cycle, clear the result or throw an exception
+        return {}; 
+    }
+    
+    return topological_order;
+}
+
+// int main() {
+//     GraphAdjList graph = {
+//         {0, {1, 2}},
+//         {1, {3}},
+//         {2, {3}},
+//         {3, {4}},
+//         {4, {}}
+//     };
+//     std::vector<int> result = topologicalSort(graph);
+//     for (int node : result) {
+//         std::cout << node << " "; // 0 1 2 3 4 or 0 2 1 3 4
+//     }
+//     std::cout << std::endl;
+//     return 0;
+// }
+</code></pre>
+
+    <pre data-lang="go"><code class="language-go">package main
+
+import (
+    "container/list"
+    "fmt"
+)
+
+func topologicalSort(graph map[int][]int) ([]int, error) {
+    n := len(graph)
+    if n == 0 {
+        return []int{}, nil
+    }
+
+    inDegree := make(map[int]int)
+    for u := range graph {
+        inDegree[u] = 0
+    }
+    
+    for _, neighbors := range graph {
+        for _, v := range neighbors {
+            inDegree[v]++
+        }
+    }
+    
+    queue := list.New()
+    for u, degree := range inDegree {
+        if degree == 0 {
+            queue.PushBack(u)
+        }
+    }
+    
+    topologicalOrder := []int{}
+    
+    for queue.Len() > 0 {
+        u := queue.Remove(queue.Front()).(int)
+        topologicalOrder = append(topologicalOrder, u)
+        
+        // For each neighbor, decrement its in-degree
+        for _, v := range graph[u] {
+            inDegree[v]--
+            if inDegree[v] == 0 {
+                queue.PushBack(v)
+            }
+        }
+    }
+    
+    if len(topologicalOrder) != n {
+        return nil, fmt.Errorf("graph has a cycle, topological sort not possible")
+    }
+    
+    return topologicalOrder, nil
+}
+
+// func main() {
+//     graph := map[int][]int{
+//         0: {1, 2},
+//         1: {3},
+//         2: {3},
+//         3: {4},
+//         4: {},
+//     }
+//     order, err := topologicalSort(graph)
+//     if err != nil {
+//         fmt.Println(err)
+//     } else {
+//         fmt.Println("Topological Sort:", order) // e.g., [0 1 2 3 4]
+//     }
+// }
+</code></pre>
+    
+    <pre data-lang="d"><code class="language-d">import std.stdio;
+import std.array;
+import std.algorithm;
+import std.container.array;
+
+string[] topologicalSort(string[][string] graph) {
+    if (graph.length == 0) {
+        return [];
+    }
+
+    int[string] inDegree;
+    foreach (u; graph.keys) {
+        inDegree[u] = 0;
+    }
+    
+    foreach (u, neighbors; graph) {
+        foreach (v; neighbors) {
+            inDegree[v]++;
+        }
+    }
+    
+    auto queue = Array!string();
+    foreach (u, degree; inDegree) {
+        if (degree == 0) {
+            queue.insertBack(u);
+        }
+    }
+    
+    string[] topologicalOrder;
+    
+    while (!queue.empty) {
+        auto u = queue.removeFront();
+        topologicalOrder ~= u;
+        
+        // For each neighbor, decrement its in-degree
+        if (auto pNeighbors = u in graph) {
+            foreach (v; *pNeighbors) {
+                inDegree[v]--;
+                if (inDegree[v] == 0) {
+                    queue.insertBack(v);
+                }
+            }
+        }
+    }
+    
+    if (topologicalOrder.length != graph.length) {
+        // Graph has a cycle, return an empty array or throw
+        return []; 
+    }
+    
+    return topologicalOrder;
+}
+
+// void main() {
+//     auto graph = [
+//         "0": ["1", "2"],
+//         "1": ["3"],
+//         "2": ["3"],
+//         "3": ["4"],
+//         "4": []
+//     ];
+//     writeln("Topological Sort: ", topologicalSort(graph)); // e.g., ["0", "1", "2", "3", "4"]
+// }
+</code></pre>
+</div>
+
+<div id="code-explanation-content"><div class="markdown-content">
+    <h3>Code Walkthrough</h3>
+    <p><code>Topological Sort</code> is typically implemented using <code>Kahn's Algorithm</code>, which relies on tracking the "in-degree" of each <code>node</code>.</p>
+    <div class="explanation-fence">
+<strong>Initialization:</strong>
+<ul>
+    <li><code>graph</code>: An adjacency list representation of a directed graph.</li>
+    <li><code>in_degree</code>: A map or <code>array</code> to store the number of incoming <code>edges</code> for each <code>node</code>. This is computed by iterating through all <code>edges</code> in the graph.</li>
+    <li><code>queue</code>: A <code>queue</code> is initialized with all <code>nodes</code> that have an in-degree of 0. These are the starting points of our topological sort.</li>
+    <li><code>topological_order</code>: An empty list to store the sorted <code>nodes</code>.</li>
+</ul>
+<br>
+<strong>Main Loop:</strong>
+<ol>
+    <li>The <code>while</code> loop continues as long as the <code>queue</code> is not empty.</li>
+    <li><strong>Dequeue:</strong> A <code>node u</code> is dequeued. This <code>node</code> is added to the <code>topological_order</code> list.</li>
+    <li><strong>Process Neighbors:</strong> For each <code>neighbor v</code> of <code>u</code>:
+        <ul>
+            <li>The in-degree of <code>v</code> is decremented, as the <code>edge</code> from <code>u</code> to <code>v</code> has been "removed".</li>
+            <li>If the in-degree of <code>v</code> becomes 0, it means all of its <code>prerequisites</code> have been met, so <code>v</code> is added to the <code>queue</code>.</li>
+        </ul>
+    </li>
+</ol>
+<br>
+<strong>Cycle Detection and Result:</strong>
+<ul>
+    <li>After the loop, the algorithm checks if the number of <code>nodes</code> in <code>topological_order</code> is equal to the total number of <code>nodes</code> in the graph.</li>
+    <li>If they are equal, the <code>topological_order</code> is a valid sorted sequence.</li>
+    <li>If they are not equal, it means the <code>queue</code> became empty before all <code>nodes</code> were visited. This can only happen if there is a <code>cycle</code> in the graph, as the <code>cycle</code> would prevent the in-degrees of its <code>nodes</code> from ever reaching 0. In this case, a <code>topological sort</code> is not possible.</li>
+</ul>
+    </div></div>
+</div>
+
+<div id="application-content"><div class="markdown-content">
+    <h3>Application</h3>
+    <p><code>Topological Sort</code> is fundamental in computer science for processing sequences with dependencies:</p>
+    <ul>
+        <li><strong>Task Scheduling:</strong> Given a set of tasks with dependencies (e.g., task A must be completed before task B), <code>topological sort</code> provides a valid order of execution.</li>
+        <li><strong>Course Prerequisites:</strong> Determining the order in which to take university courses based on their prerequisites.</li>
+        <li><strong>Build Systems:</strong> In software development, build systems (like <code>make</code> or <code>Maven</code>) use <code>topological sort</code> to determine the order in which to compile source files and link libraries.</li>
+        <li><strong>Spreadsheet Cell Evaluation:</strong> Calculating the values of cells in a spreadsheet, where some cells depend on the values of others.</li>
+        <li><strong>Data Serialization/Deserialization:</strong> Resolving dependencies when serializing or deserializing complex data structures.</li>
+    </ul>
+    </p>
+</div></div>

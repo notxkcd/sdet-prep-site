@@ -1,0 +1,495 @@
+<div id="explanation-content">
+    <p>The <code>Rabin-Karp Algorithm</code> is a string searching algorithm that uses <code>hashing</code> to find any one of a set of <code>pattern</code> strings in a <code>text</code>. Instead of directly comparing the <code>pattern</code> with every substring of the <code>text</code>, it computes a <code>hash value</code> for the <code>pattern</code> and for each substring of the <code>text</code> of the same length. If the <code>hash values</code> match, it then performs a full character-by-character comparison to confirm a true match.</p>
+    <p>Its primary advantage lies in its ability to efficiently find <em>multiple</em> patterns simultaneously and in its generally good average-case performance. Its average-case time complexity is <code>O(N + M)</code>, where <code>N</code> is the length of the text and <code>M</code> is the length of the pattern, but its worst-case can be <code>O(N <em> M)</code> due to hash collisions.</p>
+</div>
+
+<div id="expanded-explanation-content">
+    <h3>How it Works (Expanded)</h3>
+    <p>The key to <code>Rabin-Karp</code> is the use of a "<code>rolling hash</code>" (also known as a "<code>polynomial hashing</code>") function. A <code>rolling hash</code> allows the hash of a substring to be updated in constant time as the window slides, without recomputing the hash from scratch.</p>
+    <div class="explanation-fence">
+Example: Search for Pattern "abc" in Text "ababcab"
+
+1. Pattern Hash: h("abc") = (a</em>p^2 + b<em>p^1 + c</em>p^0) mod Q
+   (e.g., if p=31, Q=101, then h("abc") = (97<em>31^2 + 98</em>31^1 + 99<em>31^0) mod 101)
+
+2. Text Substring Hashes (sliding window):
+   - h("aba") = (a</em>p^2 + b<em>p^1 + a</em>p^0) mod Q
+   - h("bab") = (b<em>p^2 + a</em>p^1 + b<em>p^0) mod Q (derived from h("aba") in O(1))
+   - h("abc") = ... Match! Then verify character by character.
+   - ... and so on.
+    </div>
+    <p><strong>Rolling Hash Calculation:</strong>
+    The hash for a substring <code>S[i...i+M-1]</code> can be calculated from <code>S[i-1...i+M-2]</code> using the formula:</p>
+    <p><code>hash(S[i...i+M-1]) = (hash(S[i-1...i+M-2]) - S[i-1] </em> p^(M-1)) <em> p + S[i+M-1]) mod Q</code></p>
+    <p>where <code>p</code> is a prime number (often 31 or 53 for lowercase English alphabet) and <code>Q</code> is a large prime number to minimize collisions. <code>p^(M-1)</code> is precomputed.</p>
+    <p><strong>Algorithm Steps:</strong></p>
+    <ol>
+        <li>Choose a <code>prime number p</code> and a <code>large prime modulus Q</code>.</li>
+        <li>Precompute <code>p^(M-1) mod Q</code>.</li>
+        <li>Compute the <code>hash</code> of the <code>pattern</code> (<code>pattern_hash</code>).</li>
+        <li>Compute the <code>hash</code> of the first <code>M</code> characters of the <code>text</code> (<code>text_hash</code>).</li>
+        <li>If <code>pattern_hash</code> equals <code>text_hash</code>, perform a character-by-character comparison to check for a true match (to handle <code>hash collisions</code>).</li>
+        <li>For subsequent substrings of the <code>text</code>:
+            <ul>
+                <li>Update <code>text_hash</code> using the <code>rolling hash</code> formula in <code>O(1)</code> time.</li>
+                <li>Compare <code>pattern_hash</code> and <code>text_hash</code>. If they match, perform character-by-character verification.</li>
+            </ul>
+        </li>
+    </ol>
+    <p><strong>Time Complexity:</strong>
+    <ul>
+        <li><strong>Average Case:</strong> <code>O(N + M)</code>. This is typically achieved when there are few hash collisions.</li>
+        <li><strong>Worst Case:</strong> <code>O(N </em> M)</code>. This occurs when there are many hash collisions, leading to frequent character-by-character comparisons for each substring. This can be mitigated by using a good hash function and a large <code>modulus Q</code>, or by using two different hash functions (double hashing).</li>
+    </ul>
+    </p>
+    <p><strong>Space Complexity:</strong> <code>O(1)</code> (excluding input strings).</p>
+</div>
+
+<div id="code-implementations">
+    <pre data-lang="python"><code class="language-python">def rabin_karp_search(text, pattern, prime=101, base=256):
+    n = len(text)
+    m = len(pattern)
+    if m == 0 or m > n:
+        return []
+
+    pattern_hash = 0
+    text_hash = 0
+    h = 1 # h = base^(m-1) % prime
+    
+    results = []
+
+    # Precompute h
+    for i in range(m - 1):
+        h = (h <em> base) % prime
+
+    # Compute hash of pattern and first text window
+    for i in range(m):
+        pattern_hash = (pattern_hash </em> base + ord(pattern[i])) % prime
+        text_hash = (text_hash <em> base + ord(text[i])) % prime
+
+    # Slide the pattern over text
+    for i in range(n - m + 1):
+        if pattern_hash == text_hash:
+            # Check for character-by-character match to avoid spurious hits
+            match = True
+            for j in range(m):
+                if text[i + j] != pattern[j]:
+                    match = False
+                    break
+            if match:
+                results.append(i)
+
+        # Calculate hash for next window of text
+        if i < n - m:
+            text_hash = (text_hash - ord(text[i]) </em> h) % prime
+            text_hash = (text_hash <em> base + ord(text[i + m])) % prime
+            text_hash = (text_hash + prime) % prime # Ensure positive hash
+
+    return results
+
+# Example
+# text = "GEEKS FOR GEEKS"
+# pattern = "GEEK"
+# print(rabin_karp_search(text, pattern)) # [0, 10]
+
+# text2 = "AAAAA"
+# pattern2 = "AAA"
+# print(rabin_karp_search(text2, pattern2)) # [0, 1, 2]
+</code></pre>
+
+    <pre data-lang="javascript"><code class="language-javascript">function rabinKarpSearch(text, pattern, prime = 101, base = 256) {
+    const n = text.length;
+    const m = pattern.length;
+    if (m === 0 || m > n) {
+        return [];
+    }
+
+    let patternHash = 0;
+    let textHash = 0;
+    let h = 1; // h = base^(m-1) % prime
+    
+    const results = [];
+
+    // Precompute h (base^(m-1) % prime)
+    for (let i = 0; i < m - 1; i++) {
+        h = (h </em> base) % prime;
+    }
+
+    // Compute hash of pattern and first text window
+    for (let i = 0; i < m; i++) {
+        patternHash = (patternHash <em> base + text.charCodeAt(i)) % prime;
+        textHash = (textHash </em> base + pattern.charCodeAt(i)) % prime; // Fixed: pattern.charCodeAt(i)
+    }
+    
+    // Corrected to reflect pattern_hash and text_hash usage
+    let correctPatternHash = 0;
+    for (let i = 0; i < m; i++) {
+        correctPatternHash = (correctPatternHash <em> base + pattern.charCodeAt(i)) % prime;
+    }
+    
+    let currentTextHash = 0;
+    for (let i = 0; i < m; i++) {
+        currentTextHash = (currentTextHash </em> base + text.charCodeAt(i)) % prime;
+    }
+
+
+    // Slide the pattern over text
+    for (let i = 0; i <= n - m; i++) {
+        if (correctPatternHash === currentTextHash) {
+            // Check for character-by-character match to avoid spurious hits
+            let match = true;
+            for (let j = 0; j < m; j++) {
+                if (text[i + j] !== pattern[j]) {
+                    match = false;
+                    break;
+                }
+            }
+            if (match) {
+                results.push(i);
+            }
+        }
+
+        // Calculate hash for next window of text
+        if (i < n - m) {
+            currentTextHash = (currentTextHash - text.charCodeAt(i) <em> h) % prime;
+            currentTextHash = (currentTextHash </em> base + text.charCodeAt(i + m)) % prime;
+            currentTextHash = (currentTextHash + prime) % prime; // Ensure positive hash
+        }
+    }
+
+    return results;
+}
+
+// const text = "GEEKS FOR GEEKS";
+// const pattern = "GEEK";
+// console.log(rabinKarpSearch(text, pattern)); // [0, 10]
+
+// const text2 = "AAAAA";
+// const pattern2 = "AAA";
+// console.log(rabinKarpSearch(text2, pattern2)); // [0, 1, 2]
+</code></pre>
+
+    <pre data-lang="typescript"><code class="language-typescript">function rabinKarpSearchTS(text: string, pattern: string, prime: number = 101, base: number = 256): number[] {
+    const n = text.length;
+    const m = pattern.length;
+    if (m === 0 || m > n) {
+        return [];
+    }
+
+    let patternHash = 0;
+    let textHash = 0;
+    let h = 1; // h = base^(m-1) % prime
+    
+    const results: number[] = [];
+
+    // Precompute h (base^(m-1) % prime)
+    for (let i = 0; i < m - 1; i++) {
+        h = (h <em> base) % prime;
+    }
+
+    // Compute hash of pattern and first text window
+    for (let i = 0; i < m; i++) {
+        patternHash = (patternHash </em> base + pattern.charCodeAt(i)) % prime;
+        textHash = (textHash <em> base + text.charCodeAt(i)) % prime;
+    }
+
+    // Slide the pattern over text
+    for (let i = 0; i <= n - m; i++) {
+        if (patternHash === textHash) {
+            // Check for character-by-character match to avoid spurious hits
+            let match = true;
+            for (let j = 0; j < m; j++) {
+                if (text[i + j] !== pattern[j]) {
+                    match = false;
+                    break;
+                }
+            }
+            if (match) {
+                results.push(i);
+            }
+        }
+
+        // Calculate hash for next window of text
+        if (i < n - m) {
+            textHash = (textHash - text.charCodeAt(i) </em> h) % prime;
+            textHash = (textHash <em> base + text.charCodeAt(i + m)) % prime;
+            textHash = (textHash + prime) % prime; // Ensure positive hash
+        }
+    }
+
+    return results;
+}
+
+// const textTS = "GEEKS FOR GEEKS";
+// const patternTS = "GEEK";
+// console.log(rabinKarpSearchTS(textTS, patternTS)); // [0, 10]
+
+// const text2TS = "AAAAA";
+// const pattern2TS = "AAA";
+// console.log(rabinKarpSearchTS(text2TS, pattern2TS)); // [0, 1, 2]
+</code></pre>
+    
+    <pre data-lang="cpp"><code class="language-cpp">#include &lt;string&gt;
+#include &lt;vector&gt;
+#include &lt;iostream&gt;
+
+// d is the number of characters in the input alphabet
+// For ASCII characters, d can be 256
+const int BASE = 256;
+
+void rabinKarpSearch(const std::string& text, const std::string& pattern, int prime) {
+    int n = text.length();
+    int m = pattern.length();
+    if (m == 0 || m > n) return;
+
+    int pattern_hash = 0; // hash value for pattern
+    int text_hash = 0;    // hash value for text
+    int h = 1;            // h = BASE^(m-1) % prime
+
+    // The value of h would be "pow(BASE, m-1)%prime"
+    for (int i = 0; i < m - 1; i++) {
+        h = (h </em> BASE) % prime;
+    }
+
+    // Calculate the hash value of pattern and first window of text
+    for (int i = 0; i < m; i++) {
+        pattern_hash = (BASE <em> pattern_hash + pattern[i]) % prime;
+        text_hash = (BASE </em> text_hash + text[i]) % prime;
+    }
+
+    // Slide the pattern over text one by one
+    for (int i = 0; i <= n - m; i++) {
+        // Check if hash values match
+        if (pattern_hash == text_hash) {
+            // If hash values match, then only check characters one by one
+            bool match = true;
+            for (int j = 0; j < m; j++) {
+                if (text[i + j] != pattern[j]) {
+                    match = false;
+                    break;
+                }
+            }
+            if (match) {
+                std::cout << "Pattern found at index " << i << std::endl;
+            }
+        }
+
+        // Calculate hash value for next window of text: Remove leading digit, add trailing digit
+        if (i < n - m) {
+            text_hash = (BASE <em> (text_hash - text[i] </em> h) + text[i + m]) % prime;
+
+            // We might get negative value of text_hash, converting it to positive
+            if (text_hash < 0) {
+                text_hash = (text_hash + prime);
+            }
+        }
+    }
+}
+
+// int main() {
+//     std::string text = "GEEKS FOR GEEKS";
+//     std::string pattern = "GEEK";
+//     rabinKarpSearch(text, pattern, 101); // 101 is a prime number
+
+//     std::string text2 = "AAAAA";
+//     std::string pattern2 = "AAA";
+//     rabinKarpSearch(text2, pattern2, 101);
+// }
+</code></pre>
+
+    <pre data-lang="go"><code class="language-go">package main
+
+import "fmt"
+
+const BASE_GO = 256
+
+func rabinKarpSearch(text, pattern string, prime int) []int {
+    n := len(text)
+    m := len(pattern)
+    if m == 0 || m > n {
+        return nil
+    }
+
+    patternHash := 0
+    textHash := 0
+    h := 1 // h = BASE^(m-1) % prime
+    
+    results := []int{}
+
+    // Precompute h (BASE^(m-1) % prime)
+    for i := 0; i < m-1; i++ {
+        h = (h <em> BASE_GO) % prime
+    }
+
+    // Compute hash of pattern and first text window
+    for i := 0; i < m; i++ {
+        patternHash = (patternHash</em>BASE_GO + int(pattern[i])) % prime
+        textHash = (textHash<em>BASE_GO + int(text[i])) % prime
+    }
+
+    // Slide the pattern over text
+    for i := 0; i <= n-m; i++ {
+        if patternHash == textHash {
+            // Check for character-by-character match to avoid spurious hits
+            match := true
+            for j := 0; j < m; j++ {
+                if text[i+j] != pattern[j] {
+                    match = false
+                    break
+                }
+            }
+            if match {
+                results = append(results, i)
+            }
+        }
+
+        // Calculate hash for next window of text
+        if i < n-m {
+            textHash = (textHash - int(text[i])</em>h) % prime
+            textHash = (textHash<em>BASE_GO + int(text[i+m])) % prime
+            textHash = (textHash + prime) % prime // Ensure positive hash
+        }
+    }
+
+    return results
+}
+
+// func main() {
+//     text := "GEEKS FOR GEEKS"
+//     pattern := "GEEK"
+//     fmt.Println(rabinKarpSearch(text, pattern, 101)) // [0 10]
+
+//     text2 := "AAAAA"
+//     pattern2 := "AAA"
+//     fmt.Println(rabinKarpSearch(text2, pattern2, 101)) // [0 1 2]
+// }
+</code></pre>
+    
+    <pre data-lang="d"><code class="language-d">import std.stdio;
+import std.array;
+
+enum int BASE_D = 256;
+
+int[] rabinKarpSearch(string text, string pattern, int prime) {
+    auto n = text.length;
+    auto m = pattern.length;
+    if (m == 0 || m > n) {
+        return [];
+    }
+
+    int patternHash = 0;
+    int textHash = 0;
+    int h = 1; // h = BASE^(m-1) % prime
+    
+    int[] results;
+
+    // Precompute h (BASE^(m-1) % prime)
+    for (int i = 0; i < m - 1; i++) {
+        h = (h </em> BASE_D) % prime;
+    }
+
+    // Compute hash of pattern and first text window
+    for (int i = 0; i < m; i++) {
+        patternHash = (patternHash <em> BASE_D + text[i]) % prime; // Use text[i] for character value
+        textHash = (textHash </em> BASE_D + pattern[i]) % prime;     // Use pattern[i] for character value
+    }
+    
+    // Recalculate based on corrected example
+    int actualPatternHash = 0;
+    for (int i = 0; i < m; i++) {
+        actualPatternHash = (actualPatternHash <em> BASE_D + pattern[i]) % prime;
+    }
+    
+    int currentTextHash = 0;
+    for (int i = 0; i < m; i++) {
+        currentTextHash = (currentTextHash </em> BASE_D + text[i]) % prime;
+    }
+
+
+    // Slide the pattern over text
+    for (int i = 0; i <= n - m; i++) {
+        if (actualPatternHash == currentTextHash) {
+            // Check for character-by-character match to avoid spurious hits
+            bool match = true;
+            for (int j = 0; j < m; j++) {
+                if (text[i + j] != pattern[j]) {
+                    match = false;
+                    break;
+                }
+            }
+            if (match) {
+                results ~= i;
+            }
+        }
+
+        // Calculate hash for next window of text
+        if (i < n - m) {
+            currentTextHash = (currentTextHash - text[i] <em> h) % prime;
+            currentTextHash = (currentTextHash </em> BASE_D + text[i + m]) % prime;
+            currentTextHash = (currentTextHash + prime) % prime; // Ensure positive hash
+        }
+    }
+
+    return results;
+}
+
+// void main() {
+//     string text = "GEEKS FOR GEEKS";
+//     string pattern = "GEEK";
+//     writeln(rabinKarpSearch(text, pattern, 101)); // [0, 10]
+
+//     string text2 = "AAAAA";
+//     string pattern2 = "AAA";
+//     writeln(rabinKarpSearch(text2, pattern2, 101)); // [0, 1, 2]
+// }
+</code></pre>
+</div>
+
+<div id="code-explanation-content"><div class="markdown-content">
+    <h3>Code Walkthrough</h3>
+    <p>The <code>Rabin-Karp algorithm</code> leverages <code>hashing</code> and a "<code>rolling hash</code>" technique to quickly compare substrings, reducing the need for costly character-by-character comparisons.</p>
+    <div class="explanation-fence">
+<strong>Initialization:</strong>
+<ol>
+    <li><code>n</code>, <code>m</code>: Lengths of <code>text</code> and <code>pattern</code>.</li>
+    <li><code>pattern_hash</code>, <code>text_hash</code>: Variables to store the calculated hash values.</li>
+    <li><code>prime</code>: A large prime number used for the modulo operation in hashing to reduce hash collisions.</li>
+    <li><code>base</code>: The size of the alphabet (e.g., 256 for ASCII).</li>
+    <li><code>h</code>: A precomputed value <code>base^(m-1) % prime</code>, used to efficiently remove the contribution of the leading character in the <code>rolling hash</code> calculation.</li>
+</ol>
+<br>
+<strong>Hash Calculation:</strong>
+<ol>
+    <li>The <code>pattern_hash</code> and the <code>text_hash</code> for the first window of the <code>text</code> (of length <code>m</code>) are computed using the polynomial hashing formula. Each character's ASCII value contributes to the hash, weighted by powers of <code>base</code>.</li>
+</ol>
+<br>
+<strong>Sliding Window and Comparison:</strong>
+<ol>
+    <li>The algorithm then slides a window of size <code>m</code> across the <code>text</code>.</li>
+    <li>In each step, it compares <code>pattern_hash</code> with <code>text_hash</code>.</li>
+    <li><strong>Hash Match:</strong> If the hashes match, a potential match is found. A full character-by-character comparison is then performed to confirm it's not a <code>spurious hit</code> (a hash collision). If confirmed, the <code>index</code> is recorded.</li>
+    <li><strong>Rolling Hash Update:</strong> If it's not the last window, the <code>text_hash</code> is updated for the next window in <code>O(1)</code> time using the <code>rolling hash</code> formula:
+        <ul>
+            <li>Subtract the contribution of the character leaving the window (<code>text[i] <em> h</code>).</li>
+            <li>Multiply by <code>base</code> to shift the remaining characters' contributions.</li>
+            <li>Add the contribution of the new character entering the window (<code>text[i + m]</code>).</li>
+            <li>Apply the modulo <code>prime</code> at each step to keep the numbers manageable.</li>
+            <li>A <code>prime</code> addition might be needed to handle negative results from the modulo operator in some languages.</li>
+        </ul>
+    </li>
+</ol>
+    </div></div>
+</div>
+
+<div id="application-content"><div class="markdown-content">
+    <h3>Application</h3>
+    <p>The <code>Rabin-Karp Algorithm</code> is particularly powerful for problems involving multiple pattern searches or when hash collisions are rare.</p>
+    <ul>
+        <li><strong>Plagiarism Detection:</strong> Can be extended to find cases of plagiarism across many documents by hashing sentences or blocks of text.</li>
+        <li><strong>Bioinformatics:</strong> Searching for patterns in large biological sequences (DNA, RNA, protein).</li>
+        <li><strong>File System Integrity:</strong> Checking for duplicate files or identifying corrupted blocks by comparing hashes.</li>
+        <li><strong>Network Intrusion Detection:</strong> Scanning network packets for known attack signatures, especially when a large database of signatures needs to be checked against streaming data.</li>
+        <li><strong>Finding Multiple Patterns:</strong> It can be easily modified to find any one of <code>k</code> patterns in <code>O(N + M</em>K)</code> in the worst case, but <code>O(N + K)</code> on average, where <code>K</code> is the number of patterns and <code>M</code> is the pattern length.</li>
+    </ul>
+    </p>
+</div></div>

@@ -1,0 +1,379 @@
+<div id="explanation-content">
+    <p>A <code>B-Tree</code> is a self-balancing tree data structure that maintains sorted data and allows searches, sequential access, insertions, and deletions in logarithmic time. It is specifically designed for disk-based storage systems, where accessing data from disk is much slower than accessing data from main memory.</p>
+    <p>The primary goal of a <code>B-Tree</code> is to reduce the number of disk I/O operations by ensuring that related data is stored close together on disk, allowing large blocks of data to be read efficiently.</p>
+</div>
+
+<div id="expanded-explanation-content">
+    <h3>How it Works (Expanded)</h3>
+    <p>Unlike <code>binary search trees</code>, <code>B-Trees</code> can have many children per <code>node</code>. Each <code>node</code> can hold a large number of <code>keys</code> and pointers to children, chosen to match the size of a disk block.</p>
+    <div class="explanation-fence">
+Example B-Tree (Order M=3, max 2 keys per node, max 3 children per node)
+
+              [ 50, 80 ]
+             /    |     \
+            /     |      \
+       [20,30] [60,70] [90,100]
+       / | \   / | \   / | \
+      L  M  R L  M  R L  M  R (Leaf nodes with data)
+
+Key Properties:
+- All leaves are at the same level.
+- A node with K keys has K+1 children.
+- All keys within a node are sorted.
+- All keys in a child subtree are between the parent keys defining that subtree's range.
+    </div>
+    <p><strong>Operations:</strong></p>
+    <ul>
+        <li><strong><code>Search</code>:</strong> Start at the <code>root</code>. Search the <code>keys</code> within the current <code>node</code> to find the appropriate child pointer to follow. If the <code>key</code> is found in the current <code>node</code>, the search ends. This process minimizes disk reads by loading an entire <code>node</code> (disk block) at once.</li>
+        <li><strong><code>Insert</code>:</strong> Search for the appropriate <code>leaf node</code> to insert the <code>key</code>. If the <code>leaf node</code> has space, insert it. If the <code>leaf node</code> is full, split it into two <code>nodes</code> and push the median <code>key</code> up to the parent. This splitting can propagate up to the <code>root</code>, potentially increasing the <code>height</code> of the <code>B-Tree</code>.</li>
+        <li><strong><code>Delete</code>:</strong> Similar to <code>insert</code>, finding the <code>key</code> and removing it. If a <code>node</code> underflows (has too few <code>keys</code>), it might merge with a sibling or redistribute <code>keys</code> with a sibling to maintain the <code>B-Tree</code> properties.</li>
+    </ul>
+    <p><strong>Time Complexity:</strong> All operations (<code>search</code>, <code>insert</code>, <code>delete</code>) take <code>O(logM N)</code> time, where <code>N</code> is the total number of <code>keys</code> and <code>M</code> is the order (maximum number of children) of the <code>B-Tree</code>. The <code>logM N</code> factor is crucial because a large <code>M</code> (matching disk block size) means a very shallow <code>tree height</code>, drastically reducing disk I/O.</p>
+    <p><strong>Space Complexity:</strong> <code>O(N)</code> for storing all <code>keys</code>.</p>
+</div>
+
+<div id="code-implementations">
+    <pre data-lang="python"><code class="language-python"># Conceptual B-Tree implementation (simplified, as full B-Trees are complex)
+# This example illustrates the structure and basic search idea.
+
+class BTreeNode:
+    def __init__(self, leaf=True):
+        self.leaf = leaf
+        self.keys = [] # List of keys
+        self.children = [] # List of BTreeNodes (children)
+
+class BTree:
+    def __init__(self, t): # t is minimum degree (t-1 keys, t children)
+        self.root = BTreeNode(leaf=True)
+        self.t = t # Minimum degree
+
+    # Simplified search: returns (node, index) if key found
+    def search(self, x, k): # x is node, k is key
+        i = 0
+        while i < len(x.keys) and k > x.keys[i]:
+            i += 1
+        
+        if i < len(x.keys) and k == x.keys[i]:
+            return x, i # Found
+        elif x.leaf:
+            return None # Not found
+        else:
+            # In a real B-Tree, we'd fetch x.children[i] from disk
+            return self.search(x.children[i], k)
+
+    # Simplified insert: Assumes root is never full (in real B-Tree, root splits)
+    # Full insertion logic is extensive.
+    def insert(self, k):
+        r = self.root
+        if len(r.keys) == (2 <em> self.t) - 1: # Root is full
+            s = BTreeNode()
+            self.root = s
+            s.leaf = False
+            s.children.append(r)
+            self._split_child(s, 0, r)
+            self._insert_non_full(s, k)
+        else:
+            self._insert_non_full(r, k)
+
+    def _insert_non_full(self, x, k):
+        i = len(x.keys) - 1
+        if x.leaf:
+            x.keys.append(0) # Placeholder
+            while i >= 0 and k < x.keys[i]:
+                x.keys[i + 1] = x.keys[i]
+                i -= 1
+            x.keys[i + 1] = k
+        else:
+            while i >= 0 and k < x.keys[i]:
+                i -= 1
+            i += 1
+            # In real B-Tree, read x.children[i] from disk
+            if len(x.children[i].keys) == (2 </em> self.t) - 1: # Child is full
+                self._split_child(x, i, x.children[i])
+                if k > x.keys[i]:
+                    i += 1
+            self._insert_non_full(x.children[i], k)
+
+    def _split_child(self, x, i, y):
+        z = BTreeNode(leaf=y.leaf)
+        x.keys.insert(i, y.keys[self.t - 1])
+        x.children.insert(i + 1, z)
+        z.keys = y.keys[self.t:]
+        y.keys = y.keys[:self.t - 1]
+        if not y.leaf:
+            z.children = y.children[self.t:]
+            y.children = y.children[:self.t]
+
+# Example Usage (conceptual, insertion is not fully working here without full split/merge)
+# b_tree = BTree(t=2) # A 2-3 tree
+# b_tree.insert(10)
+# b_tree.insert(20)
+# b_tree.insert(5)
+# b_tree.insert(30)
+# print(b_tree.search(b_tree.root, 20)) # Expected: (node_with_20, 0)
+</code></pre>
+
+    <pre data-lang="javascript"><code class="language-javascript">// Conceptual B-Tree implementation in JavaScript (simplified)
+// Full B-Tree implementation is extensive and typically involves disk I/O simulation.
+
+class BTreeNode {
+    constructor(leaf = true) {
+        this.leaf = leaf;
+        this.keys = []; // Array of keys
+        this.children = []; // Array of BTreeNodes (children)
+    }
+}
+
+class BTree {
+    constructor(t) { // t is minimum degree (t-1 keys, t children)
+        this.root = new BTreeNode(true);
+        this.t = t; // Minimum degree
+    }
+
+    // Simplified search
+    search(x, k) { // x is node, k is key
+        let i = 0;
+        while (i < x.keys.length && k > x.keys[i]) {
+            i++;
+        }
+
+        if (i < x.keys.length && k === x.keys[i]) {
+            return { node: x, index: i }; // Found
+        } else if (x.leaf) {
+            return null; // Not found
+        } else {
+            // In a real B-Tree, we'd simulate fetching x.children[i] from disk
+            return this.search(x.children[i], k);
+        }
+    }
+
+    // Simplified insert: assumes root is not full initially.
+    // Full insertion logic is extensive.
+    insert(k) {
+        let r = this.root;
+        if (r.keys.length === (2 <em> this.t) - 1) { // Root is full
+            let s = new BTreeNode(false); // New root
+            this.root = s;
+            s.children.push(r);
+            this._splitChild(s, 0, r);
+            this._insertNonFull(s, k);
+        } else {
+            this._insertNonFull(r, k);
+        }
+    }
+
+    _insertNonFull(x, k) {
+        let i = x.keys.length - 1;
+        if (x.leaf) {
+            x.keys.splice(i + 1, 0, k); // Insert k at correct position
+        } else {
+            while (i >= 0 && k < x.keys[i]) {
+                i--;
+            }
+            i++;
+            // In real B-Tree, simulate disk read of x.children[i]
+            if (x.children[i].keys.length === (2 </em> this.t) - 1) { // Child is full
+                this._splitChild(x, i, x.children[i]);
+                if (k > x.keys[i]) {
+                    i++;
+                }
+            }
+            this._insertNonFull(x.children[i], k);
+        }
+    }
+
+    _splitChild(x, i, y) {
+        let z = new BTreeNode(y.leaf);
+        x.keys.splice(i, 0, y.keys[this.t - 1]); // Push median up to parent
+        x.children.splice(i + 1, 0, z); // Add new child to parent
+
+        z.keys = y.keys.splice(this.t); // Move t to 2t-1 keys from y to z
+        y.keys.splice(this.t - 1);     // Remove keys from y
+
+        if (!y.leaf) {
+            z.children = y.children.splice(this.t); // Move children from y to z
+        }
+    }
+}
+</code></pre>
+
+    <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;algorithm&gt; // For std::sort
+
+// A BTreeNode represents a single node in the B-tree
+class BTreeNode {
+public:
+    std::vector&lt;int&gt; keys;     // Keys stored in this node
+    std::vector&lt;BTreeNode<em>&gt; children; // Pointers to child nodes
+    bool leaf;                  // Is true when node is leaf. Otherwise false
+    int t;                      // Minimum degree (defines range for number of keys)
+
+    BTreeNode(int t_val, bool leaf_val) : t(t_val), leaf(leaf_val) {}
+
+    // Function to search key k in this node
+    // Returns index of the first key greater than or equal to k
+    int findKey(int k) {
+        int idx = 0;
+        while (idx < keys.size() && keys[idx] < k) {
+            ++idx;
+        }
+        return idx;
+    }
+
+    // Function to insert a new key in the subtree rooted with this node
+    void insertNonFull(int k) {
+        int i = keys.size() - 1;
+
+        if (leaf) {
+            keys.push_back(0); // Make space for new key
+            while (i >= 0 && keys[i] > k) {
+                keys[i + 1] = keys[i];
+                i--;
+            }
+            keys[i + 1] = k;
+        } else {
+            // Find child where new key is to be inserted
+            while (i >= 0 && keys[i] > k) {
+                i--;
+            }
+            i++;
+            // In real B-Tree, read children[i] from disk
+            if (children[i]->keys.size() == 2 </em> t - 1) { // Child is full
+                splitChild(i, children[i]);
+                if (keys[i] < k) {
+                    i++;
+                }
+            }
+            children[i]->insertNonFull(k);
+        }
+    }
+
+    // Function to split the child y of this node x. i is index of y in children[].
+    void splitChild(int i, BTreeNode<em> y) {
+        // Create a new node which is going to store (t-1) keys of y
+        BTreeNode</em> z = new BTreeNode(y->t, y->leaf);
+        
+        // Copy the last (t-1) keys of y to z
+        for (int j = 0; j < t - 1; j++) {
+            z->keys.push_back(y->keys[j + t]);
+        }
+        
+        // If y is not leaf, copy the last t children of y to z
+        if (!y->leaf) {
+            for (int j = 0; j < t; j++) {
+                z->children.push_back(y->children[j + t]);
+            }
+        }
+        
+        // Remove the last (t) keys from y
+        y->keys.resize(t - 1);
+        
+        // Insert key from y to x
+        keys.insert(keys.begin() + i, y->keys[t - 1]);
+        
+        // Insert new child z into x
+        children.insert(children.begin() + i + 1, z);
+    }
+};
+
+class BTree {
+public:
+    BTreeNode<em> root;
+    int t; // Minimum degree
+
+    BTree(int t_val) : t(t_val) {
+        root = new BTreeNode(t, true); // New B-tree is empty, root is leaf
+    }
+
+    // Function to search key in the B-tree
+    BTreeNode</em> search(BTreeNode<em> x, int k) { // x is node, k is key
+        int i = 0;
+        while (i < x->keys.size() && k > x->keys[i]) {
+            i++;
+        }
+        if (i < x->keys.size() && k == x->keys[i]) {
+            return x; // Found
+        }
+        if (x->leaf) {
+            return nullptr; // Not found
+        }
+        // In a real B-Tree, we'd fetch x->children[i] from disk
+        return search(x->children[i], k);
+    }
+
+    void insert(int k) {
+        BTreeNode</em> r = root;
+        if (r->keys.size() == 2 <em> t - 1) { // Root is full
+            BTreeNode</em> s = new BTreeNode(t, false);
+            s->children.push_back(root);
+            s->splitChild(0, r);
+            int i = 0;
+            if (s->keys[0] < k) {
+                i++;
+            }
+            s->children[i]->insertNonFull(k);
+            root = s;
+        } else {
+            r->insertNonFull(k);
+        }
+    }
+
+    void traverse() {
+        if (root != nullptr) {
+            traverseRecursive(root);
+            std::cout &lt;&lt; std::endl;
+        }
+    }
+    void traverseRecursive(BTreeNode* x) {
+        for (int i = 0; i < x->keys.size(); ++i) {
+            if (!x->leaf) {
+                traverseRecursive(x->children[i]);
+            }
+            std::cout &lt;&lt; x->keys[i] &lt;&lt; " ";
+        }
+        if (x->leaf) {
+            return;
+        }
+        traverseRecursive(x->children[x->keys.size()]);
+    }
+
+    ~BTree() {
+        // Proper memory deallocation for a tree is complex
+        // For simplicity in this conceptual demo, it's omitted
+        // In real code, children should be deleted recursively
+        delete root;
+    }
+};
+</code></pre>
+
+    <div id="code-explanation-content"><div class="markdown-content">
+        <h3>Code Walkthrough</h3>
+        <p>Implementing a full, production-ready <code>B-Tree</code> is a significant task due to its disk-oriented nature and complex <code>insert</code>/<code>delete</code>/<code>split</code>/<code>merge</code> operations. The provided code is a conceptual illustration of its structure and the <code>search</code> operation.</p>
+        <div class="explanation-fence">
+<strong><code>BTreeNode</code> Class:</strong> Represents a single <code>node</code> in the <code>B-Tree</code>.
+<ul>
+    <li><code>keys</code>: A sorted <code>list</code>/<code>vector</code> of <code>keys</code> stored in this <code>node</code>.</li>
+    <li><code>children</code>: A <code>list</code>/<code>vector</code> of pointers to child <code>BTreeNode</code>s. A <code>node</code> with <code>K keys</code> has <code>K+1 children</code>.</li>
+    <li><code>leaf</code>: A boolean flag indicating if this is a <code>leaf node</code> (which holds the actual data) or an internal <code>node</code>.</li>
+    <li><code>t</code>: The minimum degree of the <code>B-Tree</code>, defining the minimum and maximum number of <code>keys</code> and <code>children</code> a <code>node</code> can have (e.g., <code>t-1</code> to <code>2t-1 keys</code>, <code>t</code> to <code>2t children</code>).</li>
+    <li><strong><code>findKey(k)</code>:</strong> A helper function to find the appropriate position for a <code>key</code> within the <code>node</code>'s <code>keys</code>.</li>
+    <li><strong><code>insertNonFull(k)</code>:</strong> A recursive helper for <code>inserting</code> a <code>key</code> into a <code>node</code> that is not full. It traverses to the correct <code>leaf</code>, or recursively calls itself on the appropriate child. If a child is full, it calls <code>splitChild</code>.</li>
+    <li><strong><code>splitChild(i, y)</code>:</strong> Splits a full child <code>node</code> <code>y</code> (at <code>index</code> <code>i</code>) into two <code>nodes</code>, and moves the median <code>key</code> up to the parent <code>node</code>.</li>
+</ul>
+<br>
+<strong><code>BTree</code> Class:</strong>
+<ul>
+    <li><code>root</code>: A pointer to the <code>root BTreeNode</code>.</li>
+    <li><code>t</code>: The minimum degree for the entire <code>B-Tree</code>.</li>
+    <li><strong><code>search(x, k)</code>:</strong> Recursively traverses the <code>tree</code> to find a <code>key</code> <code>k</code> starting from <code>node x</code>. It efficiently determines which child <code>node</code> to descend into based on the <code>keys</code> within the current <code>node</code>.</li>
+    <li><strong><code>insert(k)</code>:</strong> The main <code>insert</code> method. If the <code>root</code> is full, it creates a new <code>root</code> and splits the old <code>root</code>. Otherwise, it calls <code>_insertNonFull</code>.</li>
+</ul>
+        </div></div>
+        <p>The complexity of <code>B-Tree</code>s makes full code examples very long. The key takeaway is the concept of a wide, shallow <code>tree</code> designed for disk access, where <code>nodes</code> (disk blocks) are managed efficiently.</p>
+    </div>
+</div>
+<div id="application-content"><div class="markdown-content">
+    <h3>Application</h3>
+    <p>B-Trees are the de facto standard for indexing in most relational databases (like <strong>MySQL</strong>, <strong>PostgreSQL</strong>, <strong>Oracle</strong>) and filesystems (like <strong>NTFS</strong> and <strong>HFS+</strong>). Their high fanout (many children per node) and self-balancing nature result in very shallow trees, which is crucial for minimizing slow disk I/O operations. When you run a query with a <code>WHERE</code> clause on an indexed column in a database, a B-Tree is almost certainly being used to find the data records efficiently.</p>
+</div></div>

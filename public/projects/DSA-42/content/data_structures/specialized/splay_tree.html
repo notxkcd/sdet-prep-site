@@ -1,0 +1,543 @@
+<div id="explanation-content">
+    <p>A <code>Splay Tree</code> is a self-balancing <code>binary search tree</code> (<code>BST</code>) with an additional property: recently accessed <code>nodes</code> are moved to the <code>root</code> of the <code>tree</code> through a series of rotations (splay operations). This "self-organizing" behavior means that frequently accessed <code>elements</code> can be found quickly, as they tend to stay near the <code>root</code>.</p>
+    <p>While worst-case operations can be <code>O(N)</code>, the amortized time complexity for most operations (<code>insertion</code>, <code>search</code>, <code>deletion</code>) is <code>O(log N)</code>. <code>Splay Trees</code> are often simpler to implement than other self-balancing <code>BSTs</code> like <code>AVL trees</code> or <code>Red-Black trees</code>, and can perform better in practice for certain access patterns (e.g., when some <code>elements</code> are accessed much more frequently than others).</p>
+</div>
+
+<div id="expanded-explanation-content">
+    <h3>How it Works (Expanded)</h3>
+    <p>The core idea of a <code>Splay Tree</code> is that every time a <code>node</code> is accessed (read, inserted, or deleted), that <code>node</code> is "splayed" to the <code>root</code> of the <code>tree</code>. This splay operation involves a sequence of <code>tree rotations</code>: <code>zig</code>, <code>zig-zig</code>, and <code>zig-zag</code>.</p>
+    <div class="explanation-fence">
+Splay Operations (moving X to the root):
+
+1.  <strong>Zig Rotation:</strong> If X is a child of the root, rotate X with the root.
+    (Simple case: X is child of P, P is root)
+          P          X
+         / \        / \
+        X   C  ->  A   P
+       / \            / \
+      A   B          B   C
+
+2.  <strong>Zig-Zig Rotation:</strong> If X and its parent P are both left children (or both right children).
+    (Case: X is left child of P, P is left child of G)
+          G                 X
+         / \
+        P   D             A   P
+       / \        ->         / \
+      X   C                 B   G
+     / \                       / \
+    A   B                     C   D
+
+3.  <strong>Zig-Zag Rotation:</strong> If X is a left child and its parent P is a right child (or vice-versa).
+    (Case: X is left child of P, P is right child of G)
+          G                X
+         / \
+        A   P     ->     P   G
+           / \          / \ / \
+          B   X        A  B C  D
+             / \
+            C   D
+    </div>
+    <p>These rotations ensure that the <code>tree</code> remains "approximately balanced" over a sequence of operations, leading to the amortized <code>O(log N)</code> performance.</p>
+    <p><strong>Operations:</strong></p>
+    <ul>
+        <li><strong><code>Search</code>:</strong> Search for the <code>key</code> as in a regular <code>BST</code>. If the <code>key</code> is found, splay that <code>node</code> to the <code>root</code>. If not found, splay the last accessed <code>node</code> (the <code>node</code> where the search would have terminated) to the <code>root</code>.</li>
+        <li><strong><code>Insert</code>:</strong> Insert the new <code>node</code> as in a regular <code>BST</code>. Then, splay the newly inserted <code>node</code> to the <code>root</code>.</li>
+        <li><strong><code>Delete</code>:</strong> Splay the <code>node</code> to be deleted to the <code>root</code>. Remove it. The <code>tree</code> now has two subtrees (<code>left</code> and <code>right</code>). Find the maximum <code>node</code> in the <code>left subtree</code> (this will be the new <code>root</code>), and splay it to the <code>root</code> of the <code>left subtree</code>. Attach the <code>right subtree</code> as the <code>right child</code> of this new <code>root</code>.</li>
+    </ul>
+    <p><strong>Time Complexity:</strong> Amortized <code>O(log N)</code> for <code>Search</code>, <code>Insert</code>, and <code>Delete</code>. This means that while a single operation might take <code>O(N)</code> time in the worst case (e.g., splaying a deep <code>node</code>), a sequence of <code>M</code> operations will take <code>O(M log N)</code> time.</p>
+    <p><strong>Space Complexity:</strong> <code>O(N)</code>, same as other <code>BSTs</code>.</p>
+</div>
+
+<div id="code-implementations">
+    <pre data-lang="python"><code class="language-python"># Conceptual Splay Tree implementation (Simplified for clarity)
+# A full implementation involves precise handling of pointers during rotations.
+
+class SplayTreeNode:
+    def __init__(self, key):
+        self.key = key
+        self.left = None
+        self.right = None
+        self.parent = None # Parent pointer simplifies rotations
+
+class SplayTree:
+    def __init__(self):
+        self.root = None
+
+    def _rotate_left(self, x):
+        y = x.right
+        x.right = y.left
+        if y.left:
+            y.left.parent = x
+        y.parent = x.parent
+        if not x.parent:
+            self.root = y
+        elif x == x.parent.left:
+            x.parent.left = y
+        else:
+            x.parent.right = y
+        y.left = x
+        x.parent = y
+
+    def _rotate_right(self, x):
+        y = x.left
+        x.left = y.right
+        if y.right:
+            y.right.parent = x
+        y.parent = x.parent
+        if not x.parent:
+            self.root = y
+        elif x == x.parent.right:
+            x.parent.right = y
+        else:
+            x.parent.left = y
+        y.right = x
+        x.parent = y
+
+    def _splay(self, node):
+        while node.parent:
+            parent = node.parent
+            grandparent = parent.parent
+
+            if not grandparent: # Zig rotation
+                if node == parent.left:
+                    self._rotate_right(parent)
+                else:
+                    self._rotate_left(parent)
+            elif (node == parent.left and parent == grandparent.left): # Zig-zig left
+                self._rotate_right(grandparent)
+                self._rotate_right(parent)
+            elif (node == parent.right and parent == grandparent.right): # Zig-zig right
+                self._rotate_left(grandparent)
+                self._rotate_left(parent)
+            elif (node == parent.left and parent == grandparent.right): # Zig-zag left-right
+                self._rotate_right(parent)
+                self._rotate_left(grandparent)
+            else: # Zig-zag right-left
+                self._rotate_left(parent)
+                self._rotate_right(grandparent)
+
+    def insert(self, key):
+        if not self.root:
+            self.root = SplayTreeNode(key)
+            return
+
+        current = self.root
+        parent = None
+        while current:
+            parent = current
+            if key < current.key:
+                current = current.left
+            elif key > current.key:
+                current = current.right
+            else: # Key already exists
+                self._splay(current)
+                return
+
+        new_node = SplayTreeNode(key)
+        new_node.parent = parent
+        if key < parent.key:
+            parent.left = new_node
+        else:
+            parent.right = new_node
+        self._splay(new_node) # Splay the newly inserted node to root
+
+    def search(self, key):
+        current = self.root
+        last_visited = None
+        while current:
+            last_visited = current
+            if key < current.key:
+                current = current.left
+            elif key > current.key:
+                current = current.right
+            else: # Found
+                self._splay(current)
+                return current
+        
+        if last_visited: # Splay the last node visited if key not found
+            self._splay(last_visited)
+        return None # Not found
+
+# Example Usage (simplified, deletion is even more complex):
+# splay_tree = SplayTree()
+# keys = [10, 20, 5, 30, 15, 25]
+# for key in keys:
+#     splay_tree.insert(key)
+
+# print("Search for 25:")
+# node_25 = splay_tree.search(25) # 25 should be root
+# print(f"Root after searching 25: {splay_tree.root.key if splay_tree.root else None}") # Expected: 25
+
+# print("Search for 5:")
+# node_5 = splay_tree.search(5) # 5 should be root
+# print(f"Root after searching 5: {splay_tree.root.key if splay_tree.root else None}") # Expected: 5
+</code></pre>
+
+    <pre data-lang="javascript"><code class="language-javascript">// Conceptual Splay Tree implementation in JavaScript (Simplified)
+
+class SplayTreeNode {
+    constructor(key) {
+        this.key = key;
+        this.left = null;
+        this.right = null;
+        this.parent = null; // Parent pointer simplifies rotations
+    }
+}
+
+class SplayTree {
+    constructor() {
+        this.root = null;
+    }
+
+    _rotateLeft(x) {
+        let y = x.right;
+        x.right = y.left;
+        if (y.left) {
+            y.left.parent = x;
+        }
+        y.parent = x.parent;
+        if (!x.parent) {
+            this.root = y;
+        } else if (x === x.parent.left) {
+            x.parent.left = y;
+        } else {
+            x.parent.right = y;
+        }
+        y.left = x;
+        x.parent = y;
+    }
+
+    _rotateRight(x) {
+        let y = x.left;
+        x.left = y.right;
+        if (y.right) {
+            y.right.parent = x;
+        }
+        y.parent = x.parent;
+        if (!x.parent) {
+            this.root = y;
+        } else if (x === x.parent.right) {
+            x.parent.right = y;
+        } else {
+            x.parent.left = y;
+        }
+        y.right = x;
+        x.parent = y;
+    }
+
+    _splay(node) {
+        while (node.parent) {
+            let parent = node.parent;
+            let grandparent = parent.parent;
+
+            if (!grandparent) { // Zig rotation
+                if (node === parent.left) {
+                    this._rotateRight(parent);
+                } else {
+                    this._rotateLeft(parent);
+                }
+            } else if (
+                (node === parent.left && parent === grandparent.left) || // Zig-zig left
+                (node === parent.right && parent === grandparent.right)    // Zig-zig right
+            ) {
+                if (node === parent.left) { // Zig-zig left
+                    this._rotateRight(grandparent);
+                    this._rotateRight(parent);
+                } else { // Zig-zig right
+                    this._rotateLeft(grandparent);
+                    this._rotateLeft(parent);
+                }
+            } else { // Zig-zag
+                if (node === parent.left) { // Zig-zag left-right
+                    this._rotateRight(parent);
+                    this._rotateLeft(grandparent);
+                } else { // Zig-zag right-left
+                    this._rotateLeft(parent);
+                    this._rotateRight(grandparent);
+                }
+            }
+        }
+    }
+
+    insert(key) {
+        if (!this.root) {
+            this.root = new SplayTreeNode(key);
+            return;
+        }
+
+        let current = this.root;
+        let parent = null;
+        while (current) {
+            parent = current;
+            if (key < current.key) {
+                current = current.left;
+            } else if (key > current.key) {
+                current = current.right;
+            } else { // Key already exists
+                this._splay(current);
+                return;
+            }
+        }
+
+        const newNode = new SplayTreeNode(key);
+        newNode.parent = parent;
+        if (key < parent.key) {
+            parent.left = newNode;
+        } else {
+            parent.right = newNode;
+        }
+        this._splay(newNode); // Splay the newly inserted node to root
+    }
+
+    search(key) {
+        let current = this.root;
+        let lastVisited = null;
+        while (current) {
+            lastVisited = current;
+            if (key < current.key) {
+                current = current.left;
+            } else if (key > current.key) {
+                current = current.right;
+            } else { // Found
+                this._splay(current);
+                return current;
+            }
+        }
+        
+        if (lastVisited) { // Splay the last node visited if key not found
+            this._splay(lastVisited);
+        }
+        return null; // Not found
+    }
+}
+
+// Example Usage (simplified, deletion is even more complex):
+// const splayTree = new SplayTree();
+// const keys = [10, 20, 5, 30, 15, 25];
+// for (const key of keys) {
+//     splayTree.insert(key);
+// }
+
+// console.log("Search for 25:");
+// let node25 = splayTree.search(25); // 25 should be root
+// console.log(<code>Root after searching 25: ${splayTree.root ? splayTree.root.key : null}</code>); // Expected: 25
+
+// console.log("Search for 5:");
+// let node5 = splayTree.search(5); // 5 should be root
+// console.log(<code>Root after searching 5: ${splayTree.root ? splayTree.root.key : null}</code>); // Expected: 5
+</code></pre>
+
+    <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+#include &lt;algorithm&gt; // For std::max
+
+// A SplayTreeNode represents a single node in the Splay tree
+class SplayTreeNode {
+public:
+    int key;
+    SplayTreeNode <em>left, </em>right, <em>parent;
+
+    SplayTreeNode(int k) : key(k), left(nullptr), right(nullptr), parent(nullptr) {}
+};
+
+// A SplayTree
+class SplayTree {
+public:
+    SplayTreeNode</em> root;
+
+    SplayTree() : root(nullptr) {}
+
+    ~SplayTree() {
+        // Implement a proper tree destructor for production code
+        // For this conceptual example, a simple approach is omitted
+        // as recursive deletion can be tricky with parent pointers.
+    }
+
+private:
+    void _rotate_left(SplayTreeNode<em> x) {
+        SplayTreeNode</em> y = x->right;
+        x->right = y->left;
+        if (y->left != nullptr) {
+            y->left->parent = x;
+        }
+        y->parent = x->parent;
+        if (x->parent == nullptr) { // x was root
+            root = y;
+        } else if (x == x->parent->left) { // x was left child
+            x->parent->left = y;
+        } else { // x was right child
+            x->parent->right = y;
+        }
+        y->left = x;
+        x->parent = y;
+    }
+
+    void _rotate_right(SplayTreeNode<em> x) {
+        SplayTreeNode</em> y = x->left;
+        x->left = y->right;
+        if (y->right != nullptr) {
+            y->right->parent = x;
+        }
+        y->parent = x->parent;
+        if (x->parent == nullptr) { // x was root
+            root = y;
+        } else if (x == x->parent->right) { // x was right child
+            x->parent->right = y;
+        } else { // x was left child
+            x->parent->left = y;
+        }
+        y->right = x;
+        x->parent = y;
+    }
+
+    void _splay(SplayTreeNode<em> node) {
+        while (node->parent != nullptr) {
+            SplayTreeNode</em> parent = node->parent;
+            SplayTreeNode<em> grandparent = parent->parent;
+
+            if (grandparent == nullptr) { // Zig rotation
+                if (node == parent->left) {
+                    _rotate_right(parent);
+                } else {
+                    _rotate_left(parent);
+                }
+            } else if ((node == parent->left && parent == grandparent->left) || // Zig-zig left
+                       (node == parent->right && parent == grandparent->right)) { // Zig-zig right
+                if (node == parent->left) { // Zig-zig left
+                    _rotate_right(grandparent);
+                    _rotate_right(parent);
+                } else { // Zig-zig right
+                    _rotate_left(grandparent);
+                    _rotate_left(parent);
+                }
+            } else { // Zig-zag
+                if (node == parent->left) { // Zig-zag left-right
+                    _rotate_right(parent);
+                    _rotate_left(grandparent);
+                } else { // Zig-zag right-left
+                    _rotate_left(parent);
+                    _rotate_right(grandparent);
+                }
+            }
+        }
+    }
+
+public:
+    void insert(int key) {
+        SplayTreeNode</em> new_node = new SplayTreeNode(key);
+        if (root == nullptr) {
+            root = new_node;
+            return;
+        }
+
+        SplayTreeNode<em> current = root;
+        SplayTreeNode</em> parent = nullptr;
+        while (current != nullptr) {
+            parent = current;
+            if (key < current->key) {
+                current = current->left;
+            } else if (key > current->key) {
+                current = current->right;
+            } else { // Key already exists
+                _splay(current);
+                delete new_node; // Avoid memory leak
+                return;
+            }
+        }
+
+        new_node->parent = parent;
+        if (key < parent->key) {
+            parent->left = new_node;
+        } else {
+            parent->right = new_node;
+        }
+        _splay(new_node); // Splay the newly inserted node to root
+    }
+
+    SplayTreeNode<em> search(int key) {
+        SplayTreeNode</em> current = root;
+        SplayTreeNode<em> last_visited = nullptr;
+        while (current != nullptr) {
+            last_visited = current;
+            if (key < current->key) {
+                current = current->left;
+            } else if (key > current->key) {
+                current = current->right;
+            } else { // Found
+                _splay(current);
+                return current;
+            }
+        }
+        
+        if (last_visited != nullptr) { // Splay the last node visited if key not found
+            _splay(last_visited);
+        }
+        return nullptr; // Not found
+    }
+
+    // Deletion is complex in Splay trees, simplified for this conceptual example.
+    // Generally, splay the node to delete to the root, remove it, and then
+    // merge the two resulting subtrees (left and right).
+};
+
+// Example Usage:
+// int main() {
+//     SplayTree splay_tree;
+//     std::vector<int> keys = {10, 20, 5, 30, 15, 25};
+//     for (int key : keys) {
+//         splay_tree.insert(key);
+//     }
+
+//     std::cout << "Search for 25:" << std::endl;
+//     SplayTreeNode</em> node_25 = splay_tree.search(25); // 25 should be root
+//     if (splay_tree.root) {
+//         std::cout << "Root after searching 25: " << splay_tree.root->key << std::endl; // Expected: 25
+//     }
+
+//     std::cout << "Search for 5:" << std::endl;
+//     SplayTreeNode* node_5 = splay_tree.search(5); // 5 should be root
+//     if (splay_tree.root) {
+//         std::cout << "Root after searching 5: " << splay_tree.root->key << std::endl; // Expected: 5
+//     }
+//     return 0;
+// }
+</code></pre>
+</div>
+<div id="code-explanation-content"><div class="markdown-content">
+    <h3>Code Walkthrough</h3>
+    <p>A <code>Splay Tree</code>'s implementation revolves around its <code>node</code> structure and the specialized <code>splay</code> operation, which involves <code>tree rotations</code>.</p>
+    <div class="explanation-fence">
+<strong><code>SplayTreeNode</code> Class:</strong>
+<ul>
+    <li><code>key</code>: The value stored in the <code>node</code>.</li>
+    <li><code>left</code>, <code>right</code>: Pointers to child <code>nodes</code>.</li>
+    <li><code>parent</code>: A crucial pointer to the parent <code>node</code>, which simplifies rotations significantly.</li>
+</ul>
+<br>
+<strong><code>SplayTree</code> Class:</strong>
+<ul>
+    <li><code>root</code>: A pointer to the <code>root SplayTreeNode</code>.</li>
+    <li><strong><code>_rotate_left(x)</code> and <code>_rotate_right(x)</code>:</strong> Standard <code>binary search tree rotation</code> operations. These functions take a <code>node x</code> and rotate it with its <code>right</code> or <code>left child</code> respectively. They update all necessary <code>parent</code> and child <code>pointers</code> to maintain <code>tree integrity</code>.</li>
+    <li><strong><code>_splay(node)</code>:</strong> The core of the <code>Splay Tree</code>. This function moves the given <code>node</code> to the <code>root</code> of the <code>tree</code> through a series of <code>zig</code>, <code>zig-zig</code>, and <code>zig-zag rotations</code>. The specific rotation pattern depends on the <code>node</code>'s position relative to its <code>parent</code> and <code>grandparent</code>.</li>
+    <li><strong><code>insert(key)</code>:</strong>
+        <ol>
+            <li>Inserts the new <code>key</code> as in a regular <code>BST</code>, creating a new <code>SplayTreeNode</code>.</li>
+            <li>After insertion, calls <code>_splay()</code> on the newly inserted <code>node</code> to move it to the <code>root</code>.</li>
+        </ol>
+    </li>
+    <li><strong><code>search(key)</code>:</strong>
+        <ol>
+            <li>Searches for the <code>key</code> as in a regular <code>BST</code>.</li>
+            <li>If the <code>key</code> is found, <code>_splay()</code> is called on the found <code>node</code> to bring it to the <code>root</code>.</li>
+            <li>If the <code>key</code> is not found, <code>_splay()</code> is called on the last <code>node</code> visited during the unsuccessful search, bringing that <code>node</code> to the <code>root</code>.</li>
+        </ol>
+    </li>
+</ul>
+    </div></div>
+    <p>The main advantage of <code>Splay Trees</code> is their self-adjusting nature and relatively simpler implementation compared to other balanced <code>BSTs</code>, while providing competitive amortized performance.</p>
+</div>
+<div id="application-content"><div class="markdown-content">
+    <h3>Application</h3>
+    <p>Splay Trees are particularly effective in applications where there is a high locality of reference, meaning that a small set of elements is accessed much more frequently than others. They are used in <strong>cache implementations</strong> (where recently accessed data should be quick to find again), <strong>network routers</strong> for routing tables, and in memory allocators and <strong>garbage collectors</strong> to manage memory blocks. Their self-organizing property makes them adaptive to changing access patterns without the strict balancing rules of AVL or Red-Black trees.</p>
+</div></div>

@@ -1,0 +1,358 @@
+<div id="explanation-content">
+    <p>The <code>Longest Common Substring (LCSUB)</code> problem is another classic problem in <code>dynamic programming</code>, closely related to the <code>Longest Common Subsequence (LCS)</code> problem. Given two strings, <code>string1</code> and <code>string2</code>, the goal is to find the longest string that is a <code>substring</code> of both. A <code>substring</code>, unlike a <code>subsequence</code>, requires consecutive characters.</p>
+    <p>For example, given <code>string1 = "ABABC"</code> and <code>string2 = "BABCA"</code>, the <code>Longest Common Substring</code>s are <code>"BABC"</code> (length 4) and <code>"ABA"</code> (length 3). The longest is <code>"BABC"</code>. It is important to distinguish this from the <code>LCS</code> problem, where "ABC" would be a common subsequence, but not a common substring, as its characters are not consecutive in <code>string2</code>.</p>
+</div>
+
+<div id="expanded-explanation-content">
+    <h3>How it Works (Expanded)</h3>
+    <p>The <code>LCSUB problem</code> can be solved using <code>dynamic programming</code> by building a 2D table (matrix) <code>dp</code> where <code>dp[i][j]</code> stores the length of the <code>longest common suffix</code> of <code>string1[0...i-1]</code> and <code>string2[0...j-1]</code>. The maximum value in the entire <code>dp</code> table will be the length of the <code>Longest Common Substring</code>.</p>
+    <div class="explanation-fence">
+Example: LCSUB of string1 = "ABABC" and string2 = "BABCA"
+
+Initialize a DP table (matrix) of size (m+1) x (n+1) with zeros.
+
+For dp[i][j]:
+- If string1[i-1] == string2[j-1]: dp[i][j] = 1 + dp[i-1][j-1]
+  (Characters match, extend the common suffix)
+- Else: dp[i][j] = 0
+  (Characters don't match, common suffix breaks, reset to 0)
+
+The maximum value in the entire DP table is the length of LCSUB.
+    </div>
+    <p><strong>Recurrence Relation:</strong></p>
+    <ul>
+        <li>Base cases: <code>dp[i][0] = 0</code> and <code>dp[0][j] = 0</code>.</li>
+        <li>For <code>i > 0</code> and <code>j > 0</code>:
+            <ul>
+                <li>If <code>string1[i-1] == string2[j-1]</code> (current characters match):
+                    <code>dp[i][j] = 1 + dp[i-1][j-1]</code></li>
+                <li>Else (current characters do not match):
+                    <code>dp[i][j] = 0</code> (The common suffix is broken, so reset length to 0).</li>
+            </ul>
+        </li>
+    </ul>
+    <p><strong>Algorithm Steps:</strong></p>
+    <ol>
+        <li>Create a 2D <code>dp</code> table of size <code>(m+1) x (n+1)</code>, where <code>m</code> and <code>n</code> are the lengths of <code>string1</code> and <code>string2</code>. Initialize all cells to 0.</li>
+        <li>Initialize <code>maxLength = 0</code> and <code>endIndex = 0</code> (to track the end of the <code>LCSUB</code>).</li>
+        <li>Fill the <code>dp</code> table iteratively:
+            <ul>
+                <li>For each <code>i</code> from 1 to <code>m</code>:</li>
+                <li>For each <code>j</code> from 1 to <code>n</code>:</li>
+                <li>Apply the recurrence relation.</li>
+                <li>If <code>dp[i][j] > maxLength</code>, update <code>maxLength = dp[i][j]</code> and <code>endIndex = i-1</code> (or <code>j-1</code>).</li>
+            </ul>
+        </li>
+        <li>The length of the <code>LCSUB</code> will be <code>maxLength</code>. The <code>LCSUB</code> itself can be extracted from <code>string1</code> (or <code>string2</code>) using <code>endIndex</code> and <code>maxLength</code>.</li>
+    </ol>
+    <p><strong>Time Complexity:</strong> <code>O(M <em> N)</code>, where <code>M</code> and <code>N</code> are the lengths of the two strings. Each cell in the <code>M x N</code> DP table is computed in constant time.</p>
+    <p><strong>Space Complexity:</strong> <code>O(M </em> N)</code> for the <code>dp</code> table. Can be optimized to <code>O(min(M, N))</code> by only storing the current and previous rows/columns.</p>
+</div>
+
+<div id="code-implementations">
+    <pre data-lang="python"><code class="language-python">def longest_common_substring(str1, str2):
+    m = len(str1)
+    n = len(str2)
+
+    # dp[i][j] stores the length of the longest common suffix of
+    # str1[0..i-1] and str2[0..j-1]
+    dp = [[0 for _ in range(n + 1)] for _ in range(m + 1)]
+
+    max_length = 0      # Stores the length of the longest common substring
+    end_index = 0       # Stores the ending index of the LCSUB in str1
+
+    # Fill dp table
+    for i in range(1, m + 1):
+        for j in range(1, n + 1):
+            if str1[i - 1] == str2[j - 1]:
+                dp[i][j] = 1 + dp[i - 1][j - 1]
+                if dp[i][j] > max_length:
+                    max_length = dp[i][j]
+                    end_index = i - 1 # or j - 1, since it's a common substring
+            else:
+                dp[i][j] = 0 # Mismatch, common suffix breaks
+    
+    # Reconstruct the LCSUB
+    if max_length == 0:
+        return ""
+    
+    return str1[end_index - max_length + 1 : end_index + 1]
+
+# Example
+# str1 = "ABABC"
+# str2 = "BABCA"
+# print(longest_common_substring(str1, str2)) # BABC
+</code></pre>
+
+    <pre data-lang="javascript"><code class="language-javascript">function longestCommonSubstring(str1, str2) {
+    const m = str1.length;
+    const n = str2.length;
+
+    // dp[i][j] stores the length of the longest common suffix of
+    // str1[0..i-1] and str2[0..j-1]
+    const dp = Array(m + 1).fill(0).map(() => Array(n + 1).fill(0));
+
+    let maxLength = 0;      // Stores the length of the longest common substring
+    let endIndex = 0;       // Stores the ending index of the LCSUB in str1
+
+    // Fill dp table
+    for (let i = 1; i <= m; i++) {
+        for (let j = 1; j <= n; j++) {
+            if (str1[i - 1] === str2[j - 1]) {
+                dp[i][j] = 1 + dp[i - 1][j - 1];
+                if (dp[i][j] > maxLength) {
+                    maxLength = dp[i][j];
+                    endIndex = i - 1; // or j - 1
+                }
+            } else {
+                dp[i][j] = 0; // Mismatch, common suffix breaks
+            }
+        }
+    }
+    
+    // Reconstruct the LCSUB
+    if (maxLength === 0) {
+        return "";
+    }
+    
+    return str1.substring(endIndex - maxLength + 1, endIndex + 1);
+}
+
+// const str1 = "ABABC";
+// const str2 = "BABCA";
+// console.log(longestCommonSubstring(str1, str2)); // BABC
+</code></pre>
+
+    <pre data-lang="typescript"><code class="language-typescript">function longestCommonSubstringTS(str1: string, str2: string): string {
+    const m = str1.length;
+    const n = str2.length;
+
+    // dp[i][j] stores the length of the longest common suffix of
+    // str1[0..i-1] and str2[0..j-1]
+    const dp: number[][] = Array(m + 1).fill(0).map(() => Array(n + 1).fill(0));
+
+    let maxLength = 0;      // Stores the length of the longest common substring
+    let endIndex = 0;       // Stores the ending index of the LCSUB in str1
+
+    // Fill dp table
+    for (let i = 1; i <= m; i++) {
+        for (let j = 1; j <= n; j++) {
+            if (str1[i - 1] === str2[j - 1]) {
+                dp[i][j] = 1 + dp[i - 1][j - 1];
+                if (dp[i][j] > maxLength) {
+                    maxLength = dp[i][j];
+                    endIndex = i - 1; // or j - 1
+                }
+            } else {
+                dp[i][j] = 0; // Mismatch, common suffix breaks
+            }
+        }
+    }
+    
+    // Reconstruct the LCSUB
+    if (maxLength === 0) {
+        return "";
+    }
+    
+    return str1.substring(endIndex - maxLength + 1, endIndex + 1);
+}
+
+// const str1TS = "ABABC";
+// const str2TS = "BABCA";
+// console.log(longestCommonSubstringTS(str1TS, str2TS)); // BABC
+</code></pre>
+    
+    <pre data-lang="cpp"><code class="language-cpp">#include &lt;string&gt;
+#include &lt;vector&gt;
+#include &lt;iostream&gt;
+#include &lt;algorithm&gt; // For std::max
+
+std::string longestCommonSubstring(const std::string& str1, const std::string& str2) {
+    int m = str1.length();
+    int n = str2.length();
+
+    // dp[i][j] stores the length of the longest common suffix of
+    // str1[0..i-1] and str2[0..j-1]
+    std::vector&lt;std::vector&lt;int&gt;&gt; dp(m + 1, std::vector&lt;int&gt;(n + 1, 0));
+
+    int max_length = 0;      // Stores the length of the longest common substring
+    int end_index = 0;       // Stores the ending index of the LCSUB in str1
+
+    // Fill dp table
+    for (int i = 1; i <= m; i++) {
+        for (int j = 1; j <= n; j++) {
+            if (str1[i - 1] == str2[j - 1]) {
+                dp[i][j] = 1 + dp[i - 1][j - 1];
+                if (dp[i][j] > max_length) {
+                    max_length = dp[i][j];
+                    end_index = i - 1; // or j - 1
+                }
+            } else {
+                dp[i][j] = 0; // Mismatch, common suffix breaks
+            }
+        }
+    }
+    
+    // Reconstruct the LCSUB
+    if (max_length == 0) {
+        return "";
+    }
+    
+    return str1.substr(end_index - max_length + 1, max_length);
+}
+
+// int main() {
+//     std::string str1 = "ABABC";
+//     std::string str2 = "BABCA";
+//     std::cout << "Longest Common Substring: " << longestCommonSubstring(str1, str2) << std::endl; // BABC
+//     return 0;
+// }
+</code></pre>
+
+    <pre data-lang="go"><code class="language-go">package main
+
+import "fmt"
+
+func longestCommonSubstring(str1, str2 string) string {
+    m := len(str1)
+    n := len(str2)
+
+    // dp[i][j] stores the length of the longest common suffix of
+    // str1[0..i-1] and str2[0..j-1]
+    dp := make([][]int, m+1)
+    for i := range dp {
+        dp[i] = make([]int, n+1)
+    }
+
+    maxLength := 0      // Stores the length of the longest common substring
+    endIndex := 0       // Stores the ending index of the LCSUB in str1
+
+    // Fill dp table
+    for i := 1; i <= m; i++ {
+        for j := 1; j <= n; j++ {
+            if str1[i-1] == str2[j-1] {
+                dp[i][j] = 1 + dp[i-1][j-1]
+                if dp[i][j] > maxLength {
+                    maxLength = dp[i][j]
+                    endIndex = i - 1 // or j - 1
+                }
+            } else {
+                dp[i][j] = 0 // Mismatch, common suffix breaks
+            }
+        }
+    }
+    
+    // Reconstruct the LCSUB
+    if maxLength == 0 {
+        return ""
+    }
+    
+    return str1[endIndex-maxLength+1 : endIndex+1]
+}
+
+// func main() {
+//     str1 := "ABABC"
+//     str2 := "BABCA"
+//     fmt.Println("Longest Common Substring:", longestCommonSubstring(str1, str2)) // BABC
+// }
+</code></pre>
+    
+    <pre data-lang="d"><code class="language-d">import std.stdio;
+import std.array;
+import std.algorithm; // For std.algorithm.max
+
+string longestCommonSubstring(string str1, string str2) {
+    auto m = str1.length;
+    auto n = str2.length;
+
+    // dp[i][j] stores the length of the longest common suffix of
+    // str1[0..i-1] and str2[0..j-1]
+    auto dp = new int[m + 1][n + 1];
+
+    int maxLength = 0;      // Stores the length of the longest common substring
+    int endIndex = 0;       // Stores the ending index of the LCSUB in str1
+
+    // Fill dp table
+    foreach (i; 1 .. m + 1) {
+        foreach (j; 1 .. n + 1) {
+            if (str1[i - 1] == str2[j - 1]) {
+                dp[i][j] = 1 + dp[i - 1][j - 1];
+                if (dp[i][j] > maxLength) {
+                    maxLength = dp[i][j];
+                    endIndex = i - 1; // or j - 1
+                }
+            } else {
+                dp[i][j] = 0; // Mismatch, common suffix breaks
+            }
+        }
+    }
+    
+    // Reconstruct the LCSUB
+    if (maxLength == 0) {
+        return "";
+    }
+    
+    return str1[endIndex - maxLength + 1 .. endIndex + 1];
+}
+
+// void main() {
+//     string str1 = "ABABC";
+//     string str2 = "BABCA";
+//     writeln("Longest Common Substring: ", longestCommonSubstring(str1, str2)); // BABC
+// }
+</code></pre>
+</div>
+
+<div id="code-explanation-content"><div class="markdown-content">
+    <h3>Code Walkthrough</h3>
+    <p>The <code>Longest Common Substring (LCSUB)</code> problem is solved using <code>dynamic programming</code> with a 2D table that tracks the length of common suffixes.</p>
+    <div class="explanation-fence">
+<strong>Initialization:</strong>
+<ul>
+    <li><code>m</code>, <code>n</code>: Lengths of <code>str1</code> and <code>str2</code>.</li>
+    <li>A 2D <code>dp</code> table (<code>m+1</code> rows, <code>n+1</code> columns) is created and initialized with zeros. <code>dp[i][j]</code> will store the length of the <code>longest common suffix</code> of <code>str1[0...i-1]</code> and <code>str2[0...j-1]</code>.</li>
+    <li><code>maxLength</code>: Tracks the maximum length found in the <code>dp</code> table, which will be the length of the <code>LCSUB</code>.</li>
+    <li><code>endIndex</code>: Tracks the ending <code>index</code> of the <code>LCSUB</code> in <code>str1</code> (or <code>str2</code>).</li>
+</ul>
+<br>
+<strong>Filling the DP Table:</strong>
+<ul>
+    <li>The <code>dp</code> table is filled iteratively for <code>i</code> from 1 to <code>m</code> and <code>j</code> from 1 to <code>n</code>.</li>
+    <li>For each cell <code>dp[i][j]</code>:
+        <ul>
+            <li>If <code>str1[i-1]</code> (the <code>i</code>-th character of <code>str1</code>) matches <code>str2[j-1]</code> (the <code>j</code>-th character of <code>str2</code>):
+                <ul>
+                    <li>The <code>longest common suffix</code> is extended by 1. So, <code>dp[i][j] = 1 + dp[i-1][j-1]</code>.</li>
+                    <li>If this <code>new length</code> <code>dp[i][j]</code> is greater than <code>maxLength</code>, update <code>maxLength</code> and <code>endIndex</code>.</li>
+                </ul>
+            </li>
+            <li>If the characters do not match:
+                <ul>
+                    <li>The common suffix is broken. So, <code>dp[i][j]</code> is reset to 0.</li>
+                </ul>
+            </li>
+        </ul>
+    </li>
+</ul>
+<br>
+<strong>Result:</strong>
+<ul>
+    <li>After filling the entire <code>dp</code> table, <code>maxLength</code> will hold the length of the <code>Longest Common Substring</code>.</li>
+    <li>The <code>LCSUB</code> can be extracted from <code>str1</code> (or <code>str2</code>) using <code>endIndex</code> and <code>maxLength</code>. For example, <code>str1[endIndex - maxLength + 1 : endIndex + 1]</code>.</li>
+</ul>
+    </div></div>
+</div>
+
+<div id="application-content"><div class="markdown-content">
+    <h3>Application</h3>
+    <p>The <code>Longest Common Substring</code> problem has several practical applications, particularly in areas involving sequence comparison and pattern recognition:</p>
+    <ul>
+        <li><strong>Plagiarism Detection:</strong> Identifying verbatim copied segments of text between documents.</li>
+        <li><strong>Bioinformatics:</strong> Finding conserved regions or similar segments in DNA, RNA, or protein sequences.</li>
+        <li><strong>File Comparison Utilities (<code>diff</code> tools):</strong> While <code>diff</code> tools often use <code>LCS</code> (subsequence), <code>LCSUB</code> can be useful for finding contiguous blocks of identical text.</li>
+        <li><strong>Version Control Systems:</strong> Identifying common code blocks between different versions of a file.</li>
+        <li><strong>Text Analysis:</strong> Extracting repeated phrases or patterns in natural language texts.</li>
+        <li><strong>Image Processing:</strong> Pattern matching in images where contiguous blocks of pixels need to be similar.</li>
+    </ul>
+    </p>
+</div></div>

@@ -1,0 +1,376 @@
+<div id="explanation-content">
+    <p>A <code>Quadtree</code> is a <code>tree data structure</code> in which each internal <code>node</code> has exactly four children. <code>Quadtrees</code> are most often used to partition a <code>two-dimensional space</code> by recursively subdividing it into four <code>quadrants</code> or <code>regions</code>.</p>
+    <p>They are particularly useful in <code>computer graphics</code>, <code>game development</code>, and <code>image processing</code> for efficiently storing and querying <code>spatial data</code> (e.g., finding all objects within a certain area on a <code>2D map</code>).</p>
+</div>
+
+<div id="expanded-explanation-content">
+    <h3>How it Works (Expanded)</h3>
+    <p>A <code>Quadtree</code> works by recursively dividing a <code>2D space</code> into four <code>equal-sized child regions</code> (<code>quadrants</code>). This subdivision continues until each <code>region</code> contains at most a predefined number of <code>objects</code> or reaches a minimum size.</p>
+    <div class="explanation-fence">
+Initial Region (<code>Node A</code>)
++---------------+
+|       |       |
+|   B   |   C   |  <- Subdivided into 4 children
+|-------+-------|
+|   D   |   E   |
++---------------+
+
+If <code>region B</code> contains too many <code>objects</code>, it's subdivided further:
++-------+-------+
+| F | G |       |
+|---+---|   C   |
+| H | I |       |
++-------+-------|
+|   D   |   E   |
++---------------+
+    </div>
+    <p><strong>Key Properties:</strong></p>
+    <ul>
+        <li>Each <code>node</code> represents a <code>square region</code> in <code>2D space</code>.</li>
+        <li>It has a maximum <code>capacity</code> for <code>objects</code>. If <code>capacity</code> is exceeded, it subdivides into four children: <code>North-West</code>, <code>North-East</code>, <code>South-West</code>, <code>South-East</code>.</li>
+        <li><code>Objects</code> are stored in the <code>leaf nodes</code> (<code>nodes</code> that are not subdivided).</li>
+    </ul>
+    <p><strong>Operations:</strong></p>
+    <ul>
+        <li><strong><code>Insert</code>:</strong> Place an <code>object</code> into the appropriate <code>leaf node</code>. If the <code>node</code>'s <code>capacity</code> is exceeded, subdivide it and redistribute existing <code>objects</code> and the new one into its children.</li>
+        <li><strong><code>Query</code> (<code>Range Search</code>):</strong> Find all <code>objects</code> within a given <code>rectangular area</code>. Traverse the tree, pruning branches that don't intersect the <code>query region</code>, and collecting <code>objects</code> from intersecting <code>leaf nodes</code>.</li>
+    </ul>
+    <p><strong>Time Complexity:</strong> <code>Insertion</code> and <code>querying</code> are typically <code>O(log n)</code> on average for well-distributed data. In worst-case scenarios (all <code>objects</code> clustered), it can degrade to <code>O(n)</code>.</p>
+</div>
+
+<div id="code-implementations">
+    <pre data-lang="python"><code class="language-python">class Point:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+class Rectangle:
+    def __init__(self, x, y, w, h):
+        self.x = x  # Center x
+        self.y = y  # Center y
+        self.w = w  # Half width
+        self.h = h  # Half height
+
+    def contains(self, point):
+        return (point.x >= self.x - self.w and
+                point.x <= self.x + self.w and
+                point.y >= self.y - self.h and
+                point.y <= self.y + self.h)
+
+    def intersects(self, range_rect):
+        return not (range_rect.x - range_rect.w > self.x + self.w or
+                    range_rect.x + range_rect.w < self.x - self.w or
+                    range_rect.y - range_rect.h > self.y + self.h or
+                    range_rect.y + range_rect.h < self.y - self.h)
+
+class QuadTree:
+    def __init__(self, boundary, capacity):
+        self.boundary = boundary
+        self.capacity = capacity
+        self.points = []
+        self.divided = False
+
+    def subdivide(self):
+        x = self.boundary.x
+        y = self.boundary.y
+        w = self.boundary.w / 2
+        h = self.boundary.h / 2
+
+        nw = Rectangle(x - w, y - h, w, h)
+        self.northwest = QuadTree(nw, self.capacity)
+        ne = Rectangle(x + w, y - h, w, h)
+        self.northeast = QuadTree(ne, self.capacity)
+        sw = Rectangle(x - w, y + h, w, h)
+        self.southwest = QuadTree(sw, self.capacity)
+        se = Rectangle(x + w, y + h, w, h)
+        self.southeast = QuadTree(se, self.capacity)
+
+        self.divided = True
+
+    def insert(self, point):
+        if not self.boundary.contains(point):
+            return False
+
+        if len(self.points) < self.capacity:
+            self.points.append(point)
+            return True
+        else:
+            if not self.divided:
+                self.subdivide()
+
+            if self.northeast.insert(point): return True
+            if self.northwest.insert(point): return True
+            if self.southeast.insert(point): return True
+            if self.southwest.insert(point): return True
+        return false
+
+    def query(self, range_rect, found=[]):
+        if not self.boundary.intersects(range_rect):
+            return found
+
+        for p in self.points:
+            if range_rect.contains(p):
+                found.append(p)
+
+        if self.divided:
+            self.northwest.query(range_rect, found)
+            self.northeast.query(range_rect, found)
+            self.southwest.query(range_rect, found)
+            self.southeast.query(range_rect, found)
+        return found
+</code></pre>
+
+    <pre data-lang="javascript"><code class="language-javascript">class Point {
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+    }
+}
+
+class Rectangle {
+    constructor(x, y, w, h) {
+        this.x = x; // Center x
+        this.y = y; // Center y
+        this.w = w; // Half width
+        this.h = h; // Half height
+    }
+
+    contains(point) {
+        return (
+            point.x >= this.x - this.w &&
+            point.x <= this.x + this.w &&
+            point.y >= this.y - this.h &&
+            point.y <= this.y + this.h
+        );
+    }
+
+    intersects(rangeRect) {
+        return !(
+            rangeRect.x - rangeRect.w > this.x + this.w ||
+            rangeRect.x + rangeRect.w < this.x - this.w ||
+            rangeRect.y - rangeRect.h > this.y + this.h ||
+            rangeRect.y + rangeRect.h < this.y - this.h
+        );
+    }
+}
+
+class QuadTree {
+    constructor(boundary, capacity) {
+        this.boundary = boundary;
+        this.capacity = capacity;
+        this.points = [];
+        this.divided = false;
+    }
+
+    subdivide() {
+        let x = this.boundary.x;
+        let y = this.boundary.y;
+        let w = this.boundary.w / 2;
+        let h = this.boundary.h / 2;
+
+        let nw = new Rectangle(x - w, y - h, w, h);
+        this.northwest = new QuadTree(nw, this.capacity);
+        let ne = new Rectangle(x + w, y - h, w, h);
+        this.northeast = new QuadTree(ne, this.capacity);
+        let sw = new Rectangle(x - w, y + h, w, h);
+        this.southwest = new QuadTree(sw, this.capacity);
+        let se = new Rectangle(x + w, y + h, w, h);
+        this.southeast = new QuadTree(se, this.capacity);
+
+        this.divided = true;
+    }
+
+    insert(point) {
+        if (!this.boundary.contains(point)) {
+            return false;
+        }
+
+        if (this.points.length < this.capacity) {
+            this.points.push(point);
+            return true;
+        } else {
+            if (!this.divided) {
+                this.subdivide();
+            }
+
+            if (this.northeast.insert(point)) return true;
+            if (this.northwest.insert(point)) return true;
+            if (this.southeast.insert(point)) return true;
+            if (this.southwest.insert(point)) return true;
+        }
+        return false;
+    }
+
+    query(rangeRect, found = []) {
+        if (!this.boundary.intersects(rangeRect)) {
+            return found;
+        }
+
+        for (let p of this.points) {
+            if (rangeRect.contains(p)) {
+                found.push(p);
+            }
+        }
+
+        if (this.divided) {
+            this.northwest.query(rangeRect, found);
+            this.northeast.query(rangeRect, found);
+            this.southwest.query(rangeRect, found);
+            this.southeast.query(rangeRect, found);
+        }
+        return found;
+    }
+}
+</code></pre>
+
+    <pre data-lang="cpp"><code class="language-cpp">#include &lt;vector&gt;
+#include &lt;iostream&gt;
+
+class Point {
+public:
+    double x, y;
+    Point(double x, double y) : x(x), y(y) {}
+};
+
+class Rectangle {
+public:
+    double x, y, w, h; // Center x, y, half width, half height
+
+    Rectangle(double x, double y, double w, double h) : x(x), y(y), w(w), h(h) {}
+
+    bool contains(Point p) {
+        return (p.x >= x - w &&
+                p.x <= x + w &&
+                p.y >= y - h &&
+                p.y <= y + h);
+    }
+
+    bool intersects(const Rectangle& range_rect) const {
+        return !(range_rect.x - range_rect.w > x + w ||
+                range_rect.x + range_rect.w < x - w ||
+                range_rect.y - range_rect.h > y + h ||
+                range_rect.y + range_rect.h < y - h);
+    }
+};
+
+class QuadTree {
+public:
+    Rectangle boundary;
+    int capacity;
+    std::vector&lt;Point&gt; points;
+    bool divided;
+
+    QuadTree <em>northwest, </em>northeast, <em>southwest, </em>southeast;
+
+    QuadTree(Rectangle boundary, int capacity) : boundary(boundary), capacity(capacity), divided(false) {
+        northwest = northeast = southwest = southeast = nullptr;
+    }
+
+    // Destructor to free memory
+    ~QuadTree() {
+        delete northwest;
+        delete northeast;
+        delete southwest;
+        delete southeast;
+    }
+
+    void subdivide() {
+        double x = boundary.x;
+        double y = boundary.y;
+        double w = boundary.w / 2;
+        double h = boundary.h / 2;
+
+        Rectangle nw = Rectangle(x - w, y - h, w, h);
+        northwest = new QuadTree(nw, capacity);
+        Rectangle ne = Rectangle(x + w, y - h, w, h);
+        northeast = new QuadTree(ne, capacity);
+        Rectangle sw = Rectangle(x - w, y + h, w, h);
+        southwest = new QuadTree(sw, capacity);
+        Rectangle se = Rectangle(x + w, y + h, w, h);
+        southeast = new QuadTree(se, capacity);
+
+        divided = true;
+    }
+
+    bool insert(Point p) {
+        if (!boundary.contains(p)) {
+            return false;
+        }
+
+        if (points.size() < capacity) {
+            points.push_back(p);
+            return true;
+        } else {
+            if (!divided) {
+                subdivide();
+            }
+
+            if (northwest->insert(p)) return true;
+            if (northeast->insert(p)) return true;
+            if (southwest->insert(p)) return true;
+            if (southeast->insert(p)) return true;
+        }
+        return false;
+    }
+
+    std::vector&lt;Point&gt; query(const Rectangle& range_rect, std::vector&lt;Point&gt; found_points = {}) {
+        if (!boundary.intersects(range_rect)) {
+            return found_points;
+        }
+
+        for (const auto& p : points) {
+            if (range_rect.contains(p)) {
+                found_points.push_back(p);
+            }
+        }
+
+        if (divided) {
+            found_points = northwest->query(range_rect, found_points);
+            found_points = northeast->query(range_rect, found_points);
+            found_points = southwest->query(range_rect, found_points);
+            found_points = southeast->query(range_rect, found_points);
+        }
+        return found_points;
+    }
+};
+</code></pre>
+</div>
+
+<div id="code-explanation-content"><div class="markdown-content">
+    <h3>Code Walkthrough</h3>
+    <p>A Quadtree implementation involves defining helper classes for Points and Rectangles, and then the Quadtree itself, often recursively.</p>
+    <div class="explanation-fence">
+<strong>Point Class:</strong> Simple class to represent a point in 2D space with <code>x</code> and <code>y</code> coordinates.
+<br><br>
+<strong>Rectangle Class:</strong> Represents the spatial boundary of a Quadtree node. It typically stores its center <code>(x, y)</code> and its <code>half-width (w)</code> and <code>half-height (h)</code>. It includes helper methods like <code>contains(point)</code> to check if a point is within its bounds, and <code>intersects(range_rect)</code> to check if it overlaps with another rectangle (useful for querying).
+<br><br>
+<strong>QuadTree Class:</strong>
+<ul>
+    <li><code>boundary</code>: A <code>Rectangle</code> object defining the area this Quadtree node covers.</li>
+    <li><code>capacity</code>: The maximum number of points this node can hold before it subdivides.</li>
+    <li><code>points</code>: A list of <code>Point</code> objects stored in this node (if it's not subdivided).</li>
+    <li><code>divided</code>: A boolean flag indicating if this node has been subdivided.</li>
+    <li><code>northwest, northeast, southwest, southeast</code>: Pointers to the four child Quadtree nodes.</li>
+    <li><strong><code>subdivide()</code>:</strong> Creates four new <code>QuadTree</code> objects for the four sub-quadrants and sets <code>divided</code> to true.</li>
+    <li><strong><code>insert(point)</code>:</strong>
+        <ol>
+            <li>Checks if the point is within this Quadtree's boundary. If not, returns false.</li>
+            <li>If the node has capacity, adds the point to its <code>points</code> list.</li>
+            <li>If the node is at capacity, it subdivides (if not already), and then attempts to insert the point into one of its children recursively.</li>
+        </ol>
+    </li>
+    <li><strong><code>query(range_rect, found_points)</code>:</strong>
+        <ol>
+            <li>Checks if the query <code>range_rect</code> intersects this Quadtree's boundary. If not, returns the current <code>found_points</code>.</li>
+            <li>Checks all points directly held by this node and adds those within <code>range_rect</code> to <code>found_points</code>.</li>
+            <li>If the node is divided, it recursively calls <code>query</code> on its children.</li>
+        </ol>
+    </li>
+</ul>
+    </div></div>
+    <p>The recursive nature of Quadtrees makes them elegant for spatial partitioning, though memory management (especially in C++) needs careful attention for children nodes.</p>
+</div>
+<div id="application-content"><div class="markdown-content">
+    <h3>Application</h3>
+    <p>Quadtrees are widely used in 2D computer graphics and geographical information systems (GIS). In video games, they are used for collision detection, efficiently culling objects that are not in the current view (view frustum culling), and for managing objects in a large 2D world. In GIS, they are used for spatial indexing of geographical data like cities, roads, and lakes, allowing for fast queries of features within a specific geographical area.</p>
+</div></div>

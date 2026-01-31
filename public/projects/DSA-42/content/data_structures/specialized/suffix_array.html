@@ -1,0 +1,291 @@
+<div id="explanation-content">
+    <p>A <code>Suffix Array</code> is a sorted array of all suffixes of a given string. It is a simple, yet powerful data structure used for a wide variety of string processing problems. It provides a more space-efficient alternative to a <code>Suffix Tree</code> while still enabling many of the same operations.</p>
+    <p>By pairing a <code>Suffix Array</code> with an <code>LCP (Longest Common Prefix) array</code>, one can solve complex problems like finding the longest repeated substring, finding the longest common substring between two strings, and more.</p>
+</div>
+
+<div id="expanded-explanation-content">
+    <h3>How it Works (Expanded)</h3>
+    <p>The construction of a <code>Suffix Array</code> involves two main steps:</p>
+    <ol>
+        <li><strong>Generate all suffixes:</strong> For a string <code>S</code> of length <code>N</code>, generate all <code>N</code> suffixes.</li>
+        <li><strong>Sort the suffixes:</strong> Sort these suffixes lexicographically (alphabetically). The <code>Suffix Array</code> itself stores the starting indices of these sorted suffixes.</li>
+    </ol>
+    <div class="explanation-fence">
+Example for string S = "banana$":
+
+Suffixes:
+0: banana$
+1: anana$
+2: nana$
+3: ana$
+4: na$
+5: a$
+6: $
+
+Sorted Suffixes:      Suffix Array (SA):
+$:                 6
+a$:                5
+ana$:              3
+anana$:            1
+banana$:           0
+na$:               4
+nana$:             2
+    </div>
+    <p>Once the <code>Suffix Array</code> is built, you can perform very fast searches. To find a pattern <code>P</code> in <code>S</code>, you can use a binary search on the <code>Suffix Array</code>, as it is sorted. Each comparison in the binary search takes <code>O(|P|)</code> time, leading to an overall search time of <code>O(|P| log N)</code>.</p>
+    <p><strong>LCP Array:</strong> The <code>LCP (Longest Common Prefix) array</code> stores the length of the longest common prefix between adjacent suffixes in the sorted <code>Suffix Array</code>. This array is crucial for more advanced applications and can be constructed in linear time alongside the <code>Suffix Array</code>.</p>
+    <p><strong>Time Complexity:</strong> Naive construction is <code>O(N^2 log N)</code>. More advanced algorithms like the <code>Manber-Myers</code> algorithm can build it in <code>O(N log N)</code>, and even more advanced DC3/SA-IS algorithms can achieve <code>O(N)</code>.</p>
+    <p><strong>Space Complexity:</strong> <code>O(N)</code> to store the array of indices.</p>
+</div>
+
+<div id="code-implementations">
+    <pre data-lang="python"><code class="language-python"># Simple (naive) Suffix Array construction in Python
+
+def build_suffix_array(s):
+    """
+    Builds a suffix array for the given string in a simple, readable way.
+    Time complexity: O(n^2 <em> log n) due to slicing and sorting.
+    """
+    # Create a list of all suffixes
+    suffixes = [(s[i:], i) for i in range(len(s))]
+    
+    # Sort the suffixes lexicographically
+    suffixes.sort(key=lambda x: x[0])
+    
+    # Extract the original indices to form the suffix array
+    suffix_array = [suffix[1] for suffix in suffixes]
+    
+    return suffix_array
+
+# Example Usage:
+# text = "banana"
+# sa = build_suffix_array(text + "$") # Add a special char smaller than any other
+# print(f"Suffix Array for 'banana$': {sa}") # Expected: [6, 5, 3, 1, 0, 4, 2]
+</code></pre>
+
+    <pre data-lang="javascript"><code class="language-javascript">// Simple (naive) Suffix Array construction in JavaScript
+
+function buildSuffixArray(s) {
+    /</em><em>
+     </em> Builds a suffix array for the given string in a simple, readable way.
+     <em> Time complexity: O(n^2 </em> log n) due to slicing and sorting.
+     <em>/
+    // Create an array of all suffixes
+    const suffixes = [];
+    for (let i = 0; i < s.length; i++) {
+        suffixes.push({ suffix: s.substring(i), index: i });
+    }
+
+    // Sort the suffixes lexicographically
+    suffixes.sort((a, b) => {
+        if (a.suffix < b.suffix) return -1;
+        if (a.suffix > b.suffix) return 1;
+        return 0;
+    });
+
+    // Extract the original indices to form the suffix array
+    const suffixArray = suffixes.map(item => item.index);
+
+    return suffixArray;
+}
+
+// Example Usage:
+// const text = "banana";
+// const sa = buildSuffixArray(text + "$"); // Add a special char smaller than any other
+// console.log(<code>Suffix Array for 'banana$':</code>, sa); // Expected: [6, 5, 3, 1, 0, 4, 2]
+</code></pre>
+
+    <pre data-lang="typescript"><code class="language-typescript">// Simple (naive) Suffix Array construction in TypeScript
+
+function buildSuffixArrayTS(s: string): number[] {
+    /</em><em>
+     </em> Builds a suffix array for the given string in a simple, readable way.
+     <em> Time complexity: O(n^2 </em> log n) due to slicing and sorting.
+     */
+    interface Suffix {
+        suffix: string;
+        index: number;
+    }
+
+    // Create an array of all suffixes
+    const suffixes: Suffix[] = [];
+    for (let i = 0; i < s.length; i++) {
+        suffixes.push({ suffix: s.substring(i), index: i });
+    }
+
+    // Sort the suffixes lexicographically
+    suffixes.sort((a, b) => {
+        if (a.suffix < b.suffix) return -1;
+        if (a.suffix > b.suffix) return 1;
+        return 0;
+    });
+
+    // Extract the original indices to form the suffix array
+    const suffixArray: number[] = suffixes.map(item => item.index);
+
+    return suffixArray;
+}
+
+// Example Usage:
+// const textTS = "banana";
+// const saTS = buildSuffixArrayTS(textTS + "$"); // Add a special char smaller than any other
+// console.log(<code>Suffix Array for 'banana$':</code>, saTS); // Expected: [6, 5, 3, 1, 0, 4, 2]
+</code></pre>
+
+    <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+#include &lt;algorithm&gt;
+
+struct Suffix {
+    int index;
+    std::string suff;
+};
+
+// Comparison function for sorting suffixes
+bool compareSuffixes(const Suffix& a, const Suffix& b) {
+    return a.suff < b.suff;
+}
+
+// Simple (naive) Suffix Array construction
+std::vector&lt;int&gt; buildSuffixArray(const std::string& s) {
+    int n = s.length();
+    std::vector&lt;Suffix&gt; suffixes(n);
+
+    // Create a vector of all suffixes
+    for (int i = 0; i < n; ++i) {
+        suffixes[i].index = i;
+        suffixes[i].suff = s.substr(i);
+    }
+
+    // Sort the suffixes lexicographically
+    std::sort(suffixes.begin(), suffixes.end(), compareSuffixes);
+
+    // Extract the original indices to form the suffix array
+    std::vector&lt;int&gt; suffixArray(n);
+    for (int i = 0; i < n; ++i) {
+        suffixArray[i] = suffixes[i].index;
+    }
+
+    return suffixArray;
+}
+
+// Example Usage:
+// int main() {
+//     std::string text = "banana$";
+//     std::vector<int> sa = buildSuffixArray(text);
+//     std::cout << "Suffix Array for 'banana$': ";
+//     for (int index : sa) {
+//         std::cout << index << " ";
+//     }
+//     std::cout << std::endl; // Expected: 6 5 3 1 0 4 2
+//     return 0;
+// }
+</code></pre>
+
+    <pre data-lang="go"><code class="language-go">package main
+
+import (
+    "fmt"
+    "sort"
+)
+
+// A struct to hold a suffix and its original index
+type Suffix struct {
+    Index  int
+    Suffix string
+}
+
+// A slice of Suffixes that implements sort.Interface
+type SuffixSlice []Suffix
+
+func (s SuffixSlice) Len() int           { return len(s) }
+func (s SuffixSlice) Less(i, j int) bool { return s[i].Suffix < s[j].Suffix }
+func (s SuffixSlice) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
+
+// Simple (naive) Suffix Array construction
+func buildSuffixArray(s string) []int {
+    n := len(s)
+    suffixes := make(SuffixSlice, n)
+
+    // Create a slice of all suffixes
+    for i := 0; i < n; i++ {
+        suffixes[i] = Suffix{Index: i, Suffix: s[i:]}
+    }
+
+    // Sort the suffixes lexicographically
+    sort.Sort(suffixes)
+
+    // Extract the original indices to form the suffix array
+    suffixArray := make([]int, n)
+    for i := 0; i < n; i++ {
+        suffixArray[i] = suffixes[i].Index
+    }
+
+    return suffixArray
+}
+
+// func main() {
+//     text := "banana$"
+//     sa := buildSuffixArray(text)
+//     fmt.Printf("Suffix Array for '%s': %v\n", text, sa) // Expected: [6 5 3 1 0 4 2]
+// }
+</code></pre>
+
+    <pre data-lang="d"><code class="language-d">import std.stdio;
+import std.algorithm;
+import std.array;
+import std.range;
+
+struct Suffix {
+    int index;
+    string suffix;
+}
+
+// Simple (naive) Suffix Array construction
+int[] buildSuffixArray(string s) {
+    auto n = s.length;
+    auto suffixes = new Suffix[n];
+
+    // Create an array of all suffixes
+    foreach (i; 0..n) {
+        suffixes[i] = Suffix(cast(int)i, s[i..$]);
+    }
+
+    // Sort the suffixes lexicographically
+    sort!((a, b) => a.suffix < b.suffix)(suffixes);
+
+    // Extract the original indices to form the suffix array
+    auto suffixArray = new int[n];
+    foreach (i, suf; suffixes) {
+        suffixArray[i] = suf.index;
+    }
+
+    return suffixArray;
+}
+
+// void main() {
+//     auto text = "banana$";
+//     auto sa = buildSuffixArray(text);
+//     writefln("Suffix Array for '%s': %s", text, sa); // Expected: [6, 5, 3, 1, 0, 4, 2]
+// }
+</code></pre>
+
+    <pre data-lang="html"><code class="language-html">&lt;div id="code-explanation-content"&gt;
+    &lt;h3&gt;Code Walkthrough&lt;/h3&gt;
+    &lt;p&gt;The provided code demonstrates a naive <code>O(N^2 log N)</code> approach to building a <code>Suffix Array</code>, which is easy to understand but too slow for large strings. The core idea is to create a <code>list</code> of all suffixes, sort them, and then store their original starting indices.&lt;/p&gt;
+    &lt;div class="explanation-fence"&gt;
+<strong>Naive Construction Steps:</strong>
+&lt;ol&gt;
+    &lt;li&gt;Create a temporary data structure (like a <code>list</code> of objects or structs) to hold both the suffix string and its original starting <code>index</code>.&lt;/li&gt;
+    &lt;li&gt;Loop from <code>i = 0</code> to <code>N-1</code>, where <code>N</code> is the string length. In each iteration, slice the string from <code>index i</code> to the end to get a suffix, and store it along with <code>i</code> in your temporary <code>list</code>.&lt;/li&gt;
+    &lt;li&gt;Use your language's built-in sort function to sort the temporary <code>list</code> lexicographically based on the suffix strings.&lt;/li&gt;
+    &lt;li&gt;Create a final integer <code>array</code> (the <code>Suffix Array</code>). Iterate through your sorted temporary <code>list</code> and append the original <code>index</code> of each suffix to this final <code>array</code>.&lt;/li&gt;
+&lt;/ol&gt;
+    &lt;/div&gt;
+    &lt;p&gt;While simple, this method is inefficient because comparing two long suffixes during the sort is slow. Production-grade implementations use far more complex algorithms (like <code>Manber-Myers</code> or <code>SA-IS</code>) that cleverly avoid repeated comparisons and achieve <code>O(N log N)</code> or even <code>O(N)</code> time complexity.&lt;/p&gt;
+&lt;/div&gt;
+
+<div id="application-content"><div class="markdown-content">
+    <h3>Application</h3>
+    &lt;p&gt;Suffix Arrays are a fundamental tool in stringology and bioinformatics. Their primary use is for <strong>fast substring searching</strong> (finding if a pattern exists in a text). They are the core of many full-text search utilities like <code>grep</code>. In <strong>bioinformatics</strong>, they are used to find long repeated sequences or commonalities within DNA or protein sequences. They are also used in <strong>data compression</strong> algorithms and for problems like finding the longest repeated substring or the longest common substring between two strings.&lt;/p&gt;
+</div></div>

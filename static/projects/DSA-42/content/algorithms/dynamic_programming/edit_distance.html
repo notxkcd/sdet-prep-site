@@ -1,0 +1,362 @@
+<div id="explanation-content">
+    <p>The <code>Edit Distance</code>, often known as <code>Levenshtein Distance</code>, is a metric for measuring the difference between two sequences (typically strings). It quantifies how dissimilar two strings are by counting the minimum number of single-character edits (insertions, deletions, or substitutions) required to change one word into the other.</p>
+    <p>This problem is a classic application of <code>dynamic programming</code>, where the solution builds upon the optimal solutions of smaller subproblems. It's widely used in spell checkers, DNA sequence analysis, and natural language processing.</p>
+</div>
+
+<div id="expanded-explanation-content">
+    <h3>How it Works (Expanded)</h3>
+    <p>The <code>Edit Distance</code> algorithm uses a 2D <code>DP table</code> (matrix) to store the minimum <code>edit distance</code> between all possible prefixes of the two input strings. <code>dp[i][j]</code> represents the <code>Levenshtein distance</code> between <code>string1[0...i-1]</code> and <code>string2[0...j-1]</code>.</p>
+    <div class="explanation-fence">
+Example: Edit Distance between "kitten" and "sitting"
+
+Initialize a DP table (matrix) of size (m+1) x (n+1)
+- dp[i][0] = i (cost of deleting all chars from string1)
+- dp[0][j] = j (cost of inserting all chars from string2)
+
+For dp[i][j]:
+- If string1[i-1] == string2[j-1]: dp[i][j] = dp[i-1][j-1] (no cost if characters match)
+- Else: dp[i][j] = 1 + min(dp[i-1][j],   // Deletion
+                          dp[i][j-1],   // Insertion
+                          dp[i-1][j-1]) // Substitution
+
+The final dp[m][n] value is the edit distance.
+    </div>
+    <p><strong>Recurrence Relation:</strong></p>
+    <ul>
+        <li>Base cases:
+            <ul>
+                <li><code>dp[i][0] = i</code> (cost of transforming a string of length <code>i</code> to an empty string is <code>i</code> deletions).</li>
+                <li><code>dp[0][j] = j</code> (cost of transforming an empty string to a string of length <code>j</code> is <code>j</code> insertions).</li>
+            </ul>
+        </li>
+        <li>For <code>i > 0</code> and <code>j > 0</code>:
+            <ul>
+                <li>If <code>string1[i-1] == string2[j-1]</code> (current characters match):
+                    <code>dp[i][j] = dp[i-1][j-1]</code> (no additional cost)</li>
+                <li>Else (current characters do not match):
+                    <code>dp[i][j] = 1 + min(dp[i-1][j],   // Deletion (delete string1[i-1])</code>
+                                  <code>dp[i][j-1],   // Insertion (insert string2[j-1])</code>
+                                  <code>dp[i-1][j-1]) // Substitution (change string1[i-1] to string2[j-1])</code></li>
+            </ul>
+        </li>
+    </ul>
+    <p><strong>Algorithm Steps:</strong></p>
+    <ol>
+        <li>Create a 2D <code>dp</code> table of size <code>(m+1) x (n+1)</code>, where <code>m</code> and <code>n</code> are the lengths of <code>string1</code> and <code>string2</code>.</li>
+        <li>Initialize the first row and first column according to the base cases.</li>
+        <li>Fill the rest of the <code>dp</code> table iteratively using the recurrence relation.</li>
+        <li>The final <code>edit distance</code> will be <code>dp[m][n]</code>.</li>
+    </ol>
+    <p><strong>Time Complexity:</strong> <code>O(M <em> N)</code>, where <code>M</code> and <code>N</code> are the lengths of the two strings. Each cell in the <code>M x N</code> DP table is computed in constant time.</p>
+    <p><strong>Space Complexity:</strong> <code>O(M </em> N)</code> for the <code>dp</code> table. Can be optimized to <code>O(min(M, N))</code> by only storing the current and previous rows/columns.</p>
+</div>
+
+<div id="code-implementations">
+    <pre data-lang="python"><code class="language-python">def edit_distance(str1, str2):
+    m = len(str1)
+    n = len(str2)
+
+    # dp[i][j] stores the edit distance between str1[0..i-1] and str2[0..j-1]
+    dp = [[0 for _ in range(n + 1)] for _ in range(m + 1)]
+
+    # Initialize base cases
+    # If str1 is empty, distance is number of insertions to get str2
+    for i in range(m + 1):
+        dp[i][0] = i
+    # If str2 is empty, distance is number of deletions to get str1
+    for j in range(n + 1):
+        dp[0][j] = j
+
+    # Fill dp table
+    for i in range(1, m + 1):
+        for j in range(1, n + 1):
+            if str1[i - 1] == str2[j - 1]:
+                dp[i][j] = dp[i - 1][j - 1] # Characters match, no cost
+            else:
+                dp[i][j] = 1 + min(dp[i - 1][j],      # Deletion
+                                   dp[i][j - 1],      # Insertion
+                                   dp[i - 1][j - 1])  # Substitution
+    
+    return dp[m][n]
+
+# Example
+# str1 = "kitten"
+# str2 = "sitting"
+# print(edit_distance(str1, str2)) # 3 (k -> s, e -> i, _ -> g)
+</code></pre>
+
+    <pre data-lang="javascript"><code class="language-javascript">function editDistance(str1, str2) {
+    const m = str1.length;
+    const n = str2.length;
+
+    // dp[i][j] stores the edit distance between str1[0..i-1] and str2[0..j-1]
+    const dp = Array(m + 1).fill(0).map(() => Array(n + 1).fill(0));
+
+    // Initialize base cases
+    // If str1 is empty, distance is number of insertions to get str2
+    for (let i = 0; i <= m; i++) {
+        dp[i][0] = i;
+    }
+    // If str2 is empty, distance is number of deletions to get str1
+    for (let j = 0; j <= n; j++) {
+        dp[0][j] = j;
+    }
+
+    // Fill dp table
+    for (let i = 1; i <= m; i++) {
+        for (let j = 1; j <= n; j++) {
+            if (str1[i - 1] === str2[j - 1]) {
+                dp[i][j] = dp[i - 1][j - 1]; // Characters match, no cost
+            } else {
+                dp[i][j] = 1 + Math.min(dp[i - 1][j],      // Deletion
+                                        dp[i][j - 1],      // Insertion
+                                        dp[i - 1][j - 1]);  // Substitution
+            }
+        }
+    }
+    
+    return dp[m][n];
+}
+
+// const str1 = "kitten";
+// const str2 = "sitting";
+// console.log(editDistance(str1, str2)); // 3
+</code></pre>
+
+    <pre data-lang="typescript"><code class="language-typescript">function editDistanceTS(str1: string, str2: string): number {
+    const m = str1.length;
+    const n = str2.length;
+
+    // dp[i][j] stores the edit distance between str1[0..i-1] and str2[0..j-1]
+    const dp: number[][] = Array(m + 1).fill(0).map(() => Array(n + 1).fill(0));
+
+    // Initialize base cases
+    // If str1 is empty, distance is number of insertions to get str2
+    for (let i = 0; i <= m; i++) {
+        dp[i][0] = i;
+    }
+    // If str2 is empty, distance is number of deletions to get str1
+    for (let j = 0; j <= n; j++) {
+        dp[0][j] = j;
+    }
+
+    // Fill dp table
+    for (let i = 1; i <= m; i++) {
+        for (let j = 1; j <= n; j++) {
+            if (str1[i - 1] === str2[j - 1]) {
+                dp[i][j] = dp[i - 1][j - 1]; // Characters match, no cost
+            } else {
+                dp[i][j] = 1 + Math.min(dp[i - 1][j],      // Deletion
+                                        dp[i][j - 1],      // Insertion
+                                        dp[i - 1][j - 1]);  // Substitution
+            }
+        }
+    }
+    
+    return dp[m][n];
+}
+
+// const str1TS = "kitten";
+// const str2TS = "sitting";
+// console.log(editDistanceTS(str1TS, str2TS)); // 3
+</code></pre>
+    
+    <pre data-lang="cpp"><code class="language-cpp">#include &lt;string&gt;
+#include &lt;vector&gt;
+#include &lt;iostream&gt;
+#include &lt;algorithm&gt; // For std::min
+
+int editDistance(const std::string& str1, const std::string& str2) {
+    int m = str1.length();
+    int n = str2.length();
+
+    // dp[i][j] stores the edit distance between str1[0..i-1] and str2[0..j-1]
+    std::vector&lt;std::vector&lt;int&gt;&gt; dp(m + 1, std::vector&lt;int&gt;(n + 1));
+
+    // Initialize base cases
+    // If str1 is empty, distance is number of insertions to get str2
+    for (int i = 0; i <= m; i++) {
+        dp[i][0] = i;
+    }
+    // If str2 is empty, distance is number of deletions to get str1
+    for (int j = 0; j <= n; j++) {
+        dp[0][j] = j;
+    }
+
+    // Fill dp table
+    for (int i = 1; i <= m; i++) {
+        for (int j = 1; j <= n; j++) {
+            if (str1[i - 1] == str2[j - 1]) {
+                dp[i][j] = dp[i - 1][j - 1]; // Characters match, no cost
+            } else {
+                dp[i][j] = 1 + std::min({dp[i - 1][j],      // Deletion
+                                        dp[i][j - 1],      // Insertion
+                                        dp[i - 1][j - 1]});  // Substitution
+            }
+        }
+    }
+    
+    return dp[m][n];
+}
+
+// int main() {
+//     std::string str1 = "kitten";
+//     std::string str2 = "sitting";
+//     std::cout << "Edit Distance: " << editDistance(str1, str2) << std::endl; // 3
+//     return 0;
+// }
+</code></pre>
+
+    <pre data-lang="go"><code class="language-go">package main
+
+import "fmt"
+
+func editDistance(str1, str2 string) int {
+    m := len(str1)
+    n := len(str2)
+
+    // dp[i][j] stores the edit distance between str1[0..i-1] and str2[0..j-1]
+    dp := make([][]int, m+1)
+    for i := range dp {
+        dp[i] = make([]int, n+1)
+    }
+
+    // Initialize base cases
+    // If str1 is empty, distance is number of insertions to get str2
+    for i := 0; i <= m; i++ {
+        dp[i][0] = i
+    }
+    // If str2 is empty, distance is number of deletions to get str1
+    for j := 0; j <= n; j++ {
+        dp[0][j] = j
+    }
+
+    // Fill dp table
+    for i := 1; i <= m; i++ {
+        for j := 1; j <= n; j++ {
+            if str1[i-1] == str2[j-1] {
+                dp[i][j] = dp[i-1][j-1] // Characters match, no cost
+            } else {
+                dp[i][j] = 1 + min(dp[i-1][j],      // Deletion
+                                   dp[i][j-1],      // Insertion
+                                   dp[i-1][j-1])  // Substitution
+            }
+        }
+    }
+    
+    return dp[m][n]
+}
+
+func min(a, b, c int) int {
+    if a < b {
+        if a < c {
+            return a
+        }
+        return c
+    } else {
+        if b < c {
+            return b
+        }
+        return c
+    }
+}
+
+// func main() {
+//     str1 := "kitten"
+//     str2 := "sitting"
+//     fmt.Println("Edit Distance:", editDistance(str1, str2)) // 3
+// }
+</code></pre>
+    
+    <pre data-lang="d"><code class="language-d">import std.stdio;
+import std.array;
+import std.algorithm; // For std.algorithm.min
+
+int editDistance(string str1, string str2) {
+    auto m = str1.length;
+    auto n = str2.length;
+
+    // dp[i][j] stores the edit distance between str1[0..i-1] and str2[0..j-1]
+    auto dp = new int[m + 1][n + 1];
+
+    // Initialize base cases
+    // If str1 is empty, distance is number of insertions to get str2
+    foreach (i; 0 .. m + 1) {
+        dp[i][0] = i;
+    }
+    // If str2 is empty, distance is number of deletions to get str1
+    foreach (j; 0 .. n + 1) {
+        dp[0][j] = j;
+    }
+
+    // Fill dp table
+    foreach (i; 1 .. m + 1) {
+        foreach (j; 1 .. n + 1) {
+            if (str1[i - 1] == str2[j - 1]) {
+                dp[i][j] = dp[i - 1][j - 1]; // Characters match, no cost
+            } else {
+                dp[i][j] = 1 + min(dp[i - 1][j],      // Deletion
+                                   dp[i][j - 1],      // Insertion
+                                   dp[i - 1][j - 1]);  // Substitution
+            }
+        }
+    }
+    
+    return dp[m][n];
+}
+
+// void main() {
+//     string str1 = "kitten";
+//     string str2 = "sitting";
+//     writeln("Edit Distance: ", editDistance(str1, str2)); // 3
+// }
+</code></pre>
+</div>
+
+<div id="code-explanation-content"><div class="markdown-content">
+    <h3>Code Walkthrough</h3>
+    <p>The <code>Edit Distance</code> algorithm uses <code>dynamic programming</code> to fill a 2D table representing the <code>edit distance</code> between all prefixes of the two input strings.</p>
+    <div class="explanation-fence">
+<strong>Initialization:</strong>
+<ul>
+    <li>A 2D <code>dp</code> table (<code>m+1</code> rows, <code>n+1</code> columns) is created.</li>
+    <li>The first row <code>dp[i][0]</code> is initialized from 0 to <code>m</code>, representing the cost of deleting <code>i</code> characters from <code>str1</code> to make it empty.</li>
+    <li>The first column <code>dp[0][j]</code> is initialized from 0 to <code>n</code>, representing the cost of inserting <code>j</code> characters to make an empty string <code>str2</code>.</li>
+</ul>
+<br>
+<strong>Filling the DP Table:</strong>
+<ul>
+    <li>The <code>dp</code> table is filled iteratively for <code>i</code> from 1 to <code>m</code> and <code>j</code> from 1 to <code>n</code>.</li>
+    <li>For each cell <code>dp[i][j]</code>:
+        <ul>
+            <li>If <code>str1[i-1]</code> (the <code>i</code>-th character of <code>str1</code>) matches <code>str2[j-1]</code> (the <code>j</code>-th character of <code>str2</code>), then no <code>edit</code> operation is needed for these characters. The <code>edit distance</code> is simply inherited from the previous diagonal cell: <code>dp[i-1][j-1]</code>.</li>
+            <li>If the characters do not match, an <code>edit</code> operation (deletion, insertion, or substitution) is required. The cost of this operation is <code>1</code> plus the minimum <code>edit distance</code> from three possibilities:
+                <ul>
+                    <li><code>dp[i-1][j]</code>: Cost of deleting <code>str1[i-1]</code>.</li>
+                    <li><code>dp[i][j-1]</code>: Cost of inserting <code>str2[j-1]</code>.</li>
+                    <li><code>dp[i-1][j-1]</code>: Cost of substituting <code>str1[i-1]</code> with <code>str2[j-1]</code>.</li>
+                </ul>
+            </li>
+        </ul>
+    </li>
+</ul>
+<br>
+<strong>Result:</strong>
+<ul>
+    <li>The final <code>edit distance</code> between <code>str1</code> and <code>str2</code> is stored in <code>dp[m][n]</code>.</li>
+</ul>
+    </div></div>
+</div>
+
+<div id="application-content"><div class="markdown-content">
+    <h3>Application</h3>
+    <p>The <code>Edit Distance (Levenshtein Distance)</code> algorithm has a wide array of practical applications:</p>
+    <ul>
+        <li><strong>Spell Checkers and Autocorrection:</strong> Suggesting corrections for misspelled words by finding dictionary words with the minimum <code>edit distance</code>.</li>
+        <li><strong>DNA Sequence Alignment:</strong> Measuring the similarity between biological sequences to understand evolutionary relationships or identify functional similarities.</li>
+        <li><strong>Plagiarism Detection:</strong> Quantifying the textual similarity between documents.</li>
+        <li><strong>Optical Character Recognition (OCR) Error Correction:</strong> Correcting errors introduced during the scanning of text.</li>
+        <li><strong>Natural Language Processing (NLP):</strong> Used in tasks like machine translation evaluation, fuzzy string matching, and text comparison.</li>
+    </ul>
+    </p>
+</div></div>

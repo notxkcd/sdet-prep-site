@@ -1,0 +1,666 @@
+<div id="explanation-content">
+    <p><code>Kruskal's Algorithm</code> is a greedy algorithm that finds a <code>minimum spanning tree (MST)</code> for a connected, undirected, weighted graph. Similar to <code>Prim's Algorithm</code>, an <code>MST</code> is a subset of the <code>edges</code> that connects all the <code>vertices</code> together, without any <code>cycles</code> and with the minimum possible total <code>edge weight</code>.</p>
+    <p>Unlike Prim's, which grows the <code>MST</code> from a starting <code>vertex</code>, Kruskal's algorithm considers <code>edges</code> in increasing order of their <code>weights</code> and adds them to the <code>MST</code> if they do not form a <code>cycle</code>. It uses a <code>Disjoint Set Union (DSU)</code> data structure to efficiently detect cycles.</p>
+</div>
+
+<div id="expanded-explanation-content">
+    <h3>How it Works (Expanded)</h3>
+    <p><code>Kruskal's Algorithm</code> operates on the entire graph at once, focusing on individual <code>edges</code>. The crucial part is checking for <code>cycles</code>, which is where the <code>DSU</code> data structure comes in handy. A <code>DSU</code> can tell us if two <code>vertices</code> are already connected (i.e., part of the same component) in near-constant time on average.</p>
+    <div class="explanation-fence">
+Example: Finding MST using Kruskal's
+Graph Edges: (A,B,4), (A,C,2), (B,C,1), (B,D,5), (C,D,8)
+
+1. Sort edges by weight: (B,C,1), (A,C,2), (A,B,4), (B,D,5), (C,D,8)
+
+2. Process sorted edges:
+   - (B,C,1): B and C not connected. Add to MST. DSU: {A},{B,C},{D}. MST: {(B,C,1)}.
+   - (A,C,2): A and C not connected. Add to MST. DSU: {A,B,C},{D}. MST: {(B,C,1), (A,C,2)}.
+   - (A,B,4): A and B ARE connected (in {A,B,C}). Skip (would form a cycle).
+   - (B,D,5): B and D not connected. Add to MST. DSU: {A,B,C,D}. MST: {(B,C,1), (A,C,2), (B,D,5)}.
+   - (C,D,8): C and D ARE connected (in {A,B,C,D}). Skip.
+
+All vertices connected. MST formed. Total weight = 1+2+5=8.
+    </div>
+    <p><strong>Algorithm Steps:</strong></p>
+    <ol>
+        <li>Create a list of all <code>edges</code> in the graph.</li>
+        <li>Sort all <code>edges</code> in non-decreasing order of their <code>weights</code>.</li>
+        <li>Initialize a <code>Disjoint Set Union (DSU)</code> data structure where each <code>vertex</code> is in its own set.</li>
+        <li>Initialize an empty <code>MST</code> set.</li>
+        <li>Iterate through the sorted <code>edges</code>:
+            <ul>
+                <li>For each <code>edge (u, v)</code> with <code>weight w</code>:
+                    <ul>
+                        <li>If <code>u</code> and <code>v</code> are not already in the same set (i.e., <code>find(u) != find(v)</code> using <code>DSU</code>):
+                            <ul>
+                                <li>Add the <code>edge (u, v)</code> to the <code>MST</code>.</li>
+                                <li>Union the sets containing <code>u</code> and <code>v</code> (i.e., <code>union(u, v)</code> using <code>DSU</code>).</li>
+                                <li>If the <code>MST</code> has <code>V-1</code> edges (where <code>V</code> is the number of vertices), then all vertices are connected, and the <code>MST</code> is complete. Terminate.</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+    </ol>
+    <p><strong>Time Complexity:</strong> <code>O(E log E)</code> or <code>O(E log V)</code>. Sorting the <code>edges</code> takes <code>O(E log E)</code> time. The <code>DSU</code> operations (find and union) take nearly constant time on average, so iterating through the edges and performing <code>DSU</code> operations takes effectively <code>O(E α(V))</code> time, where <code>α</code> is the inverse Ackermann function, which is very slow-growing. Since <code>E</code> can be at most <code>V^2</code>, <code>log E</code> is at most <code>2 log V</code>, so <code>O(E log E)</code> dominates.</p>
+    <p><strong>Space Complexity:</strong> <code>O(V + E)</code> for storing the <code>edges</code> and the <code>DSU</code> structure.</p>
+</div>
+
+<div id="code-implementations">
+    <pre data-lang="python"><code class="language-python"># Disjoint Set Union (DSU) helper class
+class DSU:
+    def __init__(self, n_nodes):
+        self.parent = list(range(n_nodes))
+        self.rank = [0] <em> n_nodes # Used for union by rank optimization
+
+    def find(self, i):
+        if self.parent[i] == i:
+            return i
+        self.parent[i] = self.find(self.parent[i]) # Path compression
+        return self.parent[i]
+
+    def union(self, i, j):
+        root_i = self.find(i)
+        root_j = self.find(j)
+
+        if root_i != root_j:
+            # Union by rank
+            if self.rank[root_i] < self.rank[root_j]:
+                self.parent[root_i] = root_j
+            elif self.rank[root_i] > self.rank[root_j]:
+                self.parent[root_j] = root_i
+            else:
+                self.parent[root_j] = root_i
+                self.rank[root_i] += 1
+            return True
+        return False
+
+def kruskal_algorithm(num_vertices, edges):
+    """
+    Finds the Minimum Spanning Tree (MST) of a connected, undirected graph
+    using Kruskal's algorithm.
+    <code>num_vertices</code>: total number of vertices (e.g., 4 for A, B, C, D)
+    <code>edges</code>: list of (weight, u, v) tuples
+    """
+    
+    # 1. Sort all edges by their weights
+    edges.sort()
+    
+    dsu = DSU(num_vertices)
+    mst_edges = []
+    min_cost = 0
+    num_edges_in_mst = 0
+
+    # 2. Iterate through sorted edges
+    for weight, u, v in edges:
+        if dsu.union(u, v): # If adding this edge does not form a cycle
+            mst_edges.append((u, v, weight))
+            min_cost += weight
+            num_edges_in_mst += 1
+            
+            # Optimization: If MST has V-1 edges, it's complete
+            if num_edges_in_mst == num_vertices - 1:
+                break
+    
+    # Check if all vertices were connected
+    if num_edges_in_mst != num_vertices - 1:
+        return "Graph is not connected, MST not possible"
+
+    return mst_edges, min_cost
+
+# Example
+# num_vertices = 4 (for A, B, C, D, mapped to 0, 1, 2, 3)
+# edges = [
+#     (1, 1, 2), # B-C, weight 1
+#     (2, 0, 2), # A-C, weight 2
+#     (4, 0, 1), # A-B, weight 4
+#     (5, 1, 3), # B-D, weight 5
+#     (8, 2, 3)  # C-D, weight 8
+# ]
+# # Expected MST edges: [(1, 1, 2), (2, 0, 2), (5, 1, 3)] (total weight 8)
+# mst, cost = kruskal_algorithm(num_vertices, edges)
+# print("MST Edges:", mst)
+# print("Minimum Cost:", cost)
+</code></pre>
+
+    <pre data-lang="javascript"><code class="language-javascript">// Disjoint Set Union (DSU) helper class
+class DSU {
+    constructor(nNodes) {
+        this.parent = Array.from({ length: nNodes }, (_, i) => i);
+        this.rank = new Array(nNodes).fill(0);
+    }
+
+    find(i) {
+        if (this.parent[i] === i) {
+            return i;
+        }
+        this.parent[i] = this.find(this.parent[i]); // Path compression
+        return this.parent[i];
+    }
+
+    union(i, j) {
+        const rootI = this.find(i);
+        const rootJ = this.find(j);
+
+        if (rootI !== rootJ) {
+            // Union by rank
+            if (this.rank[rootI] < this.rank[rootJ]) {
+                this.parent[rootI] = rootJ;
+            } else if (this.rank[rootI] > this.rank[rootJ]) {
+                this.parent[rootJ] = rootI;
+            } else {
+                this.parent[rootJ] = rootI;
+                this.rank[rootI]++;
+            }
+            return true;
+        }
+        return false;
+    }
+}
+
+function kruskalAlgorithm(numVertices, edges) {
+    // 1. Sort all edges by their weights
+    edges.sort((a, b) => a[0] - b[0]); // Edges format: [weight, u, v]
+    
+    const dsu = new DSU(numVertices);
+    const mstEdges = [];
+    let minCost = 0;
+    let numEdgesInMst = 0;
+
+    // 2. Iterate through sorted edges
+    for (const [weight, u, v] of edges) {
+        if (dsu.union(u, v)) { // If adding this edge does not form a cycle
+            mstEdges.push([u, v, weight]);
+            minCost += weight;
+            numEdgesInMst++;
+            
+            // Optimization: If MST has V-1 edges, it's complete
+            if (numEdgesInMst === numVertices - 1) {
+                break;
+            }
+        }
+    }
+    
+    // Check if all vertices were connected
+    if (numEdgesInMst !== numVertices - 1) {
+        return "Graph is not connected, MST not possible";
+    }
+
+    return { mstEdges, minCost };
+}
+
+// const numVertices = 4; // for A, B, C, D (mapped to 0, 1, 2, 3)
+// const edges = [
+//     [1, 1, 2], // B-C, weight 1
+//     [2, 0, 2], // A-C, weight 2
+//     [4, 0, 1], // A-B, weight 4
+//     [5, 1, 3], // B-D, weight 5
+//     [8, 2, 3]  // C-D, weight 8
+// ];
+// const { mstEdges, minCost } = kruskalAlgorithm(numVertices, edges);
+// console.log("MST Edges:", mstEdges);
+// console.log("Minimum Cost:", minCost); // Expected: 8
+</code></pre>
+
+    <pre data-lang="typescript"><code class="language-typescript">// Disjoint Set Union (DSU) helper class
+class DSU {
+    public parent: number[];
+    public rank: number[];
+
+    constructor(nNodes: number) {
+        this.parent = Array.from({ length: nNodes }, (_, i) => i);
+        this.rank = new Array(nNodes).fill(0);
+    }
+
+    find(i: number): number {
+        if (this.parent[i] === i) {
+            return i;
+        }
+        this.parent[i] = this.find(this.parent[i]); // Path compression
+        return this.parent[i];
+    }
+
+    union(i: number, j: number): boolean {
+        const rootI = this.find(i);
+        const rootJ = this.find(j);
+
+        if (rootI !== rootJ) {
+            // Union by rank
+            if (this.rank[rootI] < this.rank[rootJ]) {
+                this.parent[rootI] = rootJ;
+            } else if (this.rank[rootI] > this.rank[rootJ]) {
+                this.parent[rootJ] = rootI;
+            } else {
+                this.parent[rootJ] = rootI;
+                this.rank[rootI]++;
+            }
+            return true;
+        }
+        return false;
+    }
+}
+
+type Edge = [number, number, number]; // [weight, u, v]
+
+function kruskalAlgorithmTS(numVertices: number, edges: Edge[]): { mstEdges: Edge[]; minCost: number } | string {
+    // 1. Sort all edges by their weights
+    edges.sort((a, b) => a[0] - b[0]);
+    
+    const dsu = new DSU(numVertices);
+    const mstEdges: Edge[] = [];
+    let minCost = 0;
+    let numEdgesInMst = 0;
+
+    // 2. Iterate through sorted edges
+    for (const [weight, u, v] of edges) {
+        if (dsu.union(u, v)) { // If adding this edge does not form a cycle
+            mstEdges.push([u, v, weight]);
+            minCost += weight;
+            numEdgesInMst++;
+            
+            // Optimization: If MST has V-1 edges, it's complete
+            if (numEdgesInMst === numVertices - 1) {
+                break;
+            }
+        }
+    }
+    
+    // Check if all vertices were connected
+    if (numEdgesInMst !== numVertices - 1) {
+        return "Graph is not connected, MST not possible";
+    }
+
+    return { mstEdges, minCost };
+}
+
+// const numVerticesTS = 4; // for A, B, C, D (mapped to 0, 1, 2, 3)
+// const edgesTS: Edge[] = [
+//     [1, 1, 2], // B-C, weight 1
+//     [2, 0, 2], // A-C, weight 2
+//     [4, 0, 1], // A-B, weight 4
+//     [5, 1, 3], // B-D, weight 5
+//     [8, 2, 3]  // C-D, weight 8
+// ];
+// const resultTS = kruskalAlgorithmTS(numVerticesTS, edgesTS);
+// if (typeof resultTS !== 'string') {
+//     console.log("MST Edges:", resultTS.mstEdges);
+//     console.log("Minimum Cost:", resultTS.minCost); // Expected: 8
+// } else {
+//     console.log(resultTS);
+// }
+</code></pre>
+
+    <pre data-lang="cpp"><code class="language-cpp">#include &lt;vector&gt;
+#include &lt;iostream&gt;
+#include &lt;algorithm&gt; // For std::sort
+
+// Edge structure
+struct Edge {
+    int weight;
+    int u, v;
+
+    bool operator&lt;(const Edge& other) const {
+        return weight < other.weight;
+    }
+};
+
+// Disjoint Set Union (DSU) helper class
+class DSU {
+public:
+    std::vector&lt;int&gt; parent;
+    std::vector&lt;int&gt; rank;
+
+    DSU(int n_nodes) {
+        parent.resize(n_nodes);
+        for (int i = 0; i < n_nodes; ++i) {
+            parent[i] = i;
+        }
+        rank.assign(n_nodes, 0);
+    }
+
+    int find(int i) {
+        if (parent[i] == i) {
+            return i;
+        }
+        return parent[i] = find(parent[i]); // Path compression
+    }
+
+    bool unite(int i, int j) { // Changed name from union to unite to avoid keyword conflict
+        int root_i = find(i);
+        int root_j = find(j);
+
+        if (root_i != root_j) {
+            // Union by rank
+            if (rank[root_i] < rank[root_j]) {
+                parent[root_i] = root_j;
+            } else if (rank[root_i] > rank[root_j]) {
+                parent[root_j] = root_i;
+            } else {
+                parent[root_j] = root_i;
+                rank[root_i]++;
+            }
+            return true;
+        }
+        return false;
+    }
+};
+
+std::pair&lt;std::vector&lt;Edge&gt;, int&gt; kruskalAlgorithm(int num_vertices, std::vector&lt;Edge&gt; edges) {
+    // 1. Sort all edges by their weights
+    std::sort(edges.begin(), edges.end());
+    
+    DSU dsu(num_vertices);
+    std::vector&lt;Edge&gt; mst_edges;
+    int min_cost = 0;
+    int num_edges_in_mst = 0;
+
+    // 2. Iterate through sorted edges
+    for (const auto& edge : edges) {
+        if (dsu.unite(edge.u, edge.v)) { // If adding this edge does not form a cycle
+            mst_edges.push_back(edge);
+            min_cost += edge.weight;
+            num_edges_in_mst++;
+            
+            // Optimization: If MST has V-1 edges, it's complete
+            if (num_edges_in_mst == num_vertices - 1) {
+                break;
+            }
+        }
+    }
+    
+    // Check if all vertices were connected
+    if (num_edges_in_mst != num_vertices - 1) {
+        // Return an empty MST and 0 cost, or throw an exception
+        return {{}, -1}; 
+    }
+
+    return {mst_edges, min_cost};
+}
+
+// int main() {
+//     int num_vertices = 4; // for A, B, C, D (mapped to 0, 1, 2, 3)
+//     std::vector<Edge> edges = {
+//         {1, 1, 2}, // B-C, weight 1
+//         {2, 0, 2}, // A-C, weight 2
+//         {4, 0, 1}, // A-B, weight 4
+//         {5, 1, 3}, // B-D, weight 5
+//         {8, 2, 3}  // C-D, weight 8
+//     };
+//     auto result = kruskalAlgorithm(num_vertices, edges);
+//     std::cout << "Minimum Cost: " << result.second << std::endl; // 8
+//     for(const auto& edge : result.first) {
+//         std::cout << edge.u << "-" << edge.v << " (" << edge.weight << ")" << std::endl;
+//     }
+//     return 0;
+// }
+</code></pre>
+
+    <pre data-lang="go"><code class="language-go">package main
+
+import "fmt"
+
+// DSU (Disjoint Set Union) helper struct
+type DSU struct {
+    parent []int
+    rank   []int
+}
+
+func NewDSU(nNodes int) </em>DSU {
+    parent := make([]int, nNodes)
+    for i := range parent {
+        parent[i] = i
+    }
+    return &DSU{
+        parent: parent,
+        rank:   make([]int, nNodes),
+    }
+}
+
+func (d <em>DSU) Find(i int) int {
+    if d.parent[i] == i {
+        return i
+    }
+    d.parent[i] = d.Find(d.parent[i]) // Path compression
+    return d.parent[i]
+}
+
+func (d </em>DSU) Union(i, j int) bool {
+    rootI := d.Find(i)
+    rootJ := d.Find(j)
+
+    if rootI != rootJ {
+        // Union by rank
+        if d.rank[rootI] < d.rank[rootJ] {
+            d.parent[rootI] = rootJ
+        } else if d.rank[rootI] > d.rank[rootJ] {
+            d.parent[rootJ] = rootI
+        } else {
+            d.parent[rootJ] = rootI
+            d.rank[rootI]++
+        }
+        return true
+    }
+    return false
+}
+
+// Edge structure
+type KruskalEdge struct {
+    Weight int
+    U, V   int
+}
+
+// Custom sort for Kruskal's edges
+type ByWeight []KruskalEdge
+
+func (a ByWeight) Len() int           { return len(a) }
+func (a ByWeight) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a ByWeight) Less(i, j int) bool { return a[i].Weight < a[j].Weight }
+
+func kruskalAlgorithm(numVertices int, edges []KruskalEdge) ([]KruskalEdge, int, error) {
+    // 1. Sort all edges by their weights
+    sort.Sort(ByWeight(edges))
+    
+    dsu := NewDSU(numVertices)
+    mstEdges := []KruskalEdge{}
+    minCost := 0
+    numEdgesInMst := 0
+
+    // 2. Iterate through sorted edges
+    for _, edge := range edges {
+        if dsu.Union(edge.U, edge.V) { // If adding this edge does not form a cycle
+            mstEdges = append(mstEdges, edge)
+            minCost += edge.Weight
+            numEdgesInMst++
+            
+            // Optimization: If MST has V-1 edges, it's complete
+            if numEdgesInMst == numVertices - 1 {
+                break
+            }
+        }
+    }
+    
+    // Check if all vertices were connected
+    if numEdgesInMst != numVertices - 1 {
+        return nil, 0, fmt.Errorf("Graph is not connected, MST not possible")
+    }
+
+    return mstEdges, minCost, nil
+}
+
+// func main() {
+//     numVertices := 4 // for A, B, C, D (mapped to 0, 1, 2, 3)
+//     edges := []KruskalEdge{
+//         {Weight: 1, U: 1, V: 2}, // B-C
+//         {Weight: 2, U: 0, V: 2}, // A-C
+//         {Weight: 4, U: 0, V: 1}, // A-B
+//         {Weight: 5, U: 1, V: 3}, // B-D
+//         {Weight: 8, U: 2, V: 3}, // C-D
+//     }
+//     mst, cost, err := kruskalAlgorithm(numVertices, edges)
+//     if err != nil {
+//         fmt.Println(err)
+//     } else {
+//         fmt.Println("Minimum Cost:", cost) // 8
+//         for _, edge := range mst {
+//             fmt.Printf("%d-%d (%d)\n", edge.U, edge.V, edge.Weight)
+//         }
+//     }
+// }
+</code></pre>
+    
+    <pre data-lang="d"><code class="language-d">import std.stdio;
+import std.array;
+import std.algorithm; // For std.algorithm.sort
+import std.range; // For std.range.iota
+
+// DSU (Disjoint Set Union) helper class
+class DSU {
+    int[] parent;
+    int[] rank;
+
+    this(int nNodes) {
+        parent = iota(0, nNodes).array;
+        rank = new int[nNodes].replicate(0).array;
+    }
+
+    int find(int i) {
+        if (parent[i] == i) {
+            return i;
+        }
+        parent[i] = find(parent[i]); // Path compression
+        return parent[i];
+    }
+
+    bool unionSets(int i, int j) { // Changed name from union to unionSets to avoid keyword conflict
+        int rootI = find(i);
+        int rootJ = find(j);
+
+        if (rootI != rootJ) {
+            // Union by rank
+            if (rank[rootI] < rank[rootJ]) {
+                parent[rootI] = rootJ;
+            } else if (rank[rootI] > rank[rootJ]) {
+                parent[rootJ] = rootI;
+            } else {
+                parent[rootJ] = rootI;
+                rank[rootI]++;
+            }
+            return true;
+        }
+        return false;
+    }
+}
+
+// Edge structure
+struct KruskalEdge {
+    int weight;
+    int u, v;
+
+    int opCmp(const KruskalEdge other) const {
+        return this.weight.cmp(other.weight);
+    }
+}
+
+Tuple!(KruskalEdge[], int, string) kruskalAlgorithm(int numVertices, KruskalEdge[] edges) {
+    // 1. Sort all edges by their weights
+    edges.sort!((a, b) => a.weight < b.weight);
+    
+    auto dsu = new DSU(numVertices);
+    KruskalEdge[] mstEdges;
+    int minCost = 0;
+    int numEdgesInMst = 0;
+
+    // 2. Iterate through sorted edges
+    foreach (edge; edges) {
+        if (dsu.unionSets(edge.u, edge.v)) { // If adding this edge does not form a cycle
+            mstEdges ~= edge;
+            minCost += edge.weight;
+            numEdgesInMst++;
+            
+            // Optimization: If MST has V-1 edges, it's complete
+            if (numEdgesInMst == numVertices - 1) {
+                break;
+            }
+        }
+    }
+    
+    // Check if all vertices were connected
+    if (numEdgesInMst != numVertices - 1) {
+        return typeof(return)(null, 0, "Graph is not connected, MST not possible");
+    }
+
+    return typeof(return)(mstEdges, minCost, "");
+}
+
+// void main() {
+//     int numVertices = 4; // for A, B, C, D (mapped to 0, 1, 2, 3)
+//     KruskalEdge[] edges = [
+//         KruskalEdge(1, 1, 2), // B-C
+//         KruskalEdge(2, 0, 2), // A-C
+//         KruskalEdge(4, 0, 1), // A-B
+//         KruskalEdge(5, 1, 3), // B-D
+//         KruskalEdge(8, 2, 3)  // C-D
+//     ];
+//     auto result = kruskalAlgorithm(numVertices, edges);
+//     if (result.error.length > 0) {
+//         writeln(result.error);
+//     } else {
+//         writeln("Minimum Cost: ", result.minCost); // 8
+//         foreach (edge; result.mstEdges) {
+//             writefln("%s-%s (%s)", edge.u, edge.v, edge.weight);
+//         }
+//     }
+// }
+</code></pre>
+    
+    <pre data-lang="html"><code class="language-html">&lt;div id="code-explanation-content"&gt;
+    &lt;h3&gt;Code Walkthrough&lt;/h3&gt;
+    &lt;p&gt;<code>Kruskal's Algorithm</code> leverages a greedy approach combined with the <code>Disjoint Set Union (DSU)</code> data structure to build the <code>MST</code>.&lt;/p&gt;
+    <div class="explanation-fence">
+<strong><code>DSU</code> Class (Helper):</strong>
+<ul>
+    <li><code>parent</code>: An array where <code>parent[i]</code> stores the parent of element <code>i</code>. Used to represent sets.</li>
+    <li><code>rank</code>: An array used for "union by rank" optimization, which keeps the tree flat.</li>
+    <li><code>find(i)</code>: Finds the representative (root) of the set containing <code>i</code>. Implements "path compression" for efficiency.</li>
+    <li><code>union(i, j)</code>: Merges the sets containing <code>i</code> and <code>j</code> if they are different. Implements "union by rank" for efficiency. Returns <code>True</code> if a union occurred (i.e., <code>i</code> and <code>j</code> were in different sets), <code>False</code> otherwise.</li>
+</ul>
+<br>
+<strong><code>kruskal_algorithm(num_vertices, edges)</code> Function:</strong>
+<ul>
+    <li><code>num_vertices</code>: The total number of <code>vertices</code> in the graph.</li>
+    <li><code>edges</code>: A list of <code>tuples/arrays</code> in the format <code>(weight, u, v)</code>.</li>
+</ul>
+<br>
+<strong>Algorithm Steps:</strong>
+<ol>
+    <li><strong>Sort Edges:</strong> All <code>edges</code> are sorted in non-decreasing order of their <code>weights</code>. This is the greedy step: always consider the cheapest available <code>edge</code> first.</li>
+    <li><strong>Initialize <code>DSU</code>:</strong> A <code>DSU</code> object is created with <code>num_vertices</code>. Initially, each <code>vertex</code> is in its own separate set.</li>
+    <li><strong>Iterate Through Sorted Edges:</strong> The algorithm loops through the <code>edges</code> in their sorted order.
+        <ul>
+            <li>For each <code>edge (weight, u, v)</code>:
+                <ul>
+                    <li>It checks if <code>u</code> and <code>v</code> are already in the same connected component using <code>dsu.find(u) == dsu.find(v)</code>. If they are, adding this <code>edge</code> would form a <code>cycle</code>, so it's skipped.</li>
+                    <li>If <code>u</code> and <code>v</code> are in different components, the <code>edge</code> is added to the <code>MST</code> (<code>mst_edges</code>). The <code>cost</code> is updated, and <code>dsu.union(u, v)</code> is performed to merge their components.</li>
+                    <li><strong>Optimization:</strong> If the number of <code>edges</code> in the <code>MST</code> reaches <code>num_vertices - 1</code>, the <code>MST</code> is complete for a connected graph, so the loop can terminate early.</li>
+                </ul>
+            </li>
+        </ul>
+    </li>
+    <li><strong>Connectivity Check:</strong> After the loop, if <code>num_edges_in_mst</code> is not equal to <code>num_vertices - 1</code>, it means the original graph was not connected, and a spanning tree covering all vertices could not be formed.</li>
+</ol>
+    </div>
+</div>
+
+<div id="application-content"><div class="markdown-content">
+    <h3>Application</h3>
+    <p><code>Kruskal's Algorithm</code> is widely used for finding Minimum Spanning Trees in various applications, especially when the graph is sparse (has relatively few edges) or when a simple, globally optimal approach is preferred.</p>
+    <ul>
+        <li><strong>Network Design:</strong> Laying out telecommunication or power grids with minimum cable/wire length.</li>
+        <li><strong>Clustering:</strong> In machine learning and data analysis, for grouping data points into clusters by building a graph where nodes are data points and edge weights are dissimilarity measures.</li>
+        <li><strong>Circuit Design:</strong> Optimizing connections on printed circuit boards to minimize wire usage.</li>
+        <li><strong>Image Processing:</strong> Image segmentation where pixels are nodes and edge weights represent dissimilarity between adjacent pixels.</li>
+        <li><strong>Approximation Algorithms:</strong> Used as a subroutine in some approximation algorithms for NP-hard problems, such as the Traveling Salesperson Problem.</li>
+    </ul>
+    </p>
+</div></div>

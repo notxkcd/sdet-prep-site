@@ -1,0 +1,469 @@
+<div id="explanation-content">
+    <p>A <code>Count-Min Sketch</code> is a probabilistic data structure used to estimate the frequencies of <code>elements</code> in a data stream. It's particularly useful for handling massive datasets where storing exact counts for every unique <code>element</code> is infeasible due to memory constraints.</p>
+    <p>Like a <code>Bloom Filter</code>, it provides a space-efficient approximation, with a tunable trade-off between accuracy and memory usage. It never overestimates an <code>element</code>'s frequency by more than a small, known error margin, but it can overestimate. It never underestimates.</p>
+</div>
+
+<div id="expanded-explanation-content">
+    <h3>How it Works (Expanded)</h3>
+    <p>A <code>Count-Min Sketch</code> consists of a <code>2D array</code> (or matrix) of counters, typically initialized to zeros. The dimensions of this matrix are <code>width (w)</code> and <code>depth (d)</code>:</p>
+    <ul>
+        <li><code>depth (d)</code>: The number of independent <code>hash functions</code> used. Determines the probability of overestimation.</li>
+        <li><code>width (w)</code>: The size of each <code>hash table</code>. Determines the maximum possible overestimation error.</li>
+    </ul>
+    <div class="explanation-fence">
+Conceptual Count-Min Sketch:
+
+      Hash Function 1 (h1) -> min(counter[0][h1(item)],
+      Hash Function 2 (h2) ->             counter[1][h2(item)],
+      Hash Function 3 (h3) ->             counter[2][h3(item)])
+
+Matrix of Counters (w x d):
+      w -> width
+    +---+---+---+---+
+d=0 | 0 | 0 | 0 | 0 |
+    +---+---+---+---+
+d=1 | 0 | 0 | 0 | 0 |
+    +---+---+---+---+
+d=2 | 0 | 0 | 0 | 0 |
+    +---+---+---+---+
+
+Adding an item "x":
+- h1(x) = 1, h2(x) = 3, h3(x) = 0
+- Increment counter[0][1], counter[1][3], counter[2][0]
+
+Querying for "x":
+- Look up counter[0][1], counter[1][3], counter[2][0]
+- The estimate is the minimum of these values.
+    </div>
+    <p><strong>Operations:</strong></p>
+    <ul>
+        <li><strong><code>Add(item, count_increment)</code>:</strong> To add an <code>item</code> (or increment its <code>count</code> by <code>count_increment</code>):
+            <ol>
+                <li>For each of the <code>d hash functions</code>, compute a <code>hash value</code> for the <code>item</code>.</li>
+                <li>This <code>hash value</code> is mapped to an <code>index</code> within the range of <code>width (w)</code>.</li>
+                <li>The counter at <code>matrix[i][hash_i(item)]</code> is incremented by <code>count_increment</code>.</li>
+            </ol>
+        </li>
+        <li><strong><code>Estimate(item)</code>:</strong> To estimate the <code>frequency</code> of an <code>item</code>:
+            <ol>
+                <li>For each of the <code>d hash functions</code>, compute a <code>hash value</code> for the <code>item</code>.</li>
+                <li>Look up the counter at <code>matrix[i][hash_i(item)]</code>.</li>
+                <li>The estimated <code>frequency</code> is the minimum of these <code>d</code> counter values.</li>
+            </ol>
+        </li>
+    </ul>
+    <p>The intuition behind taking the minimum is that an <code>item</code>'s counter can only be incremented when the <code>item</code> itself passes through, or when a collision with another <code>item</code> (that hashes to the same spot) occurs. Thus, the actual <code>count</code> must be less than or equal to any of the <code>d</code> counters, and the minimum of these will be the best (least overestimated) approximation.</p>
+    <p><strong>Parameters:</strong> The <code>width (w)</code> and <code>depth (d)</code> are chosen based on the desired error guarantee (<code>epsilon</code> for overestimation, <code>delta</code> for probability of exceeding <code>epsilon</code>).</p>
+    <p><strong>Time Complexity:</strong> <code>O(d)</code> for both <code>add</code> and <code>estimate</code> operations, as <code>d</code> <code>hash functions</code> are applied.</p>
+    <p><strong>Space Complexity:</strong> <code>O(w <em> d)</code> to store the <code>counters matrix</code>. Both <code>w</code> and <code>d</code> are typically much smaller than the number of unique <code>elements</code>.</p>
+</div>
+
+<div id="code-implementations">
+    <pre data-lang="python"><code class="language-python">import hashlib
+import sys
+
+class CountMinSketch:
+    def __init__(self, width, depth):
+        self.width = width # w: number of columns
+        self.depth = depth # d: number of rows (hash functions)
+        self.table = [[0] </em> width for _ in range(depth)]
+        
+        # Seeds for hash functions. A better approach would be to use universal hashing.
+        self.seeds = [i <em> 997 + 1 for i in range(depth)] # Random seeds
+
+    def _hash(self, item, seed_idx):
+        # Using a simple hash function with different seeds
+        # For production, use better hash functions like MurmurHash
+        h = hashlib.sha256(f"{item}-{self.seeds[seed_idx]}".encode('utf-8')).hexdigest()
+        return int(h, 16) % self.width
+
+    def add(self, item, count=1):
+        for i in range(self.depth):
+            col = self._hash(item, i)
+            self.table[i][col] += count
+
+    def estimate(self, item):
+        min_count = sys.maxsize # Initialize with a very large number
+        for i in range(self.depth):
+            col = self._hash(item, i)
+            min_count = min(min_count, self.table[i][col])
+        return min_count
+
+# Example Usage:
+# sketch = CountMinSketch(width=100, depth=5) # w=100, d=5
+# stream_data = ["apple", "banana", "apple", "cherry", "banana", "apple", "date"]
+
+# for item in stream_data:
+#     sketch.add(item)
+
+# print("Estimated frequency of 'apple':", sketch.estimate("apple"))   # Expected: ~3
+# print("Estimated frequency of 'banana':", sketch.estimate("banana")) # Expected: ~2
+# print("Estimated frequency of 'date':", sketch.estimate("date"))     # Expected: ~1
+# print("Estimated frequency of 'grape':", sketch.estimate("grape"))   # Expected: ~0 (or small non-zero due to collisions)
+</code></pre>
+
+    <pre data-lang="javascript"><code class="language-javascript">class CountMinSketch {
+    constructor(width, depth) {
+        this.width = width; // w: number of columns
+        this.depth = depth; // d: number of rows (hash functions)
+        this.table = Array(depth).fill(0).map(() => new Array(width).fill(0));
+        
+        // Seeds for hash functions. A better approach would be to use universal hashing.
+        this.seeds = Array(depth).fill(0).map((_, i) => i </em> 997 + 1);
+    }
+
+    _hash(item, seedIdx) {
+        // Simple string hash function (FNV-1a variant) combined with a seed
+        // Not cryptographically secure, but often good enough for sketches.
+        const str = <code>${item}-${this.seeds[seedIdx]}</code>;
+        let hash = 0x811c9dc5; // FNV-1a offset basis
+        for (let i = 0; i < str.length; i++) {
+            hash ^= str.charCodeAt(i);
+            hash += (hash << 1) + (hash << 4) + (hash << 7) + (hash << 8) + (hash << 24);
+        }
+        return (hash >>> 0) % this.width; // Ensure positive and within width
+    }
+
+    add(item, count = 1) {
+        for (let i = 0; i < this.depth; i++) {
+            const col = this._hash(item, i);
+            this.table[i][col] += count;
+        }
+    }
+
+    estimate(item) {
+        let minCount = Infinity;
+        for (let i = 0; i < this.depth; i++) {
+            const col = this._hash(item, i);
+            minCount = Math.min(minCount, this.table[i][col]);
+        }
+        return minCount;
+    }
+}
+
+// const sketch = new CountMinSketch(100, 5); // w=100, d=5
+// const streamData = ["apple", "banana", "apple", "cherry", "banana", "apple", "date"];
+
+// for (const item of streamData) {
+//     sketch.add(item);
+// }
+
+// console.log("Estimated frequency of 'apple':", sketch.estimate("apple"));   // Expected: ~3
+// console.log("Estimated frequency of 'banana':", sketch.estimate("banana")); // Expected: ~2
+// console.log("Estimated frequency of 'date':", sketch.estimate("date"));     // Expected: ~1
+// console.log("Estimated frequency of 'grape':", sketch.estimate("grape"));   // Expected: ~0 (or small non-zero due to collisions)
+</code></pre>
+
+    <pre data-lang="typescript"><code class="language-typescript">class CountMinSketchTS {
+    private width: number;
+    private depth: number;
+    private table: number[][];
+    private seeds: number[];
+
+    constructor(width: number, depth: number) {
+        this.width = width;
+        this.depth = depth;
+        this.table = Array(depth).fill(0).map(() => new Array(width).fill(0));
+        this.seeds = Array(depth).fill(0).map((_, i) => i <em> 997 + 1);
+    }
+
+    private _hash(item: string | number, seedIdx: number): number {
+        const str = <code>${item}-${this.seeds[seedIdx]}</code>;
+        let hash = 0x811c9dc5; // FNV-1a offset basis
+        for (let i = 0; i < str.length; i++) {
+            hash ^= str.charCodeAt(i);
+            hash += (hash << 1) + (hash << 4) + (hash << 7) + (hash << 8) + (hash << 24);
+        }
+        return (hash >>> 0) % this.width;
+    }
+
+    public add(item: string | number, count: number = 1): void {
+        for (let i = 0; i < this.depth; i++) {
+            const col = this._hash(item, i);
+            this.table[i][col] += count;
+        }
+    }
+
+    public estimate(item: string | number): number {
+        let minCount = Infinity;
+        for (let i = 0; i < this.depth; i++) {
+            const col = this._hash(item, i);
+            minCount = Math.min(minCount, this.table[i][col]);
+        }
+        return minCount;
+    }
+}
+
+// const sketchTS = new CountMinSketchTS(100, 5);
+// const streamDataTS: (string | number)[] = ["apple", "banana", "apple", "cherry", "banana", "apple", "date"];
+
+// for (const item of streamDataTS) {
+//     sketchTS.add(item);
+// }
+
+// console.log("Estimated frequency of 'apple':", sketchTS.estimate("apple"));
+// console.log("Estimated frequency of 'banana':", sketchTS.estimate("banana"));
+// console.log("Estimated frequency of 'date':", sketchTS.estimate("date"));
+// console.log("Estimated frequency of 'grape':", sketchTS.estimate("grape"));
+</code></pre>
+    
+    <pre data-lang="cpp"><code class="language-cpp">#include &lt;vector&gt;
+#include &lt;string&gt;
+#include &lt;algorithm&gt; // For std::min
+#include &lt;limits&gt;    // For std::numeric_limits
+#include &lt;functional&gt; // For std::hash
+#include &lt;iostream&gt;
+
+// A simple hash function (for demonstration)
+// In a real Count-Min Sketch, you'd use k independent universal hash functions.
+unsigned int custom_hash(const std::string& s, unsigned int seed, unsigned int width) {
+    unsigned int hash_val = seed;
+    for (char c : s) {
+        hash_val = (hash_val </em> 31) + c;
+    }
+    return hash_val % width;
+}
+
+class CountMinSketch {
+private:
+    std::vector&lt;std::vector&lt;int&gt;&gt; table;
+    int width;
+    int depth;
+    std::vector&lt;unsigned int&gt; seeds; // Seeds for hash functions
+
+public:
+    CountMinSketch(int w, int d) : width(w), depth(d) {
+        table.resize(depth, std::vector&lt;int&gt;(width, 0));
+        seeds.resize(depth);
+        // Initialize seeds (simple, for demo)
+        for (int i = 0; i < depth; ++i) {
+            seeds[i] = i <em> 997 + 1; // Arbitrary seeds
+        }
+    }
+
+    void add(const std::string& item, int count = 1) {
+        for (int i = 0; i < depth; ++i) {
+            unsigned int col = custom_hash(item, seeds[i], width);
+            table[i][col] += count;
+        }
+    }
+
+    int estimate(const std::string& item) {
+        int min_count = std::numeric_limits&lt;int&gt;::max();
+        for (int i = 0; i < depth; ++i) {
+            unsigned int col = custom_hash(item, seeds[i], width);
+            min_count = std::min(min_count, table[i][col]);
+        }
+        return min_count;
+    }
+};
+
+// int main() {
+//     CountMinSketch sketch(100, 5); // w=100, d=5
+//     std::vector<std::string> stream_data = {"apple", "banana", "apple", "cherry", "banana", "apple", "date"};
+
+//     for (const auto& item : stream_data) {
+//         sketch.add(item);
+//     }
+
+//     std::cout << "Estimated frequency of 'apple': " << sketch.estimate("apple") << std::endl;   // Expected: ~3
+//     std::cout << "Estimated frequency of 'banana': " << sketch.estimate("banana") << std::endl; // Expected: ~2
+//     std::cout << "Estimated frequency of 'date': " << sketch.estimate("date") << std::endl;     // Expected: ~1
+//     std::cout << "Estimated frequency of 'grape': " << sketch.estimate("grape") << std::endl;   // Expected: ~0 (or small non-zero)
+//     return 0;
+// }
+</code></pre>
+    <pre data-lang="go"><code class="language-go">package main
+
+import (
+    "fmt"
+    "hash/fnv"
+    "math"
+)
+
+type CountMinSketch struct {
+    width  int
+    depth  int
+    table  [][]int
+    seeds  []uint32 // Seeds for hash functions
+}
+
+func (cms </em>CountMinSketch) hash(item string, seed uint32) uint32 {
+    h := fnv.New32a()
+    h.Write([]byte(item))
+    h.Write([]byte(fmt.Sprintf("%d", seed))) // Mix in the seed
+    return h.Sum32() % uint32(cms.width)
+}
+
+func NewCountMinSketch(width, depth int) <em>CountMinSketch {
+    table := make([][]int, depth)
+    for i := range table {
+        table[i] = make([]int, width)
+    }
+
+    seeds := make([]uint32, depth)
+    for i := range seeds {
+        seeds[i] = uint32(i</em>997 + 1) // Simple seed generation
+    }
+
+    return &CountMinSketch{
+        width:  width,
+        depth:  depth,
+        table:  table,
+        seeds:  seeds,
+    }
+}
+
+func (cms <em>CountMinSketch) Add(item string, count int) {
+    for i := 0; i < cms.depth; i++ {
+        col := cms.hash(item, cms.seeds[i])
+        cms.table[i][col] += count
+    }
+}
+
+func (cms </em>CountMinSketch) Estimate(item string) int {
+    minCount := math.MaxInt32
+    for i := 0; i < cms.depth; i++ {
+        col := cms.hash(item, cms.seeds[i])
+        if cms.table[i][col] < minCount {
+            minCount = cms.table[i][col]
+        }
+    }
+    return minCount
+}
+
+// func main() {
+//     sketch := NewCountMinSketch(100, 5) // w=100, d=5
+//     streamData := []string{"apple", "banana", "apple", "cherry", "banana", "apple", "date"}
+
+//     for _, item := range streamData {
+//         sketch.Add(item, 1)
+//     }
+
+//     fmt.Println("Estimated frequency of 'apple':", sketch.Estimate("apple"))   // Expected: ~3
+//     fmt.Println("Estimated frequency of 'banana':", sketch.Estimate("banana")) // Expected: ~2
+//     fmt.Println("Estimated frequency of 'date':", sketch.Estimate("date"))     // Expected: ~1
+//     fmt.Println("Estimated frequency of 'grape':", sketch.Estimate("grape"))   // Expected: ~0 (or small non-zero)
+// }
+</code></pre>
+    <pre data-lang="d"><code class="language-d">import std.stdio;
+import std.array;
+import std.algorithm;
+import std.string;
+import std.conv;
+import std.numeric; // For std.numeric.min
+
+// A simple hash function (for demonstration)
+// In a real Count-Min Sketch, you'd use k independent universal hash functions.
+uint custom_hash(string s, uint seed, uint width) {
+    uint hash_val = seed;
+    foreach (char c; s) {
+        hash_val = (hash_val <em> 31) + c;
+    }
+    return hash_val % width;
+}
+
+class CountMinSketch {
+private:
+    int[][] table;
+    int width;
+    int depth;
+    uint[] seeds; // Seeds for hash functions
+
+public:
+    this(int w, int d) {
+        width = w;
+        depth = d;
+        table = new int[depth][width]; // Initialize with zeros
+        seeds = new uint[depth];
+        // Initialize seeds (simple, for demo)
+        foreach (i; 0..depth) {
+            seeds[i] = cast(uint)(i </em> 997 + 1); // Arbitrary seeds
+        }
+    }
+
+    void add(string item, int count = 1) {
+        foreach (i; 0..depth) {
+            uint col = custom_hash(item, seeds[i], cast(uint)width);
+            table[i][col] += count;
+        }
+    }
+
+    int estimate(string item) {
+        int min_count = int.max;
+        foreach (i; 0..depth) {
+            uint col = custom_hash(item, seeds[i], cast(uint)width);
+            min_count = min(min_count, table[i][col]);
+        }
+        return min_count;
+    }
+}
+
+// void main() {
+//     auto sketch = new CountMinSketch(100, 5); // w=100, d=5
+//     string[] stream_data = ["apple", "banana", "apple", "cherry", "banana", "apple", "date"];
+
+//     foreach (item; stream_data) {
+//         sketch.add(item);
+//     }
+
+//     writefln("Estimated frequency of 'apple': %s", sketch.estimate("apple"));   // Expected: ~3
+//     writefln("Estimated frequency of 'banana': %s", sketch.estimate("banana")); // Expected: ~2
+//     writefln("Estimated frequency of 'date': %s", sketch.estimate("date"));     // Expected: ~1
+//     writefln("Estimated frequency of 'grape': %s", sketch.estimate("grape"));   // Expected: ~0 (or small non-zero)
+// }
+</code></pre>
+</div>
+
+<div id="code-explanation-content"><div class="markdown-content">
+    <h3>Code Walkthrough</h3>
+    <p>A <code>Count-Min Sketch</code> is implemented using a <code>2D array</code> of counters and a set of independent <code>hash functions</code>. The core logic involves applying these <code>hash functions</code> to map incoming <code>items</code> to specific <code>columns</code> in each <code>row</code> of the <code>table</code>.</p>
+    <div class="explanation-fence">
+<strong>Class Structure:</strong>
+<ul>
+    <li><code>table</code>: A <code>d x w</code> <code>matrix</code> (<code>2D array</code>) of integers, initialized to zeros. Each <code>row</code> corresponds to a different <code>hash function</code>.</li>
+    <li><code>width (w)</code>: The number of <code>columns</code> in the <code>table</code>. Affects the overestimation error.</li>
+    <li><code>depth (d)</code>: The number of <code>rows</code> in the <code>table</code>, which is also the number of independent <code>hash functions</code>. Affects the probability of the overestimation error occurring.</li>
+    <li><code>seeds</code>: A <code>list</code>/<code>vector</code>/<code>array</code> of random <code>seeds</code>, one for each <code>hash function</code>. Using different <code>seeds</code> makes the <code>hash functions</code> approximately independent.</li>
+</ul>
+<br>
+<strong><code>_hash(item, seed_idx)</code>:</strong> A helper function to generate a <code>hash value</code> for an <code>item</code> using a specific <code>seed</code> and mapping it to a <code>column index</code> within the <code>width</code>.
+<br><br>
+<strong><code>add(item, count=1)</code>:</strong>
+<ul>
+    <li>For each of the <code>d hash functions</code> (i.e., for each <code>row</code> in the <code>table</code>):
+        <ol>
+            <li>Calculate the <code>column index</code> by hashing the <code>item</code> with the respective <code>seed</code>.</li>
+            <li>Increment the counter at <code>table[row][col]</code> by the <code>count_increment</code>.</li>
+        </ol>
+    </li>
+</ul>
+<br>
+<strong><code>estimate(item)</code>:</strong>
+<ul>
+    <li>Initializes <code>min_count</code> to a very large value.</li>
+    <li>For each of the <code>d hash functions</code>:
+        <ol>
+            <li>Calculate the <code>column index</code> by hashing the <code>item</code>.</li>
+            <li>Retrieve the counter value <code>table[row][col]</code>.</li>
+            <li>Update <code>min_count</code> to be the minimum of <code>min_count</code> and the retrieved counter value.</li>
+        </ol>
+    </li>
+    <li>Returns <code>min_count</code> as the estimated <code>frequency</code>.</li>
+</ul>
+    </div></div>
+    <p>The strength of <code>Count-Min Sketch</code> lies in its ability to provide approximate <code>frequency counts</code> with strict theoretical guarantees on error bounds and probability, all while using very little memory and constant time operations per <code>item</code>.</p>
+</div>
+
+<div id="application-content"><div class="markdown-content">
+    <h3>Application</h3>
+    <p>Count-Min Sketch is invaluable in big data analytics and network monitoring where exact counts are too expensive to maintain, but approximate frequencies are sufficient. Its applications include:
+    <ul>
+        <li><strong>Network Traffic Analysis:</strong> Estimating the number of packets from a specific IP address or destination, identifying "heavy hitters" (e.g., Denial of Service attacks, popular content).</li>
+        <li><strong>Database Query Optimization:</strong> Providing approximate answers to <code>GROUP BY</code> queries or estimating join sizes in very large databases.</li>
+        <li><strong>Stream Analytics:</strong> Tracking popular items or trends in real-time data streams (e.g., trending topics on social media).</li>
+        <li><strong>Web Analytics:</strong> Estimating frequencies of URL access, user actions, or search queries.</li>
+        <li><strong>Anomaly Detection:</strong> Identifying unusual patterns in data by flagging items with unexpectedly high or low frequencies.</li>
+    </ul>
+    </p>
+</div></div>

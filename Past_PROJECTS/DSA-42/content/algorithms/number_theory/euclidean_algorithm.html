@@ -1,0 +1,193 @@
+<div id="explanation-content">
+    <p>The <code>Euclidean Algorithm</code> is a highly efficient method for computing the <code>greatest common divisor (GCD)</code> of two integers, the largest number that divides them both without leaving a remainder. The algorithm is based on the principle that the <code>greatest common divisor</code> of two numbers does not change if the larger number is replaced by its difference with the smaller number. Since this replacement reduces the larger of the two numbers, repeating this process gives successively smaller pairs of numbers until the two numbers become equal.</p>
+    <p>This algorithm is one of the oldest algorithms in common use, appearing in Euclid's "Elements" around 300 BC.</p>
+</div>
+
+<div id="expanded-explanation-content">
+    <h3>How it Works (Expanded)</h3>
+    <p>The modern version of the <code>Euclidean Algorithm</code> uses the remainder of the division of the two numbers instead of subtraction. The principle is that <code>gcd(a, b) = gcd(b, a mod b)</code>. The algorithm repeatedly applies this property until the second number becomes 0. The <code>GCD</code> is the first number at that point.</p>
+    <div class="explanation-fence">
+Example: Find GCD of 48 and 18
+
+1. gcd(48, 18):
+   - 48 = 2 <em> 18 + 12
+   - gcd(48, 18) -> gcd(18, 12)
+
+2. gcd(18, 12):
+   - 18 = 1 </em> 12 + 6
+   - gcd(18, 12) -> gcd(12, 6)
+
+3. gcd(12, 6):
+   - 12 = 2 <em> 6 + 0
+   - gcd(12, 6) -> gcd(6, 0)
+
+4. gcd(6, 0):
+   - The second number is 0. The GCD is the first number.
+   - GCD = 6.
+    </div>
+    <p><strong>Algorithm Steps:</strong></p>
+    <ol>
+        <li>Given two non-negative integers <code>a</code> and <code>b</code>.</li>
+        <li>While <code>b</code> is not 0:
+            <ul>
+                <li>Set <code>temp = b</code>.</li>
+                <li>Set <code>b = a mod b</code>.</li>
+                <li>Set <code>a = temp</code>.</li>
+            </ul>
+        </li>
+        <li>The result is <code>a</code>.</li>
+    </ol>
+    <p><strong>Time Complexity:</strong> <code>O(log(min(a, b)))</code>. The number of steps is logarithmic in the size of the smaller of the two numbers.</p>
+    <p><strong>Space Complexity:</strong> <code>O(1)</code> for the iterative version, and <code>O(log(min(a, b)))</code> for the recursive version due to the call stack.</p>
+</div>
+
+<div id="code-implementations">
+    <pre data-lang="python"><code class="language-python">def gcd_euclidean(a, b):
+    """
+    Computes the greatest common divisor (GCD) of a and b using the Euclidean algorithm.
+    """
+    while b:
+        a, b = b, a % b
+    return a
+
+# Example
+# a = 48
+# b = 18
+# print(f"GCD of {a} and {b} is {gcd_euclidean(a, b)}") # Expected: 6
+</code></pre>
+
+    <pre data-lang="javascript"><code class="language-javascript">function gcdEuclidean(a, b) {
+    /</em><em>
+     </em> Computes the greatest common divisor (GCD) of a and b using the Euclidean algorithm.
+     <em>/
+    while (b) {
+        let temp = b;
+        b = a % b;
+        a = temp;
+    }
+    return a;
+}
+
+// const a = 48;
+// const b = 18;
+// console.log(<code>GCD of ${a} and ${b} is ${gcdEuclidean(a, b)}</code>); // Expected: 6
+</code></pre>
+
+    <pre data-lang="typescript"><code class="language-typescript">function gcdEuclideanTS(a: number, b: number): number {
+    /</em><em>
+     </em> Computes the greatest common divisor (GCD) of a and b using the Euclidean algorithm.
+     */
+    while (b) {
+        let temp = b;
+        b = a % b;
+        a = temp;
+    }
+    return a;
+}
+
+// const aTS = 48;
+// const bTS = 18;
+// console.log(<code>GCD of ${aTS} and ${bTS} is ${gcdEuclideanTS(aTS, bTS)}</code>); // Expected: 6
+</code></pre>
+    
+    <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;numeric&gt; // std::gcd in C++17
+
+// Manual implementation for clarity
+int gcdEuclidean(int a, int b) {
+    while (b) {
+        int temp = b;
+        b = a % b;
+        a = temp;
+    }
+    return a;
+}
+
+// int main() {
+//     int a = 48;
+//     int b = 18;
+//     std::cout << "GCD of " << a << " and " << b << " is " << gcdEuclidean(a, b) << std::endl; // 6
+//     // Using std::gcd from C++17
+//     // std::cout << "GCD using std::gcd: " << std::gcd(a, b) << std::endl;
+// }
+</code></pre>
+
+    <pre data-lang="go"><code class="language-go">package main
+
+import "fmt"
+
+func gcdEuclidean(a, b int) int {
+    for b != 0 {
+        a, b = b, a%b
+    }
+    return a
+}
+
+// func main() {
+//     a := 48
+//     b := 18
+//     fmt.Printf("GCD of %d and %d is %d\n", a, b, gcdEuclidean(a, b)) // 6
+// }
+</code></pre>
+    
+    <pre data-lang="d"><code class="language-d">import std.stdio;
+import std.numeric; // For std.numeric.gcd
+
+// Manual implementation for clarity
+int gcdEuclidean(int a, int b) {
+    while (b != 0) {
+        int temp = b;
+        b = a % b;
+        a = temp;
+    }
+    return a;
+}
+
+// void main() {
+//     int a = 48;
+//     int b = 18;
+//     writeln("GCD of ", a, " and ", b, " is ", gcdEuclidean(a, b)); // 6
+//     // Using std.numeric.gcd
+//     // writeln("GCD using std.numeric.gcd: ", gcd(a, b));
+// }
+</code></pre>
+</div>
+
+<div id="code-explanation-content"><div class="markdown-content">
+    <h3>Code Walkthrough</h3>
+    <p>The <code>Euclidean Algorithm</code> is remarkably simple and elegant, whether implemented iteratively or recursively.</p>
+    <div class="explanation-fence">
+<strong>Iterative Implementation:</strong>
+<ol>
+    <li>The function <code>gcdEuclidean(a, b)</code> takes two non-negative integers.</li>
+    <li>A <code>while</code> loop continues as long as <code>b</code> is not zero.</li>
+    <li>Inside the loop:
+        <ul>
+            <li><code>a</code> is updated to the value of <code>b</code>.</li>
+            <li><code>b</code> is updated to <code>a mod b</code> (the remainder of <code>a</code> divided by <code>b</code>).</li>
+            <li>In some languages (like Python), this can be done in a single line: <code>a, b = b, a % b</code>.</li>
+        </ul>
+    </li>
+    <li>When the loop terminates (i.e., <code>b</code> is 0), <code>a</code> holds the <code>GCD</code>.</li>
+</ol>
+<br>
+<strong>Recursive Implementation (Conceptual):</strong>
+<ul>
+    <li><strong>Base Case:</strong> If <code>b</code> is 0, return <code>a</code>.</li>
+    <li><strong>Recursive Step:</strong> Otherwise, return <code>gcdEuclidean(b, a % b)</code>.</li>
+</ul>
+    </div></div>
+</div>
+
+<div id="application-content"><div class="markdown-content">
+    <h3>Application</h3>
+    <p>The <code>Euclidean Algorithm</code> is a cornerstone of number theory and has widespread use in computer science:</p>
+    <ul>
+        <li><strong>Simplifying Fractions:</strong> To reduce a fraction to its simplest form, you divide both the numerator and the denominator by their <code>GCD</code>.</li>
+        <li><strong>Modular Arithmetic and Cryptography:</strong> It is the key component of the <strong>Extended Euclidean Algorithm</strong>, which is used to find modular inverses. This is essential for public-key cryptography systems like RSA.</li>
+        <li><strong>Solving Diophantine Equations:</strong> Finding integer solutions to equations of the form <code>ax + by = c</code>.</li>
+        <li><strong>Computer Graphics:</strong> Used in algorithms that involve patterns and repetitions, such as calculating texture coordinates.</li>
+        <li><strong>Music Theory:</strong> The Euclidean algorithm can be used to generate musical rhythms by distributing beats as evenly as possible over a fixed number of time steps.</li>
+    </ul>
+    </p>
+</div></div>
