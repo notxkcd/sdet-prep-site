@@ -29,3 +29,14 @@ draft: false
 - **Why POM?** Code reusability and easy maintenance.
 - **StaleElementReferenceException?** Element is no longer in the DOM. **Fix:** Refresh/Wait.
 - **Sprint missed?** Communicate early, prioritize 'Must-haves'.
+
+
+---
+
+
+A comprehensive repository of Java interview questions and coding tasks, meticulously organized by difficulty and paired with concise, memorable answers to streamline your technical preparation.
+
+
+{{% center %}}
+**[Java Question Bank](/java-questions-bank/)**
+{{% /center %}}

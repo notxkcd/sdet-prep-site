@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java Ecosystem (TestNG) Concept Study Guide | SDET Interview Preparation Kit</title>
+    <link rel="stylesheet" href="//localhost:1313/css/style.css">
+    <link rel="stylesheet" href="//localhost:1313/css/terminal.css">
+    
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    
+    <link rel="stylesheet" href="//localhost:1313/lib/katex/katex.min.css">
+    <script defer src="//localhost:1313/lib/katex/katex.min.js"></script>
+    <script defer src="//localhost:1313/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</head>
+<body id="theme-body">
+    <button id="theme-toggle">Switch Theme</button>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="/">Index</a></li>
+                
+            </ul>
+        </nav>
+        <div class="site-breadcrumb">
+            <a href="/">Home</a>
+            
+                
+                    <span>/</span> <a href="//localhost:1313/">SDET Interview Dashboard</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/java-questions/">Java Question Bank</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/java-questions/concepts/">Java Concepts</a>
+                
+            
+            
+                <span>/</span> Java Ecosystem (TestNG) Concept Study Guide
+            
+        </div>
+    </header>
+
+    <main>
+        
+<article>
+    <div class="category-title" style="margin-bottom: 0.5rem;">Java Concepts</div>
+    <h1>Java Ecosystem (TestNG) Concept Study Guide</h1>
+    <div class="content-body" style="margin-top: 2rem;">
+        <h2 id="beginner">Beginner</h2>
+<ol>
+<li><a href="#1-what-is-testng-and-explain-why-and-where-it-is-required">What is TestNG and explain why and where it is required?</a></li>
+<li><a href="#2-what-are-the-advantages-of-testng">What are the advantages of TestNG?</a></li>
+<li><a href="#3-list-testng-annotations-and-explain-their-execution-order">List TestNG annotations and explain their execution order?</a></li>
+</ol>
+<h2 id="intermediate">Intermediate</h2>
+<ol>
+<li><a href="#1-what-is-the-use-of-testngxml-and-what-is-the-sequence-used-in-it">What is the use of <code>testng.xml</code> and what is the sequence used in it?</a></li>
+<li><a href="#2-what-is-a-data-provider-in-testng">What is a Data Provider in TestNG?</a></li>
+<li><a href="#3-how-do-you-rerun-failed-test-cases-in-testng">How do you rerun failed test cases in TestNG?</a></li>
+<li><a href="#4-how-do-you-perform-parameterization-in-testng">How do you perform parameterization in TestNG?</a></li>
+<li><a href="#5-how-do-you-generate-reports-in-testng">How do you generate reports in TestNG?</a></li>
+<li><a href="#6-how-do-you-pass-test-data-in-testng">How do you pass test data in TestNG?</a></li>
+<li><a href="#7-how-do-you-set-priority-in-testng-what-happens-if-no-priority-is-set">How do you set priority in TestNG? What happens if no priority is set?</a></li>
+<li><a href="#8-how-can-you-ignore-or-skip-a-particular-test-case-in-testng">How can you ignore or skip a particular test case in TestNG?</a></li>
+<li><a href="#9-how-do-you-run-a-particular-method-multiple-times-in-testng">How do you run a particular method multiple times in TestNG?</a></li>
+<li><a href="#10-why-choose-testng-over-other-frameworks-like-junit-or-cucumber">Why choose TestNG over other frameworks like JUnit or Cucumber?</a></li>
+</ol>
+<h2 id="advanced">Advanced</h2>
+<ol>
+<li><a href="#1-how-do-you-perform-parallel-execution-in-testng">How do you perform parallel execution in TestNG?</a></li>
+<li><a href="#2-explain-the-priority-logic-when-some-tests-have-priority-and-others-do-not">Explain the priority logic when some tests have priority and others do not?</a></li>
+</ol>
+<hr>
+<h2 id="questions-with-answers">Questions with Answers</h2>
+<h2 id="beginner-1">Beginner</h2>
+<h3 id="1-what-is-testng-and-explain-why-and-where-it-is-required">1. What is TestNG and explain why and where it is required?</h3>
+<p><strong>Answer</strong>: TestNG is a powerful testing framework inspired by JUnit. It is required for managing complex automation suites, providing advanced features like grouping, prioritization, and dependency management.</p>
+<h3 id="2-what-are-the-advantages-of-testng">2. What are the advantages of TestNG?</h3>
+<p><strong>Answer</strong>: It offers flexible test configurations, data-driven testing using <code>@DataProvider</code>, detailed reporting, and support for parallel execution.</p>
+<h3 id="3-list-testng-annotations-and-explain-their-execution-order">3. List TestNG annotations and explain their execution order?</h3>
+<p><strong>Answer</strong>:</p>
+<ol>
+<li><code>@BeforeSuite</code> -&gt; 2. <code>@BeforeTest</code> -&gt; 3. <code>@BeforeClass</code> -&gt; 4. <code>@BeforeMethod</code> -&gt; 5. <strong><code>@Test</code></strong> -&gt; 6. <code>@AfterMethod</code> -&gt; 7. <code>@AfterClass</code> -&gt; 8. <code>@AfterTest</code> -&gt; 9. <code>@AfterSuite</code>.</li>
+</ol>
+<h2 id="intermediate-1">Intermediate</h2>
+<h3 id="1-what-is-the-use-of-testngxml-and-what-is-the-sequence-used-in-it">1. What is the use of <code>testng.xml</code> and what is the sequence used in it?</h3>
+<p><strong>Answer</strong>: It is used to define and execute test suites. The XML sequence is: <code>&lt;suite&gt;</code> -&gt; <code>&lt;test&gt;</code> -&gt; <code>&lt;classes&gt;</code> -&gt; <code>&lt;class&gt;</code> -&gt; <code>&lt;methods&gt;</code>.</p>
+<h3 id="2-what-is-a-data-provider-in-testng">2. What is a Data Provider in TestNG?</h3>
+<p><strong>Answer</strong>: A specialized annotation (<code>@DataProvider</code>) that allows a test method to be executed multiple times with different sets of input data.</p>
+<h3 id="3-how-do-you-rerun-failed-test-cases-in-testng">3. How do you rerun failed test cases in TestNG?</h3>
+<p><strong>Answer</strong>: By running the <code>testng-failed.xml</code> file located in the <code>test-output</code> folder, or by implementing the <code>IRetryAnalyzer</code> interface for automatic retries.</p>
+<h3 id="4-how-do-you-perform-parameterization-in-testng">4. How do you perform parameterization in TestNG?</h3>
+<p><strong>Answer</strong>: Using the <code>@Parameters</code> annotation to read values from the <code>testng.xml</code> file or using the <code>@DataProvider</code> annotation for complex data sets.</p>
+<h3 id="5-how-do-you-generate-reports-in-testng">5. How do you generate reports in TestNG?</h3>
+<p><strong>Answer</strong>: TestNG automatically generates HTML and XML reports in the <code>test-output</code> folder. Custom reports can be created using <code>ITestListener</code> or <code>IReporter</code> interfaces.</p>
+<h3 id="6-how-do-you-pass-test-data-in-testng">6. How do you pass test data in TestNG?</h3>
+<p><strong>Answer</strong>: Via the <code>testng.xml</code> parameters or by using <code>@DataProvider</code> methods which return a 2D array of objects.</p>
+<h3 id="7-how-do-you-set-priority-in-testng-what-happens-if-no-priority-is-set">7. How do you set priority in TestNG? What happens if no priority is set?</h3>
+<p><strong>Answer</strong>: Use the <code>priority</code> attribute: <code>@Test(priority = 1)</code>. If not set, all tests default to priority 0 and run in alphabetical order.</p>
+<h3 id="8-how-can-you-ignore-or-skip-a-particular-test-case-in-testng">8. How can you ignore or skip a particular test case in TestNG?</h3>
+<p><strong>Answer</strong>: Use <code>@Test(enabled = false)</code> to ignore a test, or throw a <code>SkipException</code> during runtime to skip based on a condition.</p>
+<h3 id="9-how-do-you-run-a-particular-method-multiple-times-in-testng">9. How do you run a particular method multiple times in TestNG?</h3>
+<p><strong>Answer</strong>: Use the <code>invocationCount</code> attribute: <code>@Test(invocationCount = 10)</code>.</p>
+<h3 id="10-why-choose-testng-over-other-frameworks-like-junit-or-cucumber">10. Why choose TestNG over other frameworks like JUnit or Cucumber?</h3>
+<p><strong>Answer</strong>: It provides more control over the execution flow (parallel, priority, groups) than JUnit and is less technically complex to set up than Cucumber.</p>
+<h2 id="advanced-1">Advanced</h2>
+<h3 id="1-how-do-you-perform-parallel-execution-in-testng">1. How do you perform parallel execution in TestNG?</h3>
+<p><strong>Answer</strong>: In the <code>testng.xml</code> file, set the <code>parallel</code> attribute in the <code>&lt;suite&gt;</code> tag (e.g., <code>parallel=&quot;methods&quot;</code>) and specify the <code>thread-count</code>.</p>
+<h3 id="2-explain-the-priority-logic-when-some-tests-have-priority-and-others-do-not">2. Explain the priority logic when some tests have priority and others do not?</h3>
+<p><strong>Answer</strong>: Tests with negative priority run first, followed by those with priority 0 (default, run alphabetically), and then tests with positive priorities.</p>
+
+    </div>
+</article>
+
+<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
+    
+    <a href="//localhost:1313/java-questions/concepts/q14/" class="nav-btn">← Previous</a>
+    
+    
+    <a href="//localhost:1313/java-questions/concepts/" class="nav-btn">Up</a>
+
+    
+    <a href="//localhost:1313/java-questions/concepts/q12/" class="nav-btn">Next →</a>
+    
+</div>
+
+    </main>
+
+    <footer class="footer">
+        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
+    </footer>
+
+    <script>
+        const body = document.getElementById('theme-body');
+        const btn = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme');
+
+        if (currentTheme === 'terminal') {
+            body.classList.add('theme-terminal');
+        }
+
+        btn.addEventListener('click', () => {
+            body.classList.toggle('theme-terminal');
+            let theme = 'natural';
+            if (body.classList.contains('theme-terminal')) {
+                theme = 'terminal';
+            }
+            localStorage.setItem('theme', theme);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Testing Q&amp;A Guide | SDET Interview Preparation Kit</title>
+    <link rel="stylesheet" href="//localhost:1313/css/style.css">
+    <link rel="stylesheet" href="//localhost:1313/css/terminal.css">
+    
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    
+    <link rel="stylesheet" href="//localhost:1313/lib/katex/katex.min.css">
+    <script defer src="//localhost:1313/lib/katex/katex.min.js"></script>
+    <script defer src="//localhost:1313/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</head>
+<body id="theme-body">
+    <button id="theme-toggle">Switch Theme</button>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="/">Index</a></li>
+                
+            </ul>
+        </nav>
+        <div class="site-breadcrumb">
+            <a href="/">Home</a>
+            
+                
+                    <span>/</span> <a href="//localhost:1313/">SDET Interview Dashboard</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/java-questions-bank/">Java Question Bank</a>
+                
+            
+            
+                <span>/</span> API Testing Q&amp;A Guide
+            
+        </div>
+    </header>
+
+    <main>
+        
+<article>
+    <div class="category-title" style="margin-bottom: 0.5rem;">Java Question Bank</div>
+    <h1>API Testing Q&amp;A Guide</h1>
+    <div class="content-body" style="margin-top: 2rem;">
+        <h2 id="questions-only">Questions Only</h2>
+<ol>
+<li><a href="#1-what-are-the-main-components-of-an-http-request-and-response">What are the main components of an HTTP request and response?</a></li>
+<li><a href="#2-explain-idempotency-in-apis-why-is-it-important">Explain idempotency in APIs. Why is it important?</a></li>
+<li><a href="#3-what-is-api-versioning-how-would-you-test-it">What is API versioning? How would you test it?</a></li>
+<li><a href="#4-what-are-the-different-types-of-api-tests">What are the different types of API tests?</a></li>
+<li><a href="#5-what-is-the-difference-between-synchronous-and-asynchronous-api-calls">What is the difference between synchronous and asynchronous API calls?</a></li>
+<li><a href="#6-what-are-the-status-codes-you-mostly-get-in-api-testing-what-is-429-501-500">What are the status codes you mostly get in API testing? What is 429, 501, 500?</a></li>
+<li><a href="#7-how-do-you-validate-the-request-methods-in-api">How do you validate the request methods in API?</a></li>
+<li><a href="#8-how-do-you-validate-broken-links-in-rest-assured-automation">How do you validate Broken Links in Rest Assured automation?</a></li>
+<li><a href="#9-what-are-all-the-methods-in-rest-assured">What are all the methods in Rest Assured?</a></li>
+<li><a href="#10-what-are-the-dependencies-you-use-for-rest-assured-in-which-dependency-givenwhen-is-coming">What are the dependencies you use for Rest Assured? In which dependency .given().when() is coming?</a></li>
+<li><a href="#11-write-get-request-using-payload-in-rest-assured">Write GET request using payload in Rest Assured.</a></li>
+<li><a href="#12-what-is-api-timeout">What is API timeout?</a></li>
+<li><a href="#13-what-is-the-difference-between-api-and-ui-testing">What is the difference between API and UI Testing?</a></li>
+<li><a href="#14-what-is-token-generation">What is token generation?</a></li>
+<li><a href="#15-what-is-sql-injection-in-api-security">What is SQL Injection (in API Security)?</a></li>
+<li><a href="#16-once-the-url-is-ready-what-is-the-basic-validation-you-will-do">Once the URL is ready, what is the basic validation you will do?</a></li>
+<li><a href="#17-what-is-crud">What is CRUD?</a></li>
+<li><a href="#18-real-time-example-you-tested-in-api">Real-time example you tested in API?</a></li>
+<li><a href="#19-what-you-found-in-collections-in-api">What you found in collections in API?</a></li>
+<li><a href="#20-how-do-you-approach-testing-restful-apis">How do you approach testing RESTful APIs?</a></li>
+<li><a href="#21-what-tools-have-you-used-for-api-testing">What tools have you used for API testing?</a></li>
+<li><a href="#22-how-do-you-validate-response-data-when-testing-an-api">How do you validate response data when testing an API?</a></li>
+<li><a href="#23-how-do-you-handle-testing-apis-when-dependent-services-are-down">How do you handle testing APIs when dependent services are down?</a></li>
+<li><a href="#24-what-is-mocking-in-api-testing">What is mocking in API testing?</a></li>
+<li><a href="#25-can-you-describe-how-you-would-automate-api-testing">Can you describe how you would automate API testing?</a></li>
+<li><a href="#26-what-is-contract-testing">What is contract testing?</a></li>
+<li><a href="#27-how-would-you-handle-pagination-in-api-testing">How would you handle pagination in API testing?</a></li>
+<li><a href="#28-how-do-you-test-error-handling-edge-cases">How do you test error handling &amp; edge cases?</a></li>
+<li><a href="#29-how-do-you-test-api-performance">How do you test API performance?</a></li>
+<li><a href="#30-what-is-rate-limiting-how-would-you-test-it">What is rate limiting? How would you test it?</a></li>
+<li><a href="#31-how-do-you-test-api-security">How do you test API security?</a></li>
+<li><a href="#32-explain-concurrency-testing-in-apis">Explain concurrency testing in APIs.</a></li>
+<li><a href="#33-what-is-throttling-how-would-you-test-it">What is throttling? How would you test it?</a></li>
+<li><a href="#34-how-do-you-test-apis-with-dynamic-states">How do you test APIs with dynamic states?</a></li>
+<li><a href="#35-if-api-returns-500-how-would-you-troubleshoot">If API returns 500, how would you troubleshoot?</a></li>
+<li><a href="#36-how-do-you-test-backward-compatibility">How do you test backward compatibility?</a></li>
+<li><a href="#37-describe-a-challenging-api-testing-issue-you-faced">Describe a challenging API testing issue you faced.</a></li>
+<li><a href="#38-banking-api-test-cases">Banking API test cases?</a></li>
+<li><a href="#39-how-would-you-test-third-party-apis">How would you test third-party APIs?</a></li>
+<li><a href="#40-how-do-you-ensure-accuracy-in-microservices-apis">How do you ensure accuracy in microservices APIs?</a></li>
+<li><a href="#41-how-to-handle-continuous-api-testing-in-cicd">How to handle continuous API testing in CI/CD?</a></li>
+<li><a href="#42-role-of-api-testing-in-agiledevops">Role of API testing in Agile/DevOps?</a></li>
+<li><a href="#43-how-do-you-deal-with-unclear-api-documentation">How do you deal with unclear API documentation?</a></li>
+<li><a href="#44-how-do-you-test-websockets-or-grpc-apis">How do you test WebSockets or gRPC APIs?</a></li>
+<li><a href="#45-what-is-schema-validation-in-api-testing">What is schema validation in API testing?</a></li>
+<li><a href="#46-can-you-explain-hateoas">Can you explain HATEOAS?</a></li>
+<li><a href="#47-how-do-you-ensure-data-privacy-in-api-testing-gdpr">How do you ensure data privacy in API testing (GDPR)?</a></li>
+<li><a href="#48-show-api-test-in-postman">Show API test in Postman.</a></li>
+<li><a href="#49-write-test-cases-for-sample-api">Write test cases for sample API.</a></li>
+<li><a href="#50-third-party-api-is-down-how-do-you-test">Third-party API is down. How do you test?</a></li>
+</ol>
+<hr>
+<h2 id="questions-with-answers">Questions with Answers</h2>
+<h3 id="1-what-are-the-main-components-of-an-http-request-and-response">1. What are the main components of an HTTP request and response?</h3>
+<p><strong>Answer:</strong></p>
+<ul>
+<li><strong>Request:</strong> Method (GET, POST, etc.), URL, Headers, Body (optional).</li>
+<li><strong>Response:</strong> Status Code, Headers, Body (data or error message).</li>
+</ul>
+<h3 id="2-explain-idempotency-in-apis-why-is-it-important">2. Explain idempotency in APIs. Why is it important?</h3>
+<p><strong>Answer:</strong></p>
+<ul>
+<li><strong>Idempotency</strong> means performing the same request multiple times should give the same result.</li>
+<li>Example: <code>DELETE /user/123</code> will always delete user 123 (if exists).</li>
+<li><strong>Importance:</strong> Prevents unintended side effects in retry scenarios (e.g., payment APIs).</li>
+</ul>
+<h3 id="3-what-is-api-versioning-how-would-you-test-it">3. What is API versioning? How would you test it?</h3>
+<p><strong>Answer:</strong></p>
+<ul>
+<li>API versioning allows changes without breaking existing clients.</li>
+<li>Approaches: URL-based (<code>/v1/users</code>), Header-based, Query-param based.</li>
+<li><strong>Testing:</strong> Ensure old versions still work, and new versions return correct responses.</li>
+</ul>
+<h3 id="4-what-are-the-different-types-of-api-tests">4. What are the different types of API tests?</h3>
+<p><strong>Answer:</strong></p>
+<ul>
+<li><strong>Functional</strong> (correctness, CRUD ops).</li>
+<li><strong>Performance</strong> (latency, load, stress).</li>
+<li><strong>Security</strong> (auth, SQL injection, data leaks).</li>
+<li><strong>Integration</strong> (end-to-end flow across services).</li>
+</ul>
+<h3 id="5-what-is-the-difference-between-synchronous-and-asynchronous-api-calls">5. What is the difference between synchronous and asynchronous API calls?</h3>
+<p><strong>Answer:</strong></p>
+<ul>
+<li><strong>Synchronous:</strong> Client waits for response (blocking). Example: REST calls.</li>
+<li><strong>Asynchronous:</strong> Client sends request and continues; response comes later via callback/webhook. Example: WebSockets.</li>
+</ul>
+<h3 id="6-what-are-the-status-codes-you-mostly-get-in-api-testing-what-is-429-501-500">6. What are the status codes you mostly get in API testing? What is 429, 501, 500?</h3>
+<p><strong>Answer:</strong></p>
+<ul>
+<li><strong>200:</strong> OK</li>
+<li><strong>201:</strong> Created</li>
+<li><strong>400:</strong> Bad Request</li>
+<li><strong>401:</strong> Unauthorized</li>
+<li><strong>403:</strong> Forbidden</li>
+<li><strong>404:</strong> Not Found</li>
+<li><strong>500:</strong> Internal Server Error</li>
+<li><strong>501:</strong> Not Implemented</li>
+<li><strong>429:</strong> Too Many Requests (rate limit exceeded)</li>
+</ul>
+<h3 id="7-how-do-you-validate-the-request-methods-in-api">7. How do you validate the request methods in API?</h3>
+<p><strong>Answer:</strong></p>
+<ul>
+<li>Check if supported methods return correct responses.</li>
+<li>Example: Sending <code>POST</code> instead of <code>GET</code> should return <code>405 Method Not Allowed</code>.</li>
+</ul>
+<h3 id="8-how-do-you-validate-broken-links-in-rest-assured-automation">8. How do you validate Broken Links in Rest Assured automation?</h3>
+<p><strong>Answer:</strong></p>
+<ul>
+<li>By checking response code for each URL.</li>
+<li>Code snippet:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#268bd2">given</span>().<span style="color:#268bd2">when</span>().<span style="color:#268bd2">get</span>(<span style="color:#268bd2">url</span>).<span style="color:#268bd2">then</span>().<span style="color:#268bd2">statusCode</span>(<span style="color:#268bd2">200</span>);
+</span></span></code></pre></div><h3 id="9-what-are-all-the-methods-in-rest-assured">9. What are all the methods in Rest Assured?</h3>
+<p><strong>Answer:</strong></p>
+<ul>
+<li><strong>HTTP methods:</strong> GET, POST, PUT, PATCH, DELETE, OPTIONS, HEAD.</li>
+<li><strong>Utility methods:</strong> given(), when(), then(), extract(), log(), etc.</li>
+</ul>
+<h3 id="10-what-are-the-dependencies-you-use-for-rest-assured-in-which-dependency-givenwhen-is-coming">10. What are the dependencies you use for Rest Assured? In which dependency .given().when() is coming?</h3>
+<p><strong>Answer:</strong></p>
+<ul>
+<li><strong>Dependencies:</strong> <code>rest-assured</code>, <code>json-path</code>, <code>hamcrest</code>.</li>
+<li><code>.given().when().then()</code> comes from <strong>rest-assured</strong> dependency.</li>
+</ul>
+<h3 id="11-write-get-request-using-payload-in-rest-assured">11. Write GET request using payload in Rest Assured.</h3>
+<p><strong>Answer:</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#268bd2">given</span>()
+</span></span><span style="display:flex;"><span>   .<span style="color:#268bd2">header</span>(<span style="color:#2aa198">&#34;Content-Type&#34;</span>, <span style="color:#2aa198">&#34;application/json&#34;</span>)
+</span></span><span style="display:flex;"><span>   .<span style="color:#268bd2">body</span>(<span style="color:#2aa198">&#34;{\&#34;id\&#34;: 123}&#34;</span>)
+</span></span><span style="display:flex;"><span>.<span style="color:#268bd2">when</span>()
+</span></span><span style="display:flex;"><span>   .<span style="color:#268bd2">get</span>(<span style="color:#2aa198">&#34;/users&#34;</span>)
+</span></span><span style="display:flex;"><span>.<span style="color:#268bd2">then</span>()
+</span></span><span style="display:flex;"><span>   .<span style="color:#268bd2">statusCode</span>(<span style="color:#268bd2">200</span>);
+</span></span></code></pre></div><h3 id="12-what-is-api-timeout">12. What is API timeout?</h3>
+<p><strong>Answer:</strong></p>
+<ul>
+<li>Maximum wait time for a response before client aborts request.</li>
+<li>Important for performance testing and preventing infinite waits.</li>
+</ul>
+<h3 id="13-what-is-the-difference-between-api-and-ui-testing">13. What is the difference between API and UI Testing?</h3>
+<p><strong>Answer:</strong></p>
+<ul>
+<li><strong>API Testing:</strong> Validates data, logic, response codes, speed.</li>
+<li><strong>UI Testing:</strong> Validates design, usability, workflow.</li>
+</ul>
+<h3 id="14-what-is-token-generation">14. What is token generation?</h3>
+<p><strong>Answer:</strong></p>
+<ul>
+<li>Token = authentication mechanism (JWT, OAuth).</li>
+<li>Generated after login/authentication and used for secure API calls.</li>
+</ul>
+<h3 id="15-what-is-sql-injection-in-api-security">15. What is SQL Injection (in API Security)?</h3>
+<p><strong>Answer:</strong></p>
+<ul>
+<li>Malicious query insertion via inputs (<code>id=1 OR 1=1</code>).</li>
+<li>Prevented by <strong>parameterized queries &amp; input validation</strong>.</li>
+</ul>
+<h3 id="16-once-the-url-is-ready-what-is-the-basic-validation-you-will-do">16. Once the URL is ready, what is the basic validation you will do?</h3>
+<p><strong>Answer:</strong></p>
+<ul>
+<li>Status Code = 200.</li>
+<li>Response Time.</li>
+<li>Content-Type = expected format (JSON/XML).</li>
+<li>Schema validation.</li>
+</ul>
+<h3 id="17-what-is-crud">17. What is CRUD?</h3>
+<p><strong>Answer:</strong></p>
+<ul>
+<li><strong>C:</strong> Create (POST)</li>
+<li><strong>R:</strong> Read (GET)</li>
+<li><strong>U:</strong> Update (PUT/PATCH)</li>
+<li><strong>D:</strong> Delete (DELETE)</li>
+</ul>
+<h3 id="18-real-time-example-you-tested-in-api">18. Real-time example you tested in API?</h3>
+<p><strong>Answer:</strong></p>
+<ul>
+<li>Example: E-commerce checkout API. Validated <strong>cart, payment, and order confirmation</strong> flow.</li>
+</ul>
+<h3 id="19-what-you-found-in-collections-in-api">19. What you found in collections in API?</h3>
+<p><strong>Answer:</strong></p>
+<ul>
+<li>Postman collections help organize test cases (login, CRUD, workflows).</li>
+</ul>
+<h3 id="20-how-do-you-approach-testing-restful-apis">20. How do you approach testing RESTful APIs?</h3>
+<p><strong>Answer:</strong></p>
+<ol>
+<li>Understand API spec/documentation.</li>
+<li>Test CRUD operations.</li>
+<li>Validate response codes &amp; schema.</li>
+<li>Test negative cases &amp; edge cases.</li>
+<li>Security &amp; performance validation.</li>
+</ol>
+<h3 id="21-what-tools-have-you-used-for-api-testing">21. What tools have you used for API testing?</h3>
+<p><strong>Answer:</strong></p>
+<ul>
+<li><strong>Manual:</strong> Postman, SoapUI.</li>
+<li><strong>Automation:</strong> Rest Assured, JMeter, Newman, Karate, Cypress.</li>
+</ul>
+<h3 id="22-how-do-you-validate-response-data-when-testing-an-api">22. How do you validate response data when testing an API?</h3>
+<p><strong>Answer:</strong></p>
+<ul>
+<li>Compare against schema (JSON schema).</li>
+<li>Assert expected fields, values, types.</li>
+<li>Example in Rest Assured:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#268bd2">body</span>(<span style="color:#2aa198">&#34;name&#34;</span>, <span style="color:#268bd2">equalTo</span>(<span style="color:#2aa198">&#34;Shahid&#34;</span>));
+</span></span></code></pre></div><h3 id="23-how-do-you-handle-testing-apis-when-dependent-services-are-down">23. How do you handle testing APIs when dependent services are down?</h3>
+<p><strong>Answer:</strong></p>
+<ul>
+<li>Use <strong>mock servers / stubs</strong>.</li>
+<li>Simulate responses with Postman Mock, WireMock.</li>
+</ul>
+<h3 id="24-what-is-mocking-in-api-testing">24. What is mocking in API testing?</h3>
+<p><strong>Answer:</strong></p>
+<ul>
+<li>Simulating API responses when real API/service is unavailable.</li>
+</ul>
+<h3 id="25-can-you-describe-how-you-would-automate-api-testing">25. Can you describe how you would automate API testing?</h3>
+<p><strong>Answer:</strong></p>
+<ul>
+<li>Use Rest Assured (Java), Postman + Newman, or Cypress.</li>
+<li>Integrate tests in CI/CD pipeline.</li>
+</ul>
+<h3 id="26-what-is-contract-testing">26. What is contract testing?</h3>
+<p><strong>Answer:</strong></p>
+<ul>
+<li>Ensures API meets predefined <strong>request/response contract</strong> (fields, types).</li>
+<li>Tools: Pact, Swagger.</li>
+</ul>
+<h3 id="27-how-would-you-handle-pagination-in-api-testing">27. How would you handle pagination in API testing?</h3>
+<p><strong>Answer:</strong></p>
+<ul>
+<li>Validate <code>limit</code>, <code>offset</code>, <code>page</code> params.</li>
+<li>Ensure <code>next/prev</code> links work correctly.</li>
+</ul>
+<h3 id="28-how-do-you-test-error-handling--edge-cases">28. How do you test error handling &amp; edge cases?</h3>
+<p><strong>Answer:</strong></p>
+<ul>
+<li>Invalid inputs, missing fields, wrong methods.</li>
+<li>Check for meaningful error messages + proper codes.</li>
+</ul>
+<h3 id="29-how-do-you-test-api-performance">29. How do you test API performance?</h3>
+<p><strong>Answer:</strong></p>
+<ul>
+<li>Use JMeter, Locust.</li>
+<li>Metrics: Response time, Throughput, Latency, Error rate.</li>
+</ul>
+<h3 id="30-what-is-rate-limiting-how-would-you-test-it">30. What is rate limiting? How would you test it?</h3>
+<p><strong>Answer:</strong></p>
+<ul>
+<li>Restricts number of requests in time window.</li>
+<li>Test by sending bursts of requests → expect <code>429</code>.</li>
+</ul>
+<h3 id="31-how-do-you-test-api-security">31. How do you test API security?</h3>
+<p><strong>Answer:</strong></p>
+<ul>
+<li>Test for <strong>auth (JWT, OAuth)</strong>.</li>
+<li>Check <strong>vulnerabilities</strong>: SQL Injection, XSS, CSRF, Data leakage.</li>
+</ul>
+<h3 id="32-explain-concurrency-testing-in-apis">32. Explain concurrency testing in APIs.</h3>
+<p><strong>Answer:</strong></p>
+<ul>
+<li>Test multiple simultaneous requests.</li>
+<li>Validate <strong>race conditions</strong> (e.g., two users buying last product).</li>
+</ul>
+<h3 id="33-what-is-throttling-how-would-you-test-it">33. What is throttling? How would you test it?</h3>
+<p><strong>Answer:</strong></p>
+<ul>
+<li>Server intentionally slows responses to avoid overload.</li>
+<li>Test by sending high traffic, check delayed responses.</li>
+</ul>
+<h3 id="34-how-do-you-test-apis-with-dynamic-states">34. How do you test APIs with dynamic states?</h3>
+<p><strong>Answer:</strong></p>
+<ul>
+<li>Example: Shopping cart → Add, Update, Delete, Checkout.</li>
+<li>Validate correct state transitions.</li>
+</ul>
+<h3 id="35-if-api-returns-500-how-would-you-troubleshoot">35. If API returns 500, how would you troubleshoot?</h3>
+<p><strong>Answer:</strong></p>
+<ul>
+<li>Check logs, request payload, headers.</li>
+<li>Validate backend issues (DB, service failure).</li>
+</ul>
+<h3 id="36-how-do-you-test-backward-compatibility">36. How do you test backward compatibility?</h3>
+<p><strong>Answer:</strong></p>
+<ul>
+<li>Run tests on old and new versions.</li>
+<li>Ensure old clients still work with updated API.</li>
+</ul>
+<h3 id="37-describe-a-challenging-api-testing-issue-you-faced">37. Describe a challenging API testing issue you faced.</h3>
+<p><strong>Answer (example):</strong></p>
+<ul>
+<li>API response had inconsistent formats.</li>
+<li>Solved using <strong>JSON schema validation</strong> and collaboration with devs.</li>
+</ul>
+<h3 id="38-banking-api-test-cases">38. Banking API test cases?</h3>
+<p><strong>Answer:</strong></p>
+<ul>
+<li>Login &amp; Authentication.</li>
+<li>Balance inquiry.</li>
+<li>Fund transfer (valid/invalid accounts).</li>
+<li>Transaction history.</li>
+<li>Rate limiting &amp; security checks.</li>
+</ul>
+<h3 id="39-how-would-you-test-third-party-apis">39. How would you test third-party APIs?</h3>
+<p><strong>Answer:</strong></p>
+<ul>
+<li>Use <strong>sandbox environment</strong>.</li>
+<li>Mock/stub third-party responses if unavailable.</li>
+<li>Validate request/response mapping.</li>
+</ul>
+<h3 id="40-how-do-you-ensure-accuracy-in-microservices-apis">40. How do you ensure accuracy in microservices APIs?</h3>
+<p><strong>Answer:</strong></p>
+<ul>
+<li>Validate <strong>end-to-end workflows</strong>.</li>
+<li>Cross-check data consistency across services.</li>
+</ul>
+<h3 id="41-how-to-handle-continuous-api-testing-in-cicd">41. How to handle continuous API testing in CI/CD?</h3>
+<p><strong>Answer:</strong></p>
+<ul>
+<li>Integrate tests using Jenkins, GitHub Actions, GitLab CI.</li>
+<li>Run API test suite after deployment.</li>
+</ul>
+<h3 id="42-role-of-api-testing-in-agiledevops">42. Role of API testing in Agile/DevOps?</h3>
+<p><strong>Answer:</strong></p>
+<ul>
+<li>Fast feedback.</li>
+<li>Shift-left testing.</li>
+<li>Automated regression in CI/CD.</li>
+</ul>
+<h3 id="43-how-do-you-deal-with-unclear-api-documentation">43. How do you deal with unclear API documentation?</h3>
+<p><strong>Answer:</strong></p>
+<ul>
+<li>Collaborate with devs.</li>
+<li>Use Swagger/OpenAPI specs.</li>
+<li>Reverse-engineer using tools like Postman capture.</li>
+</ul>
+<h3 id="44-how-do-you-test-websockets-or-grpc-apis">44. How do you test WebSockets or gRPC APIs?</h3>
+<p><strong>Answer:</strong></p>
+<ul>
+<li><strong>WebSockets:</strong> Test message exchange, connection handling.</li>
+<li><strong>gRPC:</strong> Test protobuf schema, validate request/response using tools like BloomRPC.</li>
+</ul>
+<h3 id="45-what-is-schema-validation-in-api-testing">45. What is schema validation in API testing?</h3>
+<p><strong>Answer:</strong></p>
+<ul>
+<li>Ensures API response follows expected structure (fields, types).</li>
+<li>Example: JSON schema validation.</li>
+</ul>
+<h3 id="46-can-you-explain-hateoas">46. Can you explain HATEOAS?</h3>
+<p><strong>Answer:</strong></p>
+<ul>
+<li><strong>Hypermedia as the Engine of Application State.</strong></li>
+<li>REST API responses include <strong>links</strong> to navigate resources.</li>
+<li>Example: <code>GET /orders/123</code> response contains link to <code>/orders/123/payment</code>.</li>
+</ul>
+<h3 id="47-how-do-you-ensure-data-privacy-in-api-testing-gdpr">47. How do you ensure data privacy in API testing (GDPR)?</h3>
+<p><strong>Answer:</strong></p>
+<ul>
+<li>Mask sensitive data (PII).</li>
+<li>Avoid storing credentials in logs.</li>
+<li>Use secure tokens instead of passwords.</li>
+</ul>
+<h3 id="48-show-api-test-in-postman">48. Show API test in Postman.</h3>
+<p><strong>Answer:</strong></p>
+<ul>
+<li>Send GET request → Check <code>status=200</code>, response body.</li>
+<li>Add <strong>tests</strong> in Postman:</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#268bd2">pm</span>.<span style="color:#268bd2">test</span>(<span style="color:#2aa198">&#34;Status code is 200&#34;</span>, <span style="color:#859900">function</span> () {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">pm</span>.<span style="color:#268bd2">response</span>.<span style="color:#268bd2">to</span>.<span style="color:#268bd2">have</span>.<span style="color:#268bd2">status</span>(<span style="color:#2aa198;font-weight:bold">200</span>);
+</span></span><span style="display:flex;"><span>});
+</span></span></code></pre></div><h3 id="49-write-test-cases-for-sample-api">49. Write test cases for sample API.</h3>
+<p><strong>Answer:</strong></p>
+<ul>
+<li>Status code validation.</li>
+<li>Response schema validation.</li>
+<li>Field presence &amp; values.</li>
+<li>Error handling (invalid input).</li>
+</ul>
+<h3 id="50-third-party-api-is-down-how-do-you-test">50. Third-party API is down. How do you test?</h3>
+<p><strong>Answer:</strong></p>
+<ul>
+<li>Use <strong>mock responses</strong>.</li>
+<li>Test integration layer separately.</li>
+</ul>
+
+    </div>
+</article>
+
+<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
+    
+    <span></span>
+    
+    
+    <a href="//localhost:1313/java-questions-bank/" class="nav-btn">Up</a>
+
+    
+    <span></span>
+    
+</div>
+
+    </main>
+
+    <footer class="footer">
+        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
+    </footer>
+
+    <script>
+        const body = document.getElementById('theme-body');
+        const btn = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme');
+
+        if (currentTheme === 'terminal') {
+            body.classList.add('theme-terminal');
+        }
+
+        btn.addEventListener('click', () => {
+            body.classList.toggle('theme-terminal');
+            let theme = 'natural';
+            if (body.classList.contains('theme-terminal')) {
+                theme = 'terminal';
+            }
+            localStorage.setItem('theme', theme);
+        });
+    </script>
+</body>
+</html>

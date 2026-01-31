@@ -2,7 +2,6 @@
 title: "Interview Questions"
 date: 2026-01-30
 draft: false
-category: "Projects"
 ---
 
 ## Companies
