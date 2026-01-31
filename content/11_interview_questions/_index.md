@@ -9,14 +9,14 @@ This table provides quick access to all collected interview questions and detail
 
 | Topic / Company | Category | Link |
 | :--- | :--- | :--- |
-| **Indium Interview** | Q&A | [View Questions](/11_interview_questions/indium/) |
-| **Hexaware Interview** | Q&A | [View Questions](/11_interview_questions/hexaware/) |
-| **Comcast Interview** | Q&A | [View Questions](/11_interview_questions/comcast/) |
-| **Bronswers** | General Q&A | [View Questions](/11_interview_questions/bronswers/) |
-| **OOPS Concepts** | Technical | [View Questions](/11_interview_questions/oops/) |
-| **All Questions (Bulk)** | Mixed | [View Questions](/11_interview_questions/all_qns/) |
-| **All Answers (Bulk)** | Mixed | [View Questions](/11_interview_questions/all_answers/) |
-| **Questions & Answers** | Master List | [View Questions](/11_interview_questions/all_qns_answers/) |
+| **Indium Interview** | Q&A | [View Questions](indium/) |
+| **Hexaware Interview** | Q&A | [View Questions](hexaware/) |
+| **Comcast Interview** | Q&A | [View Questions](comcast/) |
+| **Bronswers** | General Q&A | [View Questions](bronswers/) |
+| **OOPS Concepts** | Technical | [View Questions](oops/) |
+| **All Questions (Bulk)** | Mixed | [View Questions](all_qns/) |
+| **All Answers (Bulk)** | Mixed | [View Questions](all_answers/) |
+| **Questions & Answers** | Master List | [View Questions](all_qns_answers/) |
 
 ---
 
