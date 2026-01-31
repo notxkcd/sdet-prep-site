@@ -16,6 +16,8 @@ Richard Feynman used to say that if you can't explain it to a freshman, you don'
 
 In the Standard Model, every particle is its own unique "binary." In **String Theory**, we delete all those files and replace them with one single string. Everything you see—the screen you're reading this on, the coffee you're drinking—is just the same string vibrating at different frequencies.
 
+> "Physics is like sex: sure, it may give some practical results, but that's not why we do it." — Richard Feynman
+
 It's like a guitar string. Pluck it one way, you get an 'A'. Pluck it another, you get a 'D'. In the universe, pluck a string one way, you get an electron. Pluck it faster, you get a photon.
 
 ## The Math (The Based Part)

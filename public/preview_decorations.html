@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+/* Base Colors */
+:root {
+    --bg: #fdf6e3;
+    --text: #2e2e2e;
+    --accent: #2d5a27;
+    --dim: #657b83;
+    --code-bg: #eee8d5;
+    --border: #d3ccbe;
+}
+body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: serif;
+    padding: 2rem;
+    max-width: 900px;
+    margin: 0 auto;
+}
+h2 { border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; margin-top: 3rem; color: var(--accent); }
+
+/* --- SECTION 1: CURRENT DEFAULT STYLES --- */
+.default-style pre {
+    background: var(--code-bg);
+    padding: 1rem;
+    border: 1px solid var(--border);
+    font-family: monospace;
+}
+.default-style blockquote {
+    border-left: 4px solid var(--border);
+    margin: 1.5rem 0;
+    padding-left: 1.5rem;
+    font-style: italic;
+    color: var(--dim);
+}
+
+/* --- SECTION 2: PROPOSED NEW STYLES --- */
+.new-style pre {
+    background: var(--code-bg);
+    padding: 1rem;
+    border: 1px solid var(--border);
+    font-family: monospace;
+}
+/* The Decoration */
+.new-style pre::before {
+    content: "≫ SRC";
+    display: block;
+    font-family: sans-serif;
+    font-size: 0.65rem;
+    font-weight: bold;
+    color: var(--dim);
+    margin-bottom: 0.5rem;
+    letter-spacing: 1px;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+
+.new-style blockquote {
+    border-left: 4px solid var(--accent);
+    margin: 2rem 0;
+    padding: 1rem 2rem 1rem 3rem; /* Extra left padding for the quote mark */
+    font-style: italic;
+    background: rgba(45, 90, 39, 0.05);
+    position: relative;
+    color: var(--text);
+}
+.new-style blockquote::before {
+    content: "❝";
+    position: absolute;
+    top: 0rem;
+    left: 0.5rem;
+    font-size: 3rem;
+    color: var(--accent);
+    opacity: 0.2;
+    font-family: serif;
+    line-height: 1;
+}
+</style>
+</head>
+<body>
+
+<h1>Style Comparison</h1>
+
+<!-- DEFAULT -->
+<h2>1. Current Default Style</h2>
+<p><em>This is what you have right now. Clean and simple.</em></p>
+
+<div class="default-style">
+    <pre>
+public static void main(String[] args) {
+    // Just code, nothing else
+    System.out.println("Hello World");
+}</pre>
+
+    <blockquote>
+        The default blockquote is simple indentation with a gray border line. It gets the job done without shouting.
+    </blockquote>
+</div>
+
+
+<!-- PROPOSED -->
+<h2>2. Proposed "Org-Mode" Style</h2>
+<p><em>This adds the 'geeky' flavor symbols you asked about.</em></p>
+
+<div class="new-style">
+    <pre>
+public static void main(String[] args) {
+    // Notice the label above
+    System.out.println("Hello World");
+}</pre>
+
+    <blockquote>
+        This blockquote has a tinted background, a green accent border, and the large quote mark symbol to separate it visually from normal text.
+    </blockquote>
+</div>
+
+</body>
+</html>
