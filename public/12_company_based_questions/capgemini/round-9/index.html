@@ -307,12 +307,26 @@ Without a runner class, Cucumber doesn&rsquo;t know how to start or what to exec
         const btn = document.getElementById('theme-toggle');
         const currentTheme = localStorage.getItem('theme');
 
+        
+        function updateButtonText() {
+            if (body.classList.contains('theme-terminal')) {
+                btn.textContent = "Light Mode";
+            } else {
+                btn.textContent = "Dark Mode";
+            }
+        }
+
         if (currentTheme === 'terminal') {
             body.classList.add('theme-terminal');
         }
+        
+        
+        updateButtonText();
 
         btn.addEventListener('click', () => {
             body.classList.toggle('theme-terminal');
+            updateButtonText();
+            
             let theme = 'natural';
             if (body.classList.contains('theme-terminal')) {
                 theme = 'terminal';

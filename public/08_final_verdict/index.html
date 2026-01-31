@@ -98,12 +98,26 @@ Spend the next 7 days mastering the <strong>Hands-on Tasks</strong> (Section 6) 
         const btn = document.getElementById('theme-toggle');
         const currentTheme = localStorage.getItem('theme');
 
+        
+        function updateButtonText() {
+            if (body.classList.contains('theme-terminal')) {
+                btn.textContent = "Light Mode";
+            } else {
+                btn.textContent = "Dark Mode";
+            }
+        }
+
         if (currentTheme === 'terminal') {
             body.classList.add('theme-terminal');
         }
+        
+        
+        updateButtonText();
 
         btn.addEventListener('click', () => {
             body.classList.toggle('theme-terminal');
+            updateButtonText();
+            
             let theme = 'natural';
             if (body.classList.contains('theme-terminal')) {
                 theme = 'terminal';

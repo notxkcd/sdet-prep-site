@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java File IO &amp; Threads Mastery | SDET Interview Preparation Kit</title>
+    <link rel="stylesheet" href="//localhost:1313/css/style.css">
+    <link rel="stylesheet" href="//localhost:1313/css/terminal.css">
+    
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    
+    <link rel="stylesheet" href="//localhost:1313/lib/katex/katex.min.css">
+    <script defer src="//localhost:1313/lib/katex/katex.min.js"></script>
+    <script defer src="//localhost:1313/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</head>
+<body id="theme-body">
+    <button id="theme-toggle">Switch Theme</button>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="//localhost:1313/">Index</a></li>
+                
+            </ul>
+        </nav>
+        <div class="site-breadcrumb">
+            <a href="//localhost:1313/">Home</a>
+            
+                
+                    <span>/</span> <a href="//localhost:1313/">SDET Interview Dashboard</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/qa-vault/">QA Automation Interview Vault</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/qa-vault/interview-bibles/">Interview Bibles</a>
+                
+            
+            
+                <span>/</span> Java File IO &amp; Threads Mastery
+            
+        </div>
+    </header>
+
+    <main>
+        
+<article>
+    <div class="category-title" style="margin-bottom: 0.5rem;">Interview Bibles</div>
+    <h1>Java File IO &amp; Threads Mastery</h1>
+    <div class="content-body" style="margin-top: 2rem;">
+        <h2 id="1-java-file-handling--io">1. Java File Handling &amp; IO</h2>
+<h3 id="generations-of-file-apis">Generations of File APIs</h3>
+<table>
+  <thead>
+      <tr>
+          <th>Generation</th>
+          <th>Package</th>
+          <th>Main Classes</th>
+          <th>Purpose</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><strong>Old (Pre-Java 7)</strong></td>
+          <td><code>java.io</code></td>
+          <td><code>File</code>, <code>FileInputStream</code>, <code>FileReader</code>, <code>BufferedReader</code></td>
+          <td>Basic file handling</td>
+      </tr>
+      <tr>
+          <td><strong>New (Java 7+)</strong></td>
+          <td><code>java.nio.file</code></td>
+          <td><code>Files</code>, <code>Paths</code>, <code>Path</code></td>
+          <td>Modern, faster API</td>
+      </tr>
+      <tr>
+          <td><strong>Hybrid Utilities</strong></td>
+          <td><code>java.util.stream</code></td>
+          <td>Stream + NIO integration</td>
+          <td>Combine file access with Streams</td>
+      </tr>
+  </tbody>
+</table>
+<h3 id="the-main-classes-explained">The Main Classes Explained</h3>
+<table>
+  <thead>
+      <tr>
+          <th>Class</th>
+          <th>Purpose</th>
+          <th>Notes</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><code>File</code></td>
+          <td>Represents a file/folder path</td>
+          <td>Old-style. Use <code>Path</code> instead.</td>
+      </tr>
+      <tr>
+          <td><code>Path</code></td>
+          <td>Modern version of <code>File</code></td>
+          <td>Better path handling.</td>
+      </tr>
+      <tr>
+          <td><code>Files</code></td>
+          <td>Utility class with static methods</td>
+          <td>Think of it like “FileUtils”.</td>
+      </tr>
+      <tr>
+          <td><code>BufferedReader</code></td>
+          <td>Reads text line-by-line efficiently</td>
+          <td>Best for performance.</td>
+      </tr>
+      <tr>
+          <td><code>FileInputStream</code></td>
+          <td>Reads <strong>bytes</strong> (binary data)</td>
+          <td>Use for images, PDFs, etc.</td>
+      </tr>
+      <tr>
+          <td><code>Properties</code></td>
+          <td>For <code>.properties</code> files</td>
+          <td>Key-value config handler.</td>
+      </tr>
+  </tbody>
+</table>
+<h3 id="-quick-code-snippets">💡 Quick Code Snippets</h3>
+<p><strong>Read All Lines (Modern Way)</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#268bd2">Path</span> <span style="color:#268bd2">path</span> = <span style="color:#268bd2">Paths</span>.<span style="color:#268bd2">get</span>(<span style="color:#2aa198">&#34;data.txt&#34;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">List</span>&lt;<span style="color:#268bd2">String</span>&gt; <span style="color:#268bd2">lines</span> = <span style="color:#268bd2">Files</span>.<span style="color:#268bd2">readAllLines</span>(<span style="color:#268bd2">path</span>);
+</span></span></code></pre></div><p><strong>Write to File</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#268bd2">Path</span> <span style="color:#268bd2">path</span> = <span style="color:#268bd2">Paths</span>.<span style="color:#268bd2">get</span>(<span style="color:#2aa198">&#34;output.txt&#34;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">Files</span>.<span style="color:#268bd2">write</span>(<span style="color:#268bd2">path</span>, <span style="color:#268bd2">List</span>.<span style="color:#268bd2">of</span>(<span style="color:#2aa198">&#34;Hello&#34;</span>, <span style="color:#2aa198">&#34;World&#34;</span>));
+</span></span></code></pre></div><hr>
+<h2 id="2-java-threads--concurrency">2. Java Threads &amp; Concurrency</h2>
+<h3 id="what-is-a-thread">What is a Thread?</h3>
+<p>A <strong>thread</strong> is just a <strong>path of execution</strong> — like a “mini program” running inside your main program.</p>
+<h3 id="ways-to-create-threads">Ways to Create Threads</h3>
+<table>
+  <thead>
+      <tr>
+          <th>Method</th>
+          <th>Implementation</th>
+          <th>Note</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><strong>Extending <code>Thread</code></strong></td>
+          <td><code>class MyT extends Thread</code></td>
+          <td>Simple, but less flexible.</td>
+      </tr>
+      <tr>
+          <td><strong>Implementing <code>Runnable</code></strong></td>
+          <td><code>class MyTask implements Runnable</code></td>
+          <td>Preferred - allows extending other classes.</td>
+      </tr>
+  </tbody>
+</table>
+<h3 id="-common-thread-methods">⚙️ Common Thread Methods</h3>
+<table>
+  <thead>
+      <tr>
+          <th>Method</th>
+          <th>Description</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><code>start()</code></td>
+          <td>Begins execution in a new thread.</td>
+      </tr>
+      <tr>
+          <td><code>run()</code></td>
+          <td>The actual code the thread executes.</td>
+      </tr>
+      <tr>
+          <td><code>sleep(ms)</code></td>
+          <td>Pauses thread temporarily.</td>
+      </tr>
+      <tr>
+          <td><code>join()</code></td>
+          <td>Waits for another thread to finish.</td>
+      </tr>
+      <tr>
+          <td><code>synchronized</code></td>
+          <td>Prevents race conditions on shared data.</td>
+      </tr>
+  </tbody>
+</table>
+<h3 id="-simple-example">💡 Simple Example</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#268bd2">Thread</span> <span style="color:#268bd2">t1</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">Thread</span>(() -&gt; {
+</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>(<span style="color:#2aa198">&#34;Lambda thread running...&#34;</span>);
+</span></span><span style="display:flex;"><span>});
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">t1</span>.<span style="color:#268bd2">start</span>();
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">t1</span>.<span style="color:#268bd2">join</span>(); <span style="color:#93a1a1;font-style:italic">// Main waits for t1</span>
+</span></span></code></pre></div><h3 id="-interview-memory-hooks">🧠 Interview Memory Hooks</h3>
+<ol>
+<li><strong>start() vs run()</strong>: <code>start()</code> creates a new thread; <code>run()</code> is just a normal method call.</li>
+<li><strong>Runnable</strong>: &ldquo;I am the job. Thread runs me.&rdquo;</li>
+<li><strong>Synchronization</strong>: Essential for thread-safety in parallel test execution.</li>
+</ol>
+
+    </div>
+</article>
+
+<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
+    
+    <a href="//localhost:1313/qa-vault/interview-bibles/oop-concepts/" class="nav-btn">← Previous</a>
+    
+    
+    <a href="//localhost:1313/qa-vault/interview-bibles/" class="nav-btn">Up</a>
+
+    
+    <a href="//localhost:1313/qa-vault/interview-bibles/java-collections-streams/" class="nav-btn">Next →</a>
+    
+</div>
+
+    </main>
+
+    <footer class="footer">
+        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
+    </footer>
+
+    <script>
+        const body = document.getElementById('theme-body');
+        const btn = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme');
+
+        
+        function updateButtonText() {
+            if (body.classList.contains('theme-terminal')) {
+                btn.textContent = "Light Mode";
+            } else {
+                btn.textContent = "Dark Mode";
+            }
+        }
+
+        if (currentTheme === 'terminal') {
+            body.classList.add('theme-terminal');
+        }
+        
+        
+        updateButtonText();
+
+        btn.addEventListener('click', () => {
+            body.classList.toggle('theme-terminal');
+            updateButtonText();
+            
+            let theme = 'natural';
+            if (body.classList.contains('theme-terminal')) {
+                theme = 'terminal';
+            }
+            localStorage.setItem('theme', theme);
+        });
+    </script>
+</body>
+</html>

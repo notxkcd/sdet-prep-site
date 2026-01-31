@@ -55,5 +55,10 @@ A comprehensive repository of Java interview questions and coding tasks, meticul
 | :--- | :--- |
 | **[String Theory (Minimalist)](string-theory/)** | **Physics without the Bloat** |
 | **[KaTeX Font Gallery](katex-font-gallery/)** | **Math Typography Specimen** |
-|**[Java Question Bank](java-questions-bank/)**|  |
-**[Company Based Questions](12_company_based_questions/)**| |
+
+
+---
+
+A structured repository of interview question dumps, mastery guides, and deep-dive learning archives for QA Engineers.
+
+[👉 Enter the Interview Vault](qa-vault)

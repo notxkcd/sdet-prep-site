@@ -104,6 +104,14 @@
     
   
     
+      <li><a href="/misc-backup/">QA Automation Interview Preparation</a></li>
+    
+  
+    
+      <li><a href="/qa-vault/">QA Automation Interview Vault</a></li>
+    
+  
+    
   
     
       <li><a href="/12_company_based_questions/">Interview Questions</a></li>
@@ -123,10 +131,6 @@
   
     
       <li><a href="/string-theory/">The Minimalist Universe: String Theory</a></li>
-    
-  
-    
-      <li><a href="/html/"></a></li>
     
   
 </ul>
@@ -149,12 +153,26 @@
         const btn = document.getElementById('theme-toggle');
         const currentTheme = localStorage.getItem('theme');
 
+        
+        function updateButtonText() {
+            if (body.classList.contains('theme-terminal')) {
+                btn.textContent = "Light Mode";
+            } else {
+                btn.textContent = "Dark Mode";
+            }
+        }
+
         if (currentTheme === 'terminal') {
             body.classList.add('theme-terminal');
         }
+        
+        
+        updateButtonText();
 
         btn.addEventListener('click', () => {
             body.classList.toggle('theme-terminal');
+            updateButtonText();
+            
             let theme = 'natural';
             if (body.classList.contains('theme-terminal')) {
                 theme = 'terminal';

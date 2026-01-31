@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selenium Architecture &amp; Advanced Concepts | SDET Interview Preparation Kit</title>
+    <link rel="stylesheet" href="//localhost:1313/css/style.css">
+    <link rel="stylesheet" href="//localhost:1313/css/terminal.css">
+    
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    
+    <link rel="stylesheet" href="//localhost:1313/lib/katex/katex.min.css">
+    <script defer src="//localhost:1313/lib/katex/katex.min.js"></script>
+    <script defer src="//localhost:1313/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</head>
+<body id="theme-body">
+    <button id="theme-toggle">Switch Theme</button>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="//localhost:1313/">Index</a></li>
+                
+            </ul>
+        </nav>
+        <div class="site-breadcrumb">
+            <a href="//localhost:1313/">Home</a>
+            
+                
+                    <span>/</span> <a href="//localhost:1313/">SDET Interview Dashboard</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/qa-vault/">QA Automation Interview Vault</a>
+                
+            
+                
+                    <span>/</span> <a href="//localhost:1313/qa-vault/interview-bibles/">Interview Bibles</a>
+                
+            
+            
+                <span>/</span> Selenium Architecture &amp; Advanced Concepts
+            
+        </div>
+    </header>
+
+    <main>
+        
+<article>
+    <div class="category-title" style="margin-bottom: 0.5rem;">Interview Bibles</div>
+    <h1>Selenium Architecture &amp; Advanced Concepts</h1>
+    <div class="content-body" style="margin-top: 2rem;">
+        <h2 id="1-selenium-architecture">1. Selenium Architecture</h2>
+<p>Selenium follows a <strong>Client–Server architecture</strong>.</p>
+<table>
+  <thead>
+      <tr>
+          <th>Component</th>
+          <th>Description</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><strong>Selenium Client Library</strong></td>
+          <td>Your Java/Python code using Selenium commands.</td>
+      </tr>
+      <tr>
+          <td><strong>W3C WebDriver Protocol</strong></td>
+          <td>The standard protocol for browser automation.</td>
+      </tr>
+      <tr>
+          <td><strong>Browser Driver</strong></td>
+          <td>Executable (like <code>chromedriver</code>) that translates commands for the browser.</td>
+      </tr>
+      <tr>
+          <td><strong>Browser</strong></td>
+          <td>The target browser executing the UI actions.</td>
+      </tr>
+  </tbody>
+</table>
+<hr>
+<h2 id="2-advanced-interaction-javascriptexecutor">2. Advanced Interaction (JavascriptExecutor)</h2>
+<p><strong>Why use it?</strong> When Selenium&rsquo;s <code>.click()</code> or <code>.sendKeys()</code> fails due to dynamic overlays or hidden elements.</p>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#268bd2">JavascriptExecutor</span> <span style="color:#268bd2">js</span> = (<span style="color:#268bd2">JavascriptExecutor</span>) <span style="color:#268bd2">driver</span>;
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Scroll to element</span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">js</span>.<span style="color:#268bd2">executeScript</span>(<span style="color:#2aa198">&#34;arguments[0].scrollIntoView(true);&#34;</span>, <span style="color:#268bd2">element</span>);
+</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Force click</span>
+</span></span><span style="display:flex;"><span><span style="color:#268bd2">js</span>.<span style="color:#268bd2">executeScript</span>(<span style="color:#2aa198">&#34;arguments[0].click();&#34;</span>, <span style="color:#268bd2">element</span>);
+</span></span></code></pre></div><hr>
+<h2 id="3-dynamic-waits-mastery">3. Dynamic Waits Mastery</h2>
+<table>
+  <thead>
+      <tr>
+          <th>Wait Type</th>
+          <th>Mechanism</th>
+          <th>Best Use</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><strong>Implicit</strong></td>
+          <td>Global poll for presence in DOM.</td>
+          <td>Basic setup.</td>
+      </tr>
+      <tr>
+          <td><strong>Explicit</strong></td>
+          <td>Wait for a specific condition (e.g., clickable).</td>
+          <td>Handing sync issues.</td>
+      </tr>
+      <tr>
+          <td><strong>Fluent</strong></td>
+          <td>Explicit wait + custom polling/ignoring exceptions.</td>
+          <td>Highly dynamic/unstable pages.</td>
+      </tr>
+  </tbody>
+</table>
+<h3 id="-fluent-wait-syntax">💡 Fluent Wait Syntax</h3>
+<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#268bd2">Wait</span>&lt;<span style="color:#268bd2">WebDriver</span>&gt; <span style="color:#268bd2">wait</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">FluentWait</span>&lt;&gt;(<span style="color:#268bd2">driver</span>)
+</span></span><span style="display:flex;"><span>    .<span style="color:#268bd2">withTimeout</span>(<span style="color:#268bd2">Duration</span>.<span style="color:#268bd2">ofSeconds</span>(<span style="color:#268bd2">30</span>))
+</span></span><span style="display:flex;"><span>    .<span style="color:#268bd2">pollingEvery</span>(<span style="color:#268bd2">Duration</span>.<span style="color:#268bd2">ofSeconds</span>(<span style="color:#268bd2">2</span>))
+</span></span><span style="display:flex;"><span>    .<span style="color:#268bd2">ignoring</span>(<span style="color:#268bd2">NoSuchElementException</span>.<span style="color:#268bd2">class</span>);
+</span></span></code></pre></div><hr>
+<h2 id="4-xpath-axes-family-tree-logic">4. XPath Axes (Family Tree Logic)</h2>
+<p>Axes allow locating elements relative to others when IDs aren&rsquo;t available.</p>
+<table>
+  <thead>
+      <tr>
+          <th>Axis</th>
+          <th>Direction</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><code>parent::</code></td>
+          <td>Immediate level up.</td>
+      </tr>
+      <tr>
+          <td><code>ancestor::</code></td>
+          <td>All levels up.</td>
+      </tr>
+      <tr>
+          <td><code>child::</code></td>
+          <td>Immediate level down.</td>
+      </tr>
+      <tr>
+          <td><code>descendant::</code></td>
+          <td>All levels down.</td>
+      </tr>
+      <tr>
+          <td><code>following-sibling::</code></td>
+          <td>Same level, coming after.</td>
+      </tr>
+      <tr>
+          <td><code>preceding-sibling::</code></td>
+          <td>Same level, coming before.</td>
+      </tr>
+  </tbody>
+</table>
+<hr>
+<h2 id="5-typecasting-confusion-cleared">5. Typecasting Confusion Cleared</h2>
+<ul>
+<li><strong>Why Typecast?</strong> <code>WebDriver</code> interface doesn&rsquo;t have methods for screenshots or JS execution. Since <code>ChromeDriver</code> implements multiple interfaces, we cast to access them.</li>
+<li><strong>Why pass driver to constructor?</strong> Classes like <code>WebDriverWait</code> or <code>Actions</code> aren&rsquo;t drivers themselves; they are <strong>helpers</strong> that need a driver instance to perform their job.</li>
+</ul>
+
+    </div>
+</article>
+
+<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
+    
+    <span></span>
+    
+    
+    <a href="//localhost:1313/qa-vault/interview-bibles/" class="nav-btn">Up</a>
+
+    
+    <a href="//localhost:1313/qa-vault/interview-bibles/qa-interview-theory/" class="nav-btn">Next →</a>
+    
+</div>
+
+    </main>
+
+    <footer class="footer">
+        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
+    </footer>
+
+    <script>
+        const body = document.getElementById('theme-body');
+        const btn = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme');
+
+        
+        function updateButtonText() {
+            if (body.classList.contains('theme-terminal')) {
+                btn.textContent = "Light Mode";
+            } else {
+                btn.textContent = "Dark Mode";
+            }
+        }
+
+        if (currentTheme === 'terminal') {
+            body.classList.add('theme-terminal');
+        }
+        
+        
+        updateButtonText();
+
+        btn.addEventListener('click', () => {
+            body.classList.toggle('theme-terminal');
+            updateButtonText();
+            
+            let theme = 'natural';
+            if (body.classList.contains('theme-terminal')) {
+                theme = 'terminal';
+            }
+            localStorage.setItem('theme', theme);
+        });
+    </script>
+</body>
+</html>

@@ -1163,12 +1163,26 @@ This bypasses Selenium&rsquo;s visibility checks and tells the browser to fire t
         const btn = document.getElementById('theme-toggle');
         const currentTheme = localStorage.getItem('theme');
 
+        
+        function updateButtonText() {
+            if (body.classList.contains('theme-terminal')) {
+                btn.textContent = "Light Mode";
+            } else {
+                btn.textContent = "Dark Mode";
+            }
+        }
+
         if (currentTheme === 'terminal') {
             body.classList.add('theme-terminal');
         }
+        
+        
+        updateButtonText();
 
         btn.addEventListener('click', () => {
             body.classList.toggle('theme-terminal');
+            updateButtonText();
+            
             let theme = 'natural';
             if (body.classList.contains('theme-terminal')) {
                 theme = 'terminal';
