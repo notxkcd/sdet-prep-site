@@ -64,12 +64,26 @@
         const btn = document.getElementById('theme-toggle');
         const currentTheme = localStorage.getItem('theme');
 
+        // Function to update button text
+        function updateButtonText() {
+            if (body.classList.contains('theme-terminal')) {
+                btn.textContent = "Light Mode";
+            } else {
+                btn.textContent = "Dark Mode";
+            }
+        }
+
         if (currentTheme === 'terminal') {
             body.classList.add('theme-terminal');
         }
+        
+        // Initialize text
+        updateButtonText();
 
         btn.addEventListener('click', () => {
             body.classList.toggle('theme-terminal');
+            updateButtonText();
+            
             let theme = 'natural';
             if (body.classList.contains('theme-terminal')) {
                 theme = 'terminal';

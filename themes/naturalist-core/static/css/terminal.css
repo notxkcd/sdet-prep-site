@@ -1,49 +1,74 @@
+/* Dark Naturalist Theme (Replaces Cyber/Terminal) */
 body.theme-terminal {
-    --bg: #0a0b10;
-    --panel: #161b22;
-    --text: #c9d1d9;
-    --dim: #8b949e;
-    --accent: #00f2ff; /* Cyber Cyan */
-    --secondary: #ff00ff;
-    --border: #30363d;
-    --code-bg: #000000;
+    /* Solarized Dark / Deep Charcoal Palette */
+    --bg: #1a1b1e;       /* Deep matte black/grey */
+    --text: #e0e0e0;     /* Soft white */
+    --accent: #68a063;   /* Lighter Forest Green for dark mode contrast */
+    --dim: #999999;      /* Light gray */
+    --border: #3a3a3a;   /* Subtle dark border */
+    --code-bg: #25262b;  /* Slightly lighter grey for code */
+    --panel: #25262b;
+    --secondary: #68a063; /* Match accent */
 }
 
+/* Ensure consistent typography with Light Mode */
 .theme-terminal {
     background-color: var(--bg);
     color: var(--text);
-    font-family: 'Courier New', monospace;
+    font-family: 'Crimson Pro', serif; /* Keep the same elegant font */
+    background-image: none; /* Remove the cyber grid */
 }
 
+/* Headers - Keep them bold and serif */
 .theme-terminal h1, .theme-terminal h2, .theme-terminal h3 {
-    color: var(--accent);
-    font-family: 'Courier New', monospace;
-    font-weight: 700;
-    text-shadow: 1px 1px 0px rgba(0, 242, 255, 0.2);
+    color: var(--accent) !important;
+    font-family: 'Crimson Pro', serif;
+    font-weight: 700 !important;
+    text-shadow: none; /* Remove cyber glow */
 }
 
-.theme-terminal a { color: var(--accent); text-decoration: none; }
-.theme-terminal a:hover { background-color: var(--accent); color: #000; }
-
-.theme-terminal pre, .theme-terminal .highlight pre {
-    background-color: #000 !important;
-    border: 1px solid var(--accent);
+/* Links */
+.theme-terminal a {
     color: var(--accent);
+    text-decoration: underline;
+}
+
+.theme-terminal a:hover {
+    background-color: var(--accent);
+    color: var(--bg); /* Dark text on green background */
+    box-shadow: none;
+}
+
+/* Code Blocks - Dark Mode Style */
+.theme-terminal pre, 
+.theme-terminal .highlight pre {
+    background-color: var(--code-bg) !important;
+    border: 1px solid var(--border) !important;
+    color: var(--text) !important;
+    padding: 0.8rem 1.2rem !important;
+    border-radius: 4px;
+}
+
+.theme-terminal pre code {
+    background: transparent !important;
+    border: none !important;
+    color: inherit;
     white-space: pre !important;
 }
 
+/* Inline Code */
 .theme-terminal :not(pre) > code {
-    background-color: var(--panel);
-    color: var(--accent);
-    border: 1px solid var(--border);
+    background-color: var(--code-bg) !important;
+    color: #e6db74; /* Soft yellow/green for inline code visibility */
+    border: 1px solid var(--border) !important;
+    font-family: "Courier New", monospace;
+    padding: 0.1rem 0.3rem;
+    border-radius: 3px;
 }
 
-.theme-terminal table th {
-    background-color: var(--panel);
-    color: var(--accent);
-}
-
+/* Checkboxes - Keep Hand-Drawn Feel but adapted for Dark Mode */
 .theme-terminal input[type="checkbox"] {
+    background-color: var(--bg);
     border-color: var(--accent);
 }
 
@@ -51,12 +76,47 @@ body.theme-terminal {
     background-color: var(--accent);
 }
 
-/* Terminal Theme Blockquote Override */
+.theme-terminal input[type="checkbox"]:checked::after {
+    color: var(--bg); /* Dark checkmark on green bg */
+}
+
+/* Blockquotes in Dark Mode */
 .theme-terminal blockquote {
-    background: rgba(0, 242, 255, 0.05) !important; /* Cyan tint */
+    background: rgba(104, 160, 99, 0.1); /* Very low opacity green */
+    border-left-color: var(--accent);
     color: var(--text);
 }
+
 .theme-terminal blockquote::before {
     color: var(--accent);
-    opacity: 0.4;
+    opacity: 0.3;
+}
+
+/* Tables */
+.theme-terminal table th {
+    background-color: var(--code-bg);
+    color: var(--accent);
+    border-color: var(--border);
+}
+
+.theme-terminal table td {
+    border-color: var(--border);
+}
+
+/* Nav & Breadcrumbs */
+.theme-terminal .site-breadcrumb, 
+.theme-terminal nav a {
+    color: var(--dim);
+}
+
+.theme-terminal nav a:hover {
+    color: var(--accent);
+    text-shadow: none;
+}
+
+/* Toggle Button - Blend in */
+.theme-terminal #theme-toggle {
+    background: var(--accent);
+    color: var(--bg);
+    border: none;
 }
