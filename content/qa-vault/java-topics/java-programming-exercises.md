@@ -1,8 +1,10 @@
 ---
+category: "Java"
 title: "Java Programming Exercises"
 date: 2026-01-31
 draft: false
 ---
+category: "Java"
 
 ## Prompt:
 I want to practice small programming exercises to develop my intuition and get better at tracking variables and logic flow in my head. Can you give me a set of problems starting from very easy to slightly harder, and walk me through solving them step by step? I want to see how variable values change at each step and understand the reasoning behind each solution." in java
@@ -38,6 +40,7 @@ b = b * 2;           // line 5
 | 5 | 6 | 6 | 8 |
 
 ---
+category: "Java"
 
 **Problem 2 — Swap two variables**
 
@@ -53,6 +56,7 @@ y = tmp;
 x=10, y=20, tmp=10 -> x=20 -> y=10.
 
 ---
+category: "Java"
 
 **Problem 3 — Factorial using loop**
 
@@ -68,6 +72,7 @@ for (int i = 1; i <= n; i++) {
 i=1, res=1 -> i=2, res=2 -> i=3, res=6 -> i=4, res=24 -> i=5, res=120.
 
 ---
+category: "Java"
 
 **Problem 4 — Max of three values**
 
@@ -80,6 +85,7 @@ if (c > max) max = c;
 **Trace:** max=7 -> check b(3)>7? No -> check c(9)>7? Yes -> max=9.
 
 ---
+category: "Java"
 
 **Problem 5 — Array Sum & Avg**
 
@@ -93,6 +99,7 @@ double avg = (double) sum / arr.length;
 **Trace:** sum=0 -> 2 -> 6 -> 12 -> 20. Avg = 20/4 = 5.0.
 
 ---
+category: "Java"
 
 **Problem 6 — Count Vowels**
 
@@ -107,6 +114,7 @@ for(char c : s.toCharArray()) {
 **Trace:** 'h' (no), 'e' (yes, count=1), 'l' (no), 'l' (no), 'o' (yes, count=2).
 
 ---
+category: "Java"
 
 ## 🔹 Level 2: 15 More Problems (Loops & Logic)
 
@@ -154,6 +162,7 @@ for(int i=0; i<a.length-1; i++) {
 ```
 
 ---
+category: "Java"
 
 ## 🔹 Level 3: Logic & Patterns (91-110)
 
@@ -192,6 +201,7 @@ for(int i=1; i<=n; i++) {
 ```
 
 ---
+category: "Java"
 
 ## 🔹 Level 4: Data Structures (111-130)
 
@@ -218,6 +228,7 @@ Needs `front` and `rear` pointers.
 Use `Queue` + `Map`. Add char to queue, update map count. While front of queue has count > 1, poll.
 
 ---
+category: "Java"
 
 ## 🔹 Level 5: Logic & Algorithms (131-150)
 

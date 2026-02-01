@@ -1,7 +1,6 @@
 ---
 title: "API from First Principles"
 date: 2026-01-31
-category: "Learn"
 description: "A step-by-step guide to building and understanding APIs from the ground up."
 ---
 

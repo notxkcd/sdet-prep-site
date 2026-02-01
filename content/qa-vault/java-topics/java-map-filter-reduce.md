@@ -1,8 +1,10 @@
 ---
+category: "Java"
 title: "Java Map, Filter, Reduce"
 date: 2026-01-31
 draft: false
 ---
+category: "Java"
 
 ## Prompt:
 Teach me using a problem-driven, question-first approach. Start with the real problem that motivated the concept, ask me questions to think through it, let me attempt solutions, guide me through hints, and only reveal the full explanation after I've reasoned. No theory first — always discovery and questioning first
@@ -51,6 +53,7 @@ Try to outline the steps, even rough pseudocode.
 Give me your reasoning — then I'll challenge it and guide you to discover map/filter/reduce.
 
 ---
+category: "Java"
 
 ## User Answer (Simulated):
 > I would create a `count` variable. Then loop through the list. Inside the loop, check if the name contains "admin". If it DOES NOT, then I convert it to uppercase. Then I increment the count.
@@ -67,6 +70,7 @@ for (String name : names) {
 ```
 
 ---
+category: "Java"
 
 ## Response:
 Perfect. That is the **Imperative Style** (The "How").
@@ -98,6 +102,7 @@ Imagine a factory belt:
 How would you write this in English (or pseudo-code) without using the word "loop"?
 
 ---
+category: "Java"
 
 ## User Answer (Simulated):
 > Take the list of names.
@@ -106,6 +111,7 @@ How would you write this in English (or pseudo-code) without using the word "loo
 > Count them.
 
 ---
+category: "Java"
 
 ## Response:
 Boom. 💥
@@ -142,12 +148,14 @@ If I have `[1, 2, 3]` and I "map" them by multiplying by 2, I get `[2, 4, 6]`.
 Think about it.
 
 ---
+category: "Java"
 
 ## User Answer (Simulated):
 > No, `map` changes the value/type but keeps the count same.
 > `filter` changes the count (removes items) but keeps the type same.
 
 ---
+category: "Java"
 
 ## Response:
 Precisely. That is the golden rule.

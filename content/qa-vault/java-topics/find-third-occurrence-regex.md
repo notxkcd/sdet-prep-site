@@ -1,8 +1,10 @@
 ---
+category: "Java"
 title: "Find Third Occurrence Regex"
 date: 2026-01-31
 draft: false
 ---
+category: "Java"
 
 ## Prompt:
 How to find the third occurance of a word in regex java
@@ -100,6 +102,7 @@ This is considered the **standard**, **readable**, and **reliable** way.
 
 ✔ Why this is the best approach?
 --------------------------------
+category: "Java"
 
 ### **1. Regex engines are designed to return _all_ matches, one at a time**
 
@@ -137,6 +140,7 @@ All directly for the 3rd match.
 
 ✅ **Best approach — the one professionals use**
 -----------------------------------------------
+category: "Java"
 
 ```java
 Pattern p = Pattern.compile("apple");
@@ -153,6 +157,7 @@ for (int i = 0; i < 3 && m.find(); i++) {
 
 ✔ Summary
 ---------
+category: "Java"
 
 | Approach | Good? | Why |
 | --- | --- | --- |

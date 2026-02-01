@@ -1,7 +1,6 @@
 ---
 title: "Past Projects"
 date: 2026-01-31
-category: "Projects"
 ---
 
 A collection of my past work and experimental tools.

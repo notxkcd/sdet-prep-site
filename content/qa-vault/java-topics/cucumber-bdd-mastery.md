@@ -1,8 +1,10 @@
 ---
+category: "Java"
 title: "Cucumber BDD Mastery"
 date: 2026-01-31
 draft: false
 ---
+category: "Java"
 
 ## Prompt:
 Teach me using a problem-driven, question-first approach. Start with the real problem that motivated the concept, ask me questions to think through it, let me attempt solutions, guide me through hints, and only reveal the full explanation after I've reasoned. No theory first — always discovery and questioning first
@@ -48,11 +50,13 @@ Something that both:
 (Think before answering — imagine designing such a system yourself.)
 
 ---
+category: "Java"
 
 ## User Answer (Simulated):
 > Maybe we can write the test cases in plain English first, like a document, and then somehow link them to the code? Like mapping the English sentences to Java methods?
 
 ---
+category: "Java"
 
 ## Response:
 🎯 **Spot on.**
@@ -86,11 +90,13 @@ How do you tell Java that *when* it sees that specific English sentence, it shou
 (Hint: Think about how you map URLs to methods in API controllers, or how you identify things in code using metadata.)
 
 ---
+category: "Java"
 
 ## User Answer (Simulated):
 > We need some kind of mapping mechanism. Maybe annotations? Like @Given("sentence") above a function?
 
 ---
+category: "Java"
 
 ## Response:
 🔥 **Bingo.** You just re-invented **Step Definitions**.
@@ -138,11 +144,13 @@ Scenario: Login user 2
 Is there a way to make it like a "template" or a loop?
 
 ---
+category: "Java"
 
 ## User Answer (Simulated):
 > Can we use variables? Like passing the username and password as parameters? Or a table of data?
 
 ---
+category: "Java"
 
 ## Response:
 Exactly! 👏
@@ -185,11 +193,13 @@ You are using **JUnit** or **TestNG**.
 What kind of configuration class would you need?
 
 ---
+category: "Java"
 
 ## User Answer (Simulated):
 > We probably need a Runner class. It should have configurations to point to the features and glue code. Maybe using an annotation like @CucumberOptions?
 
 ---
+category: "Java"
 
 ## Response:
 You nailed it. 🔨

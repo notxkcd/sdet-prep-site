@@ -1,8 +1,10 @@
 ---
+category: "Java"
 title: "Java Exception Handling"
 date: 2026-01-31
 draft: false
 ---
+category: "Java"
 
 ## Prompt:
 Teach me using a problem-driven, question-first approach. Start with the real problem that motivated the concept, ask me questions to think through it, let me attempt solutions, guide me through hints, and only reveal the full explanation after I've reasoned. No theory first — always discovery and questioning first
@@ -46,11 +48,13 @@ Try to think of **possible techniques** you would use if Java did not have excep
 👉 **Give your answer — what mechanisms could be used to signal errors without exceptions?**
 
 ---
+category: "Java"
 
 ## User Answer (Simulated):
 > Maybe return `null`? Or return `-1` or `false` to indicate failure? Like in C functions?
 
 ---
+category: "Java"
 
 ## Response:
 Exactly. The "Old School" way (C-style).
@@ -83,11 +87,13 @@ If every single method returns `null` on failure, what does your main test code 
 **Why is this "risky" for a lazy developer?**
 
 ---
+category: "Java"
 
 ## User Answer (Simulated):
 > The code will be full of `if-else` checks. It will look messy. And if a developer *forgets* to check for `null`, the program will crash later with a NullPointerException when trying to use it.
 
 ---
+category: "Java"
 
 ## Response:
 💥 **BOOM.** That is the killer argument.
@@ -119,12 +125,14 @@ Which one of these is a "foreseeable environment issue" and which one is a "prog
 Which one should the compiler FORCE you to handle?
 
 ---
+category: "Java"
 
 ## User Answer (Simulated):
 > File not found is an external thing, so maybe the compiler should force us to handle it (Checked).
 > Dividing by zero is my stupid mistake, so maybe the compiler leaves it to me (Unchecked)?
 
 ---
+category: "Java"
 
 ## Response:
 Perfect classification.

@@ -1,8 +1,10 @@
 ---
+category: "Java"
 title: "Java Regex Cheat Sheet"
 date: 2026-01-31
 draft: false
 ---
+category: "Java"
 
 # Java Regex Cheat Sheet (Completed)
 
@@ -10,6 +12,7 @@ draft: false
 **Status:** Completed & Refined
 
 ---
+category: "Java"
 
 ## Prompt:
 teach me Java RegeEx And All i need to know No BS , strigh tto the point and give me things to remember so i dont' forget the main thingy so  i can recall without memorizing syntax like a soydev
@@ -47,6 +50,7 @@ m.matches(); // full match
 
 **Literals**
 ------------
+category: "Java"
 
 ```
 a    → literal 'a'
@@ -55,6 +59,7 @@ a    → literal 'a'
 
 **Character classes**
 ---------------------
+category: "Java"
 
 ```
 [abc]    → a or b or c
@@ -75,6 +80,7 @@ a    → literal 'a'
 
 **Quantifiers**
 ---------------
+category: "Java"
 
 ```
 *  → 0+
@@ -94,6 +100,7 @@ a    → literal 'a'
 
 **Anchors**
 -----------
+category: "Java"
 
 ```
 ^   → start of string
@@ -104,6 +111,7 @@ $   → end of string
 
 **Groups**
 ----------
+category: "Java"
 
 ```java
 (abc)       → capturing group
@@ -185,6 +193,7 @@ Lookarounds don't consume text
 
 **Find all occurrences**
 ------------------------
+category: "Java"
 
 ```java
 Pattern p = Pattern.compile("word");
@@ -197,6 +206,7 @@ while (m.find()) {
 
 **Replace**
 -----------
+category: "Java"
 
 ```java
 text = text.replaceAll("foo", "bar");
@@ -204,6 +214,7 @@ text = text.replaceAll("foo", "bar");
 
 **Group extraction**
 --------------------
+category: "Java"
 
 ```java
 Pattern p = Pattern.compile("Name: (\\w+)");
@@ -216,6 +227,7 @@ if (m.find()) {
 
 **Match whole string**
 ----------------------
+category: "Java"
 
 ```java
 if (text.matches("\\d+")) {
@@ -244,6 +256,7 @@ These are the ones you’ll use 90% of the time.
 
 **1. `matches(String regex)`**
 -------------------------------
+category: "Java"
 
 Checks _whole string_ matches pattern.
 
@@ -257,6 +270,7 @@ Checks _whole string_ matches pattern.
 
 **2. `replaceAll(String regex, String replacement)`**
 ------------------------------------------------------
+category: "Java"
 
 Replace ALL matches.
 
@@ -268,6 +282,7 @@ text.replaceAll("\\s+", " ");
 
 **3. `replaceFirst(String regex, String replacement)`**
 --------------------------------------------------------
+category: "Java"
 
 Replace only the first match.
 
@@ -279,6 +294,7 @@ text.replaceFirst("\\d", "#");
 
 **4. `split(String regex)`**
 -----------------------------
+category: "Java"
 
 Split by regex.
 
@@ -297,6 +313,7 @@ String[] parts = text.split("\\s+");
 
 **1. `compile(String regex)`**
 -------------------------------
+category: "Java"
 
 Compile regex to a Pattern.
 
@@ -308,6 +325,7 @@ Pattern p = Pattern.compile("\\d+");
 
 **2. `matcher(CharSequence input)`**
 -------------------------------------
+category: "Java"
 
 Attach pattern to a string.
 
@@ -319,6 +337,7 @@ Matcher m = p.matcher(text);
 
 **3. `split(CharSequence input)`**
 -----------------------------------
+category: "Java"
 
 Same as `String.split`, but uses an existing Pattern.
 
@@ -330,6 +349,7 @@ p.split("a b c");
 
 **4. `matches(String regex, CharSequence input)`**
 ---------------------------------------------------
+category: "Java"
 
 Static helper. Rarely used.
 
@@ -341,6 +361,7 @@ Pattern.matches("\\d+", "123");
 
 **5. Flags with compile**
 --------------------------
+category: "Java"
 
 Flags modify regex behavior.
 
@@ -378,6 +399,7 @@ SEARCH METHODS
 
 **1. `find()`**
 ----------------
+category: "Java"
 
 Find next match.
 
@@ -391,6 +413,7 @@ while (m.find()) {
 
 **2. `find(int start)`**
 -------------------------
+category: "Java"
 
 Start search at index.
 
@@ -402,6 +425,7 @@ m.find(10);
 
 **3. `lookingAt()`**
 ---------------------
+category: "Java"
 
 Matches from start of string (not full string).
 
@@ -413,6 +437,7 @@ m.lookingAt();
 
 **4. `matches()`**
 -------------------
+category: "Java"
 
 Full string match.
 
@@ -427,6 +452,7 @@ GROUP & CAPTURE METHODS
 
 **5. `group()`**
 -----------------
+category: "Java"
 
 Returns the entire match.
 
@@ -438,6 +464,7 @@ m.group();
 
 **6. `group(int index)`**
 --------------------------
+category: "Java"
 
 Returns a specific capture group.
 
@@ -449,6 +476,7 @@ m.group(1);
 
 **7. `groupCount()`**
 ----------------------
+category: "Java"
 
 Number of capturing groups.
 
@@ -456,6 +484,7 @@ Number of capturing groups.
 
 **8. `start()`**
 -----------------
+category: "Java"
 
 Start index of the whole match.
 
@@ -467,6 +496,7 @@ m.start();
 
 **9. `start(int group)`**
 --------------------------
+category: "Java"
 
 Start of capture group.
 
@@ -474,6 +504,7 @@ Start of capture group.
 
 **10. `end()`**
 ----------------
+category: "Java"
 
 End index of match.
 
@@ -485,6 +516,7 @@ m.end();
 
 **11. `end(int group)`**
 -------------------------
+category: "Java"
 
 End of capture group.
 
@@ -495,6 +527,7 @@ REPLACEMENT METHODS
 
 **12. `replaceAll(String replacement)`**
 -----------------------------------------
+category: "Java"
 
 ```java
 m.replaceAll("#");
@@ -504,6 +537,7 @@ m.replaceAll("#");
 
 **13. `replaceFirst(String replacement)`**
 -------------------------------------------
+category: "Java"
 
 ```java
 m.replaceFirst("@");
@@ -513,6 +547,7 @@ m.replaceFirst("@");
 
 **14. `appendReplacement(StringBuilder sb, String replacement)`**
 ------------------------------------------------------------------
+category: "Java"
 
 Manual streaming replacement (advanced).
 
@@ -528,6 +563,7 @@ m.appendTail(sb);
 
 **15. `appendTail(StringBuilder sb)`**
 ---------------------------------------
+category: "Java"
 
 Finish the streaming replace.
 
@@ -538,6 +574,7 @@ OTHER MATCHER METHODS
 
 **16. `reset()`**
 ------------------
+category: "Java"
 
 Send matcher back to start.
 
@@ -549,6 +586,7 @@ m.reset();
 
 **17. `reset(CharSequence input)`**
 ------------------------------------
+category: "Java"
 
 Reset + new string.
 
@@ -560,6 +598,7 @@ m.reset(newInput);
 
 **18. `pattern()`**
 --------------------
+category: "Java"
 
 Get the Pattern object.
 
@@ -567,6 +606,7 @@ Get the Pattern object.
 
 **19. `usePattern(Pattern newPattern)`**
 -----------------------------------------
+category: "Java"
 
 Change the pattern used by matcher.
 
@@ -574,6 +614,7 @@ Change the pattern used by matcher.
 
 **20. `region(int start, int end)`**
 -------------------------------------
+category: "Java"
 
 Search within a substring _without creating a new string_.
 
@@ -585,6 +626,7 @@ m.region(0, 10);
 
 **21. `regionStart()`, `regionEnd()`**
 ---------------------------------------
+category: "Java"
 
 Get region bounds.
 
@@ -592,6 +634,7 @@ Get region bounds.
 
 **22. `hitEnd()`**
 -------------------
+category: "Java"
 
 Check if matcher hit the end of input on the last match attempt.
 
@@ -601,6 +644,7 @@ Rarely needed.
 
 **23. `requireEnd()`**
 -----------------------
+category: "Java"
 
 Check if more input _could_ produce a match.
 
@@ -662,6 +706,7 @@ Great — here is the **ultra-condensed, printable, zero-soydev Java Regex cheat
 
 🟥 REGEX SYNTAX (THE REAL CORE)
 -------------------------------
+category: "Java"
 
 ### **Character Classes**
 
@@ -716,6 +761,7 @@ a|b   → a or b
 
 🟥 JAVA ESCAPES
 ---------------
+category: "Java"
 
 Java needs double escaping.
 
@@ -737,6 +783,7 @@ Rule:
 
 🟩 `String` class
 -----------------
+category: "Java"
 
 ```java
 matches(regex)
@@ -749,6 +796,7 @@ split(regex)
 
 🟩 Pattern
 ----------
+category: "Java"
 
 ```java
 Pattern.compile(regex)
@@ -775,6 +823,7 @@ Pattern.compile("abc", Pattern.CASE_INSENSITIVE | Pattern.DOTALL)
 
 🟩 Matcher Methods (Everything you need)
 ----------------------------------------
+category: "Java"
 
 ```java
 find()
@@ -842,6 +891,7 @@ Do these and you become a regex killer.
 
 🔹 Level 1 — Basics
 -------------------
+category: "Java"
 
 **1. Match a 10-digit mobile number**
 
@@ -865,6 +915,7 @@ Do these and you become a regex killer.
 
 🔹 Level 2 — Groups & Captures
 ------------------------------
+category: "Java"
 
 **4. Extract first name and last name**  
 Pattern:
@@ -889,6 +940,7 @@ Pattern:
 
 🔹 Level 3 — Boundaries & Anchors
 ---------------------------------
+category: "Java"
 
 **7. Match a whole line containing only letters**
 
@@ -906,6 +958,7 @@ Pattern:
 
 🔹 Level 4 — Replace
 --------------------
+category: "Java"
 
 **9. Replace multiple spaces with 1**
 
@@ -923,6 +976,7 @@ find("\\d+")
 
 🔹 Level 5 — Lookaheads
 -----------------------
+category: "Java"
 
 **11. Number followed by “kg”**
 
@@ -940,6 +994,7 @@ good(?!boy)
 
 🔹 Level 6 — Lookbehinds
 ------------------------
+category: "Java"
 
 (Works in Java 9+)
 
@@ -953,6 +1008,7 @@ good(?!boy)
 
 🔹 Level 7 — Harder Patterns
 ----------------------------
+category: "Java"
 
 **14. Match an email**
 
@@ -970,6 +1026,7 @@ https?://[^\\s]+
 
 🔹 Level 8 — Real-World
 -----------------------
+category: "Java"
 
 **16. Extract key=value pairs**
 
@@ -987,6 +1044,7 @@ https?://[^\\s]+
 
 🔹 Level 9 — You’re now advanced
 --------------------------------
+category: "Java"
 
 **18. Match Java identifiers**
 
@@ -1004,6 +1062,7 @@ https?://[^\\s]+
 
 🔥 Final Boss
 -------------
+category: "Java"
 
 **20. Balanced parentheses (regex hack)**
 

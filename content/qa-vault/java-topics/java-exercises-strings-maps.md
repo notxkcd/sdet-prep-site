@@ -1,8 +1,10 @@
 ---
+category: "Java"
 title: "Java Exercises: Strings & Maps"
 date: 2026-01-31
 draft: false
 ---
+category: "Java"
 
 ## Prompt:
 "I want to practice [String+Collecion Map] in [java]. Can you give me [20] exercises that start very easy and gradually become harder? I want each exercise to be solved step by step with explanations, and I want to see how variable values change at each step if applicable.

@@ -1,8 +1,10 @@
 ---
+category: "Java"
 title: "Solving Problems Without Overwhelm"
 date: 2026-01-31
 draft: false
 ---
+category: "Java"
 
 ## Prompt:
 how to solve problems without getting overwhelemed programming/math always getting stuck it think it's too hard and brain trying to distract or avoid it na dwasted 4 years of my life without realising this im thinking I'm learning

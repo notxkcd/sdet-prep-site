@@ -1,8 +1,10 @@
 ---
+category: "Java"
 title: "Java Records"
 date: 2026-01-31
 draft: false
 ---
+category: "Java"
 
 ## Prompt:
 Teach me using a problem-driven, question-first approach. Start with the real problem that motivated the concept, ask me questions to think through it, let me attempt solutions, guide me through hints, and
@@ -72,11 +74,13 @@ Think in terms of:
 Give me _your_ thoughts first. Then I'll guide you.
 
 ---
+category: "Java"
 
 ## User Answer (Simulated):
 > It's huge maintenance. If I add one field `z`, I have to update the constructor, the getter, the equals method, the hashcode, and the toString. It's easy to make a mistake, like forgetting to add `z` to `equals()`. Also, the code is hard to read because 90% of it is just noise.
 
 ---
+category: "Java"
 
 ## Response:
 🎯 **Exactly.**
@@ -97,6 +101,7 @@ If such a feature existed, **how short do you think that 60-line class could bec
 Write a hypothetical syntax for it.
 
 ---
+category: "Java"
 
 ## User Answer (Simulated):
 > Something like:
@@ -105,6 +110,7 @@ Write a hypothetical syntax for it.
 > `record Point(int x, int y) {}`
 
 ---
+category: "Java"
 
 ## Response:
 🔥 **You literally guessed the syntax.**
@@ -137,11 +143,13 @@ If you use a **Record** instead of a Class for `LoginData`, what limitations mig
 Is that a **good thing** or a **bad thing** for Test Data?
 
 ---
+category: "Java"
 
 ## User Answer (Simulated):
 > It's mostly a good thing because test data shouldn't change during the test. It prevents accidental modification. But if I need to update just one field for a different test case (like "same user but wrong password"), I can't just `setPass()`. I'd have to create a new object.
 
 ---
+category: "Java"
 
 ## Response:
 Perfect analysis.

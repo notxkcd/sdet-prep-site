@@ -1,8 +1,10 @@
 ---
+category: "Java"
 title: "String Replacement Exercises"
 date: 2026-01-31
 draft: false
 ---
+category: "Java"
 
 ## Prompt:
 "I want to practice [String replacement] in [java]. Can you give me [20] exercises that start very easy and gradually become harder? I want each exercise to be solved step by step with explanations, and I want to see how variable values change at each step if applicable. After each problem, ask me to predict the result before showing the solution so I can train my intuition.
@@ -14,6 +16,7 @@ Absolutely! Let's do a **progressive set of 20 Java exercises on String replacem
 
 **Exercise 1: Simple character replacement**
 --------------------------------------------
+category: "Java"
 
 **Problem:** Replace 'a' with 'b' in "apple".
 
@@ -34,6 +37,7 @@ System.out.println(result);
 
 **Exercise 2: Replace substring**
 ---------------------------------
+category: "Java"
 
 **Problem:** Replace "cat" with "dog" in "the cat sat".
 
@@ -54,6 +58,7 @@ System.out.println(result);
 
 **Exercise 3: Replace multiple occurrences**
 --------------------------------------------
+category: "Java"
 
 **Problem:** Replace 'l' with 'x' in "hello world".
 
@@ -74,6 +79,7 @@ System.out.println(result);
 
 **Exercise 4: No match replacement**
 ------------------------------------
+category: "Java"
 
 **Problem:** Replace 'z' with 'a' in "java".
 
@@ -93,6 +99,7 @@ System.out.println(result);
 
 **Exercise 5: Replace first occurrence of substring**
 -----------------------------------------------------
+category: "Java"
 
 **Problem:** Replace only the first "cat" with "dog" in "cat cat cat".
 
@@ -112,6 +119,7 @@ System.out.println(result);
 
 **Exercise 6: Regex replacement**
 ---------------------------------
+category: "Java"
 
 **Problem:** Replace all digits with '*' in "a1b2c3".
 
@@ -132,6 +140,7 @@ System.out.println(result);
 
 **Exercise 7: Case sensitive replacement**
 ------------------------------------------
+category: "Java"
 
 **Problem:** Replace "Java" with "Python" in "I love java and Java".
 
@@ -151,6 +160,7 @@ System.out.println(result);
 
 **Exercise 8: Replace using regex for letters**
 -----------------------------------------------
+category: "Java"
 
 **Problem:** Replace all vowels with '*' in "hello world".
 
@@ -171,6 +181,7 @@ System.out.println(result);
 
 **Exercise 9: Remove whitespace**
 ---------------------------------
+category: "Java"
 
 **Problem:** Remove all spaces in "I am learning Java".
 
@@ -191,6 +202,7 @@ System.out.println(result);
 
 **Exercise 10: Replace multiple characters using regex**
 --------------------------------------------------------
+category: "Java"
 
 **Problem:** Replace all digits and vowels with '#' in "a1b2c3".
 
@@ -211,6 +223,7 @@ System.out.println(result);
 
 **Exercise 11: Chain replacements**
 -----------------------------------
+category: "Java"
 
 **Problem:** Replace 'a' with 'o', then 'o' with 'u' in "java".
 
@@ -231,6 +244,7 @@ System.out.println(result);
 
 **Exercise 12: Replace ignoring case using regex**
 --------------------------------------------------
+category: "Java"
 
 **Problem:** Replace "java" with "Python" ignoring case in "I love JAVA and java".
 
@@ -251,6 +265,7 @@ System.out.println(result);
 
 **Exercise 13: Replace words with boundary check**
 --------------------------------------------------
+category: "Java"
 
 **Problem:** Replace "cat" with "dog" only as a full word in "concatenate cat catapult".
 
@@ -271,6 +286,7 @@ System.out.println(result);
 
 **Exercise 14: Replace digits with different length**
 -----------------------------------------------------
+category: "Java"
 
 **Problem:** Replace digits with "X" in "User1234".
 
@@ -291,6 +307,7 @@ System.out.println(result);
 
 **Exercise 15: Replace multiple words**
 ---------------------------------------
+category: "Java"
 
 **Problem:** Replace "cat" with "dog" and "mouse" with "cheese" in "cat and mouse".
 
@@ -311,6 +328,7 @@ System.out.println(result);
 
 **Exercise 16: Replace using a map (advanced)**
 -----------------------------------------------
+category: "Java"
 
 **Problem:** Replace "apple" → "orange", "banana" → "kiwi" in "I like apple and banana".
 
@@ -326,6 +344,7 @@ System.out.println(str);
 
 **Exercise 17: Replace special characters**
 -------------------------------------------
+category: "Java"
 
 **Problem:** Replace all punctuation with '-' in "Hello, world!".
 
@@ -346,6 +365,7 @@ System.out.println(result);
 
 **Exercise 18: Replace multiple spaces with single space**
 ----------------------------------------------------------
+category: "Java"
 
 **Problem:** Replace consecutive spaces with a single space in "I am here".
 
@@ -361,6 +381,7 @@ System.out.println(result);
 
 **Exercise 19: Remove all non-alphanumeric characters**
 -------------------------------------------------------
+category: "Java"
 
 **Problem:** Remove everything except letters and numbers from "Hello! 123, World?".
 
@@ -381,6 +402,7 @@ System.out.println(result);
 
 **Exercise 20: Complex chain with regex and replace**
 -----------------------------------------------------
+category: "Java"
 
 **Problem:** Replace vowels with '*' and digits with '#' in "Hello 2025 World".
 
@@ -396,6 +418,7 @@ System.out.println(result);
 
 **Exercise 21: Replace all uppercase letters with `*`**
 -------------------------------------------------------
+category: "Java"
 
 ```java
 String str = "Hello World!";
@@ -409,6 +432,7 @@ System.out.println(result);
 
 **Exercise 22: Replace all lowercase letters with `#`**
 -------------------------------------------------------
+category: "Java"
 
 ```javascript
 String str = "Hello World!";
@@ -422,6 +446,7 @@ System.out.println(result);
 
 **Exercise 23: Replace first digit only**
 -----------------------------------------
+category: "Java"
 
 ```java
 String str = "Room 123";
@@ -435,6 +460,7 @@ System.out.println(result);
 
 **Exercise 24: Replace all whitespace with underscore**
 -------------------------------------------------------
+category: "Java"
 
 ```java
 String str = "I love Java";
@@ -448,6 +474,7 @@ System.out.println(result);
 
 **Exercise 25: Replace only the first vowel**
 ---------------------------------------------
+category: "Java"
 
 ```java
 String str = "banana";
@@ -461,6 +488,7 @@ System.out.println(result);
 
 **Exercise 26: Replace word at the beginning**
 ----------------------------------------------
+category: "Java"
 
 ```java
 String str = "Hello World Hello";
@@ -474,6 +502,7 @@ System.out.println(result);
 
 **Exercise 27: Replace word at the end**
 ----------------------------------------
+category: "Java"
 
 ```java
 String str = "Hello World Hello";
@@ -487,6 +516,7 @@ System.out.println(result);
 
 **Exercise 28: Replace consecutive identical letters**
 ------------------------------------------------------
+category: "Java"
 
 ```java
 String str = "bookkeeper";
@@ -500,6 +530,7 @@ System.out.println(result);
 
 **Exercise 29: Replace all non-digits with `*`**
 ------------------------------------------------
+category: "Java"
 
 ```java
 String str = "a1b2c3";
@@ -513,6 +544,7 @@ System.out.println(result);
 
 **Exercise 30: Replace multiple spaces with comma**
 ---------------------------------------------------
+category: "Java"
 
 ```java
 String str = "I   am   here";
@@ -526,6 +558,7 @@ System.out.println(result);
 
 **Exercise 31: Replace words with specific length**
 ---------------------------------------------------
+category: "Java"
 
 ```java
 String str = "I am here for fun";
@@ -539,6 +572,7 @@ System.out.println(result);
 
 **Exercise 32: Replace numbers of specific length**
 ---------------------------------------------------
+category: "Java"
 
 ```java
 String str = "My pin is 1234 and code 567";
@@ -552,6 +586,7 @@ System.out.println(result);
 
 **Exercise 33: Replace HTML-like tags**
 ---------------------------------------
+category: "Java"
 
 ```java
 String str = "<div>Hello</div>";
@@ -565,6 +600,7 @@ System.out.println(result);
 
 **Exercise 34: Remove all punctuation except `.`**
 --------------------------------------------------
+category: "Java"
 
 ```java
 String str = "Hello, world! How are you?";
@@ -578,6 +614,7 @@ System.out.println(result);
 
 **Exercise 35: Replace all vowels at word boundary**
 ----------------------------------------------------
+category: "Java"
 
 ```java
 String str = "apple orange";
@@ -591,6 +628,7 @@ System.out.println(result);
 
 **Exercise 36: Replace repeated whitespace with single space**
 --------------------------------------------------------------
+category: "Java"
 
 ```java
 String str = "This    is   Java";
@@ -604,6 +642,7 @@ System.out.println(result);
 
 **Exercise 37: Mask email address**
 -----------------------------------
+category: "Java"
 
 ```java
 String str = "Contact me at test@example.com";
@@ -617,6 +656,7 @@ System.out.println(result);
 
 **Exercise 38: Remove digits at start of string**
 -------------------------------------------------
+category: "Java"
 
 ```java
 String str = "123abc456";
@@ -630,6 +670,7 @@ System.out.println(result);
 
 **Exercise 39: Replace last word using lookahead**
 --------------------------------------------------
+category: "Java"
 
 ```java
 String str = "I like Java programming";
@@ -643,6 +684,7 @@ System.out.println(result);
 
 **Exercise 40: Replace multiple patterns using regex alternation**
 ------------------------------------------------------------------
+category: "Java"
 
 ```java
 String str = "cat dog bird";

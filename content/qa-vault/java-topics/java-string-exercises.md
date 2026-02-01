@@ -1,8 +1,10 @@
 ---
+category: "Java"
 title: "Java String Exercises"
 date: 2026-01-31
 draft: false
 ---
+category: "Java"
 
 ## Prompt:
 "I want to practice [Strings] in [java]. Can you give me [20] exercises that start very easy and gradually become harder? I want each exercise to be solved step by step with explanations, and I want to see how variable values change at each step if applicable.
@@ -14,6 +16,7 @@ Nice — below are **20** progressive Java string exercises. For each: a short p
 
 **1) Length of a string**
 ---------------------
+category: "Java"
 
 **Problem:** Given `s = "hello"`, print its length.  
 **Code**
@@ -34,6 +37,7 @@ System.out.println(len);
 
 **2) Character at an index**
 ------------------------
+category: "Java"
 
 **Problem:** Find character at index `2` in `"hello"`.  
 **Code**
@@ -54,6 +58,7 @@ System.out.println(c);
 
 **3) Concatenate strings**
 ----------------------
+category: "Java"
 
 **Problem:** Join `"hello"` and `"world"` with a space.  
 **Code**
@@ -76,6 +81,7 @@ System.out.println(joined);
 
 **4) Substring extraction**
 -----------------------
+category: "Java"
 
 **Problem:** Extract `"ell"` from `"hello"`.  
 **Code**
@@ -96,6 +102,7 @@ System.out.println(sub);
 
 **5) First occurrence index**
 -------------------------
+category: "Java"
 
 **Problem:** Find index of `"lo"` in `"hello world"`.  
 **Code**
@@ -116,6 +123,7 @@ System.out.println(idx);
 
 **6) Last occurrence index**
 ------------------------
+category: "Java"
 
 **Problem:** Last index of `'l'` in `"hello world"`.  
 **Code**
@@ -136,6 +144,7 @@ System.out.println(last);
 
 **7) Case change and trim**
 -----------------------
+category: "Java"
 
 **Problem:** Given `" Java "`, trim and convert to uppercase.  
 **Code**
@@ -158,6 +167,7 @@ System.out.println("[" + upper + "]");
 
 **8) Replace characters**
 ---------------------
+category: "Java"
 
 **Problem:** Replace all `'a'` with `'@'` in `"banana"`.  
 **Code**
@@ -178,6 +188,7 @@ System.out.println(r);
 
 **9) contains / startsWith / endsWith**
 -----------------------------------
+category: "Java"
 
 **Problem:** Check if `"hello.java"` contains `"java"`, starts with `"he"`, ends with `".java"`.  
 **Code**
@@ -202,6 +213,7 @@ System.out.println(has + ", " + sw + ", " + ew);
 
 **10) Split and join**
 ------------------
+category: "Java"
 
 **Problem:** Split `"a,b,c"` by `,` and join with `-`.  
 **Code**
@@ -223,6 +235,7 @@ System.out.println(joined);
 
 **11) Reverse a string (manual)**
 -----------------------------
+category: "Java"
 
 **Problem:** Reverse `"abcd"` → `"dcba"`.  
 **Code**
@@ -250,6 +263,7 @@ System.out.println(rev);
 
 **12) Palindrome check**
 ------------------------------------------------------
+category: "Java"
 
 **Problem:** Check if `"A man a plan a canal Panama"` is a palindrome (ignore spaces/case).  
 **Code**
@@ -275,6 +289,7 @@ System.out.println(isPal);
 
 **13) Count vowels and consonants**
 -------------------------------
+category: "Java"
 
 **Problem:** For `"hello"`, count vowels and consonants.  
 **Code**
@@ -305,6 +320,7 @@ System.out.println(vowels + " vowels, " + consonants + " consonants");
 
 **14) Remove duplicate characters (preserve order)**
 ------------------------------------------------
+category: "Java"
 
 **Problem:** From `"banana"`, produce `"ban"`.  
 **Code**
@@ -338,6 +354,7 @@ System.out.println(result);
 
 **15) Anagram check (sort & compare)**
 ----------------------------------
+category: "Java"
 
 **Problem:** Determine if `"listen"` and `"silent"` are anagrams.  
 **Code**
@@ -361,6 +378,7 @@ System.out.println(anagram);
 
 **16) Simple run-length compress**
 --------------------------------------
+category: "Java"
 
 **Problem:** Compress `"aaabbc"` → `"a3b2c1"`.  
 **Code**
@@ -394,6 +412,7 @@ System.out.println(sb.toString());
 
 **17) Longest common prefix**
 --------------------------------------------
+category: "Java"
 
 **Problem:** Given `["flower","flow","flight"]` find longest common prefix → `"fl"`.  
 **Code**
@@ -426,6 +445,7 @@ System.out.println(prefix);
 
 **18) Simple `atoi` (string → int)**
 --------------------------------------------------------------------------------------
+category: "Java"
 
 **Problem:** Convert `" -42"` → `-42`.  
 **Code**
@@ -463,6 +483,7 @@ System.out.println(result);
 
 **19) Longest palindromic substring**
 ----------------------------------------------------
+category: "Java"
 
 **Problem:** For `"babad"` find longest palindromic substring (`"bab"` or `"aba"`).  
 **Code**
@@ -495,6 +516,7 @@ static int expand(String s, int left, int right) {
 
 **20) Check if two strings are isomorphic**
 ---------------------------------------
+category: "Java"
 
 **Problem:** Determine if `"egg"` and `"add"` are isomorphic (`'e'->'a', 'g'->'d'`), but `"foo"` and `"bar"` are not.  
 **Code**

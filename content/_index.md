@@ -32,7 +32,7 @@ A comprehensive repository of Java interview questions and coding tasks, meticul
 
 1. **[Java Question Bank](java-questions-bank/)**
 2. **[Company Based Questions](12_company_based_questions/)**
-3. **[API from First Principles](api-from-first-principle/)** — *A step-by-step guide to building and understanding APIs from the ground up.*
+3. **[API from First Principles](api-from-first-principle/)**
 
 
 {{% center %}}
@@ -42,35 +42,25 @@ A comprehensive repository of Java interview questions and coding tasks, meticul
 
 ---
 
-### 🚀 Immediate Cheat Sheet for ADHD Recall:
+### Immediate Cheat Sheet for ADHD Recall:
 - **How does Selenium work?** JSON Wire Protocol -> Browser Driver -> Real Browser.
 - **Why POM?** Code reusability and easy maintenance.
 - **StaleElementReferenceException?** Element is no longer in the DOM. **Fix:** Refresh/Wait.
 - **Sprint missed?** Communicate early, prioritize 'Must-haves'.
-
-
 ---
 
+## Java Practice Guides
 
-| Blog | Showcase of this Blog  |
+| Blog | Description  |
 | :--- | :--- |
-| **[String Theory (Minimalist)](string-theory/)** | **Physics without the Bloat** |
-| **[KaTeX Font Gallery](katex-font-gallery/)** | **Math Typography Specimen** |
+| **[Ultimate Java 21 Cheat Sheet](ultimate-questions-cheatsheet/java-ultimate-cheat-sheet/)** | **400+ Q&A (Java 8 to 21)** |
+| **[Java String-Regex Guide](java-string-regex-exercises/)** | **50+ Progressive Exercises** |
+| **[Java Generics Mastery](java-generics-exercises/)** | **60 Expert-Level Exercises** |
+| **[Java Generics Interview Q&A](java-generics-interview-qa/)** | **SDET Focus (Indian Market)** |
+| **[Java Collections Q&A](java-collections-interview-qa/)** | **Hierarchy & HashMap Internals** |
+| **[70 Java Collection Q&A](ultimate-questions-cheatsheet/70-java-collection-hugo-with-code)**| **70 Java Collections questions with interactive navigation**|
 
-
----
 
 A structured repository of interview question dumps, mastery guides, and deep-dive learning archives for QA Engineers.
 
-[👉 Enter the Interview Vault](qa-vault)
-
-
----
-
-### 🎨 Past Projects Showcase
-
-| Project | Description |
-| :--- | :--- |
-| **[DSA-42](projects/DSA-42/)** | **42 Algorithms & 42 Data Structures** |
-| **[Voxel JSONPath](projects/json-path/)** | **Interactive JSONPath Explorer** |
-| **[Voxel JSON](projects/voxel-json/)** | **Voxel-themed JSON Editor** |
+**[Enter the Interview Vault for more](qa-vault)**

@@ -1,8 +1,10 @@
 ---
+category: "Java"
 title: "Learn JS Before TS"
 date: 2026-01-31
 draft: false
 ---
+category: "Java"
 
 ## Prompt:
 I'm planning to learn TypeScript for playwright or test automation, so should I learn JavaScript first, then learn TypeScript, or TypeScript is just enough?
@@ -14,6 +16,7 @@ Short answer: **You _can_ start directly with TypeScript**, but **knowing basic 
 
 📌 Why JavaScript first helps
 -----------------------------
+category: "Java"
 
 TypeScript is built **on top of JavaScript**, so everything in JS still applies.  
 Without JS fundamentals, TS might feel confusing because you’ll struggle with:
@@ -33,6 +36,7 @@ If you learn TypeScript without knowing JS, you’ll learn both at the same time
 
 Recommended Learning Path
 -------------------------
+category: "Java"
 
 ### If you want a **smooth progressive path**
 
@@ -53,6 +57,7 @@ Recommended Learning Path
 
 Practical Timeline for Automation Goal
 --------------------------------------
+category: "Java"
 
 | Stage | Duration | Outcome |
 | --- | --- | --- |
@@ -65,6 +70,7 @@ Practical Timeline for Automation Goal
 
 In simple words
 ---------------
+category: "Java"
 
 If your main goal is **Playwright automation**, then:
 
@@ -907,6 +913,7 @@ Try yourself first → Then check answers.
 
 **Exercises:**
 --------------
+category: "Java"
 
 1.  Create a function `delay(ms)` that waits given milliseconds using promise.
 2.  Write async function that prints:

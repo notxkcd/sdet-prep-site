@@ -1,8 +1,10 @@
 ---
+category: "Java"
 title: "Java Records Explained"
 date: 2026-01-31
 draft: false
 ---
+category: "Java"
 
 ## Prompt:
 Teach me java records in simple plain style. Straight to the point no bullshit

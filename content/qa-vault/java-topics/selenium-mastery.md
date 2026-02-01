@@ -1,8 +1,10 @@
 ---
+category: "Java"
 title: "Selenium Mastery"
 date: 2026-01-31
 draft: false
 ---
+category: "Java"
 
 ## Prompt:
 Teach me using a problem-driven, question-first approach. Start with the real problem that motivated the concept, ask me questions to think through it, let me attempt solutions, guide me through hints, and only reveal the full explanation after I've reasoned. No theory first — always discovery and questioning first
@@ -36,6 +38,7 @@ List your guesses.**
 After you answer, I’ll ask the next discovery questions.
 
 ---
+category: "Java"
 
 ## User Answer (Simulated):
 > 1. Elements not loading fast enough (Waits?).
@@ -44,6 +47,7 @@ After you answer, I’ll ask the next discovery questions.
 > 4. Network issues.
 
 ---
+category: "Java"
 
 ## Response:
 Excellent. You hit the top 3 killers of automation.
@@ -65,11 +69,13 @@ You decide to put `Thread.sleep(5000)` (pause for 5 seconds) before the click. I
 Think about a test suite with 1000 tests.
 
 ---
+category: "Java"
 
 ## User Answer (Simulated):
 > Because it's hardcoded. If the element loads in 1 second, I still wait 5 seconds. That's 4 seconds wasted. Multiplied by 1000 tests, that's huge wasted time. Also, if it takes 6 seconds, it still fails.
 
 ---
+category: "Java"
 
 ## Response:
 Exactly. **It is static, dumb, and slow.**
@@ -85,11 +91,13 @@ This brings us to **Implicit vs Explicit Waits**.
 **Which one do you think is better for handling complex states (like waiting for a spinner to disappear)?**
 
 ---
+category: "Java"
 
 ## User Answer (Simulated):
 > Explicit. Because Implicit just waits for "presence" in the DOM, but Explicit can wait for "visibility" or "interactability".
 
 ---
+category: "Java"
 
 ## Response:
 💯 **100% Correct.**
@@ -112,12 +120,14 @@ One day, the developer changes the ID from `user` to `username_field`.
 How could you have designed it differently to fix this in **one place**?
 
 ---
+category: "Java"
 
 ## User Answer (Simulated):
 > All 50 tests break. I have to find-and-replace in 50 places.
 > To fix this, I should have stored the locator in one variable or class. If I change it there, it updates everywhere. This sounds like the Page Object Model.
 
 ---
+category: "Java"
 
 ## Response:
 You just derived the **Page Object Model (POM)** pattern.
