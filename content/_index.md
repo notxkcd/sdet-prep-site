@@ -59,6 +59,7 @@ A comprehensive repository of Java interview questions and coding tasks, meticul
 | **[Java Generics Interview Q&A](java-generics-interview-qa/)** | **SDET Focus (Indian Market)** |
 | **[Java Collections Q&A](java-collections-interview-qa/)** | **Hierarchy & HashMap Internals** |
 | **[70 Java Collection Q&A](ultimate-questions-cheatsheet/70-java-collection-hugo-with-code)**| **70 Java Collections questions with interactive navigation**|
+| **[Git & Security Mastery](git/)** | **Basics, SSH, GPG, YubiKey & Supply Chain Security** |
 
 
 A structured repository of interview question dumps, mastery guides, and deep-dive learning archives for QA Engineers.
