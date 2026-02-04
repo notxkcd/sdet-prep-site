@@ -1,207 +1,54 @@
-<!DOCTYPE html>
-<html lang="en-us">
-<head><script src="/sdet-prep-site/livereload.js?mindelay=10&amp;v=2&amp;port=41691&amp;path=sdet-prep-site/livereload" data-no-instant defer></script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Step 6: JSON and Schemas | SDET Interview Preparation Kit</title>
-    <link rel="stylesheet" href="http://localhost:41691/sdet-prep-site/css/style.css">
-    <link rel="stylesheet" href="http://localhost:41691/sdet-prep-site/css/terminal.css">
-    
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
-    
-    
-    <link rel="stylesheet" href="http://localhost:41691/sdet-prep-site/lib/katex/katex.min.css">
-    <script defer src="http://localhost:41691/sdet-prep-site/lib/katex/katex.min.js"></script>
-    <script defer src="http://localhost:41691/sdet-prep-site/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            renderMathInElement(document.body, {
-                delimiters: [
-                    {left: "$$", right: "$$", display: true},
-                    {left: "$", right: "$", display: false}
-                ]
-            });
-        });
-    </script>
-</head>
-<body id="theme-body">
-    <button id="theme-toggle">Switch Theme</button>
-    <header>
-        <nav>
-            <ul>
-                <li><a href="http://localhost:41691/sdet-prep-site/">Index</a></li>
-                
-            </ul>
-        </nav>
-        <div class="site-breadcrumb">
-            <a href="http://localhost:41691/sdet-prep-site/">Home</a>
-            
-                
-                    <span>/</span> <a href="http://localhost:41691/sdet-prep-site/">SDET Interview Dashboard</a>
-                
-            
-                
-                    <span>/</span> <a href="http://localhost:41691/sdet-prep-site/api-from-first-principle/">API from First Principles</a>
-                
-            
-            
-                <span>/</span> Step 6: JSON and Schemas
-            
-        </div>
-    </header>
-
-    <main>
-        
-<article>
-    
-    <h1>Step 6: JSON and Schemas</h1>
-    <div class="content-body" style="margin-top: 2rem;">
-        <h2 id="1-what-problem-this-step-solves">1. What problem this step solves</h2>
-<p>Until now, our server replied with sentences like &ldquo;The sum is 30.&rdquo; If a mobile app wants to display just the number &ldquo;30&rdquo; in a large font, it has to write complex code to &ldquo;scrape&rdquo; the number out of the sentence. If we change the sentence to &ldquo;Result: 30&rdquo;, the app breaks. We need a way to send data that is structured and machine-readable.</p>
-<h2 id="2-concepts-introduced-in-this-step">2. Concepts introduced in this step</h2>
-<ul>
-<li><strong>JSON (JavaScript Object Notation):</strong> A text-based format for representing structured data (lists and dictionaries).</li>
-<li><strong>Serialization:</strong> Converting a Python object into a JSON string.</li>
-<li><strong>Deserialization:</strong> Converting a JSON string back into a Python object.</li>
-<li><strong>Schema:</strong> A &ldquo;blueprint&rdquo; or &ldquo;definition&rdquo; of what the data should look like (e.g., &ldquo;The &lsquo;age&rsquo; field must be an integer&rdquo;).</li>
-</ul>
-<h2 id="3-why-these-concepts-exist-why-focused">3. Why these concepts exist (WHY-focused)</h2>
-<p><strong>JSON</strong> is the industry standard because it is lightweight and easy for almost every programming language to read.
-<strong>Schemas</strong> exist because &ldquo;Garbage In = Garbage Out.&rdquo; If your API expects a user&rsquo;s <code>email</code> and someone sends an image, your database might crash. A Schema allows you to validate the data <em>before</em> your logic touches it.</p>
-<h2 id="4-common-confusions--doubts-explicit-qa">4. Common confusions &amp; doubts (explicit Q&amp;A)</h2>
-<p><strong>Q: Is JSON related to JavaScript?</strong><br>
-A: It started that way, but now it&rsquo;s universal. You don&rsquo;t need to know any JavaScript to use JSON in Python.</p>
-<p><strong>Q: Can I send images in JSON?</strong><br>
-A: Not directly. JSON is text. You usually send a &ldquo;URL&rdquo; to the image, or you encode the image into a very long text string (Base64), though the former is preferred.</p>
-<p><strong>Q: Why not use XML?</strong><br>
-A: XML is much wordier and harder to read for humans. JSON has mostly replaced it for modern APIs.</p>
-<h2 id="5-ascii-diagrams">5. ASCII diagrams</h2>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>TEXT VS JSON:
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>Plain Text:
-</span></span><span style="display:flex;"><span>&#34;User John is 25 years old and lives in New York&#34;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>JSON:
-</span></span><span style="display:flex;"><span>{
-</span></span><span style="display:flex;"><span>  &#34;name&#34;: &#34;John&#34;,
-</span></span><span style="display:flex;"><span>  &#34;age&#34;: 25,
-</span></span><span style="display:flex;"><span>  &#34;city&#34;: &#34;New York&#34;,
-</span></span><span style="display:flex;"><span>  &#34;is_active&#34;: true
-</span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><h2 id="6-full-working-python-code">6. Full working Python code</h2>
-<p><em>We will use Python&rsquo;s built-in <code>json</code> library to handle our API data.</em></p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">json</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># 1. THE DATA (Python Dictionary)</span>
-</span></span><span style="display:flex;"><span><span style="color:#268bd2">book_data</span> = {
-</span></span><span style="display:flex;"><span>    <span style="color:#2aa198">&#34;title&#34;</span>: <span style="color:#2aa198">&#34;The Great Gatsby&#34;</span>,
-</span></span><span style="display:flex;"><span>    <span style="color:#2aa198">&#34;author&#34;</span>: <span style="color:#2aa198">&#34;F. Scott Fitzgerald&#34;</span>,
-</span></span><span style="display:flex;"><span>    <span style="color:#2aa198">&#34;year&#34;</span>: <span style="color:#2aa198;font-weight:bold">1925</span>,
-</span></span><span style="display:flex;"><span>    <span style="color:#2aa198">&#34;available&#34;</span>: <span style="color:#859900;font-weight:bold">True</span>
-</span></span><span style="display:flex;"><span>}
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># 2. SERIALIZATION (Object -&gt; String)</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># This is what the SERVER sends over the network</span>
-</span></span><span style="display:flex;"><span><span style="color:#268bd2">json_string</span> = <span style="color:#268bd2">json</span>.<span style="color:#268bd2">dumps</span>(<span style="color:#268bd2">book_data</span>)
-</span></span><span style="display:flex;"><span><span style="color:#cb4b16">print</span>(<span style="color:#2aa198">f</span><span style="color:#2aa198">&#34;Network Payload: </span><span style="color:#2aa198">{</span><span style="color:#268bd2">json_string</span><span style="color:#2aa198">}</span><span style="color:#2aa198">&#34;</span>)
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># 3. DESERIALIZATION (String -&gt; Object)</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># This is what the CLIENT does when it receives the data</span>
-</span></span><span style="display:flex;"><span><span style="color:#268bd2">received_data</span> = <span style="color:#268bd2">json</span>.<span style="color:#268bd2">loads</span>(<span style="color:#268bd2">json_string</span>)
-</span></span><span style="display:flex;"><span><span style="color:#cb4b16">print</span>(<span style="color:#2aa198">f</span><span style="color:#2aa198">&#34;Client Accessing Data: </span><span style="color:#2aa198">{</span><span style="color:#268bd2">received_data</span>[<span style="color:#2aa198">&#39;title&#39;</span>]<span style="color:#2aa198">}</span><span style="color:#2aa198"> by </span><span style="color:#2aa198">{</span><span style="color:#268bd2">received_data</span>[<span style="color:#2aa198">&#39;author&#39;</span>]<span style="color:#2aa198">}</span><span style="color:#2aa198">&#34;</span>)
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># 4. SCHEMA VALIDATION (Simple Version)</span>
-</span></span><span style="display:flex;"><span><span style="color:#859900">def</span> <span style="color:#268bd2">validate_book</span>(<span style="color:#268bd2">data</span>):
-</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">required_fields</span> = [<span style="color:#2aa198">&#34;title&#34;</span>, <span style="color:#2aa198">&#34;author&#34;</span>, <span style="color:#2aa198">&#34;year&#34;</span>]
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">field</span> <span style="color:#859900">in</span> <span style="color:#268bd2">required_fields</span>:
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">field</span> <span style="color:#859900">not</span> <span style="color:#859900">in</span> <span style="color:#268bd2">data</span>:
-</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#859900;font-weight:bold">False</span>, <span style="color:#2aa198">f</span><span style="color:#2aa198">&#34;Missing field: </span><span style="color:#2aa198">{</span><span style="color:#268bd2">field</span><span style="color:#2aa198">}</span><span style="color:#2aa198">&#34;</span>
-</span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#859900">not</span> <span style="color:#cb4b16">isinstance</span>(<span style="color:#268bd2">data</span>[<span style="color:#2aa198">&#39;year&#39;</span>], <span style="color:#cb4b16">int</span>):
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#859900;font-weight:bold">False</span>, <span style="color:#2aa198">&#34;Year must be an integer&#34;</span>
-</span></span><span style="display:flex;"><span>        
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#859900;font-weight:bold">True</span>, <span style="color:#2aa198">&#34;Valid&#34;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># Testing validation</span>
-</span></span><span style="display:flex;"><span><span style="color:#268bd2">is_valid</span>, <span style="color:#268bd2">msg</span> = <span style="color:#268bd2">validate_book</span>({<span style="color:#2aa198">&#34;title&#34;</span>: <span style="color:#2aa198">&#34;A Book&#34;</span>, <span style="color:#2aa198">&#34;author&#34;</span>: <span style="color:#2aa198">&#34;Me&#34;</span>})
-</span></span><span style="display:flex;"><span><span style="color:#cb4b16">print</span>(<span style="color:#2aa198">f</span><span style="color:#2aa198">&#34;Validation Result: </span><span style="color:#2aa198">{</span><span style="color:#268bd2">is_valid</span><span style="color:#2aa198">}</span><span style="color:#2aa198"> - </span><span style="color:#2aa198">{</span><span style="color:#268bd2">msg</span><span style="color:#2aa198">}</span><span style="color:#2aa198">&#34;</span>)
-</span></span></code></pre></div><h2 id="7-how-this-connects-to-the-next-step">7. How this connects to the next step</h2>
-<p>Now we have structured data (JSON) and a naming convention (REST). But what happens when things go wrong? Or when we need to change our API without breaking old apps? In <strong>Step 7</strong>, we will learn how to handle <strong>Errors</strong> professionally and how to <strong>Version</strong> our API.</p>
-
-    </div>
-</article>
-
-<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
-    
-    <a href="http://localhost:41691/sdet-prep-site/api-from-first-principle/step-7-versioning-and-errors/" class="nav-btn">← Previous</a>
-    
-    
-    <a href="http://localhost:41691/sdet-prep-site/api-from-first-principle/" class="nav-btn">Up</a>
-
-    
-    <a href="http://localhost:41691/sdet-prep-site/api-from-first-principle/step-5-rest-as-convention/" class="nav-btn">Next →</a>
-    
-</div>
-
-    </main>
-
-    <footer class="footer">
-        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
-    </footer>
-
-    <script>
-        
-        document.addEventListener("DOMContentLoaded", function() {
-            const content = document.body;
-            
-            const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT, null, false);
-            let node;
-            const nodesToReplace = [];
-            while(node = walker.nextNode()) {
-                if (node.nodeValue.includes("[-]")) nodesToReplace.push(node);
-            }
-            nodesToReplace.forEach(textNode => {
-                const span = document.createElement('span');
-                span.innerHTML = textNode.nodeValue.replace(/\[-\]/g, '<span class="started-icon" title="Started"></span>');
-                textNode.parentNode.replaceChild(span, textNode);
-            });
-        });
-    </script>
-
-    <script>
-        const body = document.getElementById('theme-body');
-        const btn = document.getElementById('theme-toggle');
-        const currentTheme = localStorage.getItem('theme');
-
-        
-        function updateButtonText() {
-            if (body.classList.contains('theme-terminal')) {
-                btn.textContent = "Light Mode";
-            } else {
-                btn.textContent = "Dark Mode";
-            }
-        }
-
-        if (currentTheme === 'terminal') {
-            body.classList.add('theme-terminal');
-        }
-        
-        
-        updateButtonText();
-
-        btn.addEventListener('click', () => {
-            body.classList.toggle('theme-terminal');
-            updateButtonText();
-            
-            let theme = 'natural';
-            if (body.classList.contains('theme-terminal')) {
-                theme = 'terminal';
-            }
-            localStorage.setItem('theme', theme);
-        });
-    </script>
-</body>
-</html>
+<!doctype html><html lang=en-us><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Step 6: JSON and Schemas | SDET Interview Preparation Kit</title><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/css/style.css><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/css/terminal.css><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel=stylesheet><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/lib/katex/katex.min.css><script defer src=https://notxkcd.github.io/sdet-prep-site/lib/katex/katex.min.js></script><script defer src=https://notxkcd.github.io/sdet-prep-site/lib/katex/contrib/auto-render.min.js onload=renderMathInElement(document.body)></script><script>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1}]})})</script></head><body id=theme-body><button id=theme-toggle>Switch Theme</button><header><nav><ul><li><a href=https://notxkcd.github.io/sdet-prep-site/>Index</a></li></ul></nav><div class=site-breadcrumb><a href=https://notxkcd.github.io/sdet-prep-site/>Home</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/>SDET Interview Dashboard</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/api-from-first-principle/>API from First Principles</a>
+<span>/</span> Step 6: JSON and Schemas</div></header><main><article><h1>Step 6: JSON and Schemas</h1><div class=content-body style=margin-top:2rem><h2 id=1-what-problem-this-step-solves>1. What problem this step solves</h2><p>Until now, our server replied with sentences like &ldquo;The sum is 30.&rdquo; If a mobile app wants to display just the number &ldquo;30&rdquo; in a large font, it has to write complex code to &ldquo;scrape&rdquo; the number out of the sentence. If we change the sentence to &ldquo;Result: 30&rdquo;, the app breaks. We need a way to send data that is structured and machine-readable.</p><h2 id=2-concepts-introduced-in-this-step>2. Concepts introduced in this step</h2><ul><li><strong>JSON (JavaScript Object Notation):</strong> A text-based format for representing structured data (lists and dictionaries).</li><li><strong>Serialization:</strong> Converting a Python object into a JSON string.</li><li><strong>Deserialization:</strong> Converting a JSON string back into a Python object.</li><li><strong>Schema:</strong> A &ldquo;blueprint&rdquo; or &ldquo;definition&rdquo; of what the data should look like (e.g., &ldquo;The &lsquo;age&rsquo; field must be an integer&rdquo;).</li></ul><h2 id=3-why-these-concepts-exist-why-focused>3. Why these concepts exist (WHY-focused)</h2><p><strong>JSON</strong> is the industry standard because it is lightweight and easy for almost every programming language to read.
+<strong>Schemas</strong> exist because &ldquo;Garbage In = Garbage Out.&rdquo; If your API expects a user&rsquo;s <code>email</code> and someone sends an image, your database might crash. A Schema allows you to validate the data <em>before</em> your logic touches it.</p><h2 id=4-common-confusions--doubts-explicit-qa>4. Common confusions & doubts (explicit Q&amp;A)</h2><p><strong>Q: Is JSON related to JavaScript?</strong><br>A: It started that way, but now it&rsquo;s universal. You don&rsquo;t need to know any JavaScript to use JSON in Python.</p><p><strong>Q: Can I send images in JSON?</strong><br>A: Not directly. JSON is text. You usually send a &ldquo;URL&rdquo; to the image, or you encode the image into a very long text string (Base64), though the former is preferred.</p><p><strong>Q: Why not use XML?</strong><br>A: XML is much wordier and harder to read for humans. JSON has mostly replaced it for modern APIs.</p><h2 id=5-ascii-diagrams>5. ASCII diagrams</h2><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-text data-lang=text><span style=display:flex><span>TEXT VS JSON:
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>Plain Text:
+</span></span><span style=display:flex><span>&#34;User John is 25 years old and lives in New York&#34;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>JSON:
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>  &#34;name&#34;: &#34;John&#34;,
+</span></span><span style=display:flex><span>  &#34;age&#34;: 25,
+</span></span><span style=display:flex><span>  &#34;city&#34;: &#34;New York&#34;,
+</span></span><span style=display:flex><span>  &#34;is_active&#34;: true
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h2 id=6-full-working-python-code>6. Full working Python code</h2><p><em>We will use Python&rsquo;s built-in <code>json</code> library to handle our API data.</em></p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>json</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># 1. THE DATA (Python Dictionary)</span>
+</span></span><span style=display:flex><span><span style=color:#268bd2>book_data</span> = {
+</span></span><span style=display:flex><span>    <span style=color:#2aa198>&#34;title&#34;</span>: <span style=color:#2aa198>&#34;The Great Gatsby&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#2aa198>&#34;author&#34;</span>: <span style=color:#2aa198>&#34;F. Scott Fitzgerald&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#2aa198>&#34;year&#34;</span>: <span style=color:#2aa198;font-weight:700>1925</span>,
+</span></span><span style=display:flex><span>    <span style=color:#2aa198>&#34;available&#34;</span>: <span style=color:#859900;font-weight:700>True</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># 2. SERIALIZATION (Object -&gt; String)</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># This is what the SERVER sends over the network</span>
+</span></span><span style=display:flex><span><span style=color:#268bd2>json_string</span> = <span style=color:#268bd2>json</span>.<span style=color:#268bd2>dumps</span>(<span style=color:#268bd2>book_data</span>)
+</span></span><span style=display:flex><span><span style=color:#cb4b16>print</span>(<span style=color:#2aa198>f</span><span style=color:#2aa198>&#34;Network Payload: </span><span style=color:#2aa198>{</span><span style=color:#268bd2>json_string</span><span style=color:#2aa198>}</span><span style=color:#2aa198>&#34;</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># 3. DESERIALIZATION (String -&gt; Object)</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># This is what the CLIENT does when it receives the data</span>
+</span></span><span style=display:flex><span><span style=color:#268bd2>received_data</span> = <span style=color:#268bd2>json</span>.<span style=color:#268bd2>loads</span>(<span style=color:#268bd2>json_string</span>)
+</span></span><span style=display:flex><span><span style=color:#cb4b16>print</span>(<span style=color:#2aa198>f</span><span style=color:#2aa198>&#34;Client Accessing Data: </span><span style=color:#2aa198>{</span><span style=color:#268bd2>received_data</span>[<span style=color:#2aa198>&#39;title&#39;</span>]<span style=color:#2aa198>}</span><span style=color:#2aa198> by </span><span style=color:#2aa198>{</span><span style=color:#268bd2>received_data</span>[<span style=color:#2aa198>&#39;author&#39;</span>]<span style=color:#2aa198>}</span><span style=color:#2aa198>&#34;</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># 4. SCHEMA VALIDATION (Simple Version)</span>
+</span></span><span style=display:flex><span><span style=color:#859900>def</span> <span style=color:#268bd2>validate_book</span>(<span style=color:#268bd2>data</span>):
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>required_fields</span> = [<span style=color:#2aa198>&#34;title&#34;</span>, <span style=color:#2aa198>&#34;author&#34;</span>, <span style=color:#2aa198>&#34;year&#34;</span>]
+</span></span><span style=display:flex><span>    <span style=color:#859900>for</span> <span style=color:#268bd2>field</span> <span style=color:#859900>in</span> <span style=color:#268bd2>required_fields</span>:
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> <span style=color:#268bd2>field</span> <span style=color:#859900>not</span> <span style=color:#859900>in</span> <span style=color:#268bd2>data</span>:
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span> <span style=color:#859900;font-weight:700>False</span>, <span style=color:#2aa198>f</span><span style=color:#2aa198>&#34;Missing field: </span><span style=color:#2aa198>{</span><span style=color:#268bd2>field</span><span style=color:#2aa198>}</span><span style=color:#2aa198>&#34;</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> <span style=color:#859900>not</span> <span style=color:#cb4b16>isinstance</span>(<span style=color:#268bd2>data</span>[<span style=color:#2aa198>&#39;year&#39;</span>], <span style=color:#cb4b16>int</span>):
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#859900;font-weight:700>False</span>, <span style=color:#2aa198>&#34;Year must be an integer&#34;</span>
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#859900;font-weight:700>True</span>, <span style=color:#2aa198>&#34;Valid&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># Testing validation</span>
+</span></span><span style=display:flex><span><span style=color:#268bd2>is_valid</span>, <span style=color:#268bd2>msg</span> = <span style=color:#268bd2>validate_book</span>({<span style=color:#2aa198>&#34;title&#34;</span>: <span style=color:#2aa198>&#34;A Book&#34;</span>, <span style=color:#2aa198>&#34;author&#34;</span>: <span style=color:#2aa198>&#34;Me&#34;</span>})
+</span></span><span style=display:flex><span><span style=color:#cb4b16>print</span>(<span style=color:#2aa198>f</span><span style=color:#2aa198>&#34;Validation Result: </span><span style=color:#2aa198>{</span><span style=color:#268bd2>is_valid</span><span style=color:#2aa198>}</span><span style=color:#2aa198> - </span><span style=color:#2aa198>{</span><span style=color:#268bd2>msg</span><span style=color:#2aa198>}</span><span style=color:#2aa198>&#34;</span>)
+</span></span></code></pre></div><h2 id=7-how-this-connects-to-the-next-step>7. How this connects to the next step</h2><p>Now we have structured data (JSON) and a naming convention (REST). But what happens when things go wrong? Or when we need to change our API without breaking old apps? In <strong>Step 7</strong>, we will learn how to handle <strong>Errors</strong> professionally and how to <strong>Version</strong> our API.</p></div></article><div class=navigation style="margin-top:5rem;display:flex;justify-content:space-between;border-top:1px solid var(--border);padding-top:2rem"><a href=https://notxkcd.github.io/sdet-prep-site/api-from-first-principle/step-7-versioning-and-errors/ class=nav-btn>← Previous</a>
+<a href=https://notxkcd.github.io/sdet-prep-site/api-from-first-principle/ class=nav-btn>Up</a>
+<a href=https://notxkcd.github.io/sdet-prep-site/api-from-first-principle/step-5-rest-as-convention/ class=nav-btn>Next →</a></div></main><footer class=footer><p>Built with Hugo. No scripts. No tracking. Just the truth.</p></footer><script>document.addEventListener("DOMContentLoaded",function(){const n=document.body,s=document.createTreeWalker(n,NodeFilter.SHOW_TEXT,null,!1);let e;const t=[];for(;e=s.nextNode();)e.nodeValue.includes("[-]")&&t.push(e);t.forEach(e=>{const t=document.createElement("span");t.innerHTML=e.nodeValue.replace(/\[-\]/g,'<span class="started-icon" title="Started"></span>'),e.parentNode.replaceChild(t,e)})})</script><script>const body=document.getElementById("theme-body"),btn=document.getElementById("theme-toggle"),currentTheme=localStorage.getItem("theme");function updateButtonText(){body.classList.contains("theme-terminal")?btn.textContent="Light Mode":btn.textContent="Dark Mode"}currentTheme==="terminal"&&body.classList.add("theme-terminal"),updateButtonText(),btn.addEventListener("click",()=>{body.classList.toggle("theme-terminal"),updateButtonText();let e="natural";body.classList.contains("theme-terminal")&&(e="terminal"),localStorage.setItem("theme",e)})</script></body></html>

@@ -1,604 +1,348 @@
-<!DOCTYPE html>
-<html lang="en-us">
-<head><script src="/sdet-prep-site/livereload.js?mindelay=10&amp;v=2&amp;port=41691&amp;path=sdet-prep-site/livereload" data-no-instant defer></script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fractional Knapsack Problem | SDET Interview Preparation Kit</title>
-    <link rel="stylesheet" href="http://localhost:41691/sdet-prep-site/css/style.css">
-    <link rel="stylesheet" href="http://localhost:41691/sdet-prep-site/css/terminal.css">
-    
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
-    
-    
-    <link rel="stylesheet" href="http://localhost:41691/sdet-prep-site/lib/katex/katex.min.css">
-    <script defer src="http://localhost:41691/sdet-prep-site/lib/katex/katex.min.js"></script>
-    <script defer src="http://localhost:41691/sdet-prep-site/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            renderMathInElement(document.body, {
-                delimiters: [
-                    {left: "$$", right: "$$", display: true},
-                    {left: "$", right: "$", display: false}
-                ]
-            });
-        });
-    </script>
-</head>
-<body id="theme-body">
-    <button id="theme-toggle">Switch Theme</button>
-    <header>
-        <nav>
-            <ul>
-                <li><a href="http://localhost:41691/sdet-prep-site/">Index</a></li>
-                
-            </ul>
-        </nav>
-        <div class="site-breadcrumb">
-            <a href="http://localhost:41691/sdet-prep-site/">Home</a>
-            
-                
-                    <span>/</span> <a href="http://localhost:41691/sdet-prep-site/">SDET Interview Dashboard</a>
-                
-            
-                
-                    <span>/</span> <a href="http://localhost:41691/sdet-prep-site/dsa-42/">42 Algorithms &amp; 42 Data Structures</a>
-                
-            
-                
-                    <span>/</span> <a href="http://localhost:41691/sdet-prep-site/dsa-42/algorithms/">Algorithms</a>
-                
-            
-                
-                    <span>/</span> <a href="http://localhost:41691/sdet-prep-site/dsa-42/algorithms/greedy/">Greedy</a>
-                
-            
-            
-                <span>/</span> Fractional Knapsack Problem
-            
-        </div>
-    </header>
-
-    <main>
-        
-<article>
-    
-    <h1>Fractional Knapsack Problem</h1>
-    <div class="content-body" style="margin-top: 2rem;">
-        <p>The <code>Fractional Knapsack Problem</code> is an optimization problem that can be solved using a <code>greedy approach</code>. Given a set of <code>items</code>, each with a specific <code>weight</code> and <code>value</code>, and a <code>knapsack</code> with a maximum <code>weight capacity</code>, the goal is to choose a subset of <code>items</code> (or fractions of <code>items</code>) to put into the <code>knapsack</code> such that the total <code>value</code> is maximized, and the total <code>weight</code> does not exceed the <code>capacity</code>.</p>
-<p>Unlike the <code>0/1 Knapsack Problem</code> where items must be taken whole or not at all, the &ldquo;<code>fractional</code>&rdquo; aspect means we can take portions of items. This crucial difference allows for a simpler, greedy solution rather than a <code>dynamic programming</code> approach.</p>
-<h2 id="how-it-works">How it Works</h2>
-<h3 id="how-it-works-expanded">How it Works (Expanded)</h3>
-<p>Because we can take fractions of items, the optimal strategy for the <code>Fractional Knapsack Problem</code> is to prioritize items that give the most <code>value per unit of weight</code> (i.e., the highest <code>value/weight ratio</code>). This greedy choice always leads to the optimal solution.</p>
-<hr>
-<p>Example: Items = [(W=10, V=60), (W=20, V=100), (W=30, V=120)], Capacity = 50</p>
-<ol>
-<li>Calculate Value/Weight Ratio:</li>
-</ol>
-<ul>
-<li>Item 1: 60/10 = 6</li>
-<li>Item 2: 100/20 = 5</li>
-<li>Item 3: 120/30 = 4</li>
-</ul>
-<ol start="2">
-<li>Sort items by Value/Weight Ratio (descending):</li>
-</ol>
-<ul>
-<li>[(W=10, V=60, Ratio=6), (W=20, V=100, Ratio=5), (W=30, V=120, Ratio=4)]</li>
-</ul>
-<ol start="3">
-<li>Fill knapsack greedily:</li>
-</ol>
-<ul>
-<li>Take Item 1 (10kg, 60 value). Remaining capacity = 50 - 10 = 40. Total value = 60.</li>
-<li>Take Item 2 (20kg, 100 value). Remaining capacity = 40 - 20 = 20. Total value = 60 + 100 = 160.</li>
-<li>For Item 3 (30kg, 120 value), only 20kg capacity left. Take (20/30) fraction.</li>
-<li>Value from fraction = (20/30) <em> 120 = 80.</li>
-<li>Remaining capacity = 20 - 20 = 0. Total value = 160 + 80 = 240.</li>
-</ul>
-<p>Maximum value = 240.</p>
-<p><a href="#code-walkthrough">Jump to Code Walkthrough</a></p>
-<h2 id="implementation">Implementation</h2>
-<h3 id="python">Python</h3>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#859900">def</span> <span style="color:#268bd2">fractional_knapsack</span>(<span style="color:#268bd2">capacity</span>, <span style="color:#268bd2">items</span>):
-</span></span><span style="display:flex;"><span>    <span style="color:#2aa198">&#34;&#34;&#34;
-</span></span></span><span style="display:flex;"><span><span style="color:#2aa198">    Solves the Fractional Knapsack Problem.
-</span></span></span><span style="display:flex;"><span><span style="color:#2aa198">    &lt;code&gt;capacity&lt;/code&gt;: maximum weight capacity of the knapsack.
-</span></span></span><span style="display:flex;"><span><span style="color:#2aa198">    &lt;code&gt;items&lt;/code&gt;: a list of tuples, where each tuple is (weight, value).
-</span></span></span><span style="display:flex;"><span><span style="color:#2aa198">    &#34;&#34;&#34;</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#859900">not</span> <span style="color:#268bd2">items</span> <span style="color:#859900">or</span> <span style="color:#268bd2">capacity</span> &lt;= <span style="color:#2aa198;font-weight:bold">0</span>:
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#2aa198;font-weight:bold">0.0</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># 1. Calculate value/weight ratio for each item and sort in descending order</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># item_with_ratios = [(weight, value, value/weight)]</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">items_with_ratios</span> = []
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">w</span>, <span style="color:#268bd2">v</span> <span style="color:#859900">in</span> <span style="color:#268bd2">items</span>:
-</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">items_with_ratios</span>.<span style="color:#268bd2">append</span>((<span style="color:#268bd2">w</span>, <span style="color:#268bd2">v</span>, <span style="color:#268bd2">v</span> / <span style="color:#268bd2">w</span>))
-</span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># Sort by ratio in descending order</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">items_with_ratios</span>.<span style="color:#268bd2">sort</span>(<span style="color:#268bd2">key</span>=<span style="color:#859900">lambda</span> <span style="color:#268bd2">x</span>: <span style="color:#268bd2">x</span>[<span style="color:#2aa198;font-weight:bold">2</span>], <span style="color:#268bd2">reverse</span>=<span style="color:#859900;font-weight:bold">True</span>)
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">total_value</span> = <span style="color:#2aa198;font-weight:bold">0.0</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">current_weight</span> = <span style="color:#2aa198;font-weight:bold">0</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># 2. Iterate through sorted items and fill knapsack greedily</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">weight</span>, <span style="color:#268bd2">value</span>, <span style="color:#268bd2">ratio</span> <span style="color:#859900">in</span> <span style="color:#268bd2">items_with_ratios</span>:
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">current_weight</span> + <span style="color:#268bd2">weight</span> &lt;= <span style="color:#268bd2">capacity</span>:
-</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic"># Take the whole item</span>
-</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">current_weight</span> += <span style="color:#268bd2">weight</span>
-</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">total_value</span> += <span style="color:#268bd2">value</span>
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">else</span>:
-</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic"># Take a fraction of the item</span>
-</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">remaining_capacity</span> = <span style="color:#268bd2">capacity</span> - <span style="color:#268bd2">current_weight</span>
-</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">fraction</span> = <span style="color:#268bd2">remaining_capacity</span> / <span style="color:#268bd2">weight</span>
-</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">total_value</span> += <span style="color:#268bd2">fraction</span> &lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">value</span>
-</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">current_weight</span> += <span style="color:#268bd2">remaining_capacity</span> <span style="color:#93a1a1;font-style:italic"># Knapsack is full</span>
-</span></span><span style="display:flex;"><span>            <span style="color:#859900">break</span> <span style="color:#93a1a1;font-style:italic"># Knapsack is full</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">total_value</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># Example</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># capacity = 50</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># items = [(10, 60), (20, 100), (30, 120)] # (weight, value)</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(fractional_knapsack(capacity, items)) # Expected: 240.0</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># (Take 10kg of item1, 20kg of item2, and 20kg of item3 (2/3 of item3))</span>
-</span></span></code></pre></div><h3 id="javascript">Javascript</h3>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#859900">function</span> <span style="color:#268bd2">fractionalKnapsack</span>(<span style="color:#268bd2">capacity</span>, <span style="color:#268bd2">items</span>) {
-</span></span><span style="display:flex;"><span>    /*&lt;em&gt;
-</span></span><span style="display:flex;"><span>     &lt;/em&gt; Solves the Fractional Knapsack Problem.
-</span></span><span style="display:flex;"><span>     &lt;<span style="color:#268bd2">em</span>&gt; &lt;<span style="color:#268bd2">code</span>&gt;<span style="color:#268bd2">capacity</span>&lt;/code&gt;: maximum weight capacity of the knapsack.
-</span></span><span style="display:flex;"><span>     &lt;/em&gt; &lt;code&gt;items&lt;/code&gt;: an array of objects, where each object is { weight: number, value: number }.
-</span></span><span style="display:flex;"><span>     &lt;<span style="color:#268bd2">em</span>&gt;/
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">items</span>.<span style="color:#268bd2">length</span> === <span style="color:#2aa198;font-weight:bold">0</span> || <span style="color:#268bd2">capacity</span> &lt;= <span style="color:#2aa198;font-weight:bold">0</span>) {
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#2aa198;font-weight:bold">0.0</span>;
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// 1. Calculate value/weight ratio for each item and sort in descending order
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#93a1a1;font-style:italic">// Add ratio to each item object
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">const</span> <span style="color:#268bd2">itemsWithRatios</span> = <span style="color:#268bd2">items</span>.<span style="color:#268bd2">map</span>(<span style="color:#268bd2">item</span> =&gt; ({
-</span></span><span style="display:flex;"><span>        ...<span style="color:#268bd2">item</span>,
-</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">ratio</span>: <span style="color:#268bd2">item</span>.<span style="color:#268bd2">value</span> / <span style="color:#268bd2">item</span>.<span style="color:#268bd2">weight</span>
-</span></span><span style="display:flex;"><span>    }));
-</span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Sort by ratio in descending order
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">itemsWithRatios</span>.<span style="color:#268bd2">sort</span>((<span style="color:#268bd2">a</span>, <span style="color:#268bd2">b</span>) =&gt; <span style="color:#268bd2">b</span>.<span style="color:#268bd2">ratio</span> - <span style="color:#268bd2">a</span>.<span style="color:#268bd2">ratio</span>);
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">let</span> <span style="color:#268bd2">totalValue</span> = <span style="color:#2aa198;font-weight:bold">0.0</span>;
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">let</span> <span style="color:#268bd2">currentWeight</span> = <span style="color:#2aa198;font-weight:bold">0</span>;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// 2. Iterate through sorted items and fill knapsack greedily
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (<span style="color:#859900">const</span> <span style="color:#268bd2">item</span> <span style="color:#859900">of</span> <span style="color:#268bd2">itemsWithRatios</span>) {
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">currentWeight</span> + <span style="color:#268bd2">item</span>.<span style="color:#268bd2">weight</span> &lt;= <span style="color:#268bd2">capacity</span>) {
-</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Take the whole item
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#268bd2">currentWeight</span> += <span style="color:#268bd2">item</span>.<span style="color:#268bd2">weight</span>;
-</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">totalValue</span> += <span style="color:#268bd2">item</span>.<span style="color:#268bd2">value</span>;
-</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> {
-</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Take a fraction of the item
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">const</span> <span style="color:#268bd2">remainingCapacity</span> = <span style="color:#268bd2">capacity</span> - <span style="color:#268bd2">currentWeight</span>;
-</span></span><span style="display:flex;"><span>            <span style="color:#859900">const</span> <span style="color:#268bd2">fraction</span> = <span style="color:#268bd2">remainingCapacity</span> / <span style="color:#268bd2">item</span>.<span style="color:#268bd2">weight</span>;
-</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">totalValue</span> += <span style="color:#268bd2">fraction</span> &lt;/em&gt; item.value;
-</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">currentWeight</span> += <span style="color:#268bd2">remainingCapacity</span>; <span style="color:#93a1a1;font-style:italic">// Knapsack is full
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">break</span>; <span style="color:#93a1a1;font-style:italic">// Knapsack is full
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        }
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">totalValue</span>;
-</span></span><span style="display:flex;"><span>}
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const capacity = 50;
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const items = [
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     { weight: 10, value: 60 },
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     { weight: 20, value: 100 },
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     { weight: 30, value: 120 }
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// ];
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(fractionalKnapsack(capacity, items)); // Expected: 240.0
-</span></span></span></code></pre></div><h3 id="typescript">Typescript</h3>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-typescript" data-lang="typescript"><span style="display:flex;"><span><span style="color:#859900">interface</span> <span style="color:#268bd2">Item</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">weight</span>: <span style="color:#859900;font-weight:bold">number</span>;
-</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">value</span>: <span style="color:#859900;font-weight:bold">number</span>;
-</span></span><span style="display:flex;"><span>}
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#859900">interface</span> <span style="color:#268bd2">ItemWithRatio</span> <span style="color:#859900">extends</span> <span style="color:#268bd2">Item</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">ratio</span>: <span style="color:#859900;font-weight:bold">number</span>;
-</span></span><span style="display:flex;"><span>}
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#859900">function</span> <span style="color:#268bd2">fractionalKnapsackTS</span>(<span style="color:#268bd2">capacity</span>: <span style="color:#859900;font-weight:bold">number</span>, <span style="color:#268bd2">items</span>: <span style="color:#859900;font-weight:bold">Item</span>[]): <span style="color:#859900;font-weight:bold">number</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">items</span>.<span style="color:#268bd2">length</span> === <span style="color:#2aa198;font-weight:bold">0</span> || <span style="color:#268bd2">capacity</span> &lt;= <span style="color:#2aa198;font-weight:bold">0</span>) {
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#2aa198;font-weight:bold">0.0</span>;
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// 1. Calculate value/weight ratio for each item and sort in descending order
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#93a1a1;font-style:italic">// Add ratio to each item object
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">const</span> <span style="color:#268bd2">itemsWithRatios</span>: <span style="color:#859900;font-weight:bold">ItemWithRatio</span>[] = <span style="color:#268bd2">items</span>.<span style="color:#268bd2">map</span>(<span style="color:#268bd2">item</span> =&gt; ({
-</span></span><span style="display:flex;"><span>        ...<span style="color:#268bd2">item</span>,
-</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">ratio</span>: <span style="color:#859900;font-weight:bold">item.value</span> / <span style="color:#268bd2">item</span>.<span style="color:#268bd2">weight</span>
-</span></span><span style="display:flex;"><span>    }));
-</span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Sort by ratio in descending order
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">itemsWithRatios</span>.<span style="color:#268bd2">sort</span>((<span style="color:#268bd2">a</span>, <span style="color:#268bd2">b</span>) =&gt; <span style="color:#268bd2">b</span>.<span style="color:#268bd2">ratio</span> - <span style="color:#268bd2">a</span>.<span style="color:#268bd2">ratio</span>);
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">let</span> <span style="color:#268bd2">totalValue</span> = <span style="color:#2aa198;font-weight:bold">0.0</span>;
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">let</span> <span style="color:#268bd2">currentWeight</span> = <span style="color:#2aa198;font-weight:bold">0</span>;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// 2. Iterate through sorted items and fill knapsack greedily
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (<span style="color:#859900">const</span> <span style="color:#268bd2">item</span> <span style="color:#859900">of</span> <span style="color:#268bd2">itemsWithRatios</span>) {
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">currentWeight</span> + <span style="color:#268bd2">item</span>.<span style="color:#268bd2">weight</span> &lt;= <span style="color:#268bd2">capacity</span>) {
-</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Take the whole item
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#268bd2">currentWeight</span> += <span style="color:#268bd2">item</span>.<span style="color:#268bd2">weight</span>;
-</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">totalValue</span> += <span style="color:#268bd2">item</span>.<span style="color:#268bd2">value</span>;
-</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> {
-</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Take a fraction of the item
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">const</span> <span style="color:#268bd2">remainingCapacity</span> = <span style="color:#268bd2">capacity</span> - <span style="color:#268bd2">currentWeight</span>;
-</span></span><span style="display:flex;"><span>            <span style="color:#859900">const</span> <span style="color:#268bd2">fraction</span> = <span style="color:#268bd2">remainingCapacity</span> / <span style="color:#268bd2">item</span>.<span style="color:#268bd2">weight</span>;
-</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">totalValue</span> += <span style="color:#268bd2">fraction</span> &lt;<span style="color:#268bd2;font-weight:bold">em</span>&gt; <span style="color:#268bd2">item</span>.<span style="color:#268bd2">value</span>;
-</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">currentWeight</span> += <span style="color:#268bd2">remainingCapacity</span>; <span style="color:#93a1a1;font-style:italic">// Knapsack is full
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">break</span>; <span style="color:#93a1a1;font-style:italic">// Knapsack is full
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        }
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">totalValue</span>;
-</span></span><span style="display:flex;"><span>}
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const capacityTS = 50;
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const itemsTS: Item[] = [
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     { weight: 10, value: 60 },
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     { weight: 20, value: 100 },
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     { weight: 30, value: 120 }
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// ];
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(fractionalKnapsackTS(capacityTS, itemsTS)); // Expected: 240.0
-</span></span></span></code></pre></div><h3 id="cpp">Cpp</h3>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;vector&gt;</span><span style="color:#93a1a1;font-style:italic">
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;iostream&gt;</span><span style="color:#93a1a1;font-style:italic">
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;algorithm&gt;</span><span style="color:#93a1a1;font-style:italic"> </span><span style="color:#93a1a1;font-style:italic">// For std::sort
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;numeric&gt;</span><span style="color:#93a1a1;font-style:italic">   </span><span style="color:#93a1a1;font-style:italic">// For std::iota
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Struct to represent an item with its weight, value, and ratio
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#859900">struct</span> <span style="color:#cb4b16">Item</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">weight</span>;
-</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">value</span>;
-</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">double</span> <span style="color:#268bd2">ratio</span>;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Constructor to calculate ratio
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">Item</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">w</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">v</span>) : <span style="color:#268bd2">weight</span>(<span style="color:#268bd2">w</span>), <span style="color:#268bd2">value</span>(<span style="color:#268bd2">v</span>) {
-</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">ratio</span> = <span style="color:#859900">static_cast</span>&lt;<span style="color:#859900;font-weight:bold">double</span>&gt;(<span style="color:#268bd2">value</span>) / <span style="color:#268bd2">weight</span>;
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Custom comparator for sorting by ratio in descending order
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900;font-weight:bold">bool</span> <span style="color:#859900">operator</span>&lt;(<span style="color:#859900">const</span> <span style="color:#268bd2">Item</span>&amp; <span style="color:#268bd2">other</span>) <span style="color:#859900">const</span> {
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">ratio</span> &gt; <span style="color:#268bd2">other</span>.<span style="color:#268bd2">ratio</span>; <span style="color:#93a1a1;font-style:italic">// Sort in descending order of ratio
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    }
-</span></span><span style="display:flex;"><span>};
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#859900;font-weight:bold">double</span> <span style="color:#268bd2">fractionalKnapsack</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">capacity</span>, <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#268bd2">Item</span>&gt; <span style="color:#268bd2">items</span>) {
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">items</span>.<span style="color:#268bd2">empty</span>() || <span style="color:#268bd2">capacity</span> &lt;= <span style="color:#2aa198;font-weight:bold">0</span>) {
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#2aa198;font-weight:bold">0.0</span>;
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// 1. Sort items by value/weight ratio in descending order
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">sort</span>(<span style="color:#268bd2">items</span>.<span style="color:#268bd2">begin</span>(), <span style="color:#268bd2">items</span>.<span style="color:#268bd2">end</span>());
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">double</span> <span style="color:#268bd2">total_value</span> = <span style="color:#2aa198;font-weight:bold">0.0</span>;
-</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">current_weight</span> = <span style="color:#2aa198;font-weight:bold">0</span>;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// 2. Iterate through sorted items and fill knapsack greedily
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (<span style="color:#859900">const</span> <span style="color:#859900">auto</span>&amp; <span style="color:#268bd2">item</span> : <span style="color:#268bd2">items</span>) {
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">current_weight</span> + <span style="color:#268bd2">item</span>.<span style="color:#268bd2">weight</span> &lt;= <span style="color:#268bd2">capacity</span>) {
-</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Take the whole item
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#268bd2">current_weight</span> += <span style="color:#268bd2">item</span>.<span style="color:#268bd2">weight</span>;
-</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">total_value</span> += <span style="color:#268bd2">item</span>.<span style="color:#268bd2">value</span>;
-</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> {
-</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Take a fraction of the item
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">remaining_capacity</span> = <span style="color:#268bd2">capacity</span> - <span style="color:#268bd2">current_weight</span>;
-</span></span><span style="display:flex;"><span>            <span style="color:#859900;font-weight:bold">double</span> <span style="color:#268bd2">fraction</span> = <span style="color:#859900">static_cast</span>&lt;<span style="color:#859900;font-weight:bold">double</span>&gt;(<span style="color:#268bd2">remaining_capacity</span>) / <span style="color:#268bd2">item</span>.<span style="color:#268bd2">weight</span>;
-</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">total_value</span> += <span style="color:#268bd2">fraction</span> &lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">item</span>.<span style="color:#268bd2">value</span>;
-</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">current_weight</span> += <span style="color:#268bd2">remaining_capacity</span>; <span style="color:#93a1a1;font-style:italic">// Knapsack is full
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">break</span>; <span style="color:#93a1a1;font-style:italic">// Knapsack is full
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        }
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">total_value</span>;
-</span></span><span style="display:flex;"><span>}
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// int main() {
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     int capacity = 50;
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::vector&lt;Item&gt; items = {
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         Item(10, 60),
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         Item(20, 100),
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         Item(30, 120)
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     };
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; &#34;Max value: &#34; &lt;&lt; fractionalKnapsack(capacity, items) &lt;&lt; std::endl; // 240.0
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     return 0;
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
-</span></span></span></code></pre></div><h3 id="go">Go</h3>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">package</span> <span style="color:#268bd2">main</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> (
-</span></span><span style="display:flex;"><span>    <span style="color:#2aa198">&#34;fmt&#34;</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#2aa198">&#34;sort&#34;</span>
-</span></span><span style="display:flex;"><span>)
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#859900">type</span> <span style="color:#268bd2">FractionalKnapsackItem</span> <span style="color:#859900">struct</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">Weight</span> <span style="color:#859900;font-weight:bold">int</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">Value</span>  <span style="color:#859900;font-weight:bold">int</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">Ratio</span>  <span style="color:#859900;font-weight:bold">float64</span>
-</span></span><span style="display:flex;"><span>}
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Implement sort.Interface for []FractionalKnapsackItem</span>
-</span></span><span style="display:flex;"><span><span style="color:#859900">type</span> <span style="color:#268bd2">ByRatio</span> []<span style="color:#268bd2">FractionalKnapsackItem</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> (<span style="color:#268bd2">a</span> <span style="color:#268bd2">ByRatio</span>) <span style="color:#268bd2">Len</span>() <span style="color:#859900;font-weight:bold">int</span>           { <span style="color:#859900">return</span> <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">a</span>) }
-</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> (<span style="color:#268bd2">a</span> <span style="color:#268bd2">ByRatio</span>) <span style="color:#268bd2">Swap</span>(<span style="color:#268bd2">i</span>, <span style="color:#268bd2">j</span> <span style="color:#859900;font-weight:bold">int</span>)      { <span style="color:#268bd2">a</span>[<span style="color:#268bd2">i</span>], <span style="color:#268bd2">a</span>[<span style="color:#268bd2">j</span>] = <span style="color:#268bd2">a</span>[<span style="color:#268bd2">j</span>], <span style="color:#268bd2">a</span>[<span style="color:#268bd2">i</span>] }
-</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> (<span style="color:#268bd2">a</span> <span style="color:#268bd2">ByRatio</span>) <span style="color:#268bd2">Less</span>(<span style="color:#268bd2">i</span>, <span style="color:#268bd2">j</span> <span style="color:#859900;font-weight:bold">int</span>) <span style="color:#859900;font-weight:bold">bool</span> { <span style="color:#859900">return</span> <span style="color:#268bd2">a</span>[<span style="color:#268bd2">i</span>].<span style="color:#268bd2">Ratio</span> &gt; <span style="color:#268bd2">a</span>[<span style="color:#268bd2">j</span>].<span style="color:#268bd2">Ratio</span> } <span style="color:#93a1a1;font-style:italic">// Descending order</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> <span style="color:#268bd2">fractionalKnapsack</span>(<span style="color:#268bd2">capacity</span> <span style="color:#859900;font-weight:bold">int</span>, <span style="color:#268bd2">items</span> []<span style="color:#268bd2">FractionalKnapsackItem</span>) <span style="color:#859900;font-weight:bold">float64</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">items</span>) == <span style="color:#2aa198;font-weight:bold">0</span> || <span style="color:#268bd2">capacity</span> &lt;= <span style="color:#2aa198;font-weight:bold">0</span> {
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#2aa198;font-weight:bold">0.0</span>
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// 1. Calculate value/weight ratio for each item and sort in descending order</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// (Ratios are calculated and added to the struct in main for simplicity of passing)</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">sort</span>.<span style="color:#268bd2">Sort</span>(<span style="color:#268bd2">ByRatio</span>(<span style="color:#268bd2">items</span>))
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">totalValue</span> := <span style="color:#2aa198;font-weight:bold">0.0</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">currentWeight</span> := <span style="color:#2aa198;font-weight:bold">0</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// 2. Iterate through sorted items and fill knapsack greedily</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">_</span>, <span style="color:#268bd2">item</span> := <span style="color:#859900">range</span> <span style="color:#268bd2">items</span> {
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">currentWeight</span>+<span style="color:#268bd2">item</span>.<span style="color:#268bd2">Weight</span> &lt;= <span style="color:#268bd2">capacity</span> {
-</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Take the whole item</span>
-</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">currentWeight</span> += <span style="color:#268bd2">item</span>.<span style="color:#268bd2">Weight</span>
-</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">totalValue</span> += <span style="color:#cb4b16">float64</span>(<span style="color:#268bd2">item</span>.<span style="color:#268bd2">Value</span>)
-</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> {
-</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Take a fraction of the item</span>
-</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">remainingCapacity</span> := <span style="color:#268bd2">capacity</span> - <span style="color:#268bd2">currentWeight</span>
-</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">fraction</span> := <span style="color:#cb4b16">float64</span>(<span style="color:#268bd2">remainingCapacity</span>) / <span style="color:#cb4b16">float64</span>(<span style="color:#268bd2">item</span>.<span style="color:#268bd2">Weight</span>)
-</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">totalValue</span> += <span style="color:#268bd2">fraction</span> &lt;<span style="color:#268bd2">em</span>&gt; <span style="color:#cb4b16">float64</span>(<span style="color:#268bd2">item</span>.<span style="color:#268bd2">Value</span>)
-</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">currentWeight</span> += <span style="color:#268bd2">remainingCapacity</span> <span style="color:#93a1a1;font-style:italic">// Knapsack is full</span>
-</span></span><span style="display:flex;"><span>            <span style="color:#859900">break</span> <span style="color:#93a1a1;font-style:italic">// Knapsack is full</span>
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">totalValue</span>
-</span></span><span style="display:flex;"><span>}
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// func main() {</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     capacity := 50</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     items := []FractionalKnapsackItem{</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         {Weight: 10, Value: 60},</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         {Weight: 20, Value: 100},</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         {Weight: 30, Value: 120},</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     }</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     // Calculate ratios manually for demonstration, in a real scenario this would be done dynamically</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     for i := range items {</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         items[i].Ratio = float64(items[i].Value) / float64(items[i].Weight)</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     }</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     fmt.Println(&#34;Max value:&#34;, fractionalKnapsack(capacity, items)) // 240.0</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }</span>
-</span></span></code></pre></div><h3 id="d">D</h3>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-d" data-lang="d"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.stdio</span>;
-</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.array</span>;
-</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.algorithm</span>; <span style="color:#93a1a1;font-style:italic">// For std.algorithm.sort
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Struct to represent an item with its weight, value, and ratio
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#859900">struct</span> <span style="color:#cb4b16">Item</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">weight</span>;
-</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">value</span>;
-</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">double</span> <span style="color:#268bd2">ratio</span>;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">this</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">w</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">v</span>) {
-</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">weight</span> = <span style="color:#268bd2">w</span>;
-</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">value</span> = <span style="color:#268bd2">v</span>;
-</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">ratio</span> = <span style="color:#859900">cast</span>(<span style="color:#859900;font-weight:bold">double</span>)<span style="color:#268bd2">value</span> / <span style="color:#268bd2">weight</span>;
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Custom comparator for sorting by ratio in descending order
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">opCmp</span>(<span style="color:#859900">const</span> <span style="color:#268bd2">Item</span> <span style="color:#268bd2">other</span>) <span style="color:#859900">const</span> {
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#859900">this</span>.<span style="color:#268bd2">ratio</span> &gt; <span style="color:#268bd2">other</span>.<span style="color:#268bd2">ratio</span>) <span style="color:#859900">return</span> <span style="color:#2aa198;font-weight:bold">1</span>;
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#859900">this</span>.<span style="color:#268bd2">ratio</span> &lt; <span style="color:#268bd2">other</span>.<span style="color:#268bd2">ratio</span>) <span style="color:#859900">return</span> -<span style="color:#2aa198;font-weight:bold">1</span>;
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#2aa198;font-weight:bold">0</span>;
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>}
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#859900;font-weight:bold">double</span> <span style="color:#268bd2">fractionalKnapsack</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">capacity</span>, <span style="color:#268bd2">Item</span>[] <span style="color:#268bd2">items</span>) {
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> (<span style="color:#268bd2">items</span>.<span style="color:#268bd2">empty</span> || <span style="color:#268bd2">capacity</span> &lt;= <span style="color:#2aa198;font-weight:bold">0</span>) {
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#2aa198;font-weight:bold">0.0</span>;
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// 1. Calculate value/weight ratio for each item and sort in descending order
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#93a1a1;font-style:italic">// (Ratios are calculated in constructor or can be done here)
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">items</span>.<span style="color:#268bd2">sort</span>!((<span style="color:#268bd2">a</span>, <span style="color:#268bd2">b</span>) =&gt; <span style="color:#268bd2">a</span>.<span style="color:#268bd2">ratio</span> &gt; <span style="color:#268bd2">b</span>.<span style="color:#268bd2">ratio</span>); <span style="color:#93a1a1;font-style:italic">// Sort in descending order of ratio
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
-</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">double</span> <span style="color:#268bd2">totalValue</span> = <span style="color:#2aa198;font-weight:bold">0.0</span>;
-</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">currentWeight</span> = <span style="color:#2aa198;font-weight:bold">0</span>;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// 2. Iterate through sorted items and fill knapsack greedily
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">foreach</span> (<span style="color:#268bd2">item</span>; <span style="color:#268bd2">items</span>) {
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">currentWeight</span> + <span style="color:#268bd2">item</span>.<span style="color:#268bd2">weight</span> &lt;= <span style="color:#268bd2">capacity</span>) {
-</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Take the whole item
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#268bd2">currentWeight</span> += <span style="color:#268bd2">item</span>.<span style="color:#268bd2">weight</span>;
-</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">totalValue</span> += <span style="color:#268bd2">item</span>.<span style="color:#268bd2">value</span>;
-</span></span><span style="display:flex;"><span>        } <span style="color:#859900">else</span> {
-</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// Take a fraction of the item
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">remainingCapacity</span> = <span style="color:#268bd2">capacity</span> - <span style="color:#268bd2">currentWeight</span>;
-</span></span><span style="display:flex;"><span>            <span style="color:#859900;font-weight:bold">double</span> <span style="color:#268bd2">fraction</span> = <span style="color:#859900">cast</span>(<span style="color:#859900;font-weight:bold">double</span>)<span style="color:#268bd2">remainingCapacity</span> / <span style="color:#268bd2">item</span>.<span style="color:#268bd2">weight</span>;
-</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">totalValue</span> += <span style="color:#268bd2">fraction</span> &lt;/<span style="color:#268bd2">em</span>&gt; <span style="color:#268bd2">item</span>.<span style="color:#268bd2">value</span>;
-</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">currentWeight</span> += <span style="color:#268bd2">remainingCapacity</span>; <span style="color:#93a1a1;font-style:italic">// Knapsack is full
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">break</span>; <span style="color:#93a1a1;font-style:italic">// Knapsack is full
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        }
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">totalValue</span>;
-</span></span><span style="display:flex;"><span>}
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// void main() {
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     int capacity = 50;
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     Item[] items = [
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         Item(10, 60),
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         Item(20, 100),
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         Item(30, 120)
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     ];
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     writeln(&#34;Max value: &#34;, fractionalKnapsack(capacity, items)); // 240.0
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
-</span></span></span></code></pre></div><h2 id="code-walkthrough">Code Walkthrough</h2>
-<p><a href="#implementation">Back to Implementation</a></p>
-<h3 id="code-walkthrough-1">Code Walkthrough</h3>
-<p>The <code>Fractional Knapsack Problem</code> is solvable with a straightforward <code>greedy approach</code> because items can be broken into fractions.</p>
-<hr>
-<p><strong><code>Item</code> Structure:</strong></p>
-<ul>
-<li>Each <code>item</code> is typically represented by its <code>weight</code>, <code>value</code>, and a calculated <code>value/weight ratio</code>.</li>
-</ul>
-<p><strong><code>fractional_knapsack(capacity, items)</code> Function:</strong></p>
-<ul>
-<li><code>capacity</code>: The maximum <code>weight</code> the <code>knapsack</code> can hold.</li>
-<li><code>items</code>: A list of <code>item</code> objects/tuples.</li>
-</ul>
-<p><strong>Algorithm Steps:</strong></p>
-<ul>
-<li>
-<p><strong>Calculate Ratios:</strong> For each <code>item</code>, its <code>value/weight ratio</code> is calculated. This ratio indicates how much <code>value</code> each unit of <code>weight</code> provides.</p>
-</li>
-<li>
-<p><strong>Sort Items:</strong> The <code>items</code> are then sorted in descending order based on this <code>value/weight ratio</code>. This is the crucial greedy step.</p>
-</li>
-<li>
-<p><strong>Initialize:</strong></p>
-</li>
-<li>
-<p><code>total_value</code>: Stores the maximum <code>value</code> accumulated so far, initialized to 0.0.</p>
-</li>
-<li>
-<p><code>current_weight</code>: Stores the current <code>weight</code> in the <code>knapsack</code>, initialized to 0.</p>
-  </li>
-</li>
-<li>
-<p><strong>Fill Knapsack Greedily:</strong> The algorithm iterates through the <code>items</code> in their sorted order (highest <code>ratio</code> first).</p>
-</li>
-<li>
-<p>For each <code>item</code>:</p>
-</li>
-<li>
-<p><strong>If <code>current_weight + item.weight &lt;= capacity</code>:</strong> The entire <code>item</code> can be added without exceeding <code>capacity</code>. The <code>item</code>&rsquo;s <code>weight</code> and <code>value</code> are added to <code>current_weight</code> and <code>total_value</code> respectively.</p>
-</li>
-<li>
-<p><strong>Else (the <code>item</code> cannot be taken whole):</strong></p>
-</li>
-<li>
-<p>The <code>knapsack</code> can only accommodate a <code>fraction</code> of the <code>item</code>.</p>
-</li>
-<li>
-<p>The <code>remaining_capacity</code> is calculated.</p>
-</li>
-<li>
-<p>The <code>fraction</code> of the <code>item</code> that can be taken is <code>remaining_capacity / item.weight</code>.</p>
-</li>
-<li>
-<p>This <code>fraction</code> of the <code>item</code>&rsquo;s <code>value</code> is added to <code>total_value</code>.</p>
-</li>
-<li>
-<p>The <code>current_weight</code> is set to <code>capacity</code> (the <code>knapsack</code> is now full).</p>
-</li>
-<li>
-<p>The loop breaks because the <code>knapsack</code> is full.</p>
-<pre><code>              &lt;/li&gt;
+<!doctype html><html lang=en-us><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Fractional Knapsack Problem | SDET Interview Preparation Kit</title><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/css/style.css><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/css/terminal.css><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel=stylesheet><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/lib/katex/katex.min.css><script defer src=https://notxkcd.github.io/sdet-prep-site/lib/katex/katex.min.js></script><script defer src=https://notxkcd.github.io/sdet-prep-site/lib/katex/contrib/auto-render.min.js onload=renderMathInElement(document.body)></script><script>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1}]})})</script></head><body id=theme-body><button id=theme-toggle>Switch Theme</button><header><nav><ul><li><a href=https://notxkcd.github.io/sdet-prep-site/>Index</a></li></ul></nav><div class=site-breadcrumb><a href=https://notxkcd.github.io/sdet-prep-site/>Home</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/>SDET Interview Dashboard</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/>42 Algorithms & 42 Data Structures</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/algorithms/>Algorithms</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/algorithms/greedy/>Greedy</a>
+<span>/</span> Fractional Knapsack Problem</div></header><main><article><h1>Fractional Knapsack Problem</h1><div class=content-body style=margin-top:2rem><p>The <code>Fractional Knapsack Problem</code> is an optimization problem that can be solved using a <code>greedy approach</code>. Given a set of <code>items</code>, each with a specific <code>weight</code> and <code>value</code>, and a <code>knapsack</code> with a maximum <code>weight capacity</code>, the goal is to choose a subset of <code>items</code> (or fractions of <code>items</code>) to put into the <code>knapsack</code> such that the total <code>value</code> is maximized, and the total <code>weight</code> does not exceed the <code>capacity</code>.</p><p>Unlike the <code>0/1 Knapsack Problem</code> where items must be taken whole or not at all, the &ldquo;<code>fractional</code>&rdquo; aspect means we can take portions of items. This crucial difference allows for a simpler, greedy solution rather than a <code>dynamic programming</code> approach.</p><h2 id=how-it-works>How it Works</h2><h3 id=how-it-works-expanded>How it Works (Expanded)</h3><p>Because we can take fractions of items, the optimal strategy for the <code>Fractional Knapsack Problem</code> is to prioritize items that give the most <code>value per unit of weight</code> (i.e., the highest <code>value/weight ratio</code>). This greedy choice always leads to the optimal solution.</p><hr><p>Example: Items = [(W=10, V=60), (W=20, V=100), (W=30, V=120)], Capacity = 50</p><ol><li>Calculate Value/Weight Ratio:</li></ol><ul><li>Item 1: 60/10 = 6</li><li>Item 2: 100/20 = 5</li><li>Item 3: 120/30 = 4</li></ul><ol start=2><li>Sort items by Value/Weight Ratio (descending):</li></ol><ul><li>[(W=10, V=60, Ratio=6), (W=20, V=100, Ratio=5), (W=30, V=120, Ratio=4)]</li></ul><ol start=3><li>Fill knapsack greedily:</li></ol><ul><li>Take Item 1 (10kg, 60 value). Remaining capacity = 50 - 10 = 40. Total value = 60.</li><li>Take Item 2 (20kg, 100 value). Remaining capacity = 40 - 20 = 20. Total value = 60 + 100 = 160.</li><li>For Item 3 (30kg, 120 value), only 20kg capacity left. Take (20/30) fraction.</li><li>Value from fraction = (20/30) <em>120 = 80.</li><li>Remaining capacity = 20 - 20 = 0. Total value = 160 + 80 = 240.</li></ul><p>Maximum value = 240.</p><p><a href=#code-walkthrough>Jump to Code Walkthrough</a></p><h2 id=implementation>Implementation</h2><h3 id=python>Python</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#859900>def</span> <span style=color:#268bd2>fractional_knapsack</span>(<span style=color:#268bd2>capacity</span>, <span style=color:#268bd2>items</span>):
+</span></span><span style=display:flex><span>    <span style=color:#2aa198>&#34;&#34;&#34;
+</span></span></span><span style=display:flex><span><span style=color:#2aa198>    Solves the Fractional Knapsack Problem.
+</span></span></span><span style=display:flex><span><span style=color:#2aa198>    &lt;code&gt;capacity&lt;/code&gt;: maximum weight capacity of the knapsack.
+</span></span></span><span style=display:flex><span><span style=color:#2aa198>    &lt;code&gt;items&lt;/code&gt;: a list of tuples, where each tuple is (weight, value).
+</span></span></span><span style=display:flex><span><span style=color:#2aa198>    &#34;&#34;&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> <span style=color:#859900>not</span> <span style=color:#268bd2>items</span> <span style=color:#859900>or</span> <span style=color:#268bd2>capacity</span> &lt;= <span style=color:#2aa198;font-weight:700>0</span>:
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#2aa198;font-weight:700>0.0</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic># 1. Calculate value/weight ratio for each item and sort in descending order</span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic># item_with_ratios = [(weight, value, value/weight)]</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>items_with_ratios</span> = []
+</span></span><span style=display:flex><span>    <span style=color:#859900>for</span> <span style=color:#268bd2>w</span>, <span style=color:#268bd2>v</span> <span style=color:#859900>in</span> <span style=color:#268bd2>items</span>:
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>items_with_ratios</span>.<span style=color:#268bd2>append</span>((<span style=color:#268bd2>w</span>, <span style=color:#268bd2>v</span>, <span style=color:#268bd2>v</span> / <span style=color:#268bd2>w</span>))
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic># Sort by ratio in descending order</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>items_with_ratios</span>.<span style=color:#268bd2>sort</span>(<span style=color:#268bd2>key</span>=<span style=color:#859900>lambda</span> <span style=color:#268bd2>x</span>: <span style=color:#268bd2>x</span>[<span style=color:#2aa198;font-weight:700>2</span>], <span style=color:#268bd2>reverse</span>=<span style=color:#859900;font-weight:700>True</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>total_value</span> = <span style=color:#2aa198;font-weight:700>0.0</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>current_weight</span> = <span style=color:#2aa198;font-weight:700>0</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic># 2. Iterate through sorted items and fill knapsack greedily</span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>for</span> <span style=color:#268bd2>weight</span>, <span style=color:#268bd2>value</span>, <span style=color:#268bd2>ratio</span> <span style=color:#859900>in</span> <span style=color:#268bd2>items_with_ratios</span>:
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> <span style=color:#268bd2>current_weight</span> + <span style=color:#268bd2>weight</span> &lt;= <span style=color:#268bd2>capacity</span>:
+</span></span><span style=display:flex><span>            <span style=color:#93a1a1;font-style:italic># Take the whole item</span>
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>current_weight</span> += <span style=color:#268bd2>weight</span>
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>total_value</span> += <span style=color:#268bd2>value</span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>else</span>:
+</span></span><span style=display:flex><span>            <span style=color:#93a1a1;font-style:italic># Take a fraction of the item</span>
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>remaining_capacity</span> = <span style=color:#268bd2>capacity</span> - <span style=color:#268bd2>current_weight</span>
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>fraction</span> = <span style=color:#268bd2>remaining_capacity</span> / <span style=color:#268bd2>weight</span>
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>total_value</span> += <span style=color:#268bd2>fraction</span> &lt;/<span style=color:#268bd2>em</span>&gt; <span style=color:#268bd2>value</span>
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>current_weight</span> += <span style=color:#268bd2>remaining_capacity</span> <span style=color:#93a1a1;font-style:italic># Knapsack is full</span>
+</span></span><span style=display:flex><span>            <span style=color:#859900>break</span> <span style=color:#93a1a1;font-style:italic># Knapsack is full</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>total_value</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># Example</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># capacity = 50</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># items = [(10, 60), (20, 100), (30, 120)] # (weight, value)</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># print(fractional_knapsack(capacity, items)) # Expected: 240.0</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># (Take 10kg of item1, 20kg of item2, and 20kg of item3 (2/3 of item3))</span>
+</span></span></code></pre></div><h3 id=javascript>Javascript</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=display:flex><span><span style=color:#859900>function</span> <span style=color:#268bd2>fractionalKnapsack</span>(<span style=color:#268bd2>capacity</span>, <span style=color:#268bd2>items</span>) {
+</span></span><span style=display:flex><span>    /*&lt;em&gt;
+</span></span><span style=display:flex><span>     &lt;/em&gt; Solves the Fractional Knapsack Problem.
+</span></span><span style=display:flex><span>     &lt;<span style=color:#268bd2>em</span>&gt; &lt;<span style=color:#268bd2>code</span>&gt;<span style=color:#268bd2>capacity</span>&lt;/code&gt;: maximum weight capacity of the knapsack.
+</span></span><span style=display:flex><span>     &lt;/em&gt; &lt;code&gt;items&lt;/code&gt;: an array of objects, where each object is { weight: number, value: number }.
+</span></span><span style=display:flex><span>     &lt;<span style=color:#268bd2>em</span>&gt;/
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> (<span style=color:#268bd2>items</span>.<span style=color:#268bd2>length</span> === <span style=color:#2aa198;font-weight:700>0</span> || <span style=color:#268bd2>capacity</span> &lt;= <span style=color:#2aa198;font-weight:700>0</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#2aa198;font-weight:700>0.0</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// 1. Calculate value/weight ratio for each item and sort in descending order
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#93a1a1;font-style:italic>// Add ratio to each item object
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900>const</span> <span style=color:#268bd2>itemsWithRatios</span> = <span style=color:#268bd2>items</span>.<span style=color:#268bd2>map</span>(<span style=color:#268bd2>item</span> =&gt; ({
+</span></span><span style=display:flex><span>        ...<span style=color:#268bd2>item</span>,
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>ratio</span>: <span style=color:#268bd2>item</span>.<span style=color:#268bd2>value</span> / <span style=color:#268bd2>item</span>.<span style=color:#268bd2>weight</span>
+</span></span><span style=display:flex><span>    }));
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// Sort by ratio in descending order
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#268bd2>itemsWithRatios</span>.<span style=color:#268bd2>sort</span>((<span style=color:#268bd2>a</span>, <span style=color:#268bd2>b</span>) =&gt; <span style=color:#268bd2>b</span>.<span style=color:#268bd2>ratio</span> - <span style=color:#268bd2>a</span>.<span style=color:#268bd2>ratio</span>);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>let</span> <span style=color:#268bd2>totalValue</span> = <span style=color:#2aa198;font-weight:700>0.0</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900>let</span> <span style=color:#268bd2>currentWeight</span> = <span style=color:#2aa198;font-weight:700>0</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// 2. Iterate through sorted items and fill knapsack greedily
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900>for</span> (<span style=color:#859900>const</span> <span style=color:#268bd2>item</span> <span style=color:#859900>of</span> <span style=color:#268bd2>itemsWithRatios</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>currentWeight</span> + <span style=color:#268bd2>item</span>.<span style=color:#268bd2>weight</span> &lt;= <span style=color:#268bd2>capacity</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#93a1a1;font-style:italic>// Take the whole item
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#268bd2>currentWeight</span> += <span style=color:#268bd2>item</span>.<span style=color:#268bd2>weight</span>;
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>totalValue</span> += <span style=color:#268bd2>item</span>.<span style=color:#268bd2>value</span>;
+</span></span><span style=display:flex><span>        } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>            <span style=color:#93a1a1;font-style:italic>// Take a fraction of the item
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#859900>const</span> <span style=color:#268bd2>remainingCapacity</span> = <span style=color:#268bd2>capacity</span> - <span style=color:#268bd2>currentWeight</span>;
+</span></span><span style=display:flex><span>            <span style=color:#859900>const</span> <span style=color:#268bd2>fraction</span> = <span style=color:#268bd2>remainingCapacity</span> / <span style=color:#268bd2>item</span>.<span style=color:#268bd2>weight</span>;
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>totalValue</span> += <span style=color:#268bd2>fraction</span> &lt;/em&gt; item.value;
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>currentWeight</span> += <span style=color:#268bd2>remainingCapacity</span>; <span style=color:#93a1a1;font-style:italic>// Knapsack is full
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#859900>break</span>; <span style=color:#93a1a1;font-style:italic>// Knapsack is full
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>totalValue</span>;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const capacity = 50;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const items = [
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     { weight: 10, value: 60 },
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     { weight: 20, value: 100 },
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     { weight: 30, value: 120 }
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// ];
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// console.log(fractionalKnapsack(capacity, items)); // Expected: 240.0
+</span></span></span></code></pre></div><h3 id=typescript>Typescript</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-typescript data-lang=typescript><span style=display:flex><span><span style=color:#859900>interface</span> <span style=color:#268bd2>Item</span> {
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>weight</span>: <span style=color:#859900;font-weight:700>number</span>;
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>value</span>: <span style=color:#859900;font-weight:700>number</span>;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>interface</span> <span style=color:#268bd2>ItemWithRatio</span> <span style=color:#859900>extends</span> <span style=color:#268bd2>Item</span> {
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>ratio</span>: <span style=color:#859900;font-weight:700>number</span>;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>function</span> <span style=color:#268bd2>fractionalKnapsackTS</span>(<span style=color:#268bd2>capacity</span>: <span style=color:#859900;font-weight:700>number</span>, <span style=color:#268bd2>items</span>: <span style=color:#859900;font-weight:700>Item</span>[]): <span style=color:#859900;font-weight:700>number</span> {
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> (<span style=color:#268bd2>items</span>.<span style=color:#268bd2>length</span> === <span style=color:#2aa198;font-weight:700>0</span> || <span style=color:#268bd2>capacity</span> &lt;= <span style=color:#2aa198;font-weight:700>0</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#2aa198;font-weight:700>0.0</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// 1. Calculate value/weight ratio for each item and sort in descending order
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#93a1a1;font-style:italic>// Add ratio to each item object
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900>const</span> <span style=color:#268bd2>itemsWithRatios</span>: <span style=color:#859900;font-weight:700>ItemWithRatio</span>[] = <span style=color:#268bd2>items</span>.<span style=color:#268bd2>map</span>(<span style=color:#268bd2>item</span> =&gt; ({
+</span></span><span style=display:flex><span>        ...<span style=color:#268bd2>item</span>,
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>ratio</span>: <span style=color:#859900;font-weight:700>item.value</span> / <span style=color:#268bd2>item</span>.<span style=color:#268bd2>weight</span>
+</span></span><span style=display:flex><span>    }));
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// Sort by ratio in descending order
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#268bd2>itemsWithRatios</span>.<span style=color:#268bd2>sort</span>((<span style=color:#268bd2>a</span>, <span style=color:#268bd2>b</span>) =&gt; <span style=color:#268bd2>b</span>.<span style=color:#268bd2>ratio</span> - <span style=color:#268bd2>a</span>.<span style=color:#268bd2>ratio</span>);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>let</span> <span style=color:#268bd2>totalValue</span> = <span style=color:#2aa198;font-weight:700>0.0</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900>let</span> <span style=color:#268bd2>currentWeight</span> = <span style=color:#2aa198;font-weight:700>0</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// 2. Iterate through sorted items and fill knapsack greedily
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900>for</span> (<span style=color:#859900>const</span> <span style=color:#268bd2>item</span> <span style=color:#859900>of</span> <span style=color:#268bd2>itemsWithRatios</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>currentWeight</span> + <span style=color:#268bd2>item</span>.<span style=color:#268bd2>weight</span> &lt;= <span style=color:#268bd2>capacity</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#93a1a1;font-style:italic>// Take the whole item
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#268bd2>currentWeight</span> += <span style=color:#268bd2>item</span>.<span style=color:#268bd2>weight</span>;
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>totalValue</span> += <span style=color:#268bd2>item</span>.<span style=color:#268bd2>value</span>;
+</span></span><span style=display:flex><span>        } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>            <span style=color:#93a1a1;font-style:italic>// Take a fraction of the item
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#859900>const</span> <span style=color:#268bd2>remainingCapacity</span> = <span style=color:#268bd2>capacity</span> - <span style=color:#268bd2>currentWeight</span>;
+</span></span><span style=display:flex><span>            <span style=color:#859900>const</span> <span style=color:#268bd2>fraction</span> = <span style=color:#268bd2>remainingCapacity</span> / <span style=color:#268bd2>item</span>.<span style=color:#268bd2>weight</span>;
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>totalValue</span> += <span style=color:#268bd2>fraction</span> &lt;<span style=color:#268bd2;font-weight:700>em</span>&gt; <span style=color:#268bd2>item</span>.<span style=color:#268bd2>value</span>;
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>currentWeight</span> += <span style=color:#268bd2>remainingCapacity</span>; <span style=color:#93a1a1;font-style:italic>// Knapsack is full
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#859900>break</span>; <span style=color:#93a1a1;font-style:italic>// Knapsack is full
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>totalValue</span>;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const capacityTS = 50;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const itemsTS: Item[] = [
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     { weight: 10, value: 60 },
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     { weight: 20, value: 100 },
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     { weight: 30, value: 120 }
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// ];
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// console.log(fractionalKnapsackTS(capacityTS, itemsTS)); // Expected: 240.0
+</span></span></span></code></pre></div><h3 id=cpp>Cpp</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-cpp data-lang=cpp><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;vector&gt;</span><span style=color:#93a1a1;font-style:italic>
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;iostream&gt;</span><span style=color:#93a1a1;font-style:italic>
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;algorithm&gt;</span><span style=color:#93a1a1;font-style:italic> </span><span style=color:#93a1a1;font-style:italic>// For std::sort
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;numeric&gt;</span><span style=color:#93a1a1;font-style:italic>   </span><span style=color:#93a1a1;font-style:italic>// For std::iota
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// Struct to represent an item with its weight, value, and ratio
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span><span style=color:#859900>struct</span> <span style=color:#cb4b16>Item</span> {
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>weight</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>value</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>double</span> <span style=color:#268bd2>ratio</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// Constructor to calculate ratio
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#268bd2>Item</span>(<span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>w</span>, <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>v</span>) : <span style=color:#268bd2>weight</span>(<span style=color:#268bd2>w</span>), <span style=color:#268bd2>value</span>(<span style=color:#268bd2>v</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>ratio</span> = <span style=color:#859900>static_cast</span>&lt;<span style=color:#859900;font-weight:700>double</span>&gt;(<span style=color:#268bd2>value</span>) / <span style=color:#268bd2>weight</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// Custom comparator for sorting by ratio in descending order
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900;font-weight:700>bool</span> <span style=color:#859900>operator</span>&lt;(<span style=color:#859900>const</span> <span style=color:#268bd2>Item</span>&amp; <span style=color:#268bd2>other</span>) <span style=color:#859900>const</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>ratio</span> &gt; <span style=color:#268bd2>other</span>.<span style=color:#268bd2>ratio</span>; <span style=color:#93a1a1;font-style:italic>// Sort in descending order of ratio
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    }
+</span></span><span style=display:flex><span>};
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900;font-weight:700>double</span> <span style=color:#268bd2>fractionalKnapsack</span>(<span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>capacity</span>, <span style=color:#268bd2>std</span>::<span style=color:#268bd2>vector</span>&lt;<span style=color:#268bd2>Item</span>&gt; <span style=color:#268bd2>items</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> (<span style=color:#268bd2>items</span>.<span style=color:#268bd2>empty</span>() || <span style=color:#268bd2>capacity</span> &lt;= <span style=color:#2aa198;font-weight:700>0</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#2aa198;font-weight:700>0.0</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// 1. Sort items by value/weight ratio in descending order
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#268bd2>std</span>::<span style=color:#268bd2>sort</span>(<span style=color:#268bd2>items</span>.<span style=color:#268bd2>begin</span>(), <span style=color:#268bd2>items</span>.<span style=color:#268bd2>end</span>());
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>double</span> <span style=color:#268bd2>total_value</span> = <span style=color:#2aa198;font-weight:700>0.0</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>current_weight</span> = <span style=color:#2aa198;font-weight:700>0</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// 2. Iterate through sorted items and fill knapsack greedily
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900>for</span> (<span style=color:#859900>const</span> <span style=color:#859900>auto</span>&amp; <span style=color:#268bd2>item</span> : <span style=color:#268bd2>items</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>current_weight</span> + <span style=color:#268bd2>item</span>.<span style=color:#268bd2>weight</span> &lt;= <span style=color:#268bd2>capacity</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#93a1a1;font-style:italic>// Take the whole item
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#268bd2>current_weight</span> += <span style=color:#268bd2>item</span>.<span style=color:#268bd2>weight</span>;
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>total_value</span> += <span style=color:#268bd2>item</span>.<span style=color:#268bd2>value</span>;
+</span></span><span style=display:flex><span>        } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>            <span style=color:#93a1a1;font-style:italic>// Take a fraction of the item
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>remaining_capacity</span> = <span style=color:#268bd2>capacity</span> - <span style=color:#268bd2>current_weight</span>;
+</span></span><span style=display:flex><span>            <span style=color:#859900;font-weight:700>double</span> <span style=color:#268bd2>fraction</span> = <span style=color:#859900>static_cast</span>&lt;<span style=color:#859900;font-weight:700>double</span>&gt;(<span style=color:#268bd2>remaining_capacity</span>) / <span style=color:#268bd2>item</span>.<span style=color:#268bd2>weight</span>;
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>total_value</span> += <span style=color:#268bd2>fraction</span> &lt;/<span style=color:#268bd2>em</span>&gt; <span style=color:#268bd2>item</span>.<span style=color:#268bd2>value</span>;
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>current_weight</span> += <span style=color:#268bd2>remaining_capacity</span>; <span style=color:#93a1a1;font-style:italic>// Knapsack is full
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#859900>break</span>; <span style=color:#93a1a1;font-style:italic>// Knapsack is full
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>total_value</span>;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// int main() {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     int capacity = 50;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     std::vector&lt;Item&gt; items = {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         Item(10, 60),
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         Item(20, 100),
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         Item(30, 120)
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     };
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     std::cout &lt;&lt; &#34;Max value: &#34; &lt;&lt; fractionalKnapsack(capacity, items) &lt;&lt; std::endl; // 240.0
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     return 0;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// }
+</span></span></span></code></pre></div><h3 id=go>Go</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#dc322f;font-weight:700>package</span> <span style=color:#268bd2>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> (
+</span></span><span style=display:flex><span>    <span style=color:#2aa198>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#2aa198>&#34;sort&#34;</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>type</span> <span style=color:#268bd2>FractionalKnapsackItem</span> <span style=color:#859900>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>Weight</span> <span style=color:#859900;font-weight:700>int</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>Value</span>  <span style=color:#859900;font-weight:700>int</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>Ratio</span>  <span style=color:#859900;font-weight:700>float64</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// Implement sort.Interface for []FractionalKnapsackItem</span>
+</span></span><span style=display:flex><span><span style=color:#859900>type</span> <span style=color:#268bd2>ByRatio</span> []<span style=color:#268bd2>FractionalKnapsackItem</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>func</span> (<span style=color:#268bd2>a</span> <span style=color:#268bd2>ByRatio</span>) <span style=color:#268bd2>Len</span>() <span style=color:#859900;font-weight:700>int</span>           { <span style=color:#859900>return</span> <span style=color:#cb4b16>len</span>(<span style=color:#268bd2>a</span>) }
+</span></span><span style=display:flex><span><span style=color:#859900>func</span> (<span style=color:#268bd2>a</span> <span style=color:#268bd2>ByRatio</span>) <span style=color:#268bd2>Swap</span>(<span style=color:#268bd2>i</span>, <span style=color:#268bd2>j</span> <span style=color:#859900;font-weight:700>int</span>)      { <span style=color:#268bd2>a</span>[<span style=color:#268bd2>i</span>], <span style=color:#268bd2>a</span>[<span style=color:#268bd2>j</span>] = <span style=color:#268bd2>a</span>[<span style=color:#268bd2>j</span>], <span style=color:#268bd2>a</span>[<span style=color:#268bd2>i</span>] }
+</span></span><span style=display:flex><span><span style=color:#859900>func</span> (<span style=color:#268bd2>a</span> <span style=color:#268bd2>ByRatio</span>) <span style=color:#268bd2>Less</span>(<span style=color:#268bd2>i</span>, <span style=color:#268bd2>j</span> <span style=color:#859900;font-weight:700>int</span>) <span style=color:#859900;font-weight:700>bool</span> { <span style=color:#859900>return</span> <span style=color:#268bd2>a</span>[<span style=color:#268bd2>i</span>].<span style=color:#268bd2>Ratio</span> &gt; <span style=color:#268bd2>a</span>[<span style=color:#268bd2>j</span>].<span style=color:#268bd2>Ratio</span> } <span style=color:#93a1a1;font-style:italic>// Descending order</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>func</span> <span style=color:#268bd2>fractionalKnapsack</span>(<span style=color:#268bd2>capacity</span> <span style=color:#859900;font-weight:700>int</span>, <span style=color:#268bd2>items</span> []<span style=color:#268bd2>FractionalKnapsackItem</span>) <span style=color:#859900;font-weight:700>float64</span> {
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> <span style=color:#cb4b16>len</span>(<span style=color:#268bd2>items</span>) == <span style=color:#2aa198;font-weight:700>0</span> || <span style=color:#268bd2>capacity</span> &lt;= <span style=color:#2aa198;font-weight:700>0</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#2aa198;font-weight:700>0.0</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// 1. Calculate value/weight ratio for each item and sort in descending order</span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// (Ratios are calculated and added to the struct in main for simplicity of passing)</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>sort</span>.<span style=color:#268bd2>Sort</span>(<span style=color:#268bd2>ByRatio</span>(<span style=color:#268bd2>items</span>))
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>totalValue</span> := <span style=color:#2aa198;font-weight:700>0.0</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>currentWeight</span> := <span style=color:#2aa198;font-weight:700>0</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// 2. Iterate through sorted items and fill knapsack greedily</span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>for</span> <span style=color:#268bd2>_</span>, <span style=color:#268bd2>item</span> := <span style=color:#859900>range</span> <span style=color:#268bd2>items</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> <span style=color:#268bd2>currentWeight</span>+<span style=color:#268bd2>item</span>.<span style=color:#268bd2>Weight</span> &lt;= <span style=color:#268bd2>capacity</span> {
+</span></span><span style=display:flex><span>            <span style=color:#93a1a1;font-style:italic>// Take the whole item</span>
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>currentWeight</span> += <span style=color:#268bd2>item</span>.<span style=color:#268bd2>Weight</span>
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>totalValue</span> += <span style=color:#cb4b16>float64</span>(<span style=color:#268bd2>item</span>.<span style=color:#268bd2>Value</span>)
+</span></span><span style=display:flex><span>        } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>            <span style=color:#93a1a1;font-style:italic>// Take a fraction of the item</span>
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>remainingCapacity</span> := <span style=color:#268bd2>capacity</span> - <span style=color:#268bd2>currentWeight</span>
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>fraction</span> := <span style=color:#cb4b16>float64</span>(<span style=color:#268bd2>remainingCapacity</span>) / <span style=color:#cb4b16>float64</span>(<span style=color:#268bd2>item</span>.<span style=color:#268bd2>Weight</span>)
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>totalValue</span> += <span style=color:#268bd2>fraction</span> &lt;<span style=color:#268bd2>em</span>&gt; <span style=color:#cb4b16>float64</span>(<span style=color:#268bd2>item</span>.<span style=color:#268bd2>Value</span>)
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>currentWeight</span> += <span style=color:#268bd2>remainingCapacity</span> <span style=color:#93a1a1;font-style:italic>// Knapsack is full</span>
+</span></span><span style=display:flex><span>            <span style=color:#859900>break</span> <span style=color:#93a1a1;font-style:italic>// Knapsack is full</span>
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>totalValue</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// func main() {</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     capacity := 50</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     items := []FractionalKnapsackItem{</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         {Weight: 10, Value: 60},</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         {Weight: 20, Value: 100},</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         {Weight: 30, Value: 120},</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     }</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     // Calculate ratios manually for demonstration, in a real scenario this would be done dynamically</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     for i := range items {</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         items[i].Ratio = float64(items[i].Value) / float64(items[i].Weight)</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     }</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     fmt.Println(&#34;Max value:&#34;, fractionalKnapsack(capacity, items)) // 240.0</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// }</span>
+</span></span></code></pre></div><h3 id=d>D</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-d data-lang=d><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>std.stdio</span>;
+</span></span><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>std.array</span>;
+</span></span><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>std.algorithm</span>; <span style=color:#93a1a1;font-style:italic>// For std.algorithm.sort
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// Struct to represent an item with its weight, value, and ratio
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span><span style=color:#859900>struct</span> <span style=color:#cb4b16>Item</span> {
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>weight</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>value</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>double</span> <span style=color:#268bd2>ratio</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>this</span>(<span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>w</span>, <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>v</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>weight</span> = <span style=color:#268bd2>w</span>;
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>value</span> = <span style=color:#268bd2>v</span>;
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>ratio</span> = <span style=color:#859900>cast</span>(<span style=color:#859900;font-weight:700>double</span>)<span style=color:#268bd2>value</span> / <span style=color:#268bd2>weight</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// Custom comparator for sorting by ratio in descending order
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>opCmp</span>(<span style=color:#859900>const</span> <span style=color:#268bd2>Item</span> <span style=color:#268bd2>other</span>) <span style=color:#859900>const</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#859900>this</span>.<span style=color:#268bd2>ratio</span> &gt; <span style=color:#268bd2>other</span>.<span style=color:#268bd2>ratio</span>) <span style=color:#859900>return</span> <span style=color:#2aa198;font-weight:700>1</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#859900>this</span>.<span style=color:#268bd2>ratio</span> &lt; <span style=color:#268bd2>other</span>.<span style=color:#268bd2>ratio</span>) <span style=color:#859900>return</span> -<span style=color:#2aa198;font-weight:700>1</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#2aa198;font-weight:700>0</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900;font-weight:700>double</span> <span style=color:#268bd2>fractionalKnapsack</span>(<span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>capacity</span>, <span style=color:#268bd2>Item</span>[] <span style=color:#268bd2>items</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> (<span style=color:#268bd2>items</span>.<span style=color:#268bd2>empty</span> || <span style=color:#268bd2>capacity</span> &lt;= <span style=color:#2aa198;font-weight:700>0</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#2aa198;font-weight:700>0.0</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// 1. Calculate value/weight ratio for each item and sort in descending order
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#93a1a1;font-style:italic>// (Ratios are calculated in constructor or can be done here)
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#268bd2>items</span>.<span style=color:#268bd2>sort</span>!((<span style=color:#268bd2>a</span>, <span style=color:#268bd2>b</span>) =&gt; <span style=color:#268bd2>a</span>.<span style=color:#268bd2>ratio</span> &gt; <span style=color:#268bd2>b</span>.<span style=color:#268bd2>ratio</span>); <span style=color:#93a1a1;font-style:italic>// Sort in descending order of ratio
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>double</span> <span style=color:#268bd2>totalValue</span> = <span style=color:#2aa198;font-weight:700>0.0</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>currentWeight</span> = <span style=color:#2aa198;font-weight:700>0</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// 2. Iterate through sorted items and fill knapsack greedily
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900>foreach</span> (<span style=color:#268bd2>item</span>; <span style=color:#268bd2>items</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>currentWeight</span> + <span style=color:#268bd2>item</span>.<span style=color:#268bd2>weight</span> &lt;= <span style=color:#268bd2>capacity</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#93a1a1;font-style:italic>// Take the whole item
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#268bd2>currentWeight</span> += <span style=color:#268bd2>item</span>.<span style=color:#268bd2>weight</span>;
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>totalValue</span> += <span style=color:#268bd2>item</span>.<span style=color:#268bd2>value</span>;
+</span></span><span style=display:flex><span>        } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>            <span style=color:#93a1a1;font-style:italic>// Take a fraction of the item
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>remainingCapacity</span> = <span style=color:#268bd2>capacity</span> - <span style=color:#268bd2>currentWeight</span>;
+</span></span><span style=display:flex><span>            <span style=color:#859900;font-weight:700>double</span> <span style=color:#268bd2>fraction</span> = <span style=color:#859900>cast</span>(<span style=color:#859900;font-weight:700>double</span>)<span style=color:#268bd2>remainingCapacity</span> / <span style=color:#268bd2>item</span>.<span style=color:#268bd2>weight</span>;
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>totalValue</span> += <span style=color:#268bd2>fraction</span> &lt;/<span style=color:#268bd2>em</span>&gt; <span style=color:#268bd2>item</span>.<span style=color:#268bd2>value</span>;
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>currentWeight</span> += <span style=color:#268bd2>remainingCapacity</span>; <span style=color:#93a1a1;font-style:italic>// Knapsack is full
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#859900>break</span>; <span style=color:#93a1a1;font-style:italic>// Knapsack is full
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>totalValue</span>;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// void main() {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     int capacity = 50;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     Item[] items = [
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         Item(10, 60),
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         Item(20, 100),
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         Item(30, 120)
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     ];
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     writeln(&#34;Max value: &#34;, fractionalKnapsack(capacity, items)); // 240.0
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// }
+</span></span></span></code></pre></div><h2 id=code-walkthrough>Code Walkthrough</h2><p><a href=#implementation>Back to Implementation</a></p><h3 id=code-walkthrough-1>Code Walkthrough</h3><p>The <code>Fractional Knapsack Problem</code> is solvable with a straightforward <code>greedy approach</code> because items can be broken into fractions.</p><hr><p><strong><code>Item</code> Structure:</strong></p><ul><li>Each <code>item</code> is typically represented by its <code>weight</code>, <code>value</code>, and a calculated <code>value/weight ratio</code>.</li></ul><p><strong><code>fractional_knapsack(capacity, items)</code> Function:</strong></p><ul><li><code>capacity</code>: The maximum <code>weight</code> the <code>knapsack</code> can hold.</li><li><code>items</code>: A list of <code>item</code> objects/tuples.</li></ul><p><strong>Algorithm Steps:</strong></p><ul><li><p><strong>Calculate Ratios:</strong> For each <code>item</code>, its <code>value/weight ratio</code> is calculated. This ratio indicates how much <code>value</code> each unit of <code>weight</code> provides.</p></li><li><p><strong>Sort Items:</strong> The <code>items</code> are then sorted in descending order based on this <code>value/weight ratio</code>. This is the crucial greedy step.</p></li><li><p><strong>Initialize:</strong></p></li><li><p><code>total_value</code>: Stores the maximum <code>value</code> accumulated so far, initialized to 0.0.</p></li><li><p><code>current_weight</code>: Stores the current <code>weight</code> in the <code>knapsack</code>, initialized to 0.</p></li></li><li><p><strong>Fill Knapsack Greedily:</strong> The algorithm iterates through the <code>items</code> in their sorted order (highest <code>ratio</code> first).</p></li><li><p>For each <code>item</code>:</p></li><li><p><strong>If <code>current_weight + item.weight &lt;= capacity</code>:</strong> The entire <code>item</code> can be added without exceeding <code>capacity</code>. The <code>item</code>&rsquo;s <code>weight</code> and <code>value</code> are added to <code>current_weight</code> and <code>total_value</code> respectively.</p></li><li><p><strong>Else (the <code>item</code> cannot be taken whole):</strong></p></li><li><p>The <code>knapsack</code> can only accommodate a <code>fraction</code> of the <code>item</code>.</p></li><li><p>The <code>remaining_capacity</code> is calculated.</p></li><li><p>The <code>fraction</code> of the <code>item</code> that can be taken is <code>remaining_capacity / item.weight</code>.</p></li><li><p>This <code>fraction</code> of the <code>item</code>&rsquo;s <code>value</code> is added to <code>total_value</code>.</p></li><li><p>The <code>current_weight</code> is set to <code>capacity</code> (the <code>knapsack</code> is now full).</p></li><li><p>The loop breaks because the <code>knapsack</code> is full.</p><pre><code>              &lt;/li&gt;
 
       &lt;/li&gt;
-</code></pre>
-  </li>
-</li>
-</ul>
-<p><strong>Result:</strong></p>
-<ul>
-<li>The <code>total_value</code> will be the maximum possible <code>value</code> that can be obtained.</li>
-</ul>
-<p><a href="#implementation">Back to Implementation</a></p>
-<h2 id="applications">Applications</h2>
-<h3 id="application">Application</h3>
-<p>The <code>Fractional Knapsack Problem</code> and its greedy solution have various practical applications in resource allocation and optimization scenarios:</p>
-<ul>
-<li><strong>Resource Allocation:</strong> Deciding how to allocate a limited budget to different projects or investments, where each project has a cost and a potential return, and partial investment is possible.</li>
-<li><strong>Loading Cargo:</strong> Optimizing the loading of a ship, truck, or airplane with various goods to maximize the total value, assuming goods can be split or poured.</li>
-<li><strong>Cutting Stock Problems:</strong> Determining how to cut raw materials (e.g., fabric, metal sheets) into smaller pieces of different values to maximize profit from a limited supply.</li>
-<li><strong>Fluid/Gas Transport:</strong> Optimizing the transport of different types of fluids or gases through a pipeline system with limited capacity, where each fluid has a value per unit volume.</li>
-<li><strong>Agricultural Planning:</strong> Allocating land to different crops to maximize yield or profit, considering varying needs and returns per unit area.</li>
-</ul>
-
-    </div>
-</article>
-
-<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
-    
-    <a href="http://localhost:41691/sdet-prep-site/dsa-42/algorithms/greedy/huffman_coding/" class="nav-btn">← Previous</a>
-    
-    
-    <a href="http://localhost:41691/sdet-prep-site/dsa-42/algorithms/greedy/" class="nav-btn">Up</a>
-
-    
-    <a href="http://localhost:41691/sdet-prep-site/dsa-42/algorithms/greedy/activity_selection/" class="nav-btn">Next →</a>
-    
-</div>
-
-    </main>
-
-    <footer class="footer">
-        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
-    </footer>
-
-    <script>
-        
-        document.addEventListener("DOMContentLoaded", function() {
-            const content = document.body;
-            
-            const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT, null, false);
-            let node;
-            const nodesToReplace = [];
-            while(node = walker.nextNode()) {
-                if (node.nodeValue.includes("[-]")) nodesToReplace.push(node);
-            }
-            nodesToReplace.forEach(textNode => {
-                const span = document.createElement('span');
-                span.innerHTML = textNode.nodeValue.replace(/\[-\]/g, '<span class="started-icon" title="Started"></span>');
-                textNode.parentNode.replaceChild(span, textNode);
-            });
-        });
-    </script>
-
-    <script>
-        const body = document.getElementById('theme-body');
-        const btn = document.getElementById('theme-toggle');
-        const currentTheme = localStorage.getItem('theme');
-
-        
-        function updateButtonText() {
-            if (body.classList.contains('theme-terminal')) {
-                btn.textContent = "Light Mode";
-            } else {
-                btn.textContent = "Dark Mode";
-            }
-        }
-
-        if (currentTheme === 'terminal') {
-            body.classList.add('theme-terminal');
-        }
-        
-        
-        updateButtonText();
-
-        btn.addEventListener('click', () => {
-            body.classList.toggle('theme-terminal');
-            updateButtonText();
-            
-            let theme = 'natural';
-            if (body.classList.contains('theme-terminal')) {
-                theme = 'terminal';
-            }
-            localStorage.setItem('theme', theme);
-        });
-    </script>
-</body>
-</html>
+</code></pre></li></li></ul><p><strong>Result:</strong></p><ul><li>The <code>total_value</code> will be the maximum possible <code>value</code> that can be obtained.</li></ul><p><a href=#implementation>Back to Implementation</a></p><h2 id=applications>Applications</h2><h3 id=application>Application</h3><p>The <code>Fractional Knapsack Problem</code> and its greedy solution have various practical applications in resource allocation and optimization scenarios:</p><ul><li><strong>Resource Allocation:</strong> Deciding how to allocate a limited budget to different projects or investments, where each project has a cost and a potential return, and partial investment is possible.</li><li><strong>Loading Cargo:</strong> Optimizing the loading of a ship, truck, or airplane with various goods to maximize the total value, assuming goods can be split or poured.</li><li><strong>Cutting Stock Problems:</strong> Determining how to cut raw materials (e.g., fabric, metal sheets) into smaller pieces of different values to maximize profit from a limited supply.</li><li><strong>Fluid/Gas Transport:</strong> Optimizing the transport of different types of fluids or gases through a pipeline system with limited capacity, where each fluid has a value per unit volume.</li><li><strong>Agricultural Planning:</strong> Allocating land to different crops to maximize yield or profit, considering varying needs and returns per unit area.</li></ul></div></article><div class=navigation style="margin-top:5rem;display:flex;justify-content:space-between;border-top:1px solid var(--border);padding-top:2rem"><a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/algorithms/greedy/huffman_coding/ class=nav-btn>← Previous</a>
+<a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/algorithms/greedy/ class=nav-btn>Up</a>
+<a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/algorithms/greedy/activity_selection/ class=nav-btn>Next →</a></div></main><footer class=footer><p>Built with Hugo. No scripts. No tracking. Just the truth.</p></footer><script>document.addEventListener("DOMContentLoaded",function(){const n=document.body,s=document.createTreeWalker(n,NodeFilter.SHOW_TEXT,null,!1);let e;const t=[];for(;e=s.nextNode();)e.nodeValue.includes("[-]")&&t.push(e);t.forEach(e=>{const t=document.createElement("span");t.innerHTML=e.nodeValue.replace(/\[-\]/g,'<span class="started-icon" title="Started"></span>'),e.parentNode.replaceChild(t,e)})})</script><script>const body=document.getElementById("theme-body"),btn=document.getElementById("theme-toggle"),currentTheme=localStorage.getItem("theme");function updateButtonText(){body.classList.contains("theme-terminal")?btn.textContent="Light Mode":btn.textContent="Dark Mode"}currentTheme==="terminal"&&body.classList.add("theme-terminal"),updateButtonText(),btn.addEventListener("click",()=>{body.classList.toggle("theme-terminal"),updateButtonText();let e="natural";body.classList.contains("theme-terminal")&&(e="terminal"),localStorage.setItem("theme",e)})</script></body></html>

@@ -1,257 +1,62 @@
-<!DOCTYPE html>
-<html lang="en-us">
-<head><script src="/sdet-prep-site/livereload.js?mindelay=10&amp;v=2&amp;port=41691&amp;path=sdet-prep-site/livereload" data-no-instant defer></script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hexaware-4 | SDET Interview Preparation Kit</title>
-    <link rel="stylesheet" href="http://localhost:41691/sdet-prep-site/css/style.css">
-    <link rel="stylesheet" href="http://localhost:41691/sdet-prep-site/css/terminal.css">
-    
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
-    
-    
-    <link rel="stylesheet" href="http://localhost:41691/sdet-prep-site/lib/katex/katex.min.css">
-    <script defer src="http://localhost:41691/sdet-prep-site/lib/katex/katex.min.js"></script>
-    <script defer src="http://localhost:41691/sdet-prep-site/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            renderMathInElement(document.body, {
-                delimiters: [
-                    {left: "$$", right: "$$", display: true},
-                    {left: "$", right: "$", display: false}
-                ]
-            });
-        });
-    </script>
-</head>
-<body id="theme-body">
-    <button id="theme-toggle">Switch Theme</button>
-    <header>
-        <nav>
-            <ul>
-                <li><a href="http://localhost:41691/sdet-prep-site/">Index</a></li>
-                
-            </ul>
-        </nav>
-        <div class="site-breadcrumb">
-            <a href="http://localhost:41691/sdet-prep-site/">Home</a>
-            
-                
-                    <span>/</span> <a href="http://localhost:41691/sdet-prep-site/">SDET Interview Dashboard</a>
-                
-            
-                
-                    <span>/</span> <a href="http://localhost:41691/sdet-prep-site/12_company_based_questions/">Interview Questions</a>
-                
-            
-                
-                    <span>/</span> <a href="http://localhost:41691/sdet-prep-site/12_company_based_questions/hexaware/">Hexaware Interview Questions</a>
-                
-            
-            
-                <span>/</span> Hexaware-4
-            
-        </div>
-    </header>
-
-    <main>
-        
-<article>
-    
-    <h1>Hexaware-4</h1>
-    <div class="content-body" style="margin-top: 2rem;">
-        <hr>
-<h2 id="original-questions">Original Questions</h2>
-<h2 id="hexaware-l1-question">Hexaware L1 Question:</h2>
-<ol>
-<li>Cucumber  Farmwork Explanation</li>
-<li>How will you generate the report and how will you handle the failure test case</li>
-<li>How will you confirm page got loaded fully &amp; how will you confirm where all the elements are loaded (more than 1000 elements)</li>
-<li>Where you find the response in jenkins</li>
-<li>Reverse the &quot; Java Selenium&quot; ( each letter reverse)
-6.Project explanation</li>
-</ol>
-<hr>
-<h2 id="answers">Answers</h2>
-<h3 id="1-cucumber-farmwork-explanation">1. Cucumber Farmwork Explanation</h3>
-<p>This is likely a typo for &ldquo;Cucumber Framework Explanation&rdquo;.
-Cucumber is a BDD (Behavior-Driven Development) framework. It enables writing executable specifications in a human-readable format (Gherkin: <code>Given/When/Then</code>). This helps bridge the communication gap between technical and non-technical stakeholders.</p>
-<ul>
-<li><strong>Components:</strong> Feature Files (Gherkin scenarios), Step Definitions (Java code implementing steps), Runner Class (to execute tests), and Hooks (for setup/teardown).</li>
-</ul>
-<h3 id="2-how-will-you-generate-the-report-and-how-will-you-handle-the-failure-test-case">2. How will you generate the report and how will you handle the failure test case</h3>
-<ul>
-<li><strong>Report Generation:</strong>
-<ul>
-<li><strong>Cucumber&rsquo;s built-in plugins:</strong> <code>json:target/cucumber.json</code> generates a JSON report that can be used by other tools. <code>html:target/cucumber.html</code> generates a basic HTML report.</li>
-<li><strong>Third-party tools:</strong> We integrate with <strong>ExtentReports</strong> or <strong>Allure Reports</strong> via our TestNG/JUnit runner. These provide much richer, interactive HTML reports.</li>
-</ul>
-</li>
-<li><strong>Handling Failure Test Cases:</strong>
-<ul>
-<li><strong>Screenshots:</strong> On failure, we capture a screenshot (<code>TakesScreenshot</code>) and embed it in the report. This is handled in an <code>@After</code> hook (Cucumber) or <code>onTestFailure</code> method (TestNG listener).</li>
-<li><strong>Error Logs/Stack Traces:</strong> The report will also include the stack trace of the exception that caused the failure.</li>
-<li><strong>Retries:</strong> For flaky tests, we use TestNG&rsquo;s <code>IRetryAnalyzer</code> to re-run failed tests a few times before marking them as a definitive failure.</li>
-</ul>
-</li>
-</ul>
-<h3 id="3-how-will-you-confirm-page-got-loaded-fully--how-will-you-confirm-where-all-the-elements-are-loaded-more-than-1000-elements">3. How will you confirm page got loaded fully &amp; how will you confirm where all the elements are loaded (more than 1000 elements)</h3>
-<ul>
-<li><strong>Page Loaded Fully:</strong> The most reliable way is to use <code>JavascriptExecutor</code> to check the <code>document.readyState</code>.
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#859900">new</span> <span style="color:#268bd2">WebDriverWait</span>(<span style="color:#268bd2">driver</span>, <span style="color:#268bd2">Duration</span>.<span style="color:#268bd2">ofSeconds</span>(<span style="color:#268bd2">30</span>)).<span style="color:#268bd2">until</span>(
-</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">webDriver</span> -&gt; ((<span style="color:#268bd2">JavascriptExecutor</span>) <span style="color:#268bd2">webDriver</span>).<span style="color:#268bd2">executeScript</span>(<span style="color:#2aa198">&#34;return document.readyState&#34;</span>).<span style="color:#268bd2">equals</span>(<span style="color:#2aa198">&#34;complete&#34;</span>));
-</span></span></code></pre></div></li>
-<li><strong>All Elements Loaded (1000+ elements):</strong>
-<ul>
-<li>You wouldn&rsquo;t typically wait for <em>all</em> 1000+ elements, as that&rsquo;s impractical and usually unnecessary.</li>
-<li>Instead, you wait for the <strong>key critical elements</strong> that signify the page is fully interactive and ready for user interaction. These would be elements that are part of the main page content, not hidden or lazy-loaded components.</li>
-<li>Use <code>WebDriverWait</code> with <code>ExpectedConditions.visibilityOfElementLocated()</code> or <code>ExpectedConditions.elementToBeClickable()</code> for a few strategic elements on the page.</li>
-</ul>
-</li>
-</ul>
-<h3 id="4-where-you-find-the-response-in-jenkins">4. Where you find the response in jenkins</h3>
-<p>In Jenkins, after a build (which includes a test run) completes:</p>
-<ul>
-<li><strong>Console Output:</strong> The basic test output (e.g., TestNG/Cucumber console logs, stack traces) can be found in the &ldquo;Console Output&rdquo; section of the build.</li>
-<li><strong>Test Result Summary:</strong> Jenkins has a built-in &ldquo;Test Result&rdquo; section that summarizes passed/failed/skipped tests (parsed from Surefire/TestNG XML reports).</li>
-<li><strong>Published HTML Reports:</strong> If you&rsquo;ve configured Jenkins to publish HTML reports (e.g., ExtentReports, Allure), there will be a link to these detailed reports in the build summary or as a post-build action. These are typically the most useful for analysis.</li>
-</ul>
-<h3 id="5-reverse-the--java-selenium--each-letter-reverse">5. Reverse the &quot; Java Selenium&quot; ( each letter reverse)</h3>
-<p>This means reversing the order of words in the sentence, while also reversing the characters within each word. The example implies: <code>avaj muineles</code></p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900">class</span> <span style="color:#cb4b16">ReverseWordsAndLetters</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#859900">static</span> <span style="color:#268bd2">String</span> <span style="color:#268bd2">reverseEachWordAndOrder</span>(<span style="color:#268bd2">String</span> <span style="color:#268bd2">sentence</span>) {
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">sentence</span> == <span style="color:#859900;font-weight:bold">null</span> || <span style="color:#268bd2">sentence</span>.<span style="color:#268bd2">trim</span>().<span style="color:#268bd2">isEmpty</span>()) {
-</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#268bd2">sentence</span>;
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">String</span>[] <span style="color:#268bd2">words</span> = <span style="color:#268bd2">sentence</span>.<span style="color:#268bd2">trim</span>().<span style="color:#268bd2">split</span>(<span style="color:#2aa198">&#34;\\s+&#34;</span>);
-</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">StringBuilder</span> <span style="color:#268bd2">reversedSentence</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">StringBuilder</span>();
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Reverse the order of words and reverse characters within each word</span>
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i</span> = <span style="color:#268bd2">words</span>.<span style="color:#268bd2">length</span> - <span style="color:#268bd2">1</span>; <span style="color:#268bd2">i</span> &gt;= <span style="color:#268bd2">0</span>; <span style="color:#268bd2">i</span>--) {
-</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">reversedSentence</span>.<span style="color:#268bd2">append</span>(<span style="color:#859900">new</span> <span style="color:#268bd2">StringBuilder</span>(<span style="color:#268bd2">words</span>[<span style="color:#268bd2">i</span>]).<span style="color:#268bd2">reverse</span>().<span style="color:#268bd2">toString</span>());
-</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">i</span> &gt; <span style="color:#268bd2">0</span>) {
-</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">reversedSentence</span>.<span style="color:#268bd2">append</span>(<span style="color:#2aa198">&#34; &#34;</span>);
-</span></span><span style="display:flex;"><span>            }
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">reversedSentence</span>.<span style="color:#268bd2">toString</span>();
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#859900">static</span> <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">main</span>(<span style="color:#268bd2">String</span>[] <span style="color:#268bd2">args</span>) {
-</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">String</span> <span style="color:#268bd2">input</span> = <span style="color:#2aa198">&#34;Java Selenium&#34;</span>;
-</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>(<span style="color:#268bd2">reverseEachWordAndOrder</span>(<span style="color:#268bd2">input</span>)); <span style="color:#93a1a1;font-style:italic">// Output: muineles avaJ</span>
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><p>If it&rsquo;s just &ldquo;each letter reverse&rdquo; (which is <code>avaj muineles</code>), the code would be slightly different. The output &ldquo;avaj muineles&rdquo; implies individual letter reversal, then a space, then another word reversal. My interpretation is closer to the prompt&rsquo;s <code>Reverse the &quot; Java Selenium&quot; ( each letter reverse)</code>. Let me re-read the input example. <code>Reverse the &quot; Java Selenium&quot; ( each letter reverse)</code>. If the request is to <code>Reverse the &quot; Java Selenium&quot; ( each letter reverse)</code>, output is <code>avaj muineles</code>.</p>
-<p>Let&rsquo;s assume the question is poorly worded and implies individual word reversal, while keeping the original word order:
-<code>Java Selenium</code> -&gt; <code>avaJ muineleS</code> (This is not what the question implies from the description, but let&rsquo;s re-read the exact output request).
-The question is &ldquo;Reverse the &lsquo;Java Selenium&rsquo; (each letter reverse)&rdquo;. So it means <code>avaj muineles</code>.</p>
-<p>My code above does <code>muineles avaJ</code>. I should reverse the order of words as well based on the previous context <code>test program -&gt; program test</code>.</p>
-<p>Let&rsquo;s assume the simplest interpretation: reverse the entire string, then reverse characters within each word. No, this would not match <code>avaj muineles</code>.</p>
-<p>Okay, the question is <code>Reverse the &quot; Java Selenium&quot; ( each letter reverse)</code>.
-This simply means: reverse the letters in &ldquo;Java&rdquo; to &ldquo;avaJ&rdquo; and reverse the letters in &ldquo;Selenium&rdquo; to &ldquo;muineles&rdquo;. Then concatenate them as &ldquo;avaJ muineleS&rdquo;.</p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900">class</span> <span style="color:#cb4b16">ReverseEachLetterInWords</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#859900">static</span> <span style="color:#268bd2">String</span> <span style="color:#268bd2">reverseEachLetter</span>(<span style="color:#268bd2">String</span> <span style="color:#268bd2">sentence</span>) {
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">sentence</span> == <span style="color:#859900;font-weight:bold">null</span> || <span style="color:#268bd2">sentence</span>.<span style="color:#268bd2">trim</span>().<span style="color:#268bd2">isEmpty</span>()) {
-</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#268bd2">sentence</span>;
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">String</span>[] <span style="color:#268bd2">words</span> = <span style="color:#268bd2">sentence</span>.<span style="color:#268bd2">trim</span>().<span style="color:#268bd2">split</span>(<span style="color:#2aa198">&#34;\\s+&#34;</span>);
-</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">StringBuilder</span> <span style="color:#268bd2">result</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">StringBuilder</span>();
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i</span> = <span style="color:#268bd2">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">words</span>.<span style="color:#268bd2">length</span>; <span style="color:#268bd2">i</span>++) {
-</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">StringBuilder</span> <span style="color:#268bd2">reversedWord</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">StringBuilder</span>(<span style="color:#268bd2">words</span>[<span style="color:#268bd2">i</span>]).<span style="color:#268bd2">reverse</span>();
-</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">result</span>.<span style="color:#268bd2">append</span>(<span style="color:#268bd2">reversedWord</span>);
-</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">words</span>.<span style="color:#268bd2">length</span> - <span style="color:#268bd2">1</span>) {
-</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">result</span>.<span style="color:#268bd2">append</span>(<span style="color:#2aa198">&#34; &#34;</span>);
-</span></span><span style="display:flex;"><span>            }
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">result</span>.<span style="color:#268bd2">toString</span>();
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#859900">static</span> <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">main</span>(<span style="color:#268bd2">String</span>[] <span style="color:#268bd2">args</span>) {
-</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">String</span> <span style="color:#268bd2">input</span> = <span style="color:#2aa198">&#34;Java Selenium&#34;</span>;
-</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>(<span style="color:#268bd2">reverseEachLetter</span>(<span style="color:#268bd2">input</span>)); <span style="color:#93a1a1;font-style:italic">// Output: avaJ muineleS</span>
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><p>This is a better interpretation of <code>( each letter reverse)</code>.</p>
-<h3 id="6-project-explanation">6. Project explanation</h3>
-<p>Standard. Describe the project domain, your role, the framework used, key technologies, challenges, and achievements.</p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"></code></pre></div>
-    </div>
-</article>
-
-<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
-    
-    <span></span>
-    
-    
-    <a href="http://localhost:41691/sdet-prep-site/12_company_based_questions/hexaware/" class="nav-btn">Up</a>
-
-    
-    <a href="http://localhost:41691/sdet-prep-site/12_company_based_questions/hexaware/round-3/" class="nav-btn">Next →</a>
-    
-</div>
-
-    </main>
-
-    <footer class="footer">
-        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
-    </footer>
-
-    <script>
-        
-        document.addEventListener("DOMContentLoaded", function() {
-            const content = document.body;
-            
-            const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT, null, false);
-            let node;
-            const nodesToReplace = [];
-            while(node = walker.nextNode()) {
-                if (node.nodeValue.includes("[-]")) nodesToReplace.push(node);
-            }
-            nodesToReplace.forEach(textNode => {
-                const span = document.createElement('span');
-                span.innerHTML = textNode.nodeValue.replace(/\[-\]/g, '<span class="started-icon" title="Started"></span>');
-                textNode.parentNode.replaceChild(span, textNode);
-            });
-        });
-    </script>
-
-    <script>
-        const body = document.getElementById('theme-body');
-        const btn = document.getElementById('theme-toggle');
-        const currentTheme = localStorage.getItem('theme');
-
-        
-        function updateButtonText() {
-            if (body.classList.contains('theme-terminal')) {
-                btn.textContent = "Light Mode";
-            } else {
-                btn.textContent = "Dark Mode";
-            }
-        }
-
-        if (currentTheme === 'terminal') {
-            body.classList.add('theme-terminal');
-        }
-        
-        
-        updateButtonText();
-
-        btn.addEventListener('click', () => {
-            body.classList.toggle('theme-terminal');
-            updateButtonText();
-            
-            let theme = 'natural';
-            if (body.classList.contains('theme-terminal')) {
-                theme = 'terminal';
-            }
-            localStorage.setItem('theme', theme);
-        });
-    </script>
-</body>
-</html>
+<!doctype html><html lang=en-us><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Hexaware-4 | SDET Interview Preparation Kit</title><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/css/style.css><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/css/terminal.css><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel=stylesheet><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/lib/katex/katex.min.css><script defer src=https://notxkcd.github.io/sdet-prep-site/lib/katex/katex.min.js></script><script defer src=https://notxkcd.github.io/sdet-prep-site/lib/katex/contrib/auto-render.min.js onload=renderMathInElement(document.body)></script><script>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1}]})})</script></head><body id=theme-body><button id=theme-toggle>Switch Theme</button><header><nav><ul><li><a href=https://notxkcd.github.io/sdet-prep-site/>Index</a></li></ul></nav><div class=site-breadcrumb><a href=https://notxkcd.github.io/sdet-prep-site/>Home</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/>SDET Interview Dashboard</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/12_company_based_questions/>Interview Questions</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/12_company_based_questions/hexaware/>Hexaware Interview Questions</a>
+<span>/</span> Hexaware-4</div></header><main><article><h1>Hexaware-4</h1><div class=content-body style=margin-top:2rem><hr><h2 id=original-questions>Original Questions</h2><h2 id=hexaware-l1-question>Hexaware L1 Question:</h2><ol><li>Cucumber Farmwork Explanation</li><li>How will you generate the report and how will you handle the failure test case</li><li>How will you confirm page got loaded fully & how will you confirm where all the elements are loaded (more than 1000 elements)</li><li>Where you find the response in jenkins</li><li>Reverse the " Java Selenium" ( each letter reverse)
+6.Project explanation</li></ol><hr><h2 id=answers>Answers</h2><h3 id=1-cucumber-farmwork-explanation>1. Cucumber Farmwork Explanation</h3><p>This is likely a typo for &ldquo;Cucumber Framework Explanation&rdquo;.
+Cucumber is a BDD (Behavior-Driven Development) framework. It enables writing executable specifications in a human-readable format (Gherkin: <code>Given/When/Then</code>). This helps bridge the communication gap between technical and non-technical stakeholders.</p><ul><li><strong>Components:</strong> Feature Files (Gherkin scenarios), Step Definitions (Java code implementing steps), Runner Class (to execute tests), and Hooks (for setup/teardown).</li></ul><h3 id=2-how-will-you-generate-the-report-and-how-will-you-handle-the-failure-test-case>2. How will you generate the report and how will you handle the failure test case</h3><ul><li><strong>Report Generation:</strong><ul><li><strong>Cucumber&rsquo;s built-in plugins:</strong> <code>json:target/cucumber.json</code> generates a JSON report that can be used by other tools. <code>html:target/cucumber.html</code> generates a basic HTML report.</li><li><strong>Third-party tools:</strong> We integrate with <strong>ExtentReports</strong> or <strong>Allure Reports</strong> via our TestNG/JUnit runner. These provide much richer, interactive HTML reports.</li></ul></li><li><strong>Handling Failure Test Cases:</strong><ul><li><strong>Screenshots:</strong> On failure, we capture a screenshot (<code>TakesScreenshot</code>) and embed it in the report. This is handled in an <code>@After</code> hook (Cucumber) or <code>onTestFailure</code> method (TestNG listener).</li><li><strong>Error Logs/Stack Traces:</strong> The report will also include the stack trace of the exception that caused the failure.</li><li><strong>Retries:</strong> For flaky tests, we use TestNG&rsquo;s <code>IRetryAnalyzer</code> to re-run failed tests a few times before marking them as a definitive failure.</li></ul></li></ul><h3 id=3-how-will-you-confirm-page-got-loaded-fully--how-will-you-confirm-where-all-the-elements-are-loaded-more-than-1000-elements>3. How will you confirm page got loaded fully & how will you confirm where all the elements are loaded (more than 1000 elements)</h3><ul><li><strong>Page Loaded Fully:</strong> The most reliable way is to use <code>JavascriptExecutor</code> to check the <code>document.readyState</code>.<div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=display:flex><span><span style=color:#859900>new</span> <span style=color:#268bd2>WebDriverWait</span>(<span style=color:#268bd2>driver</span>, <span style=color:#268bd2>Duration</span>.<span style=color:#268bd2>ofSeconds</span>(<span style=color:#268bd2>30</span>)).<span style=color:#268bd2>until</span>(
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>webDriver</span> -&gt; ((<span style=color:#268bd2>JavascriptExecutor</span>) <span style=color:#268bd2>webDriver</span>).<span style=color:#268bd2>executeScript</span>(<span style=color:#2aa198>&#34;return document.readyState&#34;</span>).<span style=color:#268bd2>equals</span>(<span style=color:#2aa198>&#34;complete&#34;</span>));
+</span></span></code></pre></div></li><li><strong>All Elements Loaded (1000+ elements):</strong><ul><li>You wouldn&rsquo;t typically wait for <em>all</em> 1000+ elements, as that&rsquo;s impractical and usually unnecessary.</li><li>Instead, you wait for the <strong>key critical elements</strong> that signify the page is fully interactive and ready for user interaction. These would be elements that are part of the main page content, not hidden or lazy-loaded components.</li><li>Use <code>WebDriverWait</code> with <code>ExpectedConditions.visibilityOfElementLocated()</code> or <code>ExpectedConditions.elementToBeClickable()</code> for a few strategic elements on the page.</li></ul></li></ul><h3 id=4-where-you-find-the-response-in-jenkins>4. Where you find the response in jenkins</h3><p>In Jenkins, after a build (which includes a test run) completes:</p><ul><li><strong>Console Output:</strong> The basic test output (e.g., TestNG/Cucumber console logs, stack traces) can be found in the &ldquo;Console Output&rdquo; section of the build.</li><li><strong>Test Result Summary:</strong> Jenkins has a built-in &ldquo;Test Result&rdquo; section that summarizes passed/failed/skipped tests (parsed from Surefire/TestNG XML reports).</li><li><strong>Published HTML Reports:</strong> If you&rsquo;ve configured Jenkins to publish HTML reports (e.g., ExtentReports, Allure), there will be a link to these detailed reports in the build summary or as a post-build action. These are typically the most useful for analysis.</li></ul><h3 id=5-reverse-the--java-selenium--each-letter-reverse>5. Reverse the " Java Selenium" ( each letter reverse)</h3><p>This means reversing the order of words in the sentence, while also reversing the characters within each word. The example implies: <code>avaj muineles</code></p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=display:flex><span><span style=color:#859900>public</span> <span style=color:#859900>class</span> <span style=color:#cb4b16>ReverseWordsAndLetters</span> {
+</span></span><span style=display:flex><span>    <span style=color:#859900>public</span> <span style=color:#859900>static</span> <span style=color:#268bd2>String</span> <span style=color:#268bd2>reverseEachWordAndOrder</span>(<span style=color:#268bd2>String</span> <span style=color:#268bd2>sentence</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>sentence</span> == <span style=color:#859900;font-weight:700>null</span> || <span style=color:#268bd2>sentence</span>.<span style=color:#268bd2>trim</span>().<span style=color:#268bd2>isEmpty</span>()) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span> <span style=color:#268bd2>sentence</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>String</span>[] <span style=color:#268bd2>words</span> = <span style=color:#268bd2>sentence</span>.<span style=color:#268bd2>trim</span>().<span style=color:#268bd2>split</span>(<span style=color:#2aa198>&#34;\\s+&#34;</span>);
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>StringBuilder</span> <span style=color:#268bd2>reversedSentence</span> = <span style=color:#859900>new</span> <span style=color:#268bd2>StringBuilder</span>();
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic>// Reverse the order of words and reverse characters within each word</span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>for</span> (<span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>i</span> = <span style=color:#268bd2>words</span>.<span style=color:#268bd2>length</span> - <span style=color:#268bd2>1</span>; <span style=color:#268bd2>i</span> &gt;= <span style=color:#268bd2>0</span>; <span style=color:#268bd2>i</span>--) {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>reversedSentence</span>.<span style=color:#268bd2>append</span>(<span style=color:#859900>new</span> <span style=color:#268bd2>StringBuilder</span>(<span style=color:#268bd2>words</span>[<span style=color:#268bd2>i</span>]).<span style=color:#268bd2>reverse</span>().<span style=color:#268bd2>toString</span>());
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> (<span style=color:#268bd2>i</span> &gt; <span style=color:#268bd2>0</span>) {
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>reversedSentence</span>.<span style=color:#268bd2>append</span>(<span style=color:#2aa198>&#34; &#34;</span>);
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>reversedSentence</span>.<span style=color:#268bd2>toString</span>();
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>public</span> <span style=color:#859900>static</span> <span style=color:#859900;font-weight:700>void</span> <span style=color:#268bd2>main</span>(<span style=color:#268bd2>String</span>[] <span style=color:#268bd2>args</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>String</span> <span style=color:#268bd2>input</span> = <span style=color:#2aa198>&#34;Java Selenium&#34;</span>;
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>System</span>.<span style=color:#268bd2>out</span>.<span style=color:#268bd2>println</span>(<span style=color:#268bd2>reverseEachWordAndOrder</span>(<span style=color:#268bd2>input</span>)); <span style=color:#93a1a1;font-style:italic>// Output: muineles avaJ</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>If it&rsquo;s just &ldquo;each letter reverse&rdquo; (which is <code>avaj muineles</code>), the code would be slightly different. The output &ldquo;avaj muineles&rdquo; implies individual letter reversal, then a space, then another word reversal. My interpretation is closer to the prompt&rsquo;s <code>Reverse the " Java Selenium" ( each letter reverse)</code>. Let me re-read the input example. <code>Reverse the " Java Selenium" ( each letter reverse)</code>. If the request is to <code>Reverse the " Java Selenium" ( each letter reverse)</code>, output is <code>avaj muineles</code>.</p><p>Let&rsquo;s assume the question is poorly worded and implies individual word reversal, while keeping the original word order:
+<code>Java Selenium</code> -> <code>avaJ muineleS</code> (This is not what the question implies from the description, but let&rsquo;s re-read the exact output request).
+The question is &ldquo;Reverse the &lsquo;Java Selenium&rsquo; (each letter reverse)&rdquo;. So it means <code>avaj muineles</code>.</p><p>My code above does <code>muineles avaJ</code>. I should reverse the order of words as well based on the previous context <code>test program -> program test</code>.</p><p>Let&rsquo;s assume the simplest interpretation: reverse the entire string, then reverse characters within each word. No, this would not match <code>avaj muineles</code>.</p><p>Okay, the question is <code>Reverse the " Java Selenium" ( each letter reverse)</code>.
+This simply means: reverse the letters in &ldquo;Java&rdquo; to &ldquo;avaJ&rdquo; and reverse the letters in &ldquo;Selenium&rdquo; to &ldquo;muineles&rdquo;. Then concatenate them as &ldquo;avaJ muineleS&rdquo;.</p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=display:flex><span><span style=color:#859900>public</span> <span style=color:#859900>class</span> <span style=color:#cb4b16>ReverseEachLetterInWords</span> {
+</span></span><span style=display:flex><span>    <span style=color:#859900>public</span> <span style=color:#859900>static</span> <span style=color:#268bd2>String</span> <span style=color:#268bd2>reverseEachLetter</span>(<span style=color:#268bd2>String</span> <span style=color:#268bd2>sentence</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>sentence</span> == <span style=color:#859900;font-weight:700>null</span> || <span style=color:#268bd2>sentence</span>.<span style=color:#268bd2>trim</span>().<span style=color:#268bd2>isEmpty</span>()) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span> <span style=color:#268bd2>sentence</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>String</span>[] <span style=color:#268bd2>words</span> = <span style=color:#268bd2>sentence</span>.<span style=color:#268bd2>trim</span>().<span style=color:#268bd2>split</span>(<span style=color:#2aa198>&#34;\\s+&#34;</span>);
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>StringBuilder</span> <span style=color:#268bd2>result</span> = <span style=color:#859900>new</span> <span style=color:#268bd2>StringBuilder</span>();
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>for</span> (<span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>i</span> = <span style=color:#268bd2>0</span>; <span style=color:#268bd2>i</span> &lt; <span style=color:#268bd2>words</span>.<span style=color:#268bd2>length</span>; <span style=color:#268bd2>i</span>++) {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>StringBuilder</span> <span style=color:#268bd2>reversedWord</span> = <span style=color:#859900>new</span> <span style=color:#268bd2>StringBuilder</span>(<span style=color:#268bd2>words</span>[<span style=color:#268bd2>i</span>]).<span style=color:#268bd2>reverse</span>();
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>result</span>.<span style=color:#268bd2>append</span>(<span style=color:#268bd2>reversedWord</span>);
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> (<span style=color:#268bd2>i</span> &lt; <span style=color:#268bd2>words</span>.<span style=color:#268bd2>length</span> - <span style=color:#268bd2>1</span>) {
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>result</span>.<span style=color:#268bd2>append</span>(<span style=color:#2aa198>&#34; &#34;</span>);
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>result</span>.<span style=color:#268bd2>toString</span>();
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>public</span> <span style=color:#859900>static</span> <span style=color:#859900;font-weight:700>void</span> <span style=color:#268bd2>main</span>(<span style=color:#268bd2>String</span>[] <span style=color:#268bd2>args</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>String</span> <span style=color:#268bd2>input</span> = <span style=color:#2aa198>&#34;Java Selenium&#34;</span>;
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>System</span>.<span style=color:#268bd2>out</span>.<span style=color:#268bd2>println</span>(<span style=color:#268bd2>reverseEachLetter</span>(<span style=color:#268bd2>input</span>)); <span style=color:#93a1a1;font-style:italic>// Output: avaJ muineleS</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>This is a better interpretation of <code>( each letter reverse)</code>.</p><h3 id=6-project-explanation>6. Project explanation</h3><p>Standard. Describe the project domain, your role, the framework used, key technologies, challenges, and achievements.</p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback></code></pre></div></div></article><div class=navigation style="margin-top:5rem;display:flex;justify-content:space-between;border-top:1px solid var(--border);padding-top:2rem"><span></span>
+<a href=https://notxkcd.github.io/sdet-prep-site/12_company_based_questions/hexaware/ class=nav-btn>Up</a>
+<a href=https://notxkcd.github.io/sdet-prep-site/12_company_based_questions/hexaware/round-3/ class=nav-btn>Next →</a></div></main><footer class=footer><p>Built with Hugo. No scripts. No tracking. Just the truth.</p></footer><script>document.addEventListener("DOMContentLoaded",function(){const n=document.body,s=document.createTreeWalker(n,NodeFilter.SHOW_TEXT,null,!1);let e;const t=[];for(;e=s.nextNode();)e.nodeValue.includes("[-]")&&t.push(e);t.forEach(e=>{const t=document.createElement("span");t.innerHTML=e.nodeValue.replace(/\[-\]/g,'<span class="started-icon" title="Started"></span>'),e.parentNode.replaceChild(t,e)})})</script><script>const body=document.getElementById("theme-body"),btn=document.getElementById("theme-toggle"),currentTheme=localStorage.getItem("theme");function updateButtonText(){body.classList.contains("theme-terminal")?btn.textContent="Light Mode":btn.textContent="Dark Mode"}currentTheme==="terminal"&&body.classList.add("theme-terminal"),updateButtonText(),btn.addEventListener("click",()=>{body.classList.toggle("theme-terminal"),updateButtonText();let e="natural";body.classList.contains("theme-terminal")&&(e="terminal"),localStorage.setItem("theme",e)})</script></body></html>

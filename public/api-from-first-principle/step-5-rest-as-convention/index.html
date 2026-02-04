@@ -1,205 +1,41 @@
-<!DOCTYPE html>
-<html lang="en-us">
-<head><script src="/sdet-prep-site/livereload.js?mindelay=10&amp;v=2&amp;port=41691&amp;path=sdet-prep-site/livereload" data-no-instant defer></script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Step 5: REST as Convention | SDET Interview Preparation Kit</title>
-    <link rel="stylesheet" href="http://localhost:41691/sdet-prep-site/css/style.css">
-    <link rel="stylesheet" href="http://localhost:41691/sdet-prep-site/css/terminal.css">
-    
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
-    
-    
-    <link rel="stylesheet" href="http://localhost:41691/sdet-prep-site/lib/katex/katex.min.css">
-    <script defer src="http://localhost:41691/sdet-prep-site/lib/katex/katex.min.js"></script>
-    <script defer src="http://localhost:41691/sdet-prep-site/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            renderMathInElement(document.body, {
-                delimiters: [
-                    {left: "$$", right: "$$", display: true},
-                    {left: "$", right: "$", display: false}
-                ]
-            });
-        });
-    </script>
-</head>
-<body id="theme-body">
-    <button id="theme-toggle">Switch Theme</button>
-    <header>
-        <nav>
-            <ul>
-                <li><a href="http://localhost:41691/sdet-prep-site/">Index</a></li>
-                
-            </ul>
-        </nav>
-        <div class="site-breadcrumb">
-            <a href="http://localhost:41691/sdet-prep-site/">Home</a>
-            
-                
-                    <span>/</span> <a href="http://localhost:41691/sdet-prep-site/">SDET Interview Dashboard</a>
-                
-            
-                
-                    <span>/</span> <a href="http://localhost:41691/sdet-prep-site/api-from-first-principle/">API from First Principles</a>
-                
-            
-            
-                <span>/</span> Step 5: REST as Convention
-            
-        </div>
-    </header>
-
-    <main>
-        
-<article>
-    
-    <h1>Step 5: REST as Convention</h1>
-    <div class="content-body" style="margin-top: 2rem;">
-        <h2 id="1-what-problem-this-step-solves">1. What problem this step solves</h2>
-<p>In Step 4, we used a path like <code>/add?a=5&amp;b=10</code>. While this works, as an API grows to hundreds of features (users, posts, comments, settings), it becomes a chaotic mess. If one developer uses <code>/getUser</code>, another uses <code>/fetch_person</code>, and another uses <code>/person/1</code>, the API becomes impossible to learn. <strong>REST</strong> (REpresentational State Transfer) is a set of &ldquo;best practice&rdquo; rules to keep things organized.</p>
-<h2 id="2-concepts-introduced-in-this-step">2. Concepts introduced in this step</h2>
-<ul>
-<li><strong>Resources:</strong> The &ldquo;nouns&rdquo; of your system (Users, Books, Orders).</li>
-<li><strong>Verbs (CRUD):</strong>
-<ul>
-<li><code>GET</code> = Read</li>
-<li><code>POST</code> = Create</li>
-<li><code>PUT/PATCH</code> = Update</li>
-<li><code>DELETE</code> = Delete</li>
-</ul>
-</li>
-<li><strong>Statelessness:</strong> The server doesn&rsquo;t &ldquo;remember&rdquo; previous requests. Every request must contain all the information needed to fulfill it.</li>
-</ul>
-<h2 id="3-why-these-concepts-exist-why-focused">3. Why these concepts exist (WHY-focused)</h2>
-<p>REST makes APIs predictable. If you know an API follows REST, you can guess the URLs without looking at the documentation.</p>
-<ul>
-<li>You want to see user 5? It&rsquo;s probably <code>GET /users/5</code>.</li>
-<li>You want to delete user 5? It&rsquo;s probably <code>DELETE /users/5</code>.</li>
-</ul>
-<p><strong>Statelessness</strong> exists for scale. If a server has to &ldquo;remember&rdquo; that you are logged in using its internal memory, and that server crashes, you are kicked out. If the request itself contains the &ldquo;proof&rdquo; of who you are (like a token), any server in a cluster can handle your request.</p>
-<h2 id="4-common-confusions--doubts-explicit-qa">4. Common confusions &amp; doubts (explicit Q&amp;A)</h2>
-<p><strong>Q: Is REST a library I download?</strong><br>
-A: No. REST is an architectural style. It&rsquo;s just a set of &ldquo;rules for humans&rdquo; on how to name their URLs and use HTTP methods.</p>
-<p><strong>Q: Do I <em>have</em> to use REST?</strong><br>
-A: No. You can name your URLs whatever you want. But if you don&rsquo;t follow conventions, other developers will find your API very difficult to use.</p>
-<p><strong>Q: What is a &ldquo;Resource&rdquo;?</strong><br>
-A: Think of it as an object. A &ldquo;User&rdquo; is a resource. A &ldquo;Product&rdquo; is a resource. You perform actions on these resources using HTTP verbs.</p>
-<h2 id="5-ascii-diagrams">5. ASCII diagrams</h2>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>THE RESTFUL NAMING CONVENTION:
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>Action          HTTP Verb   Path            Description
-</span></span><span style="display:flex;"><span>------          ---------   ----            -----------
-</span></span><span style="display:flex;"><span>List All        GET         /books          Get a list of all books
-</span></span><span style="display:flex;"><span>Get One         GET         /books/12       Get details for book #12
-</span></span><span style="display:flex;"><span>Create          POST        /books          Add a new book
-</span></span><span style="display:flex;"><span>Update          PUT         /books/12       Replace book #12
-</span></span><span style="display:flex;"><span>Delete          DELETE      /books/12       Remove book #12
-</span></span></code></pre></div><h2 id="6-full-working-python-code">6. Full working Python code</h2>
-<p><em>We will update our server logic to handle &ldquo;Restful&rdquo; paths.</em></p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># Logic-only snippet (Assume this is inside our TCP/HTTP loop)</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#859900">def</span> <span style="color:#268bd2">handle_rest_request</span>(<span style="color:#268bd2">method</span>, <span style="color:#268bd2">path</span>):
-</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">parts</span> = <span style="color:#268bd2">path</span>.<span style="color:#268bd2">strip</span>(<span style="color:#2aa198">&#34;/&#34;</span>).<span style="color:#268bd2">split</span>(<span style="color:#2aa198">&#34;/&#34;</span>)
-</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">resource</span> = <span style="color:#268bd2">parts</span>[<span style="color:#2aa198;font-weight:bold">0</span>] <span style="color:#93a1a1;font-style:italic"># e.g., &#34;books&#34;</span>
-</span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#268bd2">resource</span> == <span style="color:#2aa198">&#34;books&#34;</span>:
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">method</span> == <span style="color:#2aa198">&#34;GET&#34;</span>:
-</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">parts</span>) == <span style="color:#2aa198;font-weight:bold">1</span>:
-</span></span><span style="display:flex;"><span>                <span style="color:#859900">return</span> <span style="color:#2aa198">&#34;200 OK&#34;</span>, <span style="color:#2aa198">&#34;Listing all books...&#34;</span>
-</span></span><span style="display:flex;"><span>            <span style="color:#859900">else</span>:
-</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">book_id</span> = <span style="color:#268bd2">parts</span>[<span style="color:#2aa198;font-weight:bold">1</span>]
-</span></span><span style="display:flex;"><span>                <span style="color:#859900">return</span> <span style="color:#2aa198">&#34;200 OK&#34;</span>, <span style="color:#2aa198">f</span><span style="color:#2aa198">&#34;Showing details for book </span><span style="color:#2aa198">{</span><span style="color:#268bd2">book_id</span><span style="color:#2aa198">}</span><span style="color:#2aa198">&#34;</span>
-</span></span><span style="display:flex;"><span>        
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">method</span> == <span style="color:#2aa198">&#34;POST&#34;</span>:
-</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#2aa198">&#34;201 Created&#34;</span>, <span style="color:#2aa198">&#34;Book created successfully&#34;</span>
-</span></span><span style="display:flex;"><span>            
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">method</span> == <span style="color:#2aa198">&#34;DELETE&#34;</span>:
-</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">book_id</span> = <span style="color:#268bd2">parts</span>[<span style="color:#2aa198;font-weight:bold">1</span>]
-</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#2aa198">&#34;200 OK&#34;</span>, <span style="color:#2aa198">f</span><span style="color:#2aa198">&#34;Book </span><span style="color:#2aa198">{</span><span style="color:#268bd2">book_id</span><span style="color:#2aa198">}</span><span style="color:#2aa198"> deleted&#34;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#2aa198">&#34;404 Not Found&#34;</span>, <span style="color:#2aa198">&#34;Resource not found&#34;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># Example usage:</span>
-</span></span><span style="display:flex;"><span><span style="color:#cb4b16">print</span>(<span style="color:#268bd2">handle_rest_request</span>(<span style="color:#2aa198">&#34;GET&#34;</span>, <span style="color:#2aa198">&#34;/books/42&#34;</span>))
-</span></span><span style="display:flex;"><span><span style="color:#cb4b16">print</span>(<span style="color:#268bd2">handle_rest_request</span>(<span style="color:#2aa198">&#34;DELETE&#34;</span>, <span style="color:#2aa198">&#34;/books/101&#34;</span>))
-</span></span></code></pre></div><h2 id="7-how-this-connects-to-the-next-step">7. How this connects to the next step</h2>
-<p>We have a great naming system (REST), but we are still sending plain text like &ldquo;The sum is 30&rdquo; or &ldquo;Book created.&rdquo; Programs struggle to parse sentences. They prefer structured data. In <strong>Step 6</strong>, we will introduce <strong>JSON</strong>, the &ldquo;language of data&rdquo; for modern APIs.</p>
-
-    </div>
-</article>
-
-<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
-    
-    <a href="http://localhost:41691/sdet-prep-site/api-from-first-principle/step-6-json-and-schemas/" class="nav-btn">← Previous</a>
-    
-    
-    <a href="http://localhost:41691/sdet-prep-site/api-from-first-principle/" class="nav-btn">Up</a>
-
-    
-    <a href="http://localhost:41691/sdet-prep-site/api-from-first-principle/step-4-http-as-a-text-protocol/" class="nav-btn">Next →</a>
-    
-</div>
-
-    </main>
-
-    <footer class="footer">
-        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
-    </footer>
-
-    <script>
-        
-        document.addEventListener("DOMContentLoaded", function() {
-            const content = document.body;
-            
-            const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT, null, false);
-            let node;
-            const nodesToReplace = [];
-            while(node = walker.nextNode()) {
-                if (node.nodeValue.includes("[-]")) nodesToReplace.push(node);
-            }
-            nodesToReplace.forEach(textNode => {
-                const span = document.createElement('span');
-                span.innerHTML = textNode.nodeValue.replace(/\[-\]/g, '<span class="started-icon" title="Started"></span>');
-                textNode.parentNode.replaceChild(span, textNode);
-            });
-        });
-    </script>
-
-    <script>
-        const body = document.getElementById('theme-body');
-        const btn = document.getElementById('theme-toggle');
-        const currentTheme = localStorage.getItem('theme');
-
-        
-        function updateButtonText() {
-            if (body.classList.contains('theme-terminal')) {
-                btn.textContent = "Light Mode";
-            } else {
-                btn.textContent = "Dark Mode";
-            }
-        }
-
-        if (currentTheme === 'terminal') {
-            body.classList.add('theme-terminal');
-        }
-        
-        
-        updateButtonText();
-
-        btn.addEventListener('click', () => {
-            body.classList.toggle('theme-terminal');
-            updateButtonText();
-            
-            let theme = 'natural';
-            if (body.classList.contains('theme-terminal')) {
-                theme = 'terminal';
-            }
-            localStorage.setItem('theme', theme);
-        });
-    </script>
-</body>
-</html>
+<!doctype html><html lang=en-us><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Step 5: REST as Convention | SDET Interview Preparation Kit</title><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/css/style.css><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/css/terminal.css><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel=stylesheet><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/lib/katex/katex.min.css><script defer src=https://notxkcd.github.io/sdet-prep-site/lib/katex/katex.min.js></script><script defer src=https://notxkcd.github.io/sdet-prep-site/lib/katex/contrib/auto-render.min.js onload=renderMathInElement(document.body)></script><script>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1}]})})</script></head><body id=theme-body><button id=theme-toggle>Switch Theme</button><header><nav><ul><li><a href=https://notxkcd.github.io/sdet-prep-site/>Index</a></li></ul></nav><div class=site-breadcrumb><a href=https://notxkcd.github.io/sdet-prep-site/>Home</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/>SDET Interview Dashboard</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/api-from-first-principle/>API from First Principles</a>
+<span>/</span> Step 5: REST as Convention</div></header><main><article><h1>Step 5: REST as Convention</h1><div class=content-body style=margin-top:2rem><h2 id=1-what-problem-this-step-solves>1. What problem this step solves</h2><p>In Step 4, we used a path like <code>/add?a=5&amp;b=10</code>. While this works, as an API grows to hundreds of features (users, posts, comments, settings), it becomes a chaotic mess. If one developer uses <code>/getUser</code>, another uses <code>/fetch_person</code>, and another uses <code>/person/1</code>, the API becomes impossible to learn. <strong>REST</strong> (REpresentational State Transfer) is a set of &ldquo;best practice&rdquo; rules to keep things organized.</p><h2 id=2-concepts-introduced-in-this-step>2. Concepts introduced in this step</h2><ul><li><strong>Resources:</strong> The &ldquo;nouns&rdquo; of your system (Users, Books, Orders).</li><li><strong>Verbs (CRUD):</strong><ul><li><code>GET</code> = Read</li><li><code>POST</code> = Create</li><li><code>PUT/PATCH</code> = Update</li><li><code>DELETE</code> = Delete</li></ul></li><li><strong>Statelessness:</strong> The server doesn&rsquo;t &ldquo;remember&rdquo; previous requests. Every request must contain all the information needed to fulfill it.</li></ul><h2 id=3-why-these-concepts-exist-why-focused>3. Why these concepts exist (WHY-focused)</h2><p>REST makes APIs predictable. If you know an API follows REST, you can guess the URLs without looking at the documentation.</p><ul><li>You want to see user 5? It&rsquo;s probably <code>GET /users/5</code>.</li><li>You want to delete user 5? It&rsquo;s probably <code>DELETE /users/5</code>.</li></ul><p><strong>Statelessness</strong> exists for scale. If a server has to &ldquo;remember&rdquo; that you are logged in using its internal memory, and that server crashes, you are kicked out. If the request itself contains the &ldquo;proof&rdquo; of who you are (like a token), any server in a cluster can handle your request.</p><h2 id=4-common-confusions--doubts-explicit-qa>4. Common confusions & doubts (explicit Q&amp;A)</h2><p><strong>Q: Is REST a library I download?</strong><br>A: No. REST is an architectural style. It&rsquo;s just a set of &ldquo;rules for humans&rdquo; on how to name their URLs and use HTTP methods.</p><p><strong>Q: Do I <em>have</em> to use REST?</strong><br>A: No. You can name your URLs whatever you want. But if you don&rsquo;t follow conventions, other developers will find your API very difficult to use.</p><p><strong>Q: What is a &ldquo;Resource&rdquo;?</strong><br>A: Think of it as an object. A &ldquo;User&rdquo; is a resource. A &ldquo;Product&rdquo; is a resource. You perform actions on these resources using HTTP verbs.</p><h2 id=5-ascii-diagrams>5. ASCII diagrams</h2><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-text data-lang=text><span style=display:flex><span>THE RESTFUL NAMING CONVENTION:
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>Action          HTTP Verb   Path            Description
+</span></span><span style=display:flex><span>------          ---------   ----            -----------
+</span></span><span style=display:flex><span>List All        GET         /books          Get a list of all books
+</span></span><span style=display:flex><span>Get One         GET         /books/12       Get details for book #12
+</span></span><span style=display:flex><span>Create          POST        /books          Add a new book
+</span></span><span style=display:flex><span>Update          PUT         /books/12       Replace book #12
+</span></span><span style=display:flex><span>Delete          DELETE      /books/12       Remove book #12
+</span></span></code></pre></div><h2 id=6-full-working-python-code>6. Full working Python code</h2><p><em>We will update our server logic to handle &ldquo;Restful&rdquo; paths.</em></p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># Logic-only snippet (Assume this is inside our TCP/HTTP loop)</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>def</span> <span style=color:#268bd2>handle_rest_request</span>(<span style=color:#268bd2>method</span>, <span style=color:#268bd2>path</span>):
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>parts</span> = <span style=color:#268bd2>path</span>.<span style=color:#268bd2>strip</span>(<span style=color:#2aa198>&#34;/&#34;</span>).<span style=color:#268bd2>split</span>(<span style=color:#2aa198>&#34;/&#34;</span>)
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>resource</span> = <span style=color:#268bd2>parts</span>[<span style=color:#2aa198;font-weight:700>0</span>] <span style=color:#93a1a1;font-style:italic># e.g., &#34;books&#34;</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> <span style=color:#268bd2>resource</span> == <span style=color:#2aa198>&#34;books&#34;</span>:
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> <span style=color:#268bd2>method</span> == <span style=color:#2aa198>&#34;GET&#34;</span>:
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> <span style=color:#cb4b16>len</span>(<span style=color:#268bd2>parts</span>) == <span style=color:#2aa198;font-weight:700>1</span>:
+</span></span><span style=display:flex><span>                <span style=color:#859900>return</span> <span style=color:#2aa198>&#34;200 OK&#34;</span>, <span style=color:#2aa198>&#34;Listing all books...&#34;</span>
+</span></span><span style=display:flex><span>            <span style=color:#859900>else</span>:
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>book_id</span> = <span style=color:#268bd2>parts</span>[<span style=color:#2aa198;font-weight:700>1</span>]
+</span></span><span style=display:flex><span>                <span style=color:#859900>return</span> <span style=color:#2aa198>&#34;200 OK&#34;</span>, <span style=color:#2aa198>f</span><span style=color:#2aa198>&#34;Showing details for book </span><span style=color:#2aa198>{</span><span style=color:#268bd2>book_id</span><span style=color:#2aa198>}</span><span style=color:#2aa198>&#34;</span>
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> <span style=color:#268bd2>method</span> == <span style=color:#2aa198>&#34;POST&#34;</span>:
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span> <span style=color:#2aa198>&#34;201 Created&#34;</span>, <span style=color:#2aa198>&#34;Book created successfully&#34;</span>
+</span></span><span style=display:flex><span>            
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> <span style=color:#268bd2>method</span> == <span style=color:#2aa198>&#34;DELETE&#34;</span>:
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>book_id</span> = <span style=color:#268bd2>parts</span>[<span style=color:#2aa198;font-weight:700>1</span>]
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span> <span style=color:#2aa198>&#34;200 OK&#34;</span>, <span style=color:#2aa198>f</span><span style=color:#2aa198>&#34;Book </span><span style=color:#2aa198>{</span><span style=color:#268bd2>book_id</span><span style=color:#2aa198>}</span><span style=color:#2aa198> deleted&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#2aa198>&#34;404 Not Found&#34;</span>, <span style=color:#2aa198>&#34;Resource not found&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># Example usage:</span>
+</span></span><span style=display:flex><span><span style=color:#cb4b16>print</span>(<span style=color:#268bd2>handle_rest_request</span>(<span style=color:#2aa198>&#34;GET&#34;</span>, <span style=color:#2aa198>&#34;/books/42&#34;</span>))
+</span></span><span style=display:flex><span><span style=color:#cb4b16>print</span>(<span style=color:#268bd2>handle_rest_request</span>(<span style=color:#2aa198>&#34;DELETE&#34;</span>, <span style=color:#2aa198>&#34;/books/101&#34;</span>))
+</span></span></code></pre></div><h2 id=7-how-this-connects-to-the-next-step>7. How this connects to the next step</h2><p>We have a great naming system (REST), but we are still sending plain text like &ldquo;The sum is 30&rdquo; or &ldquo;Book created.&rdquo; Programs struggle to parse sentences. They prefer structured data. In <strong>Step 6</strong>, we will introduce <strong>JSON</strong>, the &ldquo;language of data&rdquo; for modern APIs.</p></div></article><div class=navigation style="margin-top:5rem;display:flex;justify-content:space-between;border-top:1px solid var(--border);padding-top:2rem"><a href=https://notxkcd.github.io/sdet-prep-site/api-from-first-principle/step-6-json-and-schemas/ class=nav-btn>← Previous</a>
+<a href=https://notxkcd.github.io/sdet-prep-site/api-from-first-principle/ class=nav-btn>Up</a>
+<a href=https://notxkcd.github.io/sdet-prep-site/api-from-first-principle/step-4-http-as-a-text-protocol/ class=nav-btn>Next →</a></div></main><footer class=footer><p>Built with Hugo. No scripts. No tracking. Just the truth.</p></footer><script>document.addEventListener("DOMContentLoaded",function(){const n=document.body,s=document.createTreeWalker(n,NodeFilter.SHOW_TEXT,null,!1);let e;const t=[];for(;e=s.nextNode();)e.nodeValue.includes("[-]")&&t.push(e);t.forEach(e=>{const t=document.createElement("span");t.innerHTML=e.nodeValue.replace(/\[-\]/g,'<span class="started-icon" title="Started"></span>'),e.parentNode.replaceChild(t,e)})})</script><script>const body=document.getElementById("theme-body"),btn=document.getElementById("theme-toggle"),currentTheme=localStorage.getItem("theme");function updateButtonText(){body.classList.contains("theme-terminal")?btn.textContent="Light Mode":btn.textContent="Dark Mode"}currentTheme==="terminal"&&body.classList.add("theme-terminal"),updateButtonText(),btn.addEventListener("click",()=>{body.classList.toggle("theme-terminal"),updateButtonText();let e="natural";body.classList.contains("theme-terminal")&&(e="terminal"),localStorage.setItem("theme",e)})</script></body></html>

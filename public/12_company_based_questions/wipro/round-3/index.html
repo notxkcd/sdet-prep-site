@@ -1,247 +1,61 @@
-<!DOCTYPE html>
-<html lang="en-us">
-<head><script src="/sdet-prep-site/livereload.js?mindelay=10&amp;v=2&amp;port=41691&amp;path=sdet-prep-site/livereload" data-no-instant defer></script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wipro-3 | SDET Interview Preparation Kit</title>
-    <link rel="stylesheet" href="http://localhost:41691/sdet-prep-site/css/style.css">
-    <link rel="stylesheet" href="http://localhost:41691/sdet-prep-site/css/terminal.css">
-    
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
-    
-    
-    <link rel="stylesheet" href="http://localhost:41691/sdet-prep-site/lib/katex/katex.min.css">
-    <script defer src="http://localhost:41691/sdet-prep-site/lib/katex/katex.min.js"></script>
-    <script defer src="http://localhost:41691/sdet-prep-site/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            renderMathInElement(document.body, {
-                delimiters: [
-                    {left: "$$", right: "$$", display: true},
-                    {left: "$", right: "$", display: false}
-                ]
-            });
-        });
-    </script>
-</head>
-<body id="theme-body">
-    <button id="theme-toggle">Switch Theme</button>
-    <header>
-        <nav>
-            <ul>
-                <li><a href="http://localhost:41691/sdet-prep-site/">Index</a></li>
-                
-            </ul>
-        </nav>
-        <div class="site-breadcrumb">
-            <a href="http://localhost:41691/sdet-prep-site/">Home</a>
-            
-                
-                    <span>/</span> <a href="http://localhost:41691/sdet-prep-site/">SDET Interview Dashboard</a>
-                
-            
-                
-                    <span>/</span> <a href="http://localhost:41691/sdet-prep-site/12_company_based_questions/">Interview Questions</a>
-                
-            
-                
-                    <span>/</span> <a href="http://localhost:41691/sdet-prep-site/12_company_based_questions/wipro/">Wipro Interview Questions</a>
-                
-            
-            
-                <span>/</span> Wipro-3
-            
-        </div>
-    </header>
-
-    <main>
-        
-<article>
-    
-    <h1>Wipro-3</h1>
-    <div class="content-body" style="margin-top: 2rem;">
-        <hr>
-<h2 id="original-questions">Original Questions</h2>
-<h2 id="wipro-level-1">Wipro level 1</h2>
-<ol>
-<li>Write a program/explain me the concept on how to remove duplicate in a long list of integers</li>
-<li>How will you replace a letter from a string</li>
-<li>How to replace multiple letters from string using the same replace method</li>
-<li>How good are you in sql queries</li>
-<li>Say if we have 2 tables one in regression and other is in sdet and date is common in both the tables how you print all data excluding date (think and response with java perspective)</li>
-<li>How you handle the scenario(5th question) if there is multiple table and each has lakh of datas</li>
-<li>Difference between list and set</li>
-</ol>
-<hr>
-<h2 id="answers">Answers</h2>
-<h3 id="1-write-a-programexplain-me-the-concept-on-how-to-remove-duplicate-in-a-long-list-of-integers">1. Write a program/explain me the concept on how to remove duplicate in a long list of integers</h3>
-<p>The most efficient and idiomatic way in Java is to use a <code>Set</code>.</p>
-<ul>
-<li><strong>Concept:</strong> A <code>Set</code> (like <code>HashSet</code> or <code>LinkedHashSet</code>) by definition cannot contain duplicate elements. When you try to add an element that is already present, the <code>add()</code> method returns <code>false</code> and the set remains unchanged.</li>
-<li><strong>Program:</strong></li>
-</ul>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">java.util.ArrayList</span>;
-</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">java.util.Arrays</span>;
-</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">java.util.LinkedHashSet</span>;
-</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">java.util.List</span>;
-</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">java.util.Set</span>;
-</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">java.util.stream.Collectors</span>;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900">class</span> <span style="color:#cb4b16">DuplicateRemover</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#859900">static</span> <span style="color:#268bd2">List</span>&lt;<span style="color:#268bd2">Integer</span>&gt; <span style="color:#268bd2">removeDuplicates</span>(<span style="color:#268bd2">List</span>&lt;<span style="color:#268bd2">Integer</span>&gt; <span style="color:#268bd2">numbers</span>) {
-</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Use LinkedHashSet to preserve the insertion order</span>
-</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">Set</span>&lt;<span style="color:#268bd2">Integer</span>&gt; <span style="color:#268bd2">uniqueNumbers</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">LinkedHashSet</span>&lt;&gt;(<span style="color:#268bd2">numbers</span>);
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#859900">new</span> <span style="color:#268bd2">ArrayList</span>&lt;&gt;(<span style="color:#268bd2">uniqueNumbers</span>); <span style="color:#93a1a1;font-style:italic">// Convert back to a List if needed</span>
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#859900">static</span> <span style="color:#859900;font-weight:bold">int</span>[] <span style="color:#268bd2">removeDuplicatesFromArray</span>(<span style="color:#859900;font-weight:bold">int</span>[] <span style="color:#268bd2">numbers</span>) {
-</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Java 8 Stream API - very concise</span>
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">Arrays</span>.<span style="color:#268bd2">stream</span>(<span style="color:#268bd2">numbers</span>).<span style="color:#268bd2">distinct</span>().<span style="color:#268bd2">toArray</span>();
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#859900">static</span> <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">main</span>(<span style="color:#268bd2">String</span>[] <span style="color:#268bd2">args</span>) {
-</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">List</span>&lt;<span style="color:#268bd2">Integer</span>&gt; <span style="color:#268bd2">longList</span> = <span style="color:#268bd2">Arrays</span>.<span style="color:#268bd2">asList</span>(<span style="color:#268bd2">1</span>, <span style="color:#268bd2">2</span>, <span style="color:#268bd2">3</span>, <span style="color:#268bd2">2</span>, <span style="color:#268bd2">4</span>, <span style="color:#268bd2">1</span>, <span style="color:#268bd2">5</span>, <span style="color:#268bd2">3</span>, <span style="color:#268bd2">6</span>);
-</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>(<span style="color:#2aa198">&#34;Original List: &#34;</span> + <span style="color:#268bd2">longList</span>);
-</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>(<span style="color:#2aa198">&#34;List without duplicates: &#34;</span> + <span style="color:#268bd2">removeDuplicates</span>(<span style="color:#268bd2">longList</span>));
-</span></span><span style="display:flex;"><span>        
-</span></span><span style="display:flex;"><span>        <span style="color:#859900;font-weight:bold">int</span>[] <span style="color:#268bd2">longArray</span> = {<span style="color:#268bd2">1</span>, <span style="color:#268bd2">2</span>, <span style="color:#268bd2">3</span>, <span style="color:#268bd2">2</span>, <span style="color:#268bd2">4</span>, <span style="color:#268bd2">1</span>, <span style="color:#268bd2">5</span>, <span style="color:#268bd2">3</span>, <span style="color:#268bd2">6</span>};
-</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>(<span style="color:#2aa198">&#34;Original Array: &#34;</span> + <span style="color:#268bd2">Arrays</span>.<span style="color:#268bd2">toString</span>(<span style="color:#268bd2">longArray</span>));
-</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>(<span style="color:#2aa198">&#34;Array without duplicates: &#34;</span> + <span style="color:#268bd2">Arrays</span>.<span style="color:#268bd2">toString</span>(<span style="color:#268bd2">removeDuplicatesFromArray</span>(<span style="color:#268bd2">longArray</span>)));
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><h3 id="2-how-will-you-replace-a-letter-from-a-string">2. How will you replace a letter from a string</h3>
-<p>Use the <code>replace()</code> or <code>replaceFirst()</code> methods of the <code>String</code> class.</p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#268bd2">String</span> <span style="color:#268bd2">original</span> = <span style="color:#2aa198">&#34;hello world&#34;</span>;
-</span></span><span style="display:flex;"><span><span style="color:#268bd2">String</span> <span style="color:#268bd2">replaced</span> = <span style="color:#268bd2">original</span>.<span style="color:#268bd2">replace</span>(<span style="color:#2aa198">&#39;o&#39;</span>, <span style="color:#2aa198">&#39;x&#39;</span>); <span style="color:#93a1a1;font-style:italic">// replaces all &#39;o&#39;s</span>
-</span></span><span style="display:flex;"><span><span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>(<span style="color:#268bd2">replaced</span>); <span style="color:#93a1a1;font-style:italic">// hxllx wxrld</span>
-</span></span></code></pre></div><p>If you want to replace only the first occurrence:</p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#268bd2">String</span> <span style="color:#268bd2">replacedFirst</span> = <span style="color:#268bd2">original</span>.<span style="color:#268bd2">replaceFirst</span>(<span style="color:#2aa198">&#34;o&#34;</span>, <span style="color:#2aa198">&#34;x&#34;</span>); <span style="color:#93a1a1;font-style:italic">// Uses regex for first argument</span>
-</span></span><span style="display:flex;"><span><span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>(<span style="color:#268bd2">replacedFirst</span>); <span style="color:#93a1a1;font-style:italic">// hxllo world</span>
-</span></span></code></pre></div><h3 id="3-how-to-replace-multiple-letters-from-string-using-the-same-replace-method">3. How to replace multiple letters from string using the same replace method</h3>
-<p>The <code>replace(char oldChar, char newChar)</code> method replaces <em>all</em> occurrences of the <code>oldChar</code>.
-The <code>replaceAll(String regex, String replacement)</code> method allows you to use regular expressions to match multiple characters.</p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#268bd2">String</span> <span style="color:#268bd2">original</span> = <span style="color:#2aa198">&#34;apple banana&#34;</span>;
-</span></span><span style="display:flex;"><span><span style="color:#268bd2">String</span> <span style="color:#268bd2">replaced</span> = <span style="color:#268bd2">original</span>.<span style="color:#268bd2">replace</span>(<span style="color:#2aa198">&#39;a&#39;</span>, <span style="color:#2aa198">&#39;x&#39;</span>); <span style="color:#93a1a1;font-style:italic">// Replaces all &#39;a&#39;</span>
-</span></span><span style="display:flex;"><span><span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>(<span style="color:#268bd2">replaced</span>); <span style="color:#93a1a1;font-style:italic">// xpplx bxnxnx</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Using replaceAll with a regex to replace multiple specific characters</span>
-</span></span><span style="display:flex;"><span><span style="color:#268bd2">String</span> <span style="color:#268bd2">replacedMultiple</span> = <span style="color:#268bd2">original</span>.<span style="color:#268bd2">replaceAll</span>(<span style="color:#2aa198">&#34;[ae]&#34;</span>, <span style="color:#2aa198">&#34;X&#34;</span>); <span style="color:#93a1a1;font-style:italic">// Replaces &#39;a&#39; or &#39;e&#39;</span>
-</span></span><span style="display:flex;"><span><span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>(<span style="color:#268bd2">replacedMultiple</span>); <span style="color:#93a1a1;font-style:italic">// XpplX bXnXnX</span>
-</span></span></code></pre></div><h3 id="4-how-good-are-you-in-sql-queries">4. How good are you in sql queries</h3>
-<p>&ldquo;I would rate myself as proficient in SQL (a 7 out of 10). I&rsquo;m comfortable writing standard DML (Data Manipulation Language) queries (<code>SELECT</code>, <code>INSERT</code>, <code>UPDATE</code>, <code>DELETE</code>) with <code>JOIN</code>s, <code>WHERE</code> clauses, <code>GROUP BY</code>, and aggregate functions. In my test automation work, I frequently use JDBC to query the database for test data setup and verification, and I can analyze query plans to identify performance issues.&rdquo;</p>
-<h3 id="5-say-if-we-have-2-tables-one-in-regression-and-other-is-in-sdet-and-date-is-common-in-both-the-tables-how-you-print-all-data-excluding-date-think-and-response-with-java-perspective">5. Say if we have 2 tables one in regression and other is in sdet and date is common in both the tables how you print all data excluding date (think and response with java perspective)</h3>
-<p>This scenario is unclear. &ldquo;Regression&rdquo; and &ldquo;SDET&rdquo; are not table names. Assuming they mean two tables, <code>Table1</code> and <code>Table2</code>, both have a <code>date</code> column, and you want to join them and select all columns <em>except</em> the <code>date</code> column.</p>
-<p><strong>SQL Perspective:</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#859900">SELECT</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">T1</span>.<span style="color:#268bd2">col1</span>, <span style="color:#268bd2">T1</span>.<span style="color:#268bd2">col2</span>, <span style="color:#93a1a1;font-style:italic">-- all columns from Table1 except date
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">T2</span>.<span style="color:#268bd2">colX</span>, <span style="color:#268bd2">T2</span>.<span style="color:#268bd2">colY</span>  <span style="color:#93a1a1;font-style:italic">-- all columns from Table2 except date
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#859900">FROM</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">Table1</span> <span style="color:#268bd2">T1</span>
-</span></span><span style="display:flex;"><span><span style="color:#859900">INNER</span> <span style="color:#859900">JOIN</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">Table2</span> <span style="color:#268bd2">T2</span> <span style="color:#859900">ON</span> <span style="color:#268bd2">T1</span>.<span style="color:#268bd2">CommonKey</span> = <span style="color:#268bd2">T2</span>.<span style="color:#268bd2">CommonKey</span> <span style="color:#93a1a1;font-style:italic">-- Assuming a join condition
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#859900">WHERE</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">T1</span>.<span style="color:#268bd2">DateColumn</span> = <span style="color:#268bd2">T2</span>.<span style="color:#268bd2">DateColumn</span>; <span style="color:#93a1a1;font-style:italic">-- If date is the common column for joining
-</span></span></span></code></pre></div><p>If you mean &ldquo;select all columns except the date column from <em>one</em> table&rdquo;:</p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#859900">SELECT</span> <span style="color:#268bd2">col1</span>, <span style="color:#268bd2">col2</span>, <span style="color:#268bd2">col3</span> <span style="color:#93a1a1;font-style:italic">-- manually list all columns except date
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#859900">FROM</span> <span style="color:#268bd2">YourTable</span>;
-</span></span></code></pre></div><p>There&rsquo;s no <code>SELECT * EXCLUDE date</code> syntax in standard SQL. You have to explicitly list the columns.</p>
-<p><strong>Java Perspective (JDBC):</strong>
-&ldquo;From a Java perspective using JDBC, I would execute the appropriate SQL query (as above). After getting the <code>ResultSet</code>, I would iterate through it. For each row, I would use <code>resultSet.getString(&quot;columnName&quot;)</code> or <code>resultSet.getInt(&quot;columnName&quot;)</code> for each column I <em>want</em> to print, explicitly skipping the <code>date</code> column.&rdquo;</p>
-<h3 id="6-how-you-handle-the-scenario5th-question-if-there-is-multiple-table-and-each-has-lakh-of-datas">6. How you handle the scenario(5th question) if there is multiple table and each has lakh of datas</h3>
-<p>If dealing with multiple tables with millions of rows, performance is critical.</p>
-<ol>
-<li><strong>Optimize SQL Queries:</strong>
-<ul>
-<li><strong>Indexing:</strong> Ensure the columns used in <code>WHERE</code> clauses and <code>JOIN</code> conditions are indexed.</li>
-<li><strong>Filtering Early:</strong> Use <code>WHERE</code> clauses to filter rows as early as possible before <code>JOIN</code>ing large tables.</li>
-<li><strong>Select Only Needed Columns:</strong> Never use <code>SELECT *</code>. Explicitly select only the columns you need to reduce data transfer.</li>
-<li><strong>Limit Results:</strong> Use <code>LIMIT</code> or <code>TOP</code> to fetch only a subset of data for testing if possible.</li>
-</ul>
-</li>
-<li><strong>Database Connection Pooling:</strong> In Java, use connection pooling (<code>HikariCP</code>, <code>c3p0</code>) instead of opening/closing connections for each query.</li>
-<li><strong>Fetch Size:</strong> Set an appropriate <code>setFetchSize()</code> on the <code>Statement</code> or <code>PreparedStatement</code> to control how many rows are fetched from the database at once.</li>
-<li><strong>Java Memory:</strong> Be mindful of Java&rsquo;s heap memory when processing large result sets. Stream processing or batch processing might be necessary rather than loading everything into an <code>ArrayList</code> at once.</li>
-</ol>
-<h3 id="7-difference-between-list-and-set">7. Difference between list and set</h3>
-<ul>
-<li><strong><code>List</code>:</strong> An ordered collection of elements. Elements have an index. Allows duplicates. Implementations: <code>ArrayList</code>, <code>LinkedList</code>.</li>
-<li><strong><code>Set</code>:</strong> An unordered collection of unique elements. Does not allow duplicates. Implementations: <code>HashSet</code>, <code>LinkedHashSet</code>, <code>TreeSet</code>.</li>
-</ul>
-
-    </div>
-</article>
-
-<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
-    
-    <a href="http://localhost:41691/sdet-prep-site/12_company_based_questions/wipro/round-4/" class="nav-btn">← Previous</a>
-    
-    
-    <a href="http://localhost:41691/sdet-prep-site/12_company_based_questions/wipro/" class="nav-btn">Up</a>
-
-    
-    <a href="http://localhost:41691/sdet-prep-site/12_company_based_questions/wipro/round-2/" class="nav-btn">Next →</a>
-    
-</div>
-
-    </main>
-
-    <footer class="footer">
-        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
-    </footer>
-
-    <script>
-        
-        document.addEventListener("DOMContentLoaded", function() {
-            const content = document.body;
-            
-            const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT, null, false);
-            let node;
-            const nodesToReplace = [];
-            while(node = walker.nextNode()) {
-                if (node.nodeValue.includes("[-]")) nodesToReplace.push(node);
-            }
-            nodesToReplace.forEach(textNode => {
-                const span = document.createElement('span');
-                span.innerHTML = textNode.nodeValue.replace(/\[-\]/g, '<span class="started-icon" title="Started"></span>');
-                textNode.parentNode.replaceChild(span, textNode);
-            });
-        });
-    </script>
-
-    <script>
-        const body = document.getElementById('theme-body');
-        const btn = document.getElementById('theme-toggle');
-        const currentTheme = localStorage.getItem('theme');
-
-        
-        function updateButtonText() {
-            if (body.classList.contains('theme-terminal')) {
-                btn.textContent = "Light Mode";
-            } else {
-                btn.textContent = "Dark Mode";
-            }
-        }
-
-        if (currentTheme === 'terminal') {
-            body.classList.add('theme-terminal');
-        }
-        
-        
-        updateButtonText();
-
-        btn.addEventListener('click', () => {
-            body.classList.toggle('theme-terminal');
-            updateButtonText();
-            
-            let theme = 'natural';
-            if (body.classList.contains('theme-terminal')) {
-                theme = 'terminal';
-            }
-            localStorage.setItem('theme', theme);
-        });
-    </script>
-</body>
-</html>
+<!doctype html><html lang=en-us><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Wipro-3 | SDET Interview Preparation Kit</title><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/css/style.css><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/css/terminal.css><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel=stylesheet><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/lib/katex/katex.min.css><script defer src=https://notxkcd.github.io/sdet-prep-site/lib/katex/katex.min.js></script><script defer src=https://notxkcd.github.io/sdet-prep-site/lib/katex/contrib/auto-render.min.js onload=renderMathInElement(document.body)></script><script>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1}]})})</script></head><body id=theme-body><button id=theme-toggle>Switch Theme</button><header><nav><ul><li><a href=https://notxkcd.github.io/sdet-prep-site/>Index</a></li></ul></nav><div class=site-breadcrumb><a href=https://notxkcd.github.io/sdet-prep-site/>Home</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/>SDET Interview Dashboard</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/12_company_based_questions/>Interview Questions</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/12_company_based_questions/wipro/>Wipro Interview Questions</a>
+<span>/</span> Wipro-3</div></header><main><article><h1>Wipro-3</h1><div class=content-body style=margin-top:2rem><hr><h2 id=original-questions>Original Questions</h2><h2 id=wipro-level-1>Wipro level 1</h2><ol><li>Write a program/explain me the concept on how to remove duplicate in a long list of integers</li><li>How will you replace a letter from a string</li><li>How to replace multiple letters from string using the same replace method</li><li>How good are you in sql queries</li><li>Say if we have 2 tables one in regression and other is in sdet and date is common in both the tables how you print all data excluding date (think and response with java perspective)</li><li>How you handle the scenario(5th question) if there is multiple table and each has lakh of datas</li><li>Difference between list and set</li></ol><hr><h2 id=answers>Answers</h2><h3 id=1-write-a-programexplain-me-the-concept-on-how-to-remove-duplicate-in-a-long-list-of-integers>1. Write a program/explain me the concept on how to remove duplicate in a long list of integers</h3><p>The most efficient and idiomatic way in Java is to use a <code>Set</code>.</p><ul><li><strong>Concept:</strong> A <code>Set</code> (like <code>HashSet</code> or <code>LinkedHashSet</code>) by definition cannot contain duplicate elements. When you try to add an element that is already present, the <code>add()</code> method returns <code>false</code> and the set remains unchanged.</li><li><strong>Program:</strong></li></ul><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>java.util.ArrayList</span>;
+</span></span><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>java.util.Arrays</span>;
+</span></span><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>java.util.LinkedHashSet</span>;
+</span></span><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>java.util.List</span>;
+</span></span><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>java.util.Set</span>;
+</span></span><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>java.util.stream.Collectors</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>public</span> <span style=color:#859900>class</span> <span style=color:#cb4b16>DuplicateRemover</span> {
+</span></span><span style=display:flex><span>    <span style=color:#859900>public</span> <span style=color:#859900>static</span> <span style=color:#268bd2>List</span>&lt;<span style=color:#268bd2>Integer</span>&gt; <span style=color:#268bd2>removeDuplicates</span>(<span style=color:#268bd2>List</span>&lt;<span style=color:#268bd2>Integer</span>&gt; <span style=color:#268bd2>numbers</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic>// Use LinkedHashSet to preserve the insertion order</span>
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>Set</span>&lt;<span style=color:#268bd2>Integer</span>&gt; <span style=color:#268bd2>uniqueNumbers</span> = <span style=color:#859900>new</span> <span style=color:#268bd2>LinkedHashSet</span>&lt;&gt;(<span style=color:#268bd2>numbers</span>);
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#859900>new</span> <span style=color:#268bd2>ArrayList</span>&lt;&gt;(<span style=color:#268bd2>uniqueNumbers</span>); <span style=color:#93a1a1;font-style:italic>// Convert back to a List if needed</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>public</span> <span style=color:#859900>static</span> <span style=color:#859900;font-weight:700>int</span>[] <span style=color:#268bd2>removeDuplicatesFromArray</span>(<span style=color:#859900;font-weight:700>int</span>[] <span style=color:#268bd2>numbers</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic>// Java 8 Stream API - very concise</span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>Arrays</span>.<span style=color:#268bd2>stream</span>(<span style=color:#268bd2>numbers</span>).<span style=color:#268bd2>distinct</span>().<span style=color:#268bd2>toArray</span>();
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>public</span> <span style=color:#859900>static</span> <span style=color:#859900;font-weight:700>void</span> <span style=color:#268bd2>main</span>(<span style=color:#268bd2>String</span>[] <span style=color:#268bd2>args</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>List</span>&lt;<span style=color:#268bd2>Integer</span>&gt; <span style=color:#268bd2>longList</span> = <span style=color:#268bd2>Arrays</span>.<span style=color:#268bd2>asList</span>(<span style=color:#268bd2>1</span>, <span style=color:#268bd2>2</span>, <span style=color:#268bd2>3</span>, <span style=color:#268bd2>2</span>, <span style=color:#268bd2>4</span>, <span style=color:#268bd2>1</span>, <span style=color:#268bd2>5</span>, <span style=color:#268bd2>3</span>, <span style=color:#268bd2>6</span>);
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>System</span>.<span style=color:#268bd2>out</span>.<span style=color:#268bd2>println</span>(<span style=color:#2aa198>&#34;Original List: &#34;</span> + <span style=color:#268bd2>longList</span>);
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>System</span>.<span style=color:#268bd2>out</span>.<span style=color:#268bd2>println</span>(<span style=color:#2aa198>&#34;List without duplicates: &#34;</span> + <span style=color:#268bd2>removeDuplicates</span>(<span style=color:#268bd2>longList</span>));
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900;font-weight:700>int</span>[] <span style=color:#268bd2>longArray</span> = {<span style=color:#268bd2>1</span>, <span style=color:#268bd2>2</span>, <span style=color:#268bd2>3</span>, <span style=color:#268bd2>2</span>, <span style=color:#268bd2>4</span>, <span style=color:#268bd2>1</span>, <span style=color:#268bd2>5</span>, <span style=color:#268bd2>3</span>, <span style=color:#268bd2>6</span>};
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>System</span>.<span style=color:#268bd2>out</span>.<span style=color:#268bd2>println</span>(<span style=color:#2aa198>&#34;Original Array: &#34;</span> + <span style=color:#268bd2>Arrays</span>.<span style=color:#268bd2>toString</span>(<span style=color:#268bd2>longArray</span>));
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>System</span>.<span style=color:#268bd2>out</span>.<span style=color:#268bd2>println</span>(<span style=color:#2aa198>&#34;Array without duplicates: &#34;</span> + <span style=color:#268bd2>Arrays</span>.<span style=color:#268bd2>toString</span>(<span style=color:#268bd2>removeDuplicatesFromArray</span>(<span style=color:#268bd2>longArray</span>)));
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h3 id=2-how-will-you-replace-a-letter-from-a-string>2. How will you replace a letter from a string</h3><p>Use the <code>replace()</code> or <code>replaceFirst()</code> methods of the <code>String</code> class.</p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=display:flex><span><span style=color:#268bd2>String</span> <span style=color:#268bd2>original</span> = <span style=color:#2aa198>&#34;hello world&#34;</span>;
+</span></span><span style=display:flex><span><span style=color:#268bd2>String</span> <span style=color:#268bd2>replaced</span> = <span style=color:#268bd2>original</span>.<span style=color:#268bd2>replace</span>(<span style=color:#2aa198>&#39;o&#39;</span>, <span style=color:#2aa198>&#39;x&#39;</span>); <span style=color:#93a1a1;font-style:italic>// replaces all &#39;o&#39;s</span>
+</span></span><span style=display:flex><span><span style=color:#268bd2>System</span>.<span style=color:#268bd2>out</span>.<span style=color:#268bd2>println</span>(<span style=color:#268bd2>replaced</span>); <span style=color:#93a1a1;font-style:italic>// hxllx wxrld</span>
+</span></span></code></pre></div><p>If you want to replace only the first occurrence:</p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=display:flex><span><span style=color:#268bd2>String</span> <span style=color:#268bd2>replacedFirst</span> = <span style=color:#268bd2>original</span>.<span style=color:#268bd2>replaceFirst</span>(<span style=color:#2aa198>&#34;o&#34;</span>, <span style=color:#2aa198>&#34;x&#34;</span>); <span style=color:#93a1a1;font-style:italic>// Uses regex for first argument</span>
+</span></span><span style=display:flex><span><span style=color:#268bd2>System</span>.<span style=color:#268bd2>out</span>.<span style=color:#268bd2>println</span>(<span style=color:#268bd2>replacedFirst</span>); <span style=color:#93a1a1;font-style:italic>// hxllo world</span>
+</span></span></code></pre></div><h3 id=3-how-to-replace-multiple-letters-from-string-using-the-same-replace-method>3. How to replace multiple letters from string using the same replace method</h3><p>The <code>replace(char oldChar, char newChar)</code> method replaces <em>all</em> occurrences of the <code>oldChar</code>.
+The <code>replaceAll(String regex, String replacement)</code> method allows you to use regular expressions to match multiple characters.</p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=display:flex><span><span style=color:#268bd2>String</span> <span style=color:#268bd2>original</span> = <span style=color:#2aa198>&#34;apple banana&#34;</span>;
+</span></span><span style=display:flex><span><span style=color:#268bd2>String</span> <span style=color:#268bd2>replaced</span> = <span style=color:#268bd2>original</span>.<span style=color:#268bd2>replace</span>(<span style=color:#2aa198>&#39;a&#39;</span>, <span style=color:#2aa198>&#39;x&#39;</span>); <span style=color:#93a1a1;font-style:italic>// Replaces all &#39;a&#39;</span>
+</span></span><span style=display:flex><span><span style=color:#268bd2>System</span>.<span style=color:#268bd2>out</span>.<span style=color:#268bd2>println</span>(<span style=color:#268bd2>replaced</span>); <span style=color:#93a1a1;font-style:italic>// xpplx bxnxnx</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// Using replaceAll with a regex to replace multiple specific characters</span>
+</span></span><span style=display:flex><span><span style=color:#268bd2>String</span> <span style=color:#268bd2>replacedMultiple</span> = <span style=color:#268bd2>original</span>.<span style=color:#268bd2>replaceAll</span>(<span style=color:#2aa198>&#34;[ae]&#34;</span>, <span style=color:#2aa198>&#34;X&#34;</span>); <span style=color:#93a1a1;font-style:italic>// Replaces &#39;a&#39; or &#39;e&#39;</span>
+</span></span><span style=display:flex><span><span style=color:#268bd2>System</span>.<span style=color:#268bd2>out</span>.<span style=color:#268bd2>println</span>(<span style=color:#268bd2>replacedMultiple</span>); <span style=color:#93a1a1;font-style:italic>// XpplX bXnXnX</span>
+</span></span></code></pre></div><h3 id=4-how-good-are-you-in-sql-queries>4. How good are you in sql queries</h3><p>&ldquo;I would rate myself as proficient in SQL (a 7 out of 10). I&rsquo;m comfortable writing standard DML (Data Manipulation Language) queries (<code>SELECT</code>, <code>INSERT</code>, <code>UPDATE</code>, <code>DELETE</code>) with <code>JOIN</code>s, <code>WHERE</code> clauses, <code>GROUP BY</code>, and aggregate functions. In my test automation work, I frequently use JDBC to query the database for test data setup and verification, and I can analyze query plans to identify performance issues.&rdquo;</p><h3 id=5-say-if-we-have-2-tables-one-in-regression-and-other-is-in-sdet-and-date-is-common-in-both-the-tables-how-you-print-all-data-excluding-date-think-and-response-with-java-perspective>5. Say if we have 2 tables one in regression and other is in sdet and date is common in both the tables how you print all data excluding date (think and response with java perspective)</h3><p>This scenario is unclear. &ldquo;Regression&rdquo; and &ldquo;SDET&rdquo; are not table names. Assuming they mean two tables, <code>Table1</code> and <code>Table2</code>, both have a <code>date</code> column, and you want to join them and select all columns <em>except</em> the <code>date</code> column.</p><p><strong>SQL Perspective:</strong></p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sql data-lang=sql><span style=display:flex><span><span style=color:#859900>SELECT</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>T1</span>.<span style=color:#268bd2>col1</span>, <span style=color:#268bd2>T1</span>.<span style=color:#268bd2>col2</span>, <span style=color:#93a1a1;font-style:italic>-- all columns from Table1 except date
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#268bd2>T2</span>.<span style=color:#268bd2>colX</span>, <span style=color:#268bd2>T2</span>.<span style=color:#268bd2>colY</span>  <span style=color:#93a1a1;font-style:italic>-- all columns from Table2 except date
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span><span style=color:#859900>FROM</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>Table1</span> <span style=color:#268bd2>T1</span>
+</span></span><span style=display:flex><span><span style=color:#859900>INNER</span> <span style=color:#859900>JOIN</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>Table2</span> <span style=color:#268bd2>T2</span> <span style=color:#859900>ON</span> <span style=color:#268bd2>T1</span>.<span style=color:#268bd2>CommonKey</span> = <span style=color:#268bd2>T2</span>.<span style=color:#268bd2>CommonKey</span> <span style=color:#93a1a1;font-style:italic>-- Assuming a join condition
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span><span style=color:#859900>WHERE</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>T1</span>.<span style=color:#268bd2>DateColumn</span> = <span style=color:#268bd2>T2</span>.<span style=color:#268bd2>DateColumn</span>; <span style=color:#93a1a1;font-style:italic>-- If date is the common column for joining
+</span></span></span></code></pre></div><p>If you mean &ldquo;select all columns except the date column from <em>one</em> table&rdquo;:</p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sql data-lang=sql><span style=display:flex><span><span style=color:#859900>SELECT</span> <span style=color:#268bd2>col1</span>, <span style=color:#268bd2>col2</span>, <span style=color:#268bd2>col3</span> <span style=color:#93a1a1;font-style:italic>-- manually list all columns except date
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span><span style=color:#859900>FROM</span> <span style=color:#268bd2>YourTable</span>;
+</span></span></code></pre></div><p>There&rsquo;s no <code>SELECT * EXCLUDE date</code> syntax in standard SQL. You have to explicitly list the columns.</p><p><strong>Java Perspective (JDBC):</strong>
+&ldquo;From a Java perspective using JDBC, I would execute the appropriate SQL query (as above). After getting the <code>ResultSet</code>, I would iterate through it. For each row, I would use <code>resultSet.getString("columnName")</code> or <code>resultSet.getInt("columnName")</code> for each column I <em>want</em> to print, explicitly skipping the <code>date</code> column.&rdquo;</p><h3 id=6-how-you-handle-the-scenario5th-question-if-there-is-multiple-table-and-each-has-lakh-of-datas>6. How you handle the scenario(5th question) if there is multiple table and each has lakh of datas</h3><p>If dealing with multiple tables with millions of rows, performance is critical.</p><ol><li><strong>Optimize SQL Queries:</strong><ul><li><strong>Indexing:</strong> Ensure the columns used in <code>WHERE</code> clauses and <code>JOIN</code> conditions are indexed.</li><li><strong>Filtering Early:</strong> Use <code>WHERE</code> clauses to filter rows as early as possible before <code>JOIN</code>ing large tables.</li><li><strong>Select Only Needed Columns:</strong> Never use <code>SELECT *</code>. Explicitly select only the columns you need to reduce data transfer.</li><li><strong>Limit Results:</strong> Use <code>LIMIT</code> or <code>TOP</code> to fetch only a subset of data for testing if possible.</li></ul></li><li><strong>Database Connection Pooling:</strong> In Java, use connection pooling (<code>HikariCP</code>, <code>c3p0</code>) instead of opening/closing connections for each query.</li><li><strong>Fetch Size:</strong> Set an appropriate <code>setFetchSize()</code> on the <code>Statement</code> or <code>PreparedStatement</code> to control how many rows are fetched from the database at once.</li><li><strong>Java Memory:</strong> Be mindful of Java&rsquo;s heap memory when processing large result sets. Stream processing or batch processing might be necessary rather than loading everything into an <code>ArrayList</code> at once.</li></ol><h3 id=7-difference-between-list-and-set>7. Difference between list and set</h3><ul><li><strong><code>List</code>:</strong> An ordered collection of elements. Elements have an index. Allows duplicates. Implementations: <code>ArrayList</code>, <code>LinkedList</code>.</li><li><strong><code>Set</code>:</strong> An unordered collection of unique elements. Does not allow duplicates. Implementations: <code>HashSet</code>, <code>LinkedHashSet</code>, <code>TreeSet</code>.</li></ul></div></article><div class=navigation style="margin-top:5rem;display:flex;justify-content:space-between;border-top:1px solid var(--border);padding-top:2rem"><a href=https://notxkcd.github.io/sdet-prep-site/12_company_based_questions/wipro/round-4/ class=nav-btn>← Previous</a>
+<a href=https://notxkcd.github.io/sdet-prep-site/12_company_based_questions/wipro/ class=nav-btn>Up</a>
+<a href=https://notxkcd.github.io/sdet-prep-site/12_company_based_questions/wipro/round-2/ class=nav-btn>Next →</a></div></main><footer class=footer><p>Built with Hugo. No scripts. No tracking. Just the truth.</p></footer><script>document.addEventListener("DOMContentLoaded",function(){const n=document.body,s=document.createTreeWalker(n,NodeFilter.SHOW_TEXT,null,!1);let e;const t=[];for(;e=s.nextNode();)e.nodeValue.includes("[-]")&&t.push(e);t.forEach(e=>{const t=document.createElement("span");t.innerHTML=e.nodeValue.replace(/\[-\]/g,'<span class="started-icon" title="Started"></span>'),e.parentNode.replaceChild(t,e)})})</script><script>const body=document.getElementById("theme-body"),btn=document.getElementById("theme-toggle"),currentTheme=localStorage.getItem("theme");function updateButtonText(){body.classList.contains("theme-terminal")?btn.textContent="Light Mode":btn.textContent="Dark Mode"}currentTheme==="terminal"&&body.classList.add("theme-terminal"),updateButtonText(),btn.addEventListener("click",()=>{body.classList.toggle("theme-terminal"),updateButtonText();let e="natural";body.classList.contains("theme-terminal")&&(e="terminal"),localStorage.setItem("theme",e)})</script></body></html>

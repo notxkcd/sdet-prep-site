@@ -1,329 +1,43 @@
-<!DOCTYPE html>
-<html lang="en-us">
-<head><script src="/sdet-prep-site/livereload.js?mindelay=10&amp;v=2&amp;port=41691&amp;path=sdet-prep-site/livereload" data-no-instant defer></script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> | SDET Interview Preparation Kit</title>
-    <link rel="stylesheet" href="http://localhost:41691/sdet-prep-site/css/style.css">
-    <link rel="stylesheet" href="http://localhost:41691/sdet-prep-site/css/terminal.css">
-    
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
-    
-    
-    <link rel="stylesheet" href="http://localhost:41691/sdet-prep-site/lib/katex/katex.min.css">
-    <script defer src="http://localhost:41691/sdet-prep-site/lib/katex/katex.min.js"></script>
-    <script defer src="http://localhost:41691/sdet-prep-site/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            renderMathInElement(document.body, {
-                delimiters: [
-                    {left: "$$", right: "$$", display: true},
-                    {left: "$", right: "$", display: false}
-                ]
-            });
-        });
-    </script>
-</head>
-<body id="theme-body">
-    <button id="theme-toggle">Switch Theme</button>
-    <header>
-        <nav>
-            <ul>
-                <li><a href="http://localhost:41691/sdet-prep-site/">Index</a></li>
-                
-            </ul>
-        </nav>
-        <div class="site-breadcrumb">
-            <a href="http://localhost:41691/sdet-prep-site/">Home</a>
-            
-                
-                    <span>/</span> <a href="http://localhost:41691/sdet-prep-site/">SDET Interview Dashboard</a>
-                
-            
-                
-                    <span>/</span> <a href="http://localhost:41691/sdet-prep-site/misc-backup/">QA Automation Interview Preparation</a>
-                
-            
-            
-                <span>/</span> 
-            
-        </div>
-    </header>
-
-    <main>
-        
-<article>
-    
-    <h1></h1>
-    <div class="content-body" style="margin-top: 2rem;">
-        <h1 id="java-map-filter-reduce-completed">Java Map-Filter-Reduce (Completed)</h1>
-<p><strong>User:</strong> Mohammed Shahid (<a href="mailto:shahid.xkcd@gmail.com">shahid.xkcd@gmail.com</a>)<br>
-<strong>Status:</strong> Completed &amp; Refined</p>
-<hr>
-<h2 id="prompt">Prompt:</h2>
-<p>Teach me using a problem-driven, question-first approach. Start with the real problem that motivated the concept, ask me questions to think through it, let me attempt solutions, guide me through hints, and only reveal the full explanation after I&rsquo;ve reasoned. No theory first — always discovery and questioning first</p>
-<p>Subject: java map, filter, reduce ( if it&rsquo;s valid)</p>
-<h2 id="response">Response:</h2>
-<p>Alright — <strong>problem first, no theory upfront.</strong><br>
-Let’s begin.</p>
-<hr>
-<h1 id="-the-real-problem-that-created-mapfilterreduce">🚦 <strong>The Real Problem That Created map–filter–reduce</strong></h1>
-<p>Imagine you&rsquo;re a QA engineer verifying that your team’s Java service produces correct test data.</p>
-<p>You receive a list of <em>usernames</em> from an API:</p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>[&#34;alice&#34;, &#34;bob&#34;, &#34;root&#34;, &#34;admin&#34;, &#34;charlie&#34;, &#34;administrator&#34;, &#34;eve&#34;]
-</span></span></code></pre></div><p>Your task is:</p>
-<ol>
-<li><strong>Remove suspicious usernames</strong>, i.e., anything containing <code>&quot;admin&quot;</code></li>
-<li><strong>Transform remaining names</strong> to uppercase</li>
-<li><strong>Count</strong> how many safe usernames exist.</li>
-</ol>
-<hr>
-<h1 id="-question-1--your-first-attempt">🔍 <strong>QUESTION 1 — Your First Attempt</strong></h1>
-<p>If you had to do this using ONLY loops, how would you do it?</p>
-<p>Try to outline the steps, even rough pseudocode.<br>
-(Just describe logically, you don’t need to write Java code unless you want to.)</p>
-<p><strong>How would you:</strong></p>
-<ul>
-<li>filter out suspicious items,</li>
-<li>transform the rest,</li>
-<li>and reduce that list to a single number?</li>
-</ul>
-<p>Give me your reasoning — then I&rsquo;ll challenge it and guide you to discover map/filter/reduce.</p>
-<hr>
-<h2 id="user-answer-simulated">User Answer (Simulated):</h2>
-<blockquote>
-<p>I would create a <code>count</code> variable. Then loop through the list. Inside the loop, check if the name contains &ldquo;admin&rdquo;. If it DOES NOT, then I convert it to uppercase. Then I increment the count.</p>
-</blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">count</span> = <span style="color:#268bd2">0</span>;
-</span></span><span style="display:flex;"><span><span style="color:#859900">for</span> (<span style="color:#268bd2">String</span> <span style="color:#268bd2">name</span> : <span style="color:#268bd2">names</span>) {
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> (!<span style="color:#268bd2">name</span>.<span style="color:#268bd2">contains</span>(<span style="color:#2aa198">&#34;admin&#34;</span>)) {
-</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">String</span> <span style="color:#268bd2">upper</span> = <span style="color:#268bd2">name</span>.<span style="color:#268bd2">toUpperCase</span>(); <span style="color:#93a1a1;font-style:italic">// Transforming</span>
-</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// print upper (optional)</span>
-</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">count</span>++; <span style="color:#93a1a1;font-style:italic">// Reducing</span>
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><hr>
-<h2 id="response-1">Response:</h2>
-<p>Perfect. That is the <strong>Imperative Style</strong> (The &ldquo;How&rdquo;).</p>
-<p>You told the computer exactly <em>what to do</em> step-by-step:</p>
-<ol>
-<li>Iterate.</li>
-<li>Check condition (<code>if</code>).</li>
-<li>Modify data (<code>toUpperCase</code>).</li>
-<li>Accumulate result (<code>count++</code>).</li>
-</ol>
-<h3 id="-question-2-the-refactoring">❓ QUESTION 2 (The Refactoring)</h3>
-<p>Now, look at those three operations again:</p>
-<ol>
-<li><strong>Filtering</strong> (The <code>if</code> check)</li>
-<li><strong>Mapping</strong> (The <code>toUpperCase</code> transformation)</li>
-<li><strong>Reducing</strong> (The <code>count++</code> aggregation)</li>
-</ol>
-<p>In your loop code, <strong>all three are mixed together</strong>. The business logic (&ldquo;filter admin&rdquo;) is mixed with the iteration logic (&ldquo;for each&hellip;&rdquo;).</p>
-<p>If I asked you to <strong>change the filter logic</strong> to &ldquo;names shorter than 3 chars&rdquo;, you have to dig into the loop.
-If I asked you to <strong>change the transformation</strong> to &ldquo;add prefix user_&rdquo;, you have to dig into the same loop.</p>
-<p><strong>Can we separate these concerns?</strong>
-Can we write this as a <strong>pipeline</strong> where data flows through distinct stages?</p>
-<p>Imagine a factory belt:
-<code>[Data] --&gt; [Filter Machine] --&gt; [Transformer Machine] --&gt; [Counter Machine] --&gt; Result</code></p>
-<p>How would you write this in English (or pseudo-code) without using the word &ldquo;loop&rdquo;?</p>
-<hr>
-<h2 id="user-answer-simulated-1">User Answer (Simulated):</h2>
-<blockquote>
-<p>Take the list of names.
+<!doctype html><html lang=en-us><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>| SDET Interview Preparation Kit</title><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/css/style.css><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/css/terminal.css><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel=stylesheet><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/lib/katex/katex.min.css><script defer src=https://notxkcd.github.io/sdet-prep-site/lib/katex/katex.min.js></script><script defer src=https://notxkcd.github.io/sdet-prep-site/lib/katex/contrib/auto-render.min.js onload=renderMathInElement(document.body)></script><script>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1}]})})</script></head><body id=theme-body><button id=theme-toggle>Switch Theme</button><header><nav><ul><li><a href=https://notxkcd.github.io/sdet-prep-site/>Index</a></li></ul></nav><div class=site-breadcrumb><a href=https://notxkcd.github.io/sdet-prep-site/>Home</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/>SDET Interview Dashboard</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/misc-backup/>QA Automation Interview Preparation</a>
+<span>/</span></div></header><main><article><h1></h1><div class=content-body style=margin-top:2rem><h1 id=java-map-filter-reduce-completed>Java Map-Filter-Reduce (Completed)</h1><p><strong>User:</strong> Mohammed Shahid (<a href=mailto:shahid.xkcd@gmail.com>shahid.xkcd@gmail.com</a>)<br><strong>Status:</strong> Completed & Refined</p><hr><h2 id=prompt>Prompt:</h2><p>Teach me using a problem-driven, question-first approach. Start with the real problem that motivated the concept, ask me questions to think through it, let me attempt solutions, guide me through hints, and only reveal the full explanation after I&rsquo;ve reasoned. No theory first — always discovery and questioning first</p><p>Subject: java map, filter, reduce ( if it&rsquo;s valid)</p><h2 id=response>Response:</h2><p>Alright — <strong>problem first, no theory upfront.</strong><br>Let’s begin.</p><hr><h1 id=-the-real-problem-that-created-mapfilterreduce>🚦 <strong>The Real Problem That Created map–filter–reduce</strong></h1><p>Imagine you&rsquo;re a QA engineer verifying that your team’s Java service produces correct test data.</p><p>You receive a list of <em>usernames</em> from an API:</p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>[&#34;alice&#34;, &#34;bob&#34;, &#34;root&#34;, &#34;admin&#34;, &#34;charlie&#34;, &#34;administrator&#34;, &#34;eve&#34;]
+</span></span></code></pre></div><p>Your task is:</p><ol><li><strong>Remove suspicious usernames</strong>, i.e., anything containing <code>"admin"</code></li><li><strong>Transform remaining names</strong> to uppercase</li><li><strong>Count</strong> how many safe usernames exist.</li></ol><hr><h1 id=-question-1--your-first-attempt>🔍 <strong>QUESTION 1 — Your First Attempt</strong></h1><p>If you had to do this using ONLY loops, how would you do it?</p><p>Try to outline the steps, even rough pseudocode.<br>(Just describe logically, you don’t need to write Java code unless you want to.)</p><p><strong>How would you:</strong></p><ul><li>filter out suspicious items,</li><li>transform the rest,</li><li>and reduce that list to a single number?</li></ul><p>Give me your reasoning — then I&rsquo;ll challenge it and guide you to discover map/filter/reduce.</p><hr><h2 id=user-answer-simulated>User Answer (Simulated):</h2><blockquote><p>I would create a <code>count</code> variable. Then loop through the list. Inside the loop, check if the name contains &ldquo;admin&rdquo;. If it DOES NOT, then I convert it to uppercase. Then I increment the count.</p></blockquote><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=display:flex><span><span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>count</span> = <span style=color:#268bd2>0</span>;
+</span></span><span style=display:flex><span><span style=color:#859900>for</span> (<span style=color:#268bd2>String</span> <span style=color:#268bd2>name</span> : <span style=color:#268bd2>names</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> (!<span style=color:#268bd2>name</span>.<span style=color:#268bd2>contains</span>(<span style=color:#2aa198>&#34;admin&#34;</span>)) {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>String</span> <span style=color:#268bd2>upper</span> = <span style=color:#268bd2>name</span>.<span style=color:#268bd2>toUpperCase</span>(); <span style=color:#93a1a1;font-style:italic>// Transforming</span>
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic>// print upper (optional)</span>
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>count</span>++; <span style=color:#93a1a1;font-style:italic>// Reducing</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><hr><h2 id=response-1>Response:</h2><p>Perfect. That is the <strong>Imperative Style</strong> (The &ldquo;How&rdquo;).</p><p>You told the computer exactly <em>what to do</em> step-by-step:</p><ol><li>Iterate.</li><li>Check condition (<code>if</code>).</li><li>Modify data (<code>toUpperCase</code>).</li><li>Accumulate result (<code>count++</code>).</li></ol><h3 id=-question-2-the-refactoring>❓ QUESTION 2 (The Refactoring)</h3><p>Now, look at those three operations again:</p><ol><li><strong>Filtering</strong> (The <code>if</code> check)</li><li><strong>Mapping</strong> (The <code>toUpperCase</code> transformation)</li><li><strong>Reducing</strong> (The <code>count++</code> aggregation)</li></ol><p>In your loop code, <strong>all three are mixed together</strong>. The business logic (&ldquo;filter admin&rdquo;) is mixed with the iteration logic (&ldquo;for each&mldr;&rdquo;).</p><p>If I asked you to <strong>change the filter logic</strong> to &ldquo;names shorter than 3 chars&rdquo;, you have to dig into the loop.
+If I asked you to <strong>change the transformation</strong> to &ldquo;add prefix user_&rdquo;, you have to dig into the same loop.</p><p><strong>Can we separate these concerns?</strong>
+Can we write this as a <strong>pipeline</strong> where data flows through distinct stages?</p><p>Imagine a factory belt:
+<code>[Data] --> [Filter Machine] --> [Transformer Machine] --> [Counter Machine] --> Result</code></p><p>How would you write this in English (or pseudo-code) without using the word &ldquo;loop&rdquo;?</p><hr><h2 id=user-answer-simulated-1>User Answer (Simulated):</h2><blockquote><p>Take the list of names.
 Keep only the ones that don&rsquo;t contain &ldquo;admin&rdquo;.
 Convert them to uppercase.
-Count them.</p>
-</blockquote>
-<hr>
-<h2 id="response-2">Response:</h2>
-<p>Boom. 💥
-You just spoke in <strong>Declarative Style</strong> (The &ldquo;What&rdquo;).</p>
-<p>And that is exactly what <strong>Stream API</strong> does in Java.</p>
-<ul>
-<li><strong>Filter</strong>: <code>Keep only...</code></li>
-<li><strong>Map</strong>: <code>Convert to...</code></li>
-<li><strong>Reduce</strong>: <code>Count them</code> (or sum, or average)</li>
-</ul>
-<p>Here is how your English sentence translates directly to Java 8+ Code:</p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#859900;font-weight:bold">long</span> <span style="color:#268bd2">count</span> = <span style="color:#268bd2">names</span>.<span style="color:#268bd2">stream</span>()                            <span style="color:#93a1a1;font-style:italic">// 1. The Conveyor Belt</span>
-</span></span><span style="display:flex;"><span>    .<span style="color:#268bd2">filter</span>(<span style="color:#268bd2">name</span> -&gt; !<span style="color:#268bd2">name</span>.<span style="color:#268bd2">contains</span>(<span style="color:#2aa198">&#34;admin&#34;</span>))           <span style="color:#93a1a1;font-style:italic">// 2. The Filter Machine</span>
-</span></span><span style="display:flex;"><span>    .<span style="color:#268bd2">map</span>(<span style="color:#268bd2">String</span>::<span style="color:#268bd2">toUpperCase</span>)                          <span style="color:#93a1a1;font-style:italic">// 3. The Transformer Machine</span>
-</span></span><span style="display:flex;"><span>    .<span style="color:#268bd2">count</span>();                                          <span style="color:#93a1a1;font-style:italic">// 4. The Result</span>
-</span></span></code></pre></div><h3 id="-question-3-the-deep-dive">❓ QUESTION 3 (The Deep Dive)</h3>
-<p>Why is <code>map</code> called &ldquo;Map&rdquo;? It confuses people who think of <code>HashMap</code>.
-In math, &ldquo;Mapping&rdquo; means taking a value X and producing a corresponding value Y.</p>
-<p>If I have <code>[1, 2, 3]</code> and I &ldquo;map&rdquo; them by multiplying by 2, I get <code>[2, 4, 6]</code>.</p>
-<p><strong>Input Size:</strong> 3
-<strong>Output Size:</strong> 3</p>
-<p><strong>Does <code>map</code> ever change the <em>number</em> of elements in the list?</strong>
-<strong>Does <code>filter</code> ever change the <em>type</em> of elements in the list?</strong></p>
-<p>Think about it.</p>
-<hr>
-<h2 id="user-answer-simulated-2">User Answer (Simulated):</h2>
-<blockquote>
-<p>No, <code>map</code> changes the value/type but keeps the count same.
-<code>filter</code> changes the count (removes items) but keeps the type same.</p>
-</blockquote>
-<hr>
-<h2 id="response-3">Response:</h2>
-<p>Precisely. That is the golden rule.</p>
-<ul>
-<li><strong>Filter</strong>: <code>Input N</code> -&gt; <code>Output &lt;= N</code> (Same Type)</li>
-<li><strong>Map</strong>: <code>Input N</code> -&gt; <code>Output N</code> (Different Type/Value)</li>
-<li><strong>Reduce</strong>: <code>Input N</code> -&gt; <code>Output 1</code> (Single Result)</li>
-</ul>
-<hr>
-<h1 id="-java-map-filter-reduce-cheat-sheet">⚡ Java Map-Filter-Reduce Cheat Sheet</h1>
-<h2 id="1-the-concepts">1. The Concepts</h2>
-<table>
-  <thead>
-      <tr>
-          <th style="text-align: left">Operation</th>
-          <th style="text-align: left">Purpose</th>
-          <th style="text-align: left">Analogy</th>
-          <th style="text-align: left">Input vs Output</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td style="text-align: left"><strong>Stream()</strong></td>
-          <td style="text-align: left">Starts the flow.</td>
-          <td style="text-align: left">Putting raw material on a conveyor belt.</td>
-          <td style="text-align: left">List -&gt; Stream</td>
-      </tr>
-      <tr>
-          <td style="text-align: left"><strong>Filter()</strong></td>
-          <td style="text-align: left">Removes unwanted items.</td>
-          <td style="text-align: left">A quality control robot discarding bad apples.</td>
-          <td style="text-align: left">N -&gt; &lt;N</td>
-      </tr>
-      <tr>
-          <td style="text-align: left"><strong>Map()</strong></td>
-          <td style="text-align: left">Transforms data.</td>
-          <td style="text-align: left">A painting robot that paints every car red.</td>
-          <td style="text-align: left">N -&gt; N</td>
-      </tr>
-      <tr>
-          <td style="text-align: left"><strong>Reduce()</strong></td>
-          <td style="text-align: left">Combines everything.</td>
-          <td style="text-align: left">A crusher that turns rocks into a single pile of dust.</td>
-          <td style="text-align: left">N -&gt; 1</td>
-      </tr>
-  </tbody>
-</table>
-<h2 id="2-common-interview-code-snippets">2. Common Interview Code Snippets</h2>
-<p><strong>Q: Convert a List of Strings to Uppercase.</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#268bd2">List</span>&lt;<span style="color:#268bd2">String</span>&gt; <span style="color:#268bd2">upper</span> = <span style="color:#268bd2">names</span>.<span style="color:#268bd2">stream</span>()
-</span></span><span style="display:flex;"><span>                          .<span style="color:#268bd2">map</span>(<span style="color:#268bd2">String</span>::<span style="color:#268bd2">toUpperCase</span>)
-</span></span><span style="display:flex;"><span>                          .<span style="color:#268bd2">collect</span>(<span style="color:#268bd2">Collectors</span>.<span style="color:#268bd2">toList</span>());
-</span></span></code></pre></div><p><strong>Q: Filter even numbers and sum them.</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">sum</span> = <span style="color:#268bd2">numbers</span>.<span style="color:#268bd2">stream</span>()
-</span></span><span style="display:flex;"><span>                 .<span style="color:#268bd2">filter</span>(<span style="color:#268bd2">n</span> -&gt; <span style="color:#268bd2">n</span> % <span style="color:#268bd2">2</span> == <span style="color:#268bd2">0</span>)
-</span></span><span style="display:flex;"><span>                 .<span style="color:#268bd2">reduce</span>(<span style="color:#268bd2">0</span>, <span style="color:#268bd2">Integer</span>::<span style="color:#268bd2">sum</span>);
-</span></span></code></pre></div><p><strong>Q: Get length of each string.</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#268bd2">List</span>&lt;<span style="color:#268bd2">Integer</span>&gt; <span style="color:#268bd2">lengths</span> = <span style="color:#268bd2">names</span>.<span style="color:#268bd2">stream</span>()
-</span></span><span style="display:flex;"><span>                             .<span style="color:#268bd2">map</span>(<span style="color:#268bd2">String</span>::<span style="color:#268bd2">length</span>)
-</span></span><span style="display:flex;"><span>                             .<span style="color:#268bd2">collect</span>(<span style="color:#268bd2">Collectors</span>.<span style="color:#268bd2">toList</span>());
-</span></span></code></pre></div><p><strong>Q: Find the name starting with &lsquo;A&rsquo; (First one only).</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#268bd2">String</span> <span style="color:#268bd2">result</span> = <span style="color:#268bd2">names</span>.<span style="color:#268bd2">stream</span>()
-</span></span><span style="display:flex;"><span>                     .<span style="color:#268bd2">filter</span>(<span style="color:#268bd2">n</span> -&gt; <span style="color:#268bd2">n</span>.<span style="color:#268bd2">startsWith</span>(<span style="color:#2aa198">&#34;A&#34;</span>))
-</span></span><span style="display:flex;"><span>                     .<span style="color:#268bd2">findFirst</span>()
-</span></span><span style="display:flex;"><span>                     .<span style="color:#268bd2">orElse</span>(<span style="color:#2aa198">&#34;Not Found&#34;</span>);
-</span></span></code></pre></div><h2 id="3-key-interview-questions">3. Key Interview Questions</h2>
-<ul>
-<li><strong>Is Stream faster than Loop?</strong>
-<ul>
-<li>Not always. For small lists, simple loops are faster. Streams are better for readability and large datasets (via parallel streams).</li>
-</ul>
-</li>
-<li><strong>Can you reuse a Stream?</strong>
-<ul>
-<li><strong>No.</strong> Once you call a terminal operator (like <code>collect</code> or <code>count</code>), the stream is closed.</li>
-</ul>
-</li>
-<li><strong>What is <code>flatMap</code>?</strong>
-<ul>
-<li><code>Map</code> is one-to-one. <code>FlatMap</code> is one-to-many (flattens nested lists).</li>
-<li><code>[[1,2], [3,4]]</code> -&gt; <code>flatMap</code> -&gt; <code>[1, 2, 3, 4]</code></li>
-</ul>
-</li>
-</ul>
-
-    </div>
-</article>
-
-<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
-    
-    <a href="http://localhost:41691/sdet-prep-site/misc-backup/java-topics/completed/java-programming-exercises/" class="nav-btn">← Previous</a>
-    
-    
-    <a href="http://localhost:41691/sdet-prep-site/misc-backup/" class="nav-btn">Up</a>
-
-    
-    <a href="http://localhost:41691/sdet-prep-site/misc-backup/java-topics/completed/java-generics-exercises/" class="nav-btn">Next →</a>
-    
-</div>
-
-    </main>
-
-    <footer class="footer">
-        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
-    </footer>
-
-    <script>
-        
-        document.addEventListener("DOMContentLoaded", function() {
-            const content = document.body;
-            
-            const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT, null, false);
-            let node;
-            const nodesToReplace = [];
-            while(node = walker.nextNode()) {
-                if (node.nodeValue.includes("[-]")) nodesToReplace.push(node);
-            }
-            nodesToReplace.forEach(textNode => {
-                const span = document.createElement('span');
-                span.innerHTML = textNode.nodeValue.replace(/\[-\]/g, '<span class="started-icon" title="Started"></span>');
-                textNode.parentNode.replaceChild(span, textNode);
-            });
-        });
-    </script>
-
-    <script>
-        const body = document.getElementById('theme-body');
-        const btn = document.getElementById('theme-toggle');
-        const currentTheme = localStorage.getItem('theme');
-
-        
-        function updateButtonText() {
-            if (body.classList.contains('theme-terminal')) {
-                btn.textContent = "Light Mode";
-            } else {
-                btn.textContent = "Dark Mode";
-            }
-        }
-
-        if (currentTheme === 'terminal') {
-            body.classList.add('theme-terminal');
-        }
-        
-        
-        updateButtonText();
-
-        btn.addEventListener('click', () => {
-            body.classList.toggle('theme-terminal');
-            updateButtonText();
-            
-            let theme = 'natural';
-            if (body.classList.contains('theme-terminal')) {
-                theme = 'terminal';
-            }
-            localStorage.setItem('theme', theme);
-        });
-    </script>
-</body>
-</html>
+Count them.</p></blockquote><hr><h2 id=response-2>Response:</h2><p>Boom. 💥
+You just spoke in <strong>Declarative Style</strong> (The &ldquo;What&rdquo;).</p><p>And that is exactly what <strong>Stream API</strong> does in Java.</p><ul><li><strong>Filter</strong>: <code>Keep only...</code></li><li><strong>Map</strong>: <code>Convert to...</code></li><li><strong>Reduce</strong>: <code>Count them</code> (or sum, or average)</li></ul><p>Here is how your English sentence translates directly to Java 8+ Code:</p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=display:flex><span><span style=color:#859900;font-weight:700>long</span> <span style=color:#268bd2>count</span> = <span style=color:#268bd2>names</span>.<span style=color:#268bd2>stream</span>()                            <span style=color:#93a1a1;font-style:italic>// 1. The Conveyor Belt</span>
+</span></span><span style=display:flex><span>    .<span style=color:#268bd2>filter</span>(<span style=color:#268bd2>name</span> -&gt; !<span style=color:#268bd2>name</span>.<span style=color:#268bd2>contains</span>(<span style=color:#2aa198>&#34;admin&#34;</span>))           <span style=color:#93a1a1;font-style:italic>// 2. The Filter Machine</span>
+</span></span><span style=display:flex><span>    .<span style=color:#268bd2>map</span>(<span style=color:#268bd2>String</span>::<span style=color:#268bd2>toUpperCase</span>)                          <span style=color:#93a1a1;font-style:italic>// 3. The Transformer Machine</span>
+</span></span><span style=display:flex><span>    .<span style=color:#268bd2>count</span>();                                          <span style=color:#93a1a1;font-style:italic>// 4. The Result</span>
+</span></span></code></pre></div><h3 id=-question-3-the-deep-dive>❓ QUESTION 3 (The Deep Dive)</h3><p>Why is <code>map</code> called &ldquo;Map&rdquo;? It confuses people who think of <code>HashMap</code>.
+In math, &ldquo;Mapping&rdquo; means taking a value X and producing a corresponding value Y.</p><p>If I have <code>[1, 2, 3]</code> and I &ldquo;map&rdquo; them by multiplying by 2, I get <code>[2, 4, 6]</code>.</p><p><strong>Input Size:</strong> 3
+<strong>Output Size:</strong> 3</p><p><strong>Does <code>map</code> ever change the <em>number</em> of elements in the list?</strong>
+<strong>Does <code>filter</code> ever change the <em>type</em> of elements in the list?</strong></p><p>Think about it.</p><hr><h2 id=user-answer-simulated-2>User Answer (Simulated):</h2><blockquote><p>No, <code>map</code> changes the value/type but keeps the count same.
+<code>filter</code> changes the count (removes items) but keeps the type same.</p></blockquote><hr><h2 id=response-3>Response:</h2><p>Precisely. That is the golden rule.</p><ul><li><strong>Filter</strong>: <code>Input N</code> -> <code>Output &lt;= N</code> (Same Type)</li><li><strong>Map</strong>: <code>Input N</code> -> <code>Output N</code> (Different Type/Value)</li><li><strong>Reduce</strong>: <code>Input N</code> -> <code>Output 1</code> (Single Result)</li></ul><hr><h1 id=-java-map-filter-reduce-cheat-sheet>⚡ Java Map-Filter-Reduce Cheat Sheet</h1><h2 id=1-the-concepts>1. The Concepts</h2><table><thead><tr><th style=text-align:left>Operation</th><th style=text-align:left>Purpose</th><th style=text-align:left>Analogy</th><th style=text-align:left>Input vs Output</th></tr></thead><tbody><tr><td style=text-align:left><strong>Stream()</strong></td><td style=text-align:left>Starts the flow.</td><td style=text-align:left>Putting raw material on a conveyor belt.</td><td style=text-align:left>List -> Stream</td></tr><tr><td style=text-align:left><strong>Filter()</strong></td><td style=text-align:left>Removes unwanted items.</td><td style=text-align:left>A quality control robot discarding bad apples.</td><td style=text-align:left>N -> &lt;N</td></tr><tr><td style=text-align:left><strong>Map()</strong></td><td style=text-align:left>Transforms data.</td><td style=text-align:left>A painting robot that paints every car red.</td><td style=text-align:left>N -> N</td></tr><tr><td style=text-align:left><strong>Reduce()</strong></td><td style=text-align:left>Combines everything.</td><td style=text-align:left>A crusher that turns rocks into a single pile of dust.</td><td style=text-align:left>N -> 1</td></tr></tbody></table><h2 id=2-common-interview-code-snippets>2. Common Interview Code Snippets</h2><p><strong>Q: Convert a List of Strings to Uppercase.</strong></p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=display:flex><span><span style=color:#268bd2>List</span>&lt;<span style=color:#268bd2>String</span>&gt; <span style=color:#268bd2>upper</span> = <span style=color:#268bd2>names</span>.<span style=color:#268bd2>stream</span>()
+</span></span><span style=display:flex><span>                          .<span style=color:#268bd2>map</span>(<span style=color:#268bd2>String</span>::<span style=color:#268bd2>toUpperCase</span>)
+</span></span><span style=display:flex><span>                          .<span style=color:#268bd2>collect</span>(<span style=color:#268bd2>Collectors</span>.<span style=color:#268bd2>toList</span>());
+</span></span></code></pre></div><p><strong>Q: Filter even numbers and sum them.</strong></p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=display:flex><span><span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>sum</span> = <span style=color:#268bd2>numbers</span>.<span style=color:#268bd2>stream</span>()
+</span></span><span style=display:flex><span>                 .<span style=color:#268bd2>filter</span>(<span style=color:#268bd2>n</span> -&gt; <span style=color:#268bd2>n</span> % <span style=color:#268bd2>2</span> == <span style=color:#268bd2>0</span>)
+</span></span><span style=display:flex><span>                 .<span style=color:#268bd2>reduce</span>(<span style=color:#268bd2>0</span>, <span style=color:#268bd2>Integer</span>::<span style=color:#268bd2>sum</span>);
+</span></span></code></pre></div><p><strong>Q: Get length of each string.</strong></p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=display:flex><span><span style=color:#268bd2>List</span>&lt;<span style=color:#268bd2>Integer</span>&gt; <span style=color:#268bd2>lengths</span> = <span style=color:#268bd2>names</span>.<span style=color:#268bd2>stream</span>()
+</span></span><span style=display:flex><span>                             .<span style=color:#268bd2>map</span>(<span style=color:#268bd2>String</span>::<span style=color:#268bd2>length</span>)
+</span></span><span style=display:flex><span>                             .<span style=color:#268bd2>collect</span>(<span style=color:#268bd2>Collectors</span>.<span style=color:#268bd2>toList</span>());
+</span></span></code></pre></div><p><strong>Q: Find the name starting with &lsquo;A&rsquo; (First one only).</strong></p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=display:flex><span><span style=color:#268bd2>String</span> <span style=color:#268bd2>result</span> = <span style=color:#268bd2>names</span>.<span style=color:#268bd2>stream</span>()
+</span></span><span style=display:flex><span>                     .<span style=color:#268bd2>filter</span>(<span style=color:#268bd2>n</span> -&gt; <span style=color:#268bd2>n</span>.<span style=color:#268bd2>startsWith</span>(<span style=color:#2aa198>&#34;A&#34;</span>))
+</span></span><span style=display:flex><span>                     .<span style=color:#268bd2>findFirst</span>()
+</span></span><span style=display:flex><span>                     .<span style=color:#268bd2>orElse</span>(<span style=color:#2aa198>&#34;Not Found&#34;</span>);
+</span></span></code></pre></div><h2 id=3-key-interview-questions>3. Key Interview Questions</h2><ul><li><strong>Is Stream faster than Loop?</strong><ul><li>Not always. For small lists, simple loops are faster. Streams are better for readability and large datasets (via parallel streams).</li></ul></li><li><strong>Can you reuse a Stream?</strong><ul><li><strong>No.</strong> Once you call a terminal operator (like <code>collect</code> or <code>count</code>), the stream is closed.</li></ul></li><li><strong>What is <code>flatMap</code>?</strong><ul><li><code>Map</code> is one-to-one. <code>FlatMap</code> is one-to-many (flattens nested lists).</li><li><code>[[1,2], [3,4]]</code> -> <code>flatMap</code> -> <code>[1, 2, 3, 4]</code></li></ul></li></ul></div></article><div class=navigation style="margin-top:5rem;display:flex;justify-content:space-between;border-top:1px solid var(--border);padding-top:2rem"><a href=https://notxkcd.github.io/sdet-prep-site/misc-backup/java-topics/completed/java-programming-exercises/ class=nav-btn>← Previous</a>
+<a href=https://notxkcd.github.io/sdet-prep-site/misc-backup/ class=nav-btn>Up</a>
+<a href=https://notxkcd.github.io/sdet-prep-site/misc-backup/java-topics/completed/java-generics-exercises/ class=nav-btn>Next →</a></div></main><footer class=footer><p>Built with Hugo. No scripts. No tracking. Just the truth.</p></footer><script>document.addEventListener("DOMContentLoaded",function(){const n=document.body,s=document.createTreeWalker(n,NodeFilter.SHOW_TEXT,null,!1);let e;const t=[];for(;e=s.nextNode();)e.nodeValue.includes("[-]")&&t.push(e);t.forEach(e=>{const t=document.createElement("span");t.innerHTML=e.nodeValue.replace(/\[-\]/g,'<span class="started-icon" title="Started"></span>'),e.parentNode.replaceChild(t,e)})})</script><script>const body=document.getElementById("theme-body"),btn=document.getElementById("theme-toggle"),currentTheme=localStorage.getItem("theme");function updateButtonText(){body.classList.contains("theme-terminal")?btn.textContent="Light Mode":btn.textContent="Dark Mode"}currentTheme==="terminal"&&body.classList.add("theme-terminal"),updateButtonText(),btn.addEventListener("click",()=>{body.classList.toggle("theme-terminal"),updateButtonText();let e="natural";body.classList.contains("theme-terminal")&&(e="terminal"),localStorage.setItem("theme",e)})</script></body></html>

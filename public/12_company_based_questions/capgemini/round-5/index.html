@@ -1,248 +1,95 @@
-<!DOCTYPE html>
-<html lang="en-us">
-<head><script src="/sdet-prep-site/livereload.js?mindelay=10&amp;v=2&amp;port=41691&amp;path=sdet-prep-site/livereload" data-no-instant defer></script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Capgemini-5 | SDET Interview Preparation Kit</title>
-    <link rel="stylesheet" href="http://localhost:41691/sdet-prep-site/css/style.css">
-    <link rel="stylesheet" href="http://localhost:41691/sdet-prep-site/css/terminal.css">
-    
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
-    
-    
-    <link rel="stylesheet" href="http://localhost:41691/sdet-prep-site/lib/katex/katex.min.css">
-    <script defer src="http://localhost:41691/sdet-prep-site/lib/katex/katex.min.js"></script>
-    <script defer src="http://localhost:41691/sdet-prep-site/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            renderMathInElement(document.body, {
-                delimiters: [
-                    {left: "$$", right: "$$", display: true},
-                    {left: "$", right: "$", display: false}
-                ]
-            });
-        });
-    </script>
-</head>
-<body id="theme-body">
-    <button id="theme-toggle">Switch Theme</button>
-    <header>
-        <nav>
-            <ul>
-                <li><a href="http://localhost:41691/sdet-prep-site/">Index</a></li>
-                
-            </ul>
-        </nav>
-        <div class="site-breadcrumb">
-            <a href="http://localhost:41691/sdet-prep-site/">Home</a>
-            
-                
-                    <span>/</span> <a href="http://localhost:41691/sdet-prep-site/">SDET Interview Dashboard</a>
-                
-            
-                
-                    <span>/</span> <a href="http://localhost:41691/sdet-prep-site/12_company_based_questions/">Interview Questions</a>
-                
-            
-                
-                    <span>/</span> <a href="http://localhost:41691/sdet-prep-site/12_company_based_questions/capgemini/">Capgemini Interview Questions</a>
-                
-            
-            
-                <span>/</span> Capgemini-5
-            
-        </div>
-    </header>
-
-    <main>
-        
-<article>
-    
-    <h1>Capgemini-5</h1>
-    <div class="content-body" style="margin-top: 2rem;">
-        <hr>
-<h2 id="original-questions">Original Questions</h2>
-<ul>
-<li>Capgemini L1 face to face interview(programing)</li>
-</ul>
-<hr>
-<ol>
-<li>Input= giggling remove duplicate and print unique value alone</li>
-<li>Input = make the future you want
-Count the word greater than 5 and reverse only that output: make the erutuf you want</li>
-<li>Print min and Max value in array</li>
-</ol>
-<hr>
-<h2 id="answers">Answers</h2>
-<h3 id="1-input-giggling-remove-duplicate-and-print-unique-value-alone">1. Input= giggling remove duplicate and print unique value alone</h3>
-<p>This means finding the unique characters in a string and printing them. A <code>LinkedHashSet</code> is ideal as it preserves insertion order while ensuring uniqueness.</p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">java.util.LinkedHashSet</span>;
-</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">java.util.Set</span>;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900">class</span> <span style="color:#cb4b16">UniqueChars</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#859900">static</span> <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">printUniqueCharacters</span>(<span style="color:#268bd2">String</span> <span style="color:#268bd2">input</span>) {
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">input</span> == <span style="color:#859900;font-weight:bold">null</span> || <span style="color:#268bd2">input</span>.<span style="color:#268bd2">isEmpty</span>()) {
-</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>(<span style="color:#2aa198">&#34;No characters to process.&#34;</span>);
-</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span>;
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">Set</span>&lt;<span style="color:#268bd2">Character</span>&gt; <span style="color:#268bd2">uniqueChars</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">LinkedHashSet</span>&lt;&gt;(); <span style="color:#93a1a1;font-style:italic">// Preserves order</span>
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">char</span> <span style="color:#268bd2">c</span> : <span style="color:#268bd2">input</span>.<span style="color:#268bd2">toCharArray</span>()) {
-</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">uniqueChars</span>.<span style="color:#268bd2">add</span>(<span style="color:#268bd2">c</span>);
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">print</span>(<span style="color:#2aa198">&#34;Unique characters: &#34;</span>);
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> (<span style="color:#268bd2">Character</span> <span style="color:#268bd2">c</span> : <span style="color:#268bd2">uniqueChars</span>) {
-</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">print</span>(<span style="color:#268bd2">c</span>); <span style="color:#93a1a1;font-style:italic">// Output for &#34;giggling&#34;: giling</span>
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>();
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#859900">static</span> <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">main</span>(<span style="color:#268bd2">String</span>[] <span style="color:#268bd2">args</span>) {
-</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">printUniqueCharacters</span>(<span style="color:#2aa198">&#34;giggling&#34;</span>);
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><h3 id="2-input--make-the-future-you-want-count-the-word-greater-than-5-and-reverse-only-that-output-make-the-erutuf-you-want">2. Input = make the future you want Count the word greater than 5 and reverse only that output: make the erutuf you want</h3>
-<p>This combines splitting a sentence, checking word length, and reversing specific words.</p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900">class</span> <span style="color:#cb4b16">TransformSentence</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#859900">static</span> <span style="color:#268bd2">String</span> <span style="color:#268bd2">transform</span>(<span style="color:#268bd2">String</span> <span style="color:#268bd2">sentence</span>) {
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">sentence</span> == <span style="color:#859900;font-weight:bold">null</span> || <span style="color:#268bd2">sentence</span>.<span style="color:#268bd2">isEmpty</span>()) {
-</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#268bd2">sentence</span>;
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">String</span>[] <span style="color:#268bd2">words</span> = <span style="color:#268bd2">sentence</span>.<span style="color:#268bd2">split</span>(<span style="color:#2aa198">&#34; &#34;</span>);
-</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">StringBuilder</span> <span style="color:#268bd2">result</span> = <span style="color:#859900">new</span> <span style="color:#268bd2">StringBuilder</span>();
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> (<span style="color:#268bd2">String</span> <span style="color:#268bd2">word</span> : <span style="color:#268bd2">words</span>) {
-</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">word</span>.<span style="color:#268bd2">length</span>() &gt; <span style="color:#268bd2">5</span>) {
-</span></span><span style="display:flex;"><span>                <span style="color:#93a1a1;font-style:italic">// Reverse the word if its length is greater than 5</span>
-</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">result</span>.<span style="color:#268bd2">append</span>(<span style="color:#859900">new</span> <span style="color:#268bd2">StringBuilder</span>(<span style="color:#268bd2">word</span>).<span style="color:#268bd2">reverse</span>().<span style="color:#268bd2">toString</span>());
-</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> {
-</span></span><span style="display:flex;"><span>                <span style="color:#93a1a1;font-style:italic">// Otherwise, append the word as is</span>
-</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">result</span>.<span style="color:#268bd2">append</span>(<span style="color:#268bd2">word</span>);
-</span></span><span style="display:flex;"><span>            }
-</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">result</span>.<span style="color:#268bd2">append</span>(<span style="color:#2aa198">&#34; &#34;</span>); <span style="color:#93a1a1;font-style:italic">// Add a space after each word</span>
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">result</span>.<span style="color:#268bd2">toString</span>().<span style="color:#268bd2">trim</span>(); <span style="color:#93a1a1;font-style:italic">// Trim trailing space</span>
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#859900">static</span> <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">main</span>(<span style="color:#268bd2">String</span>[] <span style="color:#268bd2">args</span>) {
-</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>(<span style="color:#268bd2">transform</span>(<span style="color:#2aa198">&#34;make the future you want&#34;</span>));
-</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Expected output: make the erutuf you want</span>
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><h3 id="3-print-min-and-max-value-in-array">3. Print min and Max value in array</h3>
-<p>A classic coding problem.</p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">java.util.Arrays</span>;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900">class</span> <span style="color:#cb4b16">ArrayMinMax</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#859900">static</span> <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">findMinAndMax</span>(<span style="color:#859900;font-weight:bold">int</span>[] <span style="color:#268bd2">arr</span>) {
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">arr</span> == <span style="color:#859900;font-weight:bold">null</span> || <span style="color:#268bd2">arr</span>.<span style="color:#268bd2">length</span> == <span style="color:#268bd2">0</span>) {
-</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>(<span style="color:#2aa198">&#34;Array is empty or null.&#34;</span>);
-</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span>;
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Using Java 8 Streams API (most concise)</span>
-</span></span><span style="display:flex;"><span>        <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">min</span> = <span style="color:#268bd2">Arrays</span>.<span style="color:#268bd2">stream</span>(<span style="color:#268bd2">arr</span>).<span style="color:#268bd2">min</span>().<span style="color:#268bd2">getAsInt</span>();
-</span></span><span style="display:flex;"><span>        <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">max</span> = <span style="color:#268bd2">Arrays</span>.<span style="color:#268bd2">stream</span>(<span style="color:#268bd2">arr</span>).<span style="color:#268bd2">max</span>().<span style="color:#268bd2">getAsInt</span>();
-</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>(<span style="color:#2aa198">&#34;Min: &#34;</span> + <span style="color:#268bd2">min</span> + <span style="color:#2aa198">&#34;, Max: &#34;</span> + <span style="color:#268bd2">max</span>);
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">/* // Traditional loop approach
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">        int currentMin = arr[0];
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">        int currentMax = arr[0];
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">        for (int i = 1; i &lt; arr.length; i++) {
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">            if (arr[i] &lt; currentMin) {
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">                currentMin = arr[i];
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">            }
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">            if (arr[i] &gt; currentMax) {
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">                currentMax = arr[i];
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">            }
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">        }
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">        System.out.println(&#34;Min (loop): &#34; + currentMin + &#34;, Max (loop): &#34; + currentMax);
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">        */</span>
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#859900">static</span> <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">main</span>(<span style="color:#268bd2">String</span>[] <span style="color:#268bd2">args</span>) {
-</span></span><span style="display:flex;"><span>        <span style="color:#859900;font-weight:bold">int</span>[] <span style="color:#268bd2">numbers</span> = {<span style="color:#268bd2">3</span>, <span style="color:#268bd2">1</span>, <span style="color:#268bd2">4</span>, <span style="color:#268bd2">1</span>, <span style="color:#268bd2">5</span>, <span style="color:#268bd2">9</span>, <span style="color:#268bd2">2</span>, <span style="color:#268bd2">6</span>};
-</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">findMinAndMax</span>(<span style="color:#268bd2">numbers</span>);
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><p>Showing the Streams API approach demonstrates modern Java knowledge.</p>
-
-    </div>
-</article>
-
-<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
-    
-    <a href="http://localhost:41691/sdet-prep-site/12_company_based_questions/capgemini/round-6/" class="nav-btn">← Previous</a>
-    
-    
-    <a href="http://localhost:41691/sdet-prep-site/12_company_based_questions/capgemini/" class="nav-btn">Up</a>
-
-    
-    <a href="http://localhost:41691/sdet-prep-site/12_company_based_questions/capgemini/round-4/" class="nav-btn">Next →</a>
-    
-</div>
-
-    </main>
-
-    <footer class="footer">
-        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
-    </footer>
-
-    <script>
-        
-        document.addEventListener("DOMContentLoaded", function() {
-            const content = document.body;
-            
-            const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT, null, false);
-            let node;
-            const nodesToReplace = [];
-            while(node = walker.nextNode()) {
-                if (node.nodeValue.includes("[-]")) nodesToReplace.push(node);
-            }
-            nodesToReplace.forEach(textNode => {
-                const span = document.createElement('span');
-                span.innerHTML = textNode.nodeValue.replace(/\[-\]/g, '<span class="started-icon" title="Started"></span>');
-                textNode.parentNode.replaceChild(span, textNode);
-            });
-        });
-    </script>
-
-    <script>
-        const body = document.getElementById('theme-body');
-        const btn = document.getElementById('theme-toggle');
-        const currentTheme = localStorage.getItem('theme');
-
-        
-        function updateButtonText() {
-            if (body.classList.contains('theme-terminal')) {
-                btn.textContent = "Light Mode";
-            } else {
-                btn.textContent = "Dark Mode";
-            }
-        }
-
-        if (currentTheme === 'terminal') {
-            body.classList.add('theme-terminal');
-        }
-        
-        
-        updateButtonText();
-
-        btn.addEventListener('click', () => {
-            body.classList.toggle('theme-terminal');
-            updateButtonText();
-            
-            let theme = 'natural';
-            if (body.classList.contains('theme-terminal')) {
-                theme = 'terminal';
-            }
-            localStorage.setItem('theme', theme);
-        });
-    </script>
-</body>
-</html>
+<!doctype html><html lang=en-us><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Capgemini-5 | SDET Interview Preparation Kit</title><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/css/style.css><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/css/terminal.css><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel=stylesheet><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/lib/katex/katex.min.css><script defer src=https://notxkcd.github.io/sdet-prep-site/lib/katex/katex.min.js></script><script defer src=https://notxkcd.github.io/sdet-prep-site/lib/katex/contrib/auto-render.min.js onload=renderMathInElement(document.body)></script><script>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1}]})})</script></head><body id=theme-body><button id=theme-toggle>Switch Theme</button><header><nav><ul><li><a href=https://notxkcd.github.io/sdet-prep-site/>Index</a></li></ul></nav><div class=site-breadcrumb><a href=https://notxkcd.github.io/sdet-prep-site/>Home</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/>SDET Interview Dashboard</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/12_company_based_questions/>Interview Questions</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/12_company_based_questions/capgemini/>Capgemini Interview Questions</a>
+<span>/</span> Capgemini-5</div></header><main><article><h1>Capgemini-5</h1><div class=content-body style=margin-top:2rem><hr><h2 id=original-questions>Original Questions</h2><ul><li>Capgemini L1 face to face interview(programing)</li></ul><hr><ol><li>Input= giggling remove duplicate and print unique value alone</li><li>Input = make the future you want
+Count the word greater than 5 and reverse only that output: make the erutuf you want</li><li>Print min and Max value in array</li></ol><hr><h2 id=answers>Answers</h2><h3 id=1-input-giggling-remove-duplicate-and-print-unique-value-alone>1. Input= giggling remove duplicate and print unique value alone</h3><p>This means finding the unique characters in a string and printing them. A <code>LinkedHashSet</code> is ideal as it preserves insertion order while ensuring uniqueness.</p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>java.util.LinkedHashSet</span>;
+</span></span><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>java.util.Set</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>public</span> <span style=color:#859900>class</span> <span style=color:#cb4b16>UniqueChars</span> {
+</span></span><span style=display:flex><span>    <span style=color:#859900>public</span> <span style=color:#859900>static</span> <span style=color:#859900;font-weight:700>void</span> <span style=color:#268bd2>printUniqueCharacters</span>(<span style=color:#268bd2>String</span> <span style=color:#268bd2>input</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>input</span> == <span style=color:#859900;font-weight:700>null</span> || <span style=color:#268bd2>input</span>.<span style=color:#268bd2>isEmpty</span>()) {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>System</span>.<span style=color:#268bd2>out</span>.<span style=color:#268bd2>println</span>(<span style=color:#2aa198>&#34;No characters to process.&#34;</span>);
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>Set</span>&lt;<span style=color:#268bd2>Character</span>&gt; <span style=color:#268bd2>uniqueChars</span> = <span style=color:#859900>new</span> <span style=color:#268bd2>LinkedHashSet</span>&lt;&gt;(); <span style=color:#93a1a1;font-style:italic>// Preserves order</span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>for</span> (<span style=color:#859900;font-weight:700>char</span> <span style=color:#268bd2>c</span> : <span style=color:#268bd2>input</span>.<span style=color:#268bd2>toCharArray</span>()) {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>uniqueChars</span>.<span style=color:#268bd2>add</span>(<span style=color:#268bd2>c</span>);
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>System</span>.<span style=color:#268bd2>out</span>.<span style=color:#268bd2>print</span>(<span style=color:#2aa198>&#34;Unique characters: &#34;</span>);
+</span></span><span style=display:flex><span>        <span style=color:#859900>for</span> (<span style=color:#268bd2>Character</span> <span style=color:#268bd2>c</span> : <span style=color:#268bd2>uniqueChars</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>System</span>.<span style=color:#268bd2>out</span>.<span style=color:#268bd2>print</span>(<span style=color:#268bd2>c</span>); <span style=color:#93a1a1;font-style:italic>// Output for &#34;giggling&#34;: giling</span>
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>System</span>.<span style=color:#268bd2>out</span>.<span style=color:#268bd2>println</span>();
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>public</span> <span style=color:#859900>static</span> <span style=color:#859900;font-weight:700>void</span> <span style=color:#268bd2>main</span>(<span style=color:#268bd2>String</span>[] <span style=color:#268bd2>args</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>printUniqueCharacters</span>(<span style=color:#2aa198>&#34;giggling&#34;</span>);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h3 id=2-input--make-the-future-you-want-count-the-word-greater-than-5-and-reverse-only-that-output-make-the-erutuf-you-want>2. Input = make the future you want Count the word greater than 5 and reverse only that output: make the erutuf you want</h3><p>This combines splitting a sentence, checking word length, and reversing specific words.</p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=display:flex><span><span style=color:#859900>public</span> <span style=color:#859900>class</span> <span style=color:#cb4b16>TransformSentence</span> {
+</span></span><span style=display:flex><span>    <span style=color:#859900>public</span> <span style=color:#859900>static</span> <span style=color:#268bd2>String</span> <span style=color:#268bd2>transform</span>(<span style=color:#268bd2>String</span> <span style=color:#268bd2>sentence</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>sentence</span> == <span style=color:#859900;font-weight:700>null</span> || <span style=color:#268bd2>sentence</span>.<span style=color:#268bd2>isEmpty</span>()) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span> <span style=color:#268bd2>sentence</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>String</span>[] <span style=color:#268bd2>words</span> = <span style=color:#268bd2>sentence</span>.<span style=color:#268bd2>split</span>(<span style=color:#2aa198>&#34; &#34;</span>);
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>StringBuilder</span> <span style=color:#268bd2>result</span> = <span style=color:#859900>new</span> <span style=color:#268bd2>StringBuilder</span>();
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>for</span> (<span style=color:#268bd2>String</span> <span style=color:#268bd2>word</span> : <span style=color:#268bd2>words</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> (<span style=color:#268bd2>word</span>.<span style=color:#268bd2>length</span>() &gt; <span style=color:#268bd2>5</span>) {
+</span></span><span style=display:flex><span>                <span style=color:#93a1a1;font-style:italic>// Reverse the word if its length is greater than 5</span>
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>result</span>.<span style=color:#268bd2>append</span>(<span style=color:#859900>new</span> <span style=color:#268bd2>StringBuilder</span>(<span style=color:#268bd2>word</span>).<span style=color:#268bd2>reverse</span>().<span style=color:#268bd2>toString</span>());
+</span></span><span style=display:flex><span>            } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>                <span style=color:#93a1a1;font-style:italic>// Otherwise, append the word as is</span>
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>result</span>.<span style=color:#268bd2>append</span>(<span style=color:#268bd2>word</span>);
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>result</span>.<span style=color:#268bd2>append</span>(<span style=color:#2aa198>&#34; &#34;</span>); <span style=color:#93a1a1;font-style:italic>// Add a space after each word</span>
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>result</span>.<span style=color:#268bd2>toString</span>().<span style=color:#268bd2>trim</span>(); <span style=color:#93a1a1;font-style:italic>// Trim trailing space</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>public</span> <span style=color:#859900>static</span> <span style=color:#859900;font-weight:700>void</span> <span style=color:#268bd2>main</span>(<span style=color:#268bd2>String</span>[] <span style=color:#268bd2>args</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>System</span>.<span style=color:#268bd2>out</span>.<span style=color:#268bd2>println</span>(<span style=color:#268bd2>transform</span>(<span style=color:#2aa198>&#34;make the future you want&#34;</span>));
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic>// Expected output: make the erutuf you want</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h3 id=3-print-min-and-max-value-in-array>3. Print min and Max value in array</h3><p>A classic coding problem.</p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>java.util.Arrays</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>public</span> <span style=color:#859900>class</span> <span style=color:#cb4b16>ArrayMinMax</span> {
+</span></span><span style=display:flex><span>    <span style=color:#859900>public</span> <span style=color:#859900>static</span> <span style=color:#859900;font-weight:700>void</span> <span style=color:#268bd2>findMinAndMax</span>(<span style=color:#859900;font-weight:700>int</span>[] <span style=color:#268bd2>arr</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>arr</span> == <span style=color:#859900;font-weight:700>null</span> || <span style=color:#268bd2>arr</span>.<span style=color:#268bd2>length</span> == <span style=color:#268bd2>0</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>System</span>.<span style=color:#268bd2>out</span>.<span style=color:#268bd2>println</span>(<span style=color:#2aa198>&#34;Array is empty or null.&#34;</span>);
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic>// Using Java 8 Streams API (most concise)</span>
+</span></span><span style=display:flex><span>        <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>min</span> = <span style=color:#268bd2>Arrays</span>.<span style=color:#268bd2>stream</span>(<span style=color:#268bd2>arr</span>).<span style=color:#268bd2>min</span>().<span style=color:#268bd2>getAsInt</span>();
+</span></span><span style=display:flex><span>        <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>max</span> = <span style=color:#268bd2>Arrays</span>.<span style=color:#268bd2>stream</span>(<span style=color:#268bd2>arr</span>).<span style=color:#268bd2>max</span>().<span style=color:#268bd2>getAsInt</span>();
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>System</span>.<span style=color:#268bd2>out</span>.<span style=color:#268bd2>println</span>(<span style=color:#2aa198>&#34;Min: &#34;</span> + <span style=color:#268bd2>min</span> + <span style=color:#2aa198>&#34;, Max: &#34;</span> + <span style=color:#268bd2>max</span>);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic>/* // Traditional loop approach
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>        int currentMin = arr[0];
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>        int currentMax = arr[0];
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>        for (int i = 1; i &lt; arr.length; i++) {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>            if (arr[i] &lt; currentMin) {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>                currentMin = arr[i];
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>            }
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>            if (arr[i] &gt; currentMax) {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>                currentMax = arr[i];
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>            }
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>        }
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>        System.out.println(&#34;Min (loop): &#34; + currentMin + &#34;, Max (loop): &#34; + currentMax);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>        */</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>public</span> <span style=color:#859900>static</span> <span style=color:#859900;font-weight:700>void</span> <span style=color:#268bd2>main</span>(<span style=color:#268bd2>String</span>[] <span style=color:#268bd2>args</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900;font-weight:700>int</span>[] <span style=color:#268bd2>numbers</span> = {<span style=color:#268bd2>3</span>, <span style=color:#268bd2>1</span>, <span style=color:#268bd2>4</span>, <span style=color:#268bd2>1</span>, <span style=color:#268bd2>5</span>, <span style=color:#268bd2>9</span>, <span style=color:#268bd2>2</span>, <span style=color:#268bd2>6</span>};
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>findMinAndMax</span>(<span style=color:#268bd2>numbers</span>);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>Showing the Streams API approach demonstrates modern Java knowledge.</p></div></article><div class=navigation style="margin-top:5rem;display:flex;justify-content:space-between;border-top:1px solid var(--border);padding-top:2rem"><a href=https://notxkcd.github.io/sdet-prep-site/12_company_based_questions/capgemini/round-6/ class=nav-btn>← Previous</a>
+<a href=https://notxkcd.github.io/sdet-prep-site/12_company_based_questions/capgemini/ class=nav-btn>Up</a>
+<a href=https://notxkcd.github.io/sdet-prep-site/12_company_based_questions/capgemini/round-4/ class=nav-btn>Next →</a></div></main><footer class=footer><p>Built with Hugo. No scripts. No tracking. Just the truth.</p></footer><script>document.addEventListener("DOMContentLoaded",function(){const n=document.body,s=document.createTreeWalker(n,NodeFilter.SHOW_TEXT,null,!1);let e;const t=[];for(;e=s.nextNode();)e.nodeValue.includes("[-]")&&t.push(e);t.forEach(e=>{const t=document.createElement("span");t.innerHTML=e.nodeValue.replace(/\[-\]/g,'<span class="started-icon" title="Started"></span>'),e.parentNode.replaceChild(t,e)})})</script><script>const body=document.getElementById("theme-body"),btn=document.getElementById("theme-toggle"),currentTheme=localStorage.getItem("theme");function updateButtonText(){body.classList.contains("theme-terminal")?btn.textContent="Light Mode":btn.textContent="Dark Mode"}currentTheme==="terminal"&&body.classList.add("theme-terminal"),updateButtonText(),btn.addEventListener("click",()=>{body.classList.toggle("theme-terminal"),updateButtonText();let e="natural";body.classList.contains("theme-terminal")&&(e="terminal"),localStorage.setItem("theme",e)})</script></body></html>

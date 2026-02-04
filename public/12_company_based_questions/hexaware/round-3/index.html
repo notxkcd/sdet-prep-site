@@ -1,210 +1,26 @@
-<!DOCTYPE html>
-<html lang="en-us">
-<head><script src="/sdet-prep-site/livereload.js?mindelay=10&amp;v=2&amp;port=41691&amp;path=sdet-prep-site/livereload" data-no-instant defer></script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hexaware-3 | SDET Interview Preparation Kit</title>
-    <link rel="stylesheet" href="http://localhost:41691/sdet-prep-site/css/style.css">
-    <link rel="stylesheet" href="http://localhost:41691/sdet-prep-site/css/terminal.css">
-    
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
-    
-    
-    <link rel="stylesheet" href="http://localhost:41691/sdet-prep-site/lib/katex/katex.min.css">
-    <script defer src="http://localhost:41691/sdet-prep-site/lib/katex/katex.min.js"></script>
-    <script defer src="http://localhost:41691/sdet-prep-site/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            renderMathInElement(document.body, {
-                delimiters: [
-                    {left: "$$", right: "$$", display: true},
-                    {left: "$", right: "$", display: false}
-                ]
-            });
-        });
-    </script>
-</head>
-<body id="theme-body">
-    <button id="theme-toggle">Switch Theme</button>
-    <header>
-        <nav>
-            <ul>
-                <li><a href="http://localhost:41691/sdet-prep-site/">Index</a></li>
-                
-            </ul>
-        </nav>
-        <div class="site-breadcrumb">
-            <a href="http://localhost:41691/sdet-prep-site/">Home</a>
-            
-                
-                    <span>/</span> <a href="http://localhost:41691/sdet-prep-site/">SDET Interview Dashboard</a>
-                
-            
-                
-                    <span>/</span> <a href="http://localhost:41691/sdet-prep-site/12_company_based_questions/">Interview Questions</a>
-                
-            
-                
-                    <span>/</span> <a href="http://localhost:41691/sdet-prep-site/12_company_based_questions/hexaware/">Hexaware Interview Questions</a>
-                
-            
-            
-                <span>/</span> Hexaware-3
-            
-        </div>
-    </header>
-
-    <main>
-        
-<article>
-    
-    <h1>Hexaware-3</h1>
-    <div class="content-body" style="margin-top: 2rem;">
-        <hr>
-<h2 id="original-questions">Original Questions</h2>
-<ul>
-<li>Hexaware L1 interview questions</li>
-</ul>
-<hr>
-<ol>
-<li>How to handle dynamic element which is changing for each page?</li>
-<li>How to handle multiple browser in selenium?</li>
-<li>Write code for take screenshot?</li>
-<li>Tell about yourself?</li>
-<li>What is string builder and string buffer?</li>
-</ol>
-<hr>
-<h2 id="answers">Answers</h2>
-<h3 id="1-how-to-handle-dynamic-element-which-is-changing-for-each-page">1. How to handle dynamic element which is changing for each page?</h3>
-<p>&ldquo;Dynamic elements are a common challenge in UI automation. You handle them by using locators that rely on attributes or relationships that are <strong>stable</strong>, rather than those that change.</p>
-<ul>
-<li><strong>Stable Attributes:</strong> Prioritize <code>name</code> or <code>data-testid</code> attributes if developers have added them.</li>
-<li><strong>Partial Matches:</strong> Use XPath functions like <code>contains()</code> or <code>starts-with()</code> if only part of an attribute is dynamic (e.g., <code>//input[contains(@id, 'product-')]</code>).</li>
-<li><strong>XPath Axes:</strong> Navigate from a nearby stable element using axes like <code>following-sibling::</code> or <code>ancestor::</code> to locate the dynamic element relative to it.&rdquo;</li>
-</ul>
-<h3 id="2-how-to-handle-multiple-browser-in-selenium">2. How to handle multiple browser in selenium?</h3>
-<p>This refers to <strong>cross-browser testing</strong>.</p>
-<ul>
-<li><strong>TestNG XML:</strong> Configure your <code>testng.xml</code> to define multiple <code>&lt;test&gt;</code> blocks, each passing a different browser name (e.g., &ldquo;chrome&rdquo;, &ldquo;firefox&rdquo;) as a parameter.</li>
-<li><strong>Setup Method:</strong> In your TestNG <code>@BeforeMethod</code> (or <code>@BeforeTest</code>), accept this browser parameter and use a <code>switch</code> statement or a factory to instantiate the corresponding <code>WebDriver</code> (e.g., <code>ChromeDriver</code>, <code>FirefoxDriver</code>).</li>
-<li><strong>Selenium Grid:</strong> To run these tests simultaneously, use a Selenium Grid, which allows you to distribute tests across different browser instances running on various machines.</li>
-</ul>
-<h3 id="3-write-code-for-take-screenshot">3. Write code for take screenshot?</h3>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">org.openqa.selenium.OutputType</span>;
-</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">org.openqa.selenium.TakesScreenshot</span>;
-</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">org.openqa.selenium.WebDriver</span>;
-</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">java.io.File</span>;
-</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">java.io.IOException</span>;
-</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">org.apache.commons.io.FileUtils</span>; <span style="color:#93a1a1;font-style:italic">// Requires Apache Commons IO library</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#859900">public</span> <span style="color:#859900">class</span> <span style="color:#cb4b16">ScreenshotUtil</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">public</span> <span style="color:#859900">static</span> <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">captureScreenshot</span>(<span style="color:#268bd2">WebDriver</span> <span style="color:#268bd2">driver</span>, <span style="color:#268bd2">String</span> <span style="color:#268bd2">screenshotPath</span>) {
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">try</span> {
-</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">TakesScreenshot</span> <span style="color:#268bd2">ts</span> = (<span style="color:#268bd2">TakesScreenshot</span>) <span style="color:#268bd2">driver</span>; <span style="color:#93a1a1;font-style:italic">// Cast driver to TakesScreenshot</span>
-</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">File</span> <span style="color:#268bd2">source</span> = <span style="color:#268bd2">ts</span>.<span style="color:#268bd2">getScreenshotAs</span>(<span style="color:#268bd2">OutputType</span>.<span style="color:#268bd2">FILE</span>); <span style="color:#93a1a1;font-style:italic">// Get screenshot as a file</span>
-</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">FileUtils</span>.<span style="color:#268bd2">copyFile</span>(<span style="color:#268bd2">source</span>, <span style="color:#859900">new</span> <span style="color:#268bd2">File</span>(<span style="color:#268bd2">screenshotPath</span>)); <span style="color:#93a1a1;font-style:italic">// Copy to desired location</span>
-</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>(<span style="color:#2aa198">&#34;Screenshot captured at: &#34;</span> + <span style="color:#268bd2">screenshotPath</span>);
-</span></span><span style="display:flex;"><span>        } <span style="color:#859900">catch</span> (<span style="color:#268bd2">IOException</span> <span style="color:#268bd2">e</span>) {
-</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">System</span>.<span style="color:#268bd2">err</span>.<span style="color:#268bd2">println</span>(<span style="color:#2aa198">&#34;Failed to capture screenshot: &#34;</span> + <span style="color:#268bd2">e</span>.<span style="color:#268bd2">getMessage</span>());
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><p>This method is typically called within an <code>@AfterMethod</code> in a TestNG listener when a test fails.</p>
-<h3 id="4-tell-about-yourself">4. Tell about yourself?</h3>
-<p>Standard opener. Keep it concise, professional, and focus on your relevant experience (automation skills, tech stack, achievements).</p>
-<h3 id="5-what-is-string-builder-and-string-buffer">5. What is string builder and string buffer?</h3>
-<p>Both are mutable classes used for creating and manipulating strings (unlike the immutable <code>String</code> class).</p>
-<ul>
-<li><strong><code>StringBuilder</code>:</strong>
-<ul>
-<li><strong>Not thread-safe</strong> (not synchronized).</li>
-<li><strong>Faster</strong> than <code>StringBuffer</code>.</li>
-<li>Best choice for single-threaded string manipulation (most common scenario).</li>
-</ul>
-</li>
-<li><strong><code>StringBuffer</code>:</strong>
-<ul>
-<li><strong>Thread-safe</strong> (its methods are synchronized).</li>
-<li><strong>Slower</strong> than <code>StringBuilder</code> due to synchronization overhead.</li>
-<li>Use only if the string is being modified concurrently by multiple threads.</li>
-</ul>
-</li>
-</ul>
-
-    </div>
-</article>
-
-<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
-    
-    <a href="http://localhost:41691/sdet-prep-site/12_company_based_questions/hexaware/round-4/" class="nav-btn">← Previous</a>
-    
-    
-    <a href="http://localhost:41691/sdet-prep-site/12_company_based_questions/hexaware/" class="nav-btn">Up</a>
-
-    
-    <a href="http://localhost:41691/sdet-prep-site/12_company_based_questions/hexaware/main/" class="nav-btn">Next →</a>
-    
-</div>
-
-    </main>
-
-    <footer class="footer">
-        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
-    </footer>
-
-    <script>
-        
-        document.addEventListener("DOMContentLoaded", function() {
-            const content = document.body;
-            
-            const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT, null, false);
-            let node;
-            const nodesToReplace = [];
-            while(node = walker.nextNode()) {
-                if (node.nodeValue.includes("[-]")) nodesToReplace.push(node);
-            }
-            nodesToReplace.forEach(textNode => {
-                const span = document.createElement('span');
-                span.innerHTML = textNode.nodeValue.replace(/\[-\]/g, '<span class="started-icon" title="Started"></span>');
-                textNode.parentNode.replaceChild(span, textNode);
-            });
-        });
-    </script>
-
-    <script>
-        const body = document.getElementById('theme-body');
-        const btn = document.getElementById('theme-toggle');
-        const currentTheme = localStorage.getItem('theme');
-
-        
-        function updateButtonText() {
-            if (body.classList.contains('theme-terminal')) {
-                btn.textContent = "Light Mode";
-            } else {
-                btn.textContent = "Dark Mode";
-            }
-        }
-
-        if (currentTheme === 'terminal') {
-            body.classList.add('theme-terminal');
-        }
-        
-        
-        updateButtonText();
-
-        btn.addEventListener('click', () => {
-            body.classList.toggle('theme-terminal');
-            updateButtonText();
-            
-            let theme = 'natural';
-            if (body.classList.contains('theme-terminal')) {
-                theme = 'terminal';
-            }
-            localStorage.setItem('theme', theme);
-        });
-    </script>
-</body>
-</html>
+<!doctype html><html lang=en-us><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Hexaware-3 | SDET Interview Preparation Kit</title><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/css/style.css><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/css/terminal.css><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel=stylesheet><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/lib/katex/katex.min.css><script defer src=https://notxkcd.github.io/sdet-prep-site/lib/katex/katex.min.js></script><script defer src=https://notxkcd.github.io/sdet-prep-site/lib/katex/contrib/auto-render.min.js onload=renderMathInElement(document.body)></script><script>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1}]})})</script></head><body id=theme-body><button id=theme-toggle>Switch Theme</button><header><nav><ul><li><a href=https://notxkcd.github.io/sdet-prep-site/>Index</a></li></ul></nav><div class=site-breadcrumb><a href=https://notxkcd.github.io/sdet-prep-site/>Home</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/>SDET Interview Dashboard</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/12_company_based_questions/>Interview Questions</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/12_company_based_questions/hexaware/>Hexaware Interview Questions</a>
+<span>/</span> Hexaware-3</div></header><main><article><h1>Hexaware-3</h1><div class=content-body style=margin-top:2rem><hr><h2 id=original-questions>Original Questions</h2><ul><li>Hexaware L1 interview questions</li></ul><hr><ol><li>How to handle dynamic element which is changing for each page?</li><li>How to handle multiple browser in selenium?</li><li>Write code for take screenshot?</li><li>Tell about yourself?</li><li>What is string builder and string buffer?</li></ol><hr><h2 id=answers>Answers</h2><h3 id=1-how-to-handle-dynamic-element-which-is-changing-for-each-page>1. How to handle dynamic element which is changing for each page?</h3><p>&ldquo;Dynamic elements are a common challenge in UI automation. You handle them by using locators that rely on attributes or relationships that are <strong>stable</strong>, rather than those that change.</p><ul><li><strong>Stable Attributes:</strong> Prioritize <code>name</code> or <code>data-testid</code> attributes if developers have added them.</li><li><strong>Partial Matches:</strong> Use XPath functions like <code>contains()</code> or <code>starts-with()</code> if only part of an attribute is dynamic (e.g., <code>//input[contains(@id, 'product-')]</code>).</li><li><strong>XPath Axes:</strong> Navigate from a nearby stable element using axes like <code>following-sibling::</code> or <code>ancestor::</code> to locate the dynamic element relative to it.&rdquo;</li></ul><h3 id=2-how-to-handle-multiple-browser-in-selenium>2. How to handle multiple browser in selenium?</h3><p>This refers to <strong>cross-browser testing</strong>.</p><ul><li><strong>TestNG XML:</strong> Configure your <code>testng.xml</code> to define multiple <code>&lt;test></code> blocks, each passing a different browser name (e.g., &ldquo;chrome&rdquo;, &ldquo;firefox&rdquo;) as a parameter.</li><li><strong>Setup Method:</strong> In your TestNG <code>@BeforeMethod</code> (or <code>@BeforeTest</code>), accept this browser parameter and use a <code>switch</code> statement or a factory to instantiate the corresponding <code>WebDriver</code> (e.g., <code>ChromeDriver</code>, <code>FirefoxDriver</code>).</li><li><strong>Selenium Grid:</strong> To run these tests simultaneously, use a Selenium Grid, which allows you to distribute tests across different browser instances running on various machines.</li></ul><h3 id=3-write-code-for-take-screenshot>3. Write code for take screenshot?</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>org.openqa.selenium.OutputType</span>;
+</span></span><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>org.openqa.selenium.TakesScreenshot</span>;
+</span></span><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>org.openqa.selenium.WebDriver</span>;
+</span></span><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>java.io.File</span>;
+</span></span><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>java.io.IOException</span>;
+</span></span><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>org.apache.commons.io.FileUtils</span>; <span style=color:#93a1a1;font-style:italic>// Requires Apache Commons IO library</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>public</span> <span style=color:#859900>class</span> <span style=color:#cb4b16>ScreenshotUtil</span> {
+</span></span><span style=display:flex><span>    <span style=color:#859900>public</span> <span style=color:#859900>static</span> <span style=color:#859900;font-weight:700>void</span> <span style=color:#268bd2>captureScreenshot</span>(<span style=color:#268bd2>WebDriver</span> <span style=color:#268bd2>driver</span>, <span style=color:#268bd2>String</span> <span style=color:#268bd2>screenshotPath</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>try</span> {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>TakesScreenshot</span> <span style=color:#268bd2>ts</span> = (<span style=color:#268bd2>TakesScreenshot</span>) <span style=color:#268bd2>driver</span>; <span style=color:#93a1a1;font-style:italic>// Cast driver to TakesScreenshot</span>
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>File</span> <span style=color:#268bd2>source</span> = <span style=color:#268bd2>ts</span>.<span style=color:#268bd2>getScreenshotAs</span>(<span style=color:#268bd2>OutputType</span>.<span style=color:#268bd2>FILE</span>); <span style=color:#93a1a1;font-style:italic>// Get screenshot as a file</span>
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>FileUtils</span>.<span style=color:#268bd2>copyFile</span>(<span style=color:#268bd2>source</span>, <span style=color:#859900>new</span> <span style=color:#268bd2>File</span>(<span style=color:#268bd2>screenshotPath</span>)); <span style=color:#93a1a1;font-style:italic>// Copy to desired location</span>
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>System</span>.<span style=color:#268bd2>out</span>.<span style=color:#268bd2>println</span>(<span style=color:#2aa198>&#34;Screenshot captured at: &#34;</span> + <span style=color:#268bd2>screenshotPath</span>);
+</span></span><span style=display:flex><span>        } <span style=color:#859900>catch</span> (<span style=color:#268bd2>IOException</span> <span style=color:#268bd2>e</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>System</span>.<span style=color:#268bd2>err</span>.<span style=color:#268bd2>println</span>(<span style=color:#2aa198>&#34;Failed to capture screenshot: &#34;</span> + <span style=color:#268bd2>e</span>.<span style=color:#268bd2>getMessage</span>());
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>This method is typically called within an <code>@AfterMethod</code> in a TestNG listener when a test fails.</p><h3 id=4-tell-about-yourself>4. Tell about yourself?</h3><p>Standard opener. Keep it concise, professional, and focus on your relevant experience (automation skills, tech stack, achievements).</p><h3 id=5-what-is-string-builder-and-string-buffer>5. What is string builder and string buffer?</h3><p>Both are mutable classes used for creating and manipulating strings (unlike the immutable <code>String</code> class).</p><ul><li><strong><code>StringBuilder</code>:</strong><ul><li><strong>Not thread-safe</strong> (not synchronized).</li><li><strong>Faster</strong> than <code>StringBuffer</code>.</li><li>Best choice for single-threaded string manipulation (most common scenario).</li></ul></li><li><strong><code>StringBuffer</code>:</strong><ul><li><strong>Thread-safe</strong> (its methods are synchronized).</li><li><strong>Slower</strong> than <code>StringBuilder</code> due to synchronization overhead.</li><li>Use only if the string is being modified concurrently by multiple threads.</li></ul></li></ul></div></article><div class=navigation style="margin-top:5rem;display:flex;justify-content:space-between;border-top:1px solid var(--border);padding-top:2rem"><a href=https://notxkcd.github.io/sdet-prep-site/12_company_based_questions/hexaware/round-4/ class=nav-btn>← Previous</a>
+<a href=https://notxkcd.github.io/sdet-prep-site/12_company_based_questions/hexaware/ class=nav-btn>Up</a>
+<a href=https://notxkcd.github.io/sdet-prep-site/12_company_based_questions/hexaware/main/ class=nav-btn>Next →</a></div></main><footer class=footer><p>Built with Hugo. No scripts. No tracking. Just the truth.</p></footer><script>document.addEventListener("DOMContentLoaded",function(){const n=document.body,s=document.createTreeWalker(n,NodeFilter.SHOW_TEXT,null,!1);let e;const t=[];for(;e=s.nextNode();)e.nodeValue.includes("[-]")&&t.push(e);t.forEach(e=>{const t=document.createElement("span");t.innerHTML=e.nodeValue.replace(/\[-\]/g,'<span class="started-icon" title="Started"></span>'),e.parentNode.replaceChild(t,e)})})</script><script>const body=document.getElementById("theme-body"),btn=document.getElementById("theme-toggle"),currentTheme=localStorage.getItem("theme");function updateButtonText(){body.classList.contains("theme-terminal")?btn.textContent="Light Mode":btn.textContent="Dark Mode"}currentTheme==="terminal"&&body.classList.add("theme-terminal"),updateButtonText(),btn.addEventListener("click",()=>{body.classList.toggle("theme-terminal"),updateButtonText();let e="natural";body.classList.contains("theme-terminal")&&(e="terminal"),localStorage.setItem("theme",e)})</script></body></html>

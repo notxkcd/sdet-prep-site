@@ -1,525 +1,302 @@
-<!DOCTYPE html>
-<html lang="en-us">
-<head><script src="/sdet-prep-site/livereload.js?mindelay=10&amp;v=2&amp;port=41691&amp;path=sdet-prep-site/livereload" data-no-instant defer></script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bellman Ford | SDET Interview Preparation Kit</title>
-    <link rel="stylesheet" href="http://localhost:41691/sdet-prep-site/css/style.css">
-    <link rel="stylesheet" href="http://localhost:41691/sdet-prep-site/css/terminal.css">
-    
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
-    
-    
-    <link rel="stylesheet" href="http://localhost:41691/sdet-prep-site/lib/katex/katex.min.css">
-    <script defer src="http://localhost:41691/sdet-prep-site/lib/katex/katex.min.js"></script>
-    <script defer src="http://localhost:41691/sdet-prep-site/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            renderMathInElement(document.body, {
-                delimiters: [
-                    {left: "$$", right: "$$", display: true},
-                    {left: "$", right: "$", display: false}
-                ]
-            });
-        });
-    </script>
-</head>
-<body id="theme-body">
-    <button id="theme-toggle">Switch Theme</button>
-    <header>
-        <nav>
-            <ul>
-                <li><a href="http://localhost:41691/sdet-prep-site/">Index</a></li>
-                
-            </ul>
-        </nav>
-        <div class="site-breadcrumb">
-            <a href="http://localhost:41691/sdet-prep-site/">Home</a>
-            
-                
-                    <span>/</span> <a href="http://localhost:41691/sdet-prep-site/">SDET Interview Dashboard</a>
-                
-            
-                
-                    <span>/</span> <a href="http://localhost:41691/sdet-prep-site/dsa-42/">42 Algorithms &amp; 42 Data Structures</a>
-                
-            
-                
-                    <span>/</span> <a href="http://localhost:41691/sdet-prep-site/dsa-42/algorithms/">Algorithms</a>
-                
-            
-                
-                    <span>/</span> <a href="http://localhost:41691/sdet-prep-site/dsa-42/algorithms/graph_shortest_paths_mst/">Graph Shortest Paths Mst</a>
-                
-            
-            
-                <span>/</span> Bellman Ford
-            
-        </div>
-    </header>
-
-    <main>
-        
-<article>
-    
-    <h1>Bellman Ford</h1>
-    <div class="content-body" style="margin-top: 2rem;">
-        <p>The <code>Bellman-Ford Algorithm</code> is a versatile algorithm used to find the shortest paths from a single source <code>node</code> to all other <code>nodes</code> in a weighted graph. Unlike <code>Dijkstra's Algorithm</code>, <code>Bellman-Ford</code> can handle graphs with negative edge weights. However, it can also detect the presence of negative cycles (a cycle where the sum of its edge weights is negative), which would imply that there is no shortest path.</p>
-<p>Its ability to handle negative weights makes it a valuable tool in scenarios where edge costs can represent penalties or benefits, and the shortest path might involve traversing such negative-weight edges.</p>
-<h2 id="how-it-works">How it Works</h2>
-<h3 id="how-it-works-expanded">How it Works (Expanded)</h3>
-<p><code>Bellman-Ford</code> works on the principle of <strong>relaxation</strong>. It iteratively relaxes all <code>edges</code> in the graph <code>V-1</code> times (where <code>V</code> is the number of <code>nodes</code>). Each relaxation step potentially updates the shortest distance to a <code>node</code> if a shorter path is found. After <code>V-1</code> iterations, if a graph contains no negative cycles, all shortest paths should have been found.</p>
-<hr>
-<p>Example: Finding shortest paths from Source A in a graph with negative weights
-Graph (Edges: u,v,w): (A,B,-1), (A,C,4), (B,C,3), (B,D,2), (B,E,2), (D,B,1), (D,C,5), (E,D,-3)</p>
-<ol>
-<li>Initialize distances: {A:0, B:inf, C:inf, D:inf, E:inf}.</li>
-<li>Repeat V-1 (5-1=4) times:</li>
-</ol>
-<ul>
-<li>
-<p>For each edge (u,v,w):</p>
-</li>
-<li>
-<p>If dist[u] + w &lt; dist[v]: dist[v] = dist[u] + w</p>
-<p>After 1st pass: A:0, B:-1, C:4, D:inf, E:inf
+<!doctype html><html lang=en-us><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Bellman Ford | SDET Interview Preparation Kit</title><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/css/style.css><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/css/terminal.css><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel=stylesheet><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/lib/katex/katex.min.css><script defer src=https://notxkcd.github.io/sdet-prep-site/lib/katex/katex.min.js></script><script defer src=https://notxkcd.github.io/sdet-prep-site/lib/katex/contrib/auto-render.min.js onload=renderMathInElement(document.body)></script><script>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1}]})})</script></head><body id=theme-body><button id=theme-toggle>Switch Theme</button><header><nav><ul><li><a href=https://notxkcd.github.io/sdet-prep-site/>Index</a></li></ul></nav><div class=site-breadcrumb><a href=https://notxkcd.github.io/sdet-prep-site/>Home</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/>SDET Interview Dashboard</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/>42 Algorithms & 42 Data Structures</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/algorithms/>Algorithms</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/algorithms/graph_shortest_paths_mst/>Graph Shortest Paths Mst</a>
+<span>/</span> Bellman Ford</div></header><main><article><h1>Bellman Ford</h1><div class=content-body style=margin-top:2rem><p>The <code>Bellman-Ford Algorithm</code> is a versatile algorithm used to find the shortest paths from a single source <code>node</code> to all other <code>nodes</code> in a weighted graph. Unlike <code>Dijkstra's Algorithm</code>, <code>Bellman-Ford</code> can handle graphs with negative edge weights. However, it can also detect the presence of negative cycles (a cycle where the sum of its edge weights is negative), which would imply that there is no shortest path.</p><p>Its ability to handle negative weights makes it a valuable tool in scenarios where edge costs can represent penalties or benefits, and the shortest path might involve traversing such negative-weight edges.</p><h2 id=how-it-works>How it Works</h2><h3 id=how-it-works-expanded>How it Works (Expanded)</h3><p><code>Bellman-Ford</code> works on the principle of <strong>relaxation</strong>. It iteratively relaxes all <code>edges</code> in the graph <code>V-1</code> times (where <code>V</code> is the number of <code>nodes</code>). Each relaxation step potentially updates the shortest distance to a <code>node</code> if a shorter path is found. After <code>V-1</code> iterations, if a graph contains no negative cycles, all shortest paths should have been found.</p><hr><p>Example: Finding shortest paths from Source A in a graph with negative weights
+Graph (Edges: u,v,w): (A,B,-1), (A,C,4), (B,C,3), (B,D,2), (B,E,2), (D,B,1), (D,C,5), (E,D,-3)</p><ol><li>Initialize distances: {A:0, B:inf, C:inf, D:inf, E:inf}.</li><li>Repeat V-1 (5-1=4) times:</li></ol><ul><li><p>For each edge (u,v,w):</p></li><li><p>If dist[u] + w &lt; dist[v]: dist[v] = dist[u] + w</p><p>After 1st pass: A:0, B:-1, C:4, D:inf, E:inf
 After 2nd pass: A:0, B:-1, C:2, D:1, E:1
 After 3rd pass: A:0, B:-1, C:2, D:-2, E:1
-After 4th pass: A:0, B:-1, C:2, D:-2, E:-1</p>
-</li>
-</ul>
-<ol start="3">
-<li>Final check for negative cycles: Repeat one more time (Vth pass).</li>
-</ol>
-<ul>
-<li>If any dist[v] is updated, a negative cycle exists.</li>
-</ul>
-<p><a href="#code-walkthrough">Jump to Code Walkthrough</a></p>
-<h2 id="implementation">Implementation</h2>
-<h3 id="python">Python</h3>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">math</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#859900">def</span> <span style="color:#268bd2">bellman_ford</span>(<span style="color:#268bd2">num_vertices</span>, <span style="color:#268bd2">edges</span>, <span style="color:#268bd2">start_node</span>):
-</span></span><span style="display:flex;"><span>    <span style="color:#2aa198">&#34;&#34;&#34;
-</span></span></span><span style="display:flex;"><span><span style="color:#2aa198">    Finds the shortest paths from a single start_node in a weighted graph.
-</span></span></span><span style="display:flex;"><span><span style="color:#2aa198">    Can handle negative edge weights and detect negative cycles.
-</span></span></span><span style="display:flex;"><span><span style="color:#2aa198">    &lt;code&gt;num_vertices&lt;/code&gt;: total number of vertices (0 to num_vertices-1)
-</span></span></span><span style="display:flex;"><span><span style="color:#2aa198">    &lt;code&gt;edges&lt;/code&gt;: list of (u, v, weight) tuples
-</span></span></span><span style="display:flex;"><span><span style="color:#2aa198">    &lt;code&gt;start_node&lt;/code&gt;: the source node
-</span></span></span><span style="display:flex;"><span><span style="color:#2aa198">    &#34;&#34;&#34;</span>
-</span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># Initialize distances: all to infinity, start_node to 0</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">distances</span> = {<span style="color:#268bd2">i</span>: <span style="color:#268bd2">math</span>.<span style="color:#268bd2">inf</span> <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> <span style="color:#859900">in</span> <span style="color:#cb4b16">range</span>(<span style="color:#268bd2">num_vertices</span>)}
-</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">distances</span>[<span style="color:#268bd2">start_node</span>] = <span style="color:#2aa198;font-weight:bold">0</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># Relax all edges num_vertices - 1 times</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">_</span> <span style="color:#859900">in</span> <span style="color:#cb4b16">range</span>(<span style="color:#268bd2">num_vertices</span> - <span style="color:#2aa198;font-weight:bold">1</span>):
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> <span style="color:#268bd2">u</span>, <span style="color:#268bd2">v</span>, <span style="color:#268bd2">weight</span> <span style="color:#859900">in</span> <span style="color:#268bd2">edges</span>:
-</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> <span style="color:#268bd2">distances</span>[<span style="color:#268bd2">u</span>] != <span style="color:#268bd2">math</span>.<span style="color:#268bd2">inf</span> <span style="color:#859900">and</span> <span style="color:#268bd2">distances</span>[<span style="color:#268bd2">u</span>] + <span style="color:#268bd2">weight</span> &lt; <span style="color:#268bd2">distances</span>[<span style="color:#268bd2">v</span>]:
-</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">distances</span>[<span style="color:#268bd2">v</span>] = <span style="color:#268bd2">distances</span>[<span style="color:#268bd2">u</span>] + <span style="color:#268bd2">weight</span>
-</span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># Check for negative cycles</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">u</span>, <span style="color:#268bd2">v</span>, <span style="color:#268bd2">weight</span> <span style="color:#859900">in</span> <span style="color:#268bd2">edges</span>:
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">distances</span>[<span style="color:#268bd2">u</span>] != <span style="color:#268bd2">math</span>.<span style="color:#268bd2">inf</span> <span style="color:#859900">and</span> <span style="color:#268bd2">distances</span>[<span style="color:#268bd2">u</span>] + <span style="color:#268bd2">weight</span> &lt; <span style="color:#268bd2">distances</span>[<span style="color:#268bd2">v</span>]:
-</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#2aa198">&#34;Graph contains a negative cycle accessible from start_node&#34;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">distances</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># Example Graph (from Wikipedia, for 0 to 4 nodes)</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># Edges: (u, v, weight)</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># num_vertices = 5</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># edges = [</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#     (0, 1, -1), (0, 2, 4),</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#     (1, 2, 3), (1, 3, 2), (1, 4, 2),</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#     (3, 2, 5), (3, 1, 1),</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#     (4, 3, -3)</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># ]</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># start_node = 0</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># # Expected output: {0: 0, 1: -1, 2: 2, 3: -2, 4: 1}</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(bellman_ford(num_vertices, edges, start_node))</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># Example with negative cycle</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># edges_neg_cycle = [</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#     (0, 1, 1), (1, 2, -1), (2, 0, -1)</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># ]</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(bellman_ford(3, edges_neg_cycle, 0)) # Graph contains a negative cycle...</span>
-</span></span></code></pre></div><h3 id="javascript">Javascript</h3>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#859900">function</span> <span style="color:#268bd2">bellmanFord</span>(<span style="color:#268bd2">numVertices</span>, <span style="color:#268bd2">edges</span>, <span style="color:#268bd2">startNode</span>) {
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Initialize distances: all to infinity, startNode to 0
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">const</span> <span style="color:#268bd2">distances</span> = {};
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">numVertices</span>; <span style="color:#268bd2">i</span>++) {
-</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">distances</span>[<span style="color:#268bd2">i</span>] = <span style="color:#859900;font-weight:bold">Infinity</span>;
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">distances</span>[<span style="color:#268bd2">startNode</span>] = <span style="color:#2aa198;font-weight:bold">0</span>;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Relax all edges numVertices - 1 times
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">numVertices</span> - <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#268bd2">i</span>++) {
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> (<span style="color:#859900">const</span> [<span style="color:#268bd2">u</span>, <span style="color:#268bd2">v</span>, <span style="color:#268bd2">weight</span>] <span style="color:#859900">of</span> <span style="color:#268bd2">edges</span>) {
-</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">distances</span>[<span style="color:#268bd2">u</span>] !== <span style="color:#859900;font-weight:bold">Infinity</span> &amp;&amp; <span style="color:#268bd2">distances</span>[<span style="color:#268bd2">u</span>] + <span style="color:#268bd2">weight</span> &lt; <span style="color:#268bd2">distances</span>[<span style="color:#268bd2">v</span>]) {
-</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">distances</span>[<span style="color:#268bd2">v</span>] = <span style="color:#268bd2">distances</span>[<span style="color:#268bd2">u</span>] + <span style="color:#268bd2">weight</span>;
-</span></span><span style="display:flex;"><span>            }
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Check for negative cycles
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (<span style="color:#859900">const</span> [<span style="color:#268bd2">u</span>, <span style="color:#268bd2">v</span>, <span style="color:#268bd2">weight</span>] <span style="color:#859900">of</span> <span style="color:#268bd2">edges</span>) {
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">distances</span>[<span style="color:#268bd2">u</span>] !== <span style="color:#859900;font-weight:bold">Infinity</span> &amp;&amp; <span style="color:#268bd2">distances</span>[<span style="color:#268bd2">u</span>] + <span style="color:#268bd2">weight</span> &lt; <span style="color:#268bd2">distances</span>[<span style="color:#268bd2">v</span>]) {
-</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#2aa198">&#34;Graph contains a negative cycle accessible from start_node&#34;</span>;
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">distances</span>;
-</span></span><span style="display:flex;"><span>}
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const numVertices = 5;
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const edges = [
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     [0, 1, -1], [0, 2, 4],
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     [1, 2, 3], [1, 3, 2], [1, 4, 2],
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     [3, 2, 5], [3, 1, 1],
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     [4, 3, -3]
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// ];
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const startNode = 0;
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(bellmanFord(numVertices, edges, startNode)); // { &#39;0&#39;: 0, &#39;1&#39;: -1, &#39;2&#39;: 2, &#39;3&#39;: -2, &#39;4&#39;: 1 }
-</span></span></span></code></pre></div><h3 id="typescript">Typescript</h3>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-typescript" data-lang="typescript"><span style="display:flex;"><span><span style="color:#859900">type</span> <span style="color:#268bd2">Edge</span> = [<span style="color:#859900;font-weight:bold">number</span>, <span style="color:#859900;font-weight:bold">number</span>, <span style="color:#859900;font-weight:bold">number</span>]; <span style="color:#93a1a1;font-style:italic">// [u, v, weight]
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
-</span></span><span style="display:flex;"><span><span style="color:#859900">function</span> <span style="color:#268bd2">bellmanFordTS</span>(<span style="color:#268bd2">numVertices</span>: <span style="color:#859900;font-weight:bold">number</span>, <span style="color:#268bd2">edges</span>: <span style="color:#859900;font-weight:bold">Edge</span>[], <span style="color:#268bd2">startNode</span>: <span style="color:#859900;font-weight:bold">number</span>): <span style="color:#268bd2">Record</span>&lt;<span style="color:#268bd2;font-weight:bold">number</span>, <span style="color:#268bd2">number</span>&gt; | <span style="color:#859900;font-weight:bold">string</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Initialize distances: all to infinity, startNode to 0
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">const</span> <span style="color:#268bd2">distances</span>: <span style="color:#859900;font-weight:bold">Record</span>&lt;<span style="color:#268bd2;font-weight:bold">number</span>, <span style="color:#268bd2">number</span>&gt; = {};
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">numVertices</span>; <span style="color:#268bd2">i</span>++) {
-</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">distances</span>[<span style="color:#268bd2">i</span>] = <span style="color:#859900;font-weight:bold">Infinity</span>;
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">distances</span>[<span style="color:#268bd2">startNode</span>] = <span style="color:#2aa198;font-weight:bold">0</span>;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Relax all edges numVertices - 1 times
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">numVertices</span> - <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#268bd2">i</span>++) {
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> (<span style="color:#859900">const</span> [<span style="color:#268bd2">u</span>, <span style="color:#268bd2">v</span>, <span style="color:#268bd2">weight</span>] <span style="color:#859900">of</span> <span style="color:#268bd2">edges</span>) {
-</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">distances</span>[<span style="color:#268bd2">u</span>] !== <span style="color:#859900;font-weight:bold">Infinity</span> &amp;&amp; <span style="color:#268bd2">distances</span>[<span style="color:#268bd2">u</span>] + <span style="color:#268bd2">weight</span> &lt; <span style="color:#268bd2">distances</span>[<span style="color:#268bd2">v</span>]) {
-</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">distances</span>[<span style="color:#268bd2">v</span>] = <span style="color:#268bd2">distances</span>[<span style="color:#268bd2">u</span>] + <span style="color:#268bd2">weight</span>;
-</span></span><span style="display:flex;"><span>            }
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Check for negative cycles
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (<span style="color:#859900">const</span> [<span style="color:#268bd2">u</span>, <span style="color:#268bd2">v</span>, <span style="color:#268bd2">weight</span>] <span style="color:#859900">of</span> <span style="color:#268bd2">edges</span>) {
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">distances</span>[<span style="color:#268bd2">u</span>] !== <span style="color:#859900;font-weight:bold">Infinity</span> &amp;&amp; <span style="color:#268bd2">distances</span>[<span style="color:#268bd2">u</span>] + <span style="color:#268bd2">weight</span> &lt; <span style="color:#268bd2">distances</span>[<span style="color:#268bd2">v</span>]) {
-</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#2aa198">&#34;Graph contains a negative cycle accessible from start_node&#34;</span>;
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">distances</span>;
-</span></span><span style="display:flex;"><span>}
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const numVerticesTS = 5;
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const edgesTS: Edge[] = [
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     [0, 1, -1], [0, 2, 4],
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     [1, 2, 3], [1, 3, 2], [1, 4, 2],
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     [3, 2, 5], [3, 1, 1],
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     [4, 3, -3]
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// ];
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const startNodeTS = 0;
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(bellmanFordTS(numVerticesTS, edgesTS, startNodeTS)); // { &#39;0&#39;: 0, &#39;1&#39;: -1, &#39;2&#39;: 2, &#39;3&#39;: -2, &#39;4&#39;: 1 }
-</span></span></span></code></pre></div><h3 id="cpp">Cpp</h3>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;vector&gt;</span><span style="color:#93a1a1;font-style:italic">
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;iostream&gt;</span><span style="color:#93a1a1;font-style:italic">
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;limits&gt;</span><span style="color:#93a1a1;font-style:italic"> </span><span style="color:#93a1a1;font-style:italic">// For std::numeric_limits
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;map&gt;</span><span style="color:#93a1a1;font-style:italic">    </span><span style="color:#93a1a1;font-style:italic">// For mapping node indices to chars if needed, or just use 0..N-1
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
-</span></span><span style="display:flex;"><span><span style="color:#859900">struct</span> <span style="color:#cb4b16">Edge</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">u</span>, <span style="color:#268bd2">v</span>, <span style="color:#268bd2">weight</span>;
-</span></span><span style="display:flex;"><span>};
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#268bd2">std</span>::<span style="color:#268bd2">map</span>&lt;<span style="color:#859900;font-weight:bold">int</span>, <span style="color:#859900;font-weight:bold">int</span>&gt; <span style="color:#268bd2">bellmanFord</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">num_vertices</span>, <span style="color:#859900">const</span> <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#268bd2">Edge</span>&gt;&amp; <span style="color:#268bd2">edges</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">start_node</span>) {
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Initialize distances: all to infinity, start_node to 0
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">map</span>&lt;<span style="color:#859900;font-weight:bold">int</span>, <span style="color:#859900;font-weight:bold">int</span>&gt; <span style="color:#268bd2">distances</span>;
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">num_vertices</span>; ++<span style="color:#268bd2">i</span>) {
-</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">distances</span>[<span style="color:#268bd2">i</span>] = <span style="color:#268bd2">std</span>::<span style="color:#268bd2">numeric_limits</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt;::<span style="color:#268bd2">max</span>();
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">distances</span>[<span style="color:#268bd2">start_node</span>] = <span style="color:#2aa198;font-weight:bold">0</span>;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Relax all edges num_vertices - 1 times
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">num_vertices</span> - <span style="color:#2aa198;font-weight:bold">1</span>; ++<span style="color:#268bd2">i</span>) {
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> (<span style="color:#859900">const</span> <span style="color:#859900">auto</span>&amp; <span style="color:#268bd2">edge</span> : <span style="color:#268bd2">edges</span>) {
-</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">distances</span>[<span style="color:#268bd2">edge</span>.<span style="color:#268bd2">u</span>] != <span style="color:#268bd2">std</span>::<span style="color:#268bd2">numeric_limits</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt;::<span style="color:#268bd2">max</span>() &amp;&amp;
-</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">distances</span>[<span style="color:#268bd2">edge</span>.<span style="color:#268bd2">u</span>] + <span style="color:#268bd2">edge</span>.<span style="color:#268bd2">weight</span> &lt; <span style="color:#268bd2">distances</span>[<span style="color:#268bd2">edge</span>.<span style="color:#268bd2">v</span>]) {
-</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">distances</span>[<span style="color:#268bd2">edge</span>.<span style="color:#268bd2">v</span>] = <span style="color:#268bd2">distances</span>[<span style="color:#268bd2">edge</span>.<span style="color:#268bd2">u</span>] + <span style="color:#268bd2">edge</span>.<span style="color:#268bd2">weight</span>;
-</span></span><span style="display:flex;"><span>            }
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Check for negative cycles
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (<span style="color:#859900">const</span> <span style="color:#859900">auto</span>&amp; <span style="color:#268bd2">edge</span> : <span style="color:#268bd2">edges</span>) {
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">distances</span>[<span style="color:#268bd2">edge</span>.<span style="color:#268bd2">u</span>] != <span style="color:#268bd2">std</span>::<span style="color:#268bd2">numeric_limits</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt;::<span style="color:#268bd2">max</span>() &amp;&amp;
-</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">distances</span>[<span style="color:#268bd2">edge</span>.<span style="color:#268bd2">u</span>] + <span style="color:#268bd2">edge</span>.<span style="color:#268bd2">weight</span> &lt; <span style="color:#268bd2">distances</span>[<span style="color:#268bd2">edge</span>.<span style="color:#268bd2">v</span>]) {
-</span></span><span style="display:flex;"><span>            <span style="color:#93a1a1;font-style:italic">// A negative cycle is detected and is reachable from start_node
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#93a1a1;font-style:italic">// For simplicity, we return an empty map or throw an exception.
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#93a1a1;font-style:italic">// A more robust implementation might return a special error code.
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#268bd2">distances</span>.<span style="color:#268bd2">clear</span>(); <span style="color:#93a1a1;font-style:italic">// Clear distances to indicate error
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#268bd2">distances</span>[-<span style="color:#2aa198;font-weight:bold">1</span>] = -<span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#93a1a1;font-style:italic">// Special indicator for negative cycle
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            <span style="color:#859900">return</span> <span style="color:#268bd2">distances</span>;
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">distances</span>;
-</span></span><span style="display:flex;"><span>}
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// int main() {
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     int num_vertices = 5;
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::vector&lt;Edge&gt; edges = {
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         {0, 1, -1}, {0, 2, 4},
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         {1, 2, 3}, {1, 3, 2}, {1, 4, 2},
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         {3, 2, 5}, {3, 1, 1},
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         {4, 3, -3}
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     };
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     int start_node = 0;
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::map&lt;int, int&gt; result = bellmanFord(num_vertices, edges, start_node);
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     if (result.count(-1)) {
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         std::cout &lt;&lt; &#34;Graph contains a negative cycle.&#34; &lt;&lt; std::endl;
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     } else {
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         for (const auto&amp; pair : result) {
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//             std::cout &lt;&lt; &#34;Distance to node &#34; &lt;&lt; pair.first &lt;&lt; &#34;: &#34; &lt;&lt; pair.second &lt;&lt; std::endl;
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         }
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     }
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     return 0;
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
-</span></span></span></code></pre></div><h3 id="go">Go</h3>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">package</span> <span style="color:#268bd2">main</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> (
-</span></span><span style="display:flex;"><span>    <span style="color:#2aa198">&#34;fmt&#34;</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#2aa198">&#34;math&#34;</span>
-</span></span><span style="display:flex;"><span>)
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#859900">type</span> <span style="color:#268bd2">BellmanFordEdge</span> <span style="color:#859900">struct</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">U</span>, <span style="color:#268bd2">V</span>   <span style="color:#859900;font-weight:bold">int</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">Weight</span> <span style="color:#859900;font-weight:bold">int</span>
-</span></span><span style="display:flex;"><span>}
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> <span style="color:#268bd2">bellmanFord</span>(<span style="color:#268bd2">numVertices</span> <span style="color:#859900;font-weight:bold">int</span>, <span style="color:#268bd2">edges</span> []<span style="color:#268bd2">BellmanFordEdge</span>, <span style="color:#268bd2">startNode</span> <span style="color:#859900;font-weight:bold">int</span>) (<span style="color:#859900">map</span>[<span style="color:#859900;font-weight:bold">int</span>]<span style="color:#859900;font-weight:bold">int</span>, <span style="color:#859900;font-weight:bold">error</span>) {
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Initialize distances: all to infinity, startNode to 0</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">distances</span> := <span style="color:#cb4b16">make</span>(<span style="color:#859900">map</span>[<span style="color:#859900;font-weight:bold">int</span>]<span style="color:#859900;font-weight:bold">int</span>)
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> := <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">numVertices</span>; <span style="color:#268bd2">i</span>++ {
-</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">distances</span>[<span style="color:#268bd2">i</span>] = <span style="color:#268bd2">math</span>.<span style="color:#268bd2">MaxInt32</span>
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">distances</span>[<span style="color:#268bd2">startNode</span>] = <span style="color:#2aa198;font-weight:bold">0</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Relax all edges numVertices - 1 times</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> := <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">numVertices</span>-<span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#268bd2">i</span>++ {
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> <span style="color:#268bd2">_</span>, <span style="color:#268bd2">edge</span> := <span style="color:#859900">range</span> <span style="color:#268bd2">edges</span> {
-</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> <span style="color:#268bd2">distances</span>[<span style="color:#268bd2">edge</span>.<span style="color:#268bd2">U</span>] != <span style="color:#268bd2">math</span>.<span style="color:#268bd2">MaxInt32</span> &amp;&amp; <span style="color:#268bd2">distances</span>[<span style="color:#268bd2">edge</span>.<span style="color:#268bd2">U</span>]+<span style="color:#268bd2">edge</span>.<span style="color:#268bd2">Weight</span> &lt; <span style="color:#268bd2">distances</span>[<span style="color:#268bd2">edge</span>.<span style="color:#268bd2">V</span>] {
-</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">distances</span>[<span style="color:#268bd2">edge</span>.<span style="color:#268bd2">V</span>] = <span style="color:#268bd2">distances</span>[<span style="color:#268bd2">edge</span>.<span style="color:#268bd2">U</span>] + <span style="color:#268bd2">edge</span>.<span style="color:#268bd2">Weight</span>
-</span></span><span style="display:flex;"><span>            }
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Check for negative cycles</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">_</span>, <span style="color:#268bd2">edge</span> := <span style="color:#859900">range</span> <span style="color:#268bd2">edges</span> {
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">distances</span>[<span style="color:#268bd2">edge</span>.<span style="color:#268bd2">U</span>] != <span style="color:#268bd2">math</span>.<span style="color:#268bd2">MaxInt32</span> &amp;&amp; <span style="color:#268bd2">distances</span>[<span style="color:#268bd2">edge</span>.<span style="color:#268bd2">U</span>]+<span style="color:#268bd2">edge</span>.<span style="color:#268bd2">Weight</span> &lt; <span style="color:#268bd2">distances</span>[<span style="color:#268bd2">edge</span>.<span style="color:#268bd2">V</span>] {
-</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#859900;font-weight:bold">nil</span>, <span style="color:#268bd2">fmt</span>.<span style="color:#268bd2">Errorf</span>(<span style="color:#2aa198">&#34;graph contains a negative cycle accessible from start_node&#34;</span>)
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">distances</span>, <span style="color:#859900;font-weight:bold">nil</span>
-</span></span><span style="display:flex;"><span>}
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// func main() {</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     numVertices := 5</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     edges := []BellmanFordEdge{</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         {0, 1, -1}, {0, 2, 4},</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         {1, 2, 3}, {1, 3, 2}, {1, 4, 2},</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         {3, 2, 5}, {3, 1, 1},</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         {4, 3, -3},</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     }</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     startNode := 0</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     result, err := bellmanFord(numVertices, edges, startNode)</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     if err != nil {</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         fmt.Println(err)</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     } else {</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         fmt.Println(&#34;Shortest distances:&#34;, result) // map[0:0 1:-1 2:2 3:-2 4:1]</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     }</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }</span>
-</span></span></code></pre></div><h3 id="d">D</h3>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-d" data-lang="d"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.stdio</span>;
-</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.array</span>;
-</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.algorithm</span>; <span style="color:#93a1a1;font-style:italic">// For std.algorithm.min
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.conv</span>; <span style="color:#93a1a1;font-style:italic">// For to!string
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
-</span></span><span style="display:flex;"><span><span style="color:#859900">struct</span> <span style="color:#cb4b16">BellmanFordEdge</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">u</span>, <span style="color:#268bd2">v</span>, <span style="color:#268bd2">weight</span>;
-</span></span><span style="display:flex;"><span>}
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#268bd2">Tuple</span>!(<span style="color:#859900;font-weight:bold">int</span>[<span style="color:#859900;font-weight:bold">int</span>], <span style="color:#cb4b16">string</span>) <span style="color:#268bd2">bellmanFord</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">numVertices</span>, <span style="color:#268bd2">BellmanFordEdge</span>[] <span style="color:#268bd2">edges</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">startNode</span>) {
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Initialize distances: all to infinity, startNode to 0
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">auto</span> <span style="color:#268bd2">distances</span> = <span style="color:#859900">new</span> <span style="color:#859900;font-weight:bold">int</span>[<span style="color:#859900;font-weight:bold">int</span>];
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">foreach</span> (<span style="color:#268bd2">i</span>; <span style="color:#2aa198;font-weight:bold">0</span> .. <span style="color:#268bd2">numVertices</span>) {
-</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">distances</span>[<span style="color:#268bd2">i</span>] = <span style="color:#859900;font-weight:bold">int</span>.<span style="color:#268bd2">max</span>;
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">distances</span>[<span style="color:#268bd2">startNode</span>] = <span style="color:#2aa198;font-weight:bold">0</span>;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Relax all edges numVertices - 1 times
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">foreach</span> (<span style="color:#268bd2">i</span>; <span style="color:#2aa198;font-weight:bold">0</span> .. <span style="color:#268bd2">numVertices</span> - <span style="color:#2aa198;font-weight:bold">1</span>) {
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">foreach</span> (<span style="color:#268bd2">edge</span>; <span style="color:#268bd2">edges</span>) {
-</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">distances</span>[<span style="color:#268bd2">edge</span>.<span style="color:#268bd2">u</span>] != <span style="color:#859900;font-weight:bold">int</span>.<span style="color:#268bd2">max</span> &amp;&amp; <span style="color:#268bd2">distances</span>[<span style="color:#268bd2">edge</span>.<span style="color:#268bd2">u</span>] + <span style="color:#268bd2">edge</span>.<span style="color:#268bd2">weight</span> &lt; <span style="color:#268bd2">distances</span>[<span style="color:#268bd2">edge</span>.<span style="color:#268bd2">v</span>]) {
-</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">distances</span>[<span style="color:#268bd2">edge</span>.<span style="color:#268bd2">v</span>] = <span style="color:#268bd2">distances</span>[<span style="color:#268bd2">edge</span>.<span style="color:#268bd2">u</span>] + <span style="color:#268bd2">edge</span>.<span style="color:#268bd2">weight</span>;
-</span></span><span style="display:flex;"><span>            }
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Check for negative cycles
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">foreach</span> (<span style="color:#268bd2">edge</span>; <span style="color:#268bd2">edges</span>) {
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">distances</span>[<span style="color:#268bd2">edge</span>.<span style="color:#268bd2">u</span>] != <span style="color:#859900;font-weight:bold">int</span>.<span style="color:#268bd2">max</span> &amp;&amp; <span style="color:#268bd2">distances</span>[<span style="color:#268bd2">edge</span>.<span style="color:#268bd2">u</span>] + <span style="color:#268bd2">edge</span>.<span style="color:#268bd2">weight</span> &lt; <span style="color:#268bd2">distances</span>[<span style="color:#268bd2">edge</span>.<span style="color:#268bd2">v</span>]) {
-</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#859900">typeof</span>(<span style="color:#859900">return</span>)(<span style="color:#859900;font-weight:bold">null</span>, <span style="color:#2aa198">&#34;Graph contains a negative cycle accessible from start_node&#34;</span>);
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#859900">typeof</span>(<span style="color:#859900">return</span>)(<span style="color:#268bd2">distances</span>, <span style="color:#2aa198">&#34;&#34;</span>);
-</span></span><span style="display:flex;"><span>}
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// void main() {
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     int numVertices = 5;
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     BellmanFordEdge[] edges = [
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         BellmanFordEdge(0, 1, -1), BellmanFordEdge(0, 2, 4),
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         BellmanFordEdge(1, 2, 3), BellmanFordEdge(1, 3, 2), BellmanFordEdge(1, 4, 2),
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         BellmanFordEdge(3, 2, 5), BellmanFordEdge(3, 1, 1),
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         BellmanFordEdge(4, 3, -3)
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     ];
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     int startNode = 0;
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     auto result = bellmanFord(numVertices, edges, startNode);
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     if (result.error.length &gt; 0) {
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         writeln(result.error);
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     } else {
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//         writeln(&#34;Shortest distances: &#34;, result.distances); // [0:0, 1:-1, 2:2, 3:-2, 4:1]
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     }
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
-</span></span></span></code></pre></div><h2 id="code-walkthrough">Code Walkthrough</h2>
-<p><a href="#implementation">Back to Implementation</a></p>
-<h3 id="code-walkthrough-1">Code Walkthrough</h3>
-<p>The <code>Bellman-Ford Algorithm</code> implements the relaxation principle iteratively to find shortest paths and detect negative cycles.</p>
-<hr>
-<p><strong>Initialization:</strong></p>
-<ul>
-<li><code>num_vertices</code>: The total number of <code>vertices</code> in the graph.</li>
-<li><code>edges</code>: A list of <code>tuples/structs</code> in the format <code>(u, v, weight)</code>.</li>
-<li><code>start_node</code>: The source <code>vertex</code> from which to find shortest paths.</li>
-<li>A <code>distances</code> map/array is created. <code>distances[i]</code> stores the shortest distance from <code>start_node</code> to <code>node i</code>. Initially, <code>distances[start_node]</code> is 0, and all other <code>distances</code> are <code>infinity</code>.</li>
-</ul>
-<p><strong>Relaxation Phase:</strong></p>
-<ul>
-<li>
-<p>This phase consists of <code>num_vertices - 1</code> iterations.</p>
-</li>
-<li>
-<p>In each iteration, the algorithm iterates through <strong>all</strong> <code>edges (u, v)</code> with <code>weight w</code> in the graph.</p>
-</li>
-<li>
-<p>For each <code>edge</code>, it performs a <strong>relaxation</strong> step:</p>
-</li>
-<li>
-<p>If the current shortest path to <code>u</code> (<code>distances[u]</code>) is not <code>infinity</code> (meaning <code>u</code> is reachable) and <code>distances[u] + w</code> (the path through <code>u</code> to <code>v</code>) is less than the current shortest path to <code>v</code> (<code>distances[v]</code>):</p>
-</li>
-<li>
-<p><code>distances[v]</code> is updated to <code>distances[u] + w</code>. This means a shorter path to <code>v</code> has been found.</p>
-<pre><code>      &lt;/li&gt;
-</code></pre>
-  </li>
-</li>
-</ul>
-<p><strong>Negative Cycle Detection Phase:</strong></p>
-<ul>
-<li>After <code>num_vertices - 1</code> iterations, all shortest paths (if no negative cycles exist) should be finalized.</li>
-<li>A <code>V</code>-th (or <code>num_vertices</code>-th) iteration is performed over all <code>edges</code>.</li>
-<li>If, during this <code>V</code>-th iteration, any <code>distance</code> <code>distances[v]</code> is still updated, it signifies that there is a negative cycle reachable from the <code>start_node</code>. This is because a path length would continue to decrease indefinitely due to the negative cycle.</li>
-</ul>
-<p><strong>Result:</strong></p>
-<ul>
-<li>If no negative cycle is detected, the <code>distances</code> map/array contains the shortest paths from <code>start_node</code> to all other <code>vertices</code>.</li>
-<li>Otherwise, an indication of a negative cycle is returned.</li>
-</ul>
-<p><a href="#implementation">Back to Implementation</a></p>
-<h2 id="applications">Applications</h2>
-<h3 id="application">Application</h3>
-<p>The <code>Bellman-Ford Algorithm</code> is crucial in scenarios where negative edge weights are a possibility, and especially for detecting negative cycles.</p>
-<ul>
-<li><strong>Network Routing Protocols:</strong> Used in protocols like the Distance Vector Routing Protocol (e.g., RIP) to compute shortest paths. The ability to handle negative weights is important, though negative cycles can cause issues if not detected.</li>
-<li><strong>Arbitrage Detection:</strong> In financial markets, if currencies are nodes and exchange rates are edge weights (transformed logarithmically), a negative cycle indicates an arbitrage opportunity (a sequence of trades that yields a profit without risk).</li>
-<li><strong>Graph Analysis with Negative Costs:</strong> Any problem where &ldquo;costs&rdquo; can represent benefits (negative costs) and you need to find the shortest path, such as optimizing resource usage or minimizing penalties.</li>
-<li><strong>Distributed Systems:</strong> For certain synchronization and resource allocation problems where negative values might indicate resource availability or gain.</li>
-</ul>
-
-    </div>
-</article>
-
-<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
-    
-    <a href="http://localhost:41691/sdet-prep-site/dsa-42/algorithms/graph_shortest_paths_mst/boruvka/" class="nav-btn">← Previous</a>
-    
-    
-    <a href="http://localhost:41691/sdet-prep-site/dsa-42/algorithms/graph_shortest_paths_mst/" class="nav-btn">Up</a>
-
-    
-    <span></span>
-    
-</div>
-
-    </main>
-
-    <footer class="footer">
-        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
-    </footer>
-
-    <script>
-        
-        document.addEventListener("DOMContentLoaded", function() {
-            const content = document.body;
-            
-            const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT, null, false);
-            let node;
-            const nodesToReplace = [];
-            while(node = walker.nextNode()) {
-                if (node.nodeValue.includes("[-]")) nodesToReplace.push(node);
-            }
-            nodesToReplace.forEach(textNode => {
-                const span = document.createElement('span');
-                span.innerHTML = textNode.nodeValue.replace(/\[-\]/g, '<span class="started-icon" title="Started"></span>');
-                textNode.parentNode.replaceChild(span, textNode);
-            });
-        });
-    </script>
-
-    <script>
-        const body = document.getElementById('theme-body');
-        const btn = document.getElementById('theme-toggle');
-        const currentTheme = localStorage.getItem('theme');
-
-        
-        function updateButtonText() {
-            if (body.classList.contains('theme-terminal')) {
-                btn.textContent = "Light Mode";
-            } else {
-                btn.textContent = "Dark Mode";
-            }
-        }
-
-        if (currentTheme === 'terminal') {
-            body.classList.add('theme-terminal');
-        }
-        
-        
-        updateButtonText();
-
-        btn.addEventListener('click', () => {
-            body.classList.toggle('theme-terminal');
-            updateButtonText();
-            
-            let theme = 'natural';
-            if (body.classList.contains('theme-terminal')) {
-                theme = 'terminal';
-            }
-            localStorage.setItem('theme', theme);
-        });
-    </script>
-</body>
-</html>
+After 4th pass: A:0, B:-1, C:2, D:-2, E:-1</p></li></ul><ol start=3><li>Final check for negative cycles: Repeat one more time (Vth pass).</li></ol><ul><li>If any dist[v] is updated, a negative cycle exists.</li></ul><p><a href=#code-walkthrough>Jump to Code Walkthrough</a></p><h2 id=implementation>Implementation</h2><h3 id=python>Python</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>math</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>def</span> <span style=color:#268bd2>bellman_ford</span>(<span style=color:#268bd2>num_vertices</span>, <span style=color:#268bd2>edges</span>, <span style=color:#268bd2>start_node</span>):
+</span></span><span style=display:flex><span>    <span style=color:#2aa198>&#34;&#34;&#34;
+</span></span></span><span style=display:flex><span><span style=color:#2aa198>    Finds the shortest paths from a single start_node in a weighted graph.
+</span></span></span><span style=display:flex><span><span style=color:#2aa198>    Can handle negative edge weights and detect negative cycles.
+</span></span></span><span style=display:flex><span><span style=color:#2aa198>    &lt;code&gt;num_vertices&lt;/code&gt;: total number of vertices (0 to num_vertices-1)
+</span></span></span><span style=display:flex><span><span style=color:#2aa198>    &lt;code&gt;edges&lt;/code&gt;: list of (u, v, weight) tuples
+</span></span></span><span style=display:flex><span><span style=color:#2aa198>    &lt;code&gt;start_node&lt;/code&gt;: the source node
+</span></span></span><span style=display:flex><span><span style=color:#2aa198>    &#34;&#34;&#34;</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic># Initialize distances: all to infinity, start_node to 0</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>distances</span> = {<span style=color:#268bd2>i</span>: <span style=color:#268bd2>math</span>.<span style=color:#268bd2>inf</span> <span style=color:#859900>for</span> <span style=color:#268bd2>i</span> <span style=color:#859900>in</span> <span style=color:#cb4b16>range</span>(<span style=color:#268bd2>num_vertices</span>)}
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>start_node</span>] = <span style=color:#2aa198;font-weight:700>0</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic># Relax all edges num_vertices - 1 times</span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>for</span> <span style=color:#268bd2>_</span> <span style=color:#859900>in</span> <span style=color:#cb4b16>range</span>(<span style=color:#268bd2>num_vertices</span> - <span style=color:#2aa198;font-weight:700>1</span>):
+</span></span><span style=display:flex><span>        <span style=color:#859900>for</span> <span style=color:#268bd2>u</span>, <span style=color:#268bd2>v</span>, <span style=color:#268bd2>weight</span> <span style=color:#859900>in</span> <span style=color:#268bd2>edges</span>:
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>u</span>] != <span style=color:#268bd2>math</span>.<span style=color:#268bd2>inf</span> <span style=color:#859900>and</span> <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>u</span>] + <span style=color:#268bd2>weight</span> &lt; <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>v</span>]:
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>v</span>] = <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>u</span>] + <span style=color:#268bd2>weight</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic># Check for negative cycles</span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>for</span> <span style=color:#268bd2>u</span>, <span style=color:#268bd2>v</span>, <span style=color:#268bd2>weight</span> <span style=color:#859900>in</span> <span style=color:#268bd2>edges</span>:
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>u</span>] != <span style=color:#268bd2>math</span>.<span style=color:#268bd2>inf</span> <span style=color:#859900>and</span> <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>u</span>] + <span style=color:#268bd2>weight</span> &lt; <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>v</span>]:
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span> <span style=color:#2aa198>&#34;Graph contains a negative cycle accessible from start_node&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>distances</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># Example Graph (from Wikipedia, for 0 to 4 nodes)</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># Edges: (u, v, weight)</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># num_vertices = 5</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># edges = [</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#     (0, 1, -1), (0, 2, 4),</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#     (1, 2, 3), (1, 3, 2), (1, 4, 2),</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#     (3, 2, 5), (3, 1, 1),</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#     (4, 3, -3)</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># ]</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># start_node = 0</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># # Expected output: {0: 0, 1: -1, 2: 2, 3: -2, 4: 1}</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># print(bellman_ford(num_vertices, edges, start_node))</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># Example with negative cycle</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># edges_neg_cycle = [</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#     (0, 1, 1), (1, 2, -1), (2, 0, -1)</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># ]</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># print(bellman_ford(3, edges_neg_cycle, 0)) # Graph contains a negative cycle...</span>
+</span></span></code></pre></div><h3 id=javascript>Javascript</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=display:flex><span><span style=color:#859900>function</span> <span style=color:#268bd2>bellmanFord</span>(<span style=color:#268bd2>numVertices</span>, <span style=color:#268bd2>edges</span>, <span style=color:#268bd2>startNode</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// Initialize distances: all to infinity, startNode to 0
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900>const</span> <span style=color:#268bd2>distances</span> = {};
+</span></span><span style=display:flex><span>    <span style=color:#859900>for</span> (<span style=color:#859900>let</span> <span style=color:#268bd2>i</span> = <span style=color:#2aa198;font-weight:700>0</span>; <span style=color:#268bd2>i</span> &lt; <span style=color:#268bd2>numVertices</span>; <span style=color:#268bd2>i</span>++) {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>i</span>] = <span style=color:#859900;font-weight:700>Infinity</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>startNode</span>] = <span style=color:#2aa198;font-weight:700>0</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// Relax all edges numVertices - 1 times
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900>for</span> (<span style=color:#859900>let</span> <span style=color:#268bd2>i</span> = <span style=color:#2aa198;font-weight:700>0</span>; <span style=color:#268bd2>i</span> &lt; <span style=color:#268bd2>numVertices</span> - <span style=color:#2aa198;font-weight:700>1</span>; <span style=color:#268bd2>i</span>++) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>for</span> (<span style=color:#859900>const</span> [<span style=color:#268bd2>u</span>, <span style=color:#268bd2>v</span>, <span style=color:#268bd2>weight</span>] <span style=color:#859900>of</span> <span style=color:#268bd2>edges</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> (<span style=color:#268bd2>distances</span>[<span style=color:#268bd2>u</span>] !== <span style=color:#859900;font-weight:700>Infinity</span> &amp;&amp; <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>u</span>] + <span style=color:#268bd2>weight</span> &lt; <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>v</span>]) {
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>v</span>] = <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>u</span>] + <span style=color:#268bd2>weight</span>;
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// Check for negative cycles
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900>for</span> (<span style=color:#859900>const</span> [<span style=color:#268bd2>u</span>, <span style=color:#268bd2>v</span>, <span style=color:#268bd2>weight</span>] <span style=color:#859900>of</span> <span style=color:#268bd2>edges</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>distances</span>[<span style=color:#268bd2>u</span>] !== <span style=color:#859900;font-weight:700>Infinity</span> &amp;&amp; <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>u</span>] + <span style=color:#268bd2>weight</span> &lt; <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>v</span>]) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span> <span style=color:#2aa198>&#34;Graph contains a negative cycle accessible from start_node&#34;</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>distances</span>;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const numVertices = 5;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const edges = [
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     [0, 1, -1], [0, 2, 4],
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     [1, 2, 3], [1, 3, 2], [1, 4, 2],
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     [3, 2, 5], [3, 1, 1],
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     [4, 3, -3]
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// ];
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const startNode = 0;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// console.log(bellmanFord(numVertices, edges, startNode)); // { &#39;0&#39;: 0, &#39;1&#39;: -1, &#39;2&#39;: 2, &#39;3&#39;: -2, &#39;4&#39;: 1 }
+</span></span></span></code></pre></div><h3 id=typescript>Typescript</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-typescript data-lang=typescript><span style=display:flex><span><span style=color:#859900>type</span> <span style=color:#268bd2>Edge</span> = [<span style=color:#859900;font-weight:700>number</span>, <span style=color:#859900;font-weight:700>number</span>, <span style=color:#859900;font-weight:700>number</span>]; <span style=color:#93a1a1;font-style:italic>// [u, v, weight]
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#859900>function</span> <span style=color:#268bd2>bellmanFordTS</span>(<span style=color:#268bd2>numVertices</span>: <span style=color:#859900;font-weight:700>number</span>, <span style=color:#268bd2>edges</span>: <span style=color:#859900;font-weight:700>Edge</span>[], <span style=color:#268bd2>startNode</span>: <span style=color:#859900;font-weight:700>number</span>): <span style=color:#268bd2>Record</span>&lt;<span style=color:#268bd2;font-weight:700>number</span>, <span style=color:#268bd2>number</span>&gt; | <span style=color:#859900;font-weight:700>string</span> {
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// Initialize distances: all to infinity, startNode to 0
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900>const</span> <span style=color:#268bd2>distances</span>: <span style=color:#859900;font-weight:700>Record</span>&lt;<span style=color:#268bd2;font-weight:700>number</span>, <span style=color:#268bd2>number</span>&gt; = {};
+</span></span><span style=display:flex><span>    <span style=color:#859900>for</span> (<span style=color:#859900>let</span> <span style=color:#268bd2>i</span> = <span style=color:#2aa198;font-weight:700>0</span>; <span style=color:#268bd2>i</span> &lt; <span style=color:#268bd2>numVertices</span>; <span style=color:#268bd2>i</span>++) {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>i</span>] = <span style=color:#859900;font-weight:700>Infinity</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>startNode</span>] = <span style=color:#2aa198;font-weight:700>0</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// Relax all edges numVertices - 1 times
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900>for</span> (<span style=color:#859900>let</span> <span style=color:#268bd2>i</span> = <span style=color:#2aa198;font-weight:700>0</span>; <span style=color:#268bd2>i</span> &lt; <span style=color:#268bd2>numVertices</span> - <span style=color:#2aa198;font-weight:700>1</span>; <span style=color:#268bd2>i</span>++) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>for</span> (<span style=color:#859900>const</span> [<span style=color:#268bd2>u</span>, <span style=color:#268bd2>v</span>, <span style=color:#268bd2>weight</span>] <span style=color:#859900>of</span> <span style=color:#268bd2>edges</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> (<span style=color:#268bd2>distances</span>[<span style=color:#268bd2>u</span>] !== <span style=color:#859900;font-weight:700>Infinity</span> &amp;&amp; <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>u</span>] + <span style=color:#268bd2>weight</span> &lt; <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>v</span>]) {
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>v</span>] = <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>u</span>] + <span style=color:#268bd2>weight</span>;
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// Check for negative cycles
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900>for</span> (<span style=color:#859900>const</span> [<span style=color:#268bd2>u</span>, <span style=color:#268bd2>v</span>, <span style=color:#268bd2>weight</span>] <span style=color:#859900>of</span> <span style=color:#268bd2>edges</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>distances</span>[<span style=color:#268bd2>u</span>] !== <span style=color:#859900;font-weight:700>Infinity</span> &amp;&amp; <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>u</span>] + <span style=color:#268bd2>weight</span> &lt; <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>v</span>]) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span> <span style=color:#2aa198>&#34;Graph contains a negative cycle accessible from start_node&#34;</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>distances</span>;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const numVerticesTS = 5;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const edgesTS: Edge[] = [
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     [0, 1, -1], [0, 2, 4],
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     [1, 2, 3], [1, 3, 2], [1, 4, 2],
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     [3, 2, 5], [3, 1, 1],
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     [4, 3, -3]
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// ];
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const startNodeTS = 0;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// console.log(bellmanFordTS(numVerticesTS, edgesTS, startNodeTS)); // { &#39;0&#39;: 0, &#39;1&#39;: -1, &#39;2&#39;: 2, &#39;3&#39;: -2, &#39;4&#39;: 1 }
+</span></span></span></code></pre></div><h3 id=cpp>Cpp</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-cpp data-lang=cpp><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;vector&gt;</span><span style=color:#93a1a1;font-style:italic>
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;iostream&gt;</span><span style=color:#93a1a1;font-style:italic>
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;limits&gt;</span><span style=color:#93a1a1;font-style:italic> </span><span style=color:#93a1a1;font-style:italic>// For std::numeric_limits
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;map&gt;</span><span style=color:#93a1a1;font-style:italic>    </span><span style=color:#93a1a1;font-style:italic>// For mapping node indices to chars if needed, or just use 0..N-1
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#859900>struct</span> <span style=color:#cb4b16>Edge</span> {
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>u</span>, <span style=color:#268bd2>v</span>, <span style=color:#268bd2>weight</span>;
+</span></span><span style=display:flex><span>};
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#268bd2>std</span>::<span style=color:#268bd2>map</span>&lt;<span style=color:#859900;font-weight:700>int</span>, <span style=color:#859900;font-weight:700>int</span>&gt; <span style=color:#268bd2>bellmanFord</span>(<span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>num_vertices</span>, <span style=color:#859900>const</span> <span style=color:#268bd2>std</span>::<span style=color:#268bd2>vector</span>&lt;<span style=color:#268bd2>Edge</span>&gt;&amp; <span style=color:#268bd2>edges</span>, <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>start_node</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// Initialize distances: all to infinity, start_node to 0
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#268bd2>std</span>::<span style=color:#268bd2>map</span>&lt;<span style=color:#859900;font-weight:700>int</span>, <span style=color:#859900;font-weight:700>int</span>&gt; <span style=color:#268bd2>distances</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900>for</span> (<span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>i</span> = <span style=color:#2aa198;font-weight:700>0</span>; <span style=color:#268bd2>i</span> &lt; <span style=color:#268bd2>num_vertices</span>; ++<span style=color:#268bd2>i</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>i</span>] = <span style=color:#268bd2>std</span>::<span style=color:#268bd2>numeric_limits</span>&lt;<span style=color:#859900;font-weight:700>int</span>&gt;::<span style=color:#268bd2>max</span>();
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>start_node</span>] = <span style=color:#2aa198;font-weight:700>0</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// Relax all edges num_vertices - 1 times
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900>for</span> (<span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>i</span> = <span style=color:#2aa198;font-weight:700>0</span>; <span style=color:#268bd2>i</span> &lt; <span style=color:#268bd2>num_vertices</span> - <span style=color:#2aa198;font-weight:700>1</span>; ++<span style=color:#268bd2>i</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>for</span> (<span style=color:#859900>const</span> <span style=color:#859900>auto</span>&amp; <span style=color:#268bd2>edge</span> : <span style=color:#268bd2>edges</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> (<span style=color:#268bd2>distances</span>[<span style=color:#268bd2>edge</span>.<span style=color:#268bd2>u</span>] != <span style=color:#268bd2>std</span>::<span style=color:#268bd2>numeric_limits</span>&lt;<span style=color:#859900;font-weight:700>int</span>&gt;::<span style=color:#268bd2>max</span>() &amp;&amp;
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>edge</span>.<span style=color:#268bd2>u</span>] + <span style=color:#268bd2>edge</span>.<span style=color:#268bd2>weight</span> &lt; <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>edge</span>.<span style=color:#268bd2>v</span>]) {
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>edge</span>.<span style=color:#268bd2>v</span>] = <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>edge</span>.<span style=color:#268bd2>u</span>] + <span style=color:#268bd2>edge</span>.<span style=color:#268bd2>weight</span>;
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// Check for negative cycles
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900>for</span> (<span style=color:#859900>const</span> <span style=color:#859900>auto</span>&amp; <span style=color:#268bd2>edge</span> : <span style=color:#268bd2>edges</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>distances</span>[<span style=color:#268bd2>edge</span>.<span style=color:#268bd2>u</span>] != <span style=color:#268bd2>std</span>::<span style=color:#268bd2>numeric_limits</span>&lt;<span style=color:#859900;font-weight:700>int</span>&gt;::<span style=color:#268bd2>max</span>() &amp;&amp;
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>edge</span>.<span style=color:#268bd2>u</span>] + <span style=color:#268bd2>edge</span>.<span style=color:#268bd2>weight</span> &lt; <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>edge</span>.<span style=color:#268bd2>v</span>]) {
+</span></span><span style=display:flex><span>            <span style=color:#93a1a1;font-style:italic>// A negative cycle is detected and is reachable from start_node
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#93a1a1;font-style:italic>// For simplicity, we return an empty map or throw an exception.
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#93a1a1;font-style:italic>// A more robust implementation might return a special error code.
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#268bd2>distances</span>.<span style=color:#268bd2>clear</span>(); <span style=color:#93a1a1;font-style:italic>// Clear distances to indicate error
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#268bd2>distances</span>[-<span style=color:#2aa198;font-weight:700>1</span>] = -<span style=color:#2aa198;font-weight:700>1</span>; <span style=color:#93a1a1;font-style:italic>// Special indicator for negative cycle
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#859900>return</span> <span style=color:#268bd2>distances</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>distances</span>;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// int main() {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     int num_vertices = 5;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     std::vector&lt;Edge&gt; edges = {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         {0, 1, -1}, {0, 2, 4},
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         {1, 2, 3}, {1, 3, 2}, {1, 4, 2},
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         {3, 2, 5}, {3, 1, 1},
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         {4, 3, -3}
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     };
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     int start_node = 0;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     std::map&lt;int, int&gt; result = bellmanFord(num_vertices, edges, start_node);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     if (result.count(-1)) {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         std::cout &lt;&lt; &#34;Graph contains a negative cycle.&#34; &lt;&lt; std::endl;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     } else {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         for (const auto&amp; pair : result) {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//             std::cout &lt;&lt; &#34;Distance to node &#34; &lt;&lt; pair.first &lt;&lt; &#34;: &#34; &lt;&lt; pair.second &lt;&lt; std::endl;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         }
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     }
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     return 0;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// }
+</span></span></span></code></pre></div><h3 id=go>Go</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#dc322f;font-weight:700>package</span> <span style=color:#268bd2>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> (
+</span></span><span style=display:flex><span>    <span style=color:#2aa198>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#2aa198>&#34;math&#34;</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>type</span> <span style=color:#268bd2>BellmanFordEdge</span> <span style=color:#859900>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>U</span>, <span style=color:#268bd2>V</span>   <span style=color:#859900;font-weight:700>int</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>Weight</span> <span style=color:#859900;font-weight:700>int</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>func</span> <span style=color:#268bd2>bellmanFord</span>(<span style=color:#268bd2>numVertices</span> <span style=color:#859900;font-weight:700>int</span>, <span style=color:#268bd2>edges</span> []<span style=color:#268bd2>BellmanFordEdge</span>, <span style=color:#268bd2>startNode</span> <span style=color:#859900;font-weight:700>int</span>) (<span style=color:#859900>map</span>[<span style=color:#859900;font-weight:700>int</span>]<span style=color:#859900;font-weight:700>int</span>, <span style=color:#859900;font-weight:700>error</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// Initialize distances: all to infinity, startNode to 0</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>distances</span> := <span style=color:#cb4b16>make</span>(<span style=color:#859900>map</span>[<span style=color:#859900;font-weight:700>int</span>]<span style=color:#859900;font-weight:700>int</span>)
+</span></span><span style=display:flex><span>    <span style=color:#859900>for</span> <span style=color:#268bd2>i</span> := <span style=color:#2aa198;font-weight:700>0</span>; <span style=color:#268bd2>i</span> &lt; <span style=color:#268bd2>numVertices</span>; <span style=color:#268bd2>i</span>++ {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>i</span>] = <span style=color:#268bd2>math</span>.<span style=color:#268bd2>MaxInt32</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>startNode</span>] = <span style=color:#2aa198;font-weight:700>0</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// Relax all edges numVertices - 1 times</span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>for</span> <span style=color:#268bd2>i</span> := <span style=color:#2aa198;font-weight:700>0</span>; <span style=color:#268bd2>i</span> &lt; <span style=color:#268bd2>numVertices</span>-<span style=color:#2aa198;font-weight:700>1</span>; <span style=color:#268bd2>i</span>++ {
+</span></span><span style=display:flex><span>        <span style=color:#859900>for</span> <span style=color:#268bd2>_</span>, <span style=color:#268bd2>edge</span> := <span style=color:#859900>range</span> <span style=color:#268bd2>edges</span> {
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>edge</span>.<span style=color:#268bd2>U</span>] != <span style=color:#268bd2>math</span>.<span style=color:#268bd2>MaxInt32</span> &amp;&amp; <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>edge</span>.<span style=color:#268bd2>U</span>]+<span style=color:#268bd2>edge</span>.<span style=color:#268bd2>Weight</span> &lt; <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>edge</span>.<span style=color:#268bd2>V</span>] {
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>edge</span>.<span style=color:#268bd2>V</span>] = <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>edge</span>.<span style=color:#268bd2>U</span>] + <span style=color:#268bd2>edge</span>.<span style=color:#268bd2>Weight</span>
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// Check for negative cycles</span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>for</span> <span style=color:#268bd2>_</span>, <span style=color:#268bd2>edge</span> := <span style=color:#859900>range</span> <span style=color:#268bd2>edges</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>edge</span>.<span style=color:#268bd2>U</span>] != <span style=color:#268bd2>math</span>.<span style=color:#268bd2>MaxInt32</span> &amp;&amp; <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>edge</span>.<span style=color:#268bd2>U</span>]+<span style=color:#268bd2>edge</span>.<span style=color:#268bd2>Weight</span> &lt; <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>edge</span>.<span style=color:#268bd2>V</span>] {
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span> <span style=color:#859900;font-weight:700>nil</span>, <span style=color:#268bd2>fmt</span>.<span style=color:#268bd2>Errorf</span>(<span style=color:#2aa198>&#34;graph contains a negative cycle accessible from start_node&#34;</span>)
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>distances</span>, <span style=color:#859900;font-weight:700>nil</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// func main() {</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     numVertices := 5</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     edges := []BellmanFordEdge{</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         {0, 1, -1}, {0, 2, 4},</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         {1, 2, 3}, {1, 3, 2}, {1, 4, 2},</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         {3, 2, 5}, {3, 1, 1},</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         {4, 3, -3},</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     }</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     startNode := 0</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     result, err := bellmanFord(numVertices, edges, startNode)</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     if err != nil {</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         fmt.Println(err)</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     } else {</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         fmt.Println(&#34;Shortest distances:&#34;, result) // map[0:0 1:-1 2:2 3:-2 4:1]</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     }</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// }</span>
+</span></span></code></pre></div><h3 id=d>D</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-d data-lang=d><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>std.stdio</span>;
+</span></span><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>std.array</span>;
+</span></span><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>std.algorithm</span>; <span style=color:#93a1a1;font-style:italic>// For std.algorithm.min
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>std.conv</span>; <span style=color:#93a1a1;font-style:italic>// For to!string
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#859900>struct</span> <span style=color:#cb4b16>BellmanFordEdge</span> {
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>u</span>, <span style=color:#268bd2>v</span>, <span style=color:#268bd2>weight</span>;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#268bd2>Tuple</span>!(<span style=color:#859900;font-weight:700>int</span>[<span style=color:#859900;font-weight:700>int</span>], <span style=color:#cb4b16>string</span>) <span style=color:#268bd2>bellmanFord</span>(<span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>numVertices</span>, <span style=color:#268bd2>BellmanFordEdge</span>[] <span style=color:#268bd2>edges</span>, <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>startNode</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// Initialize distances: all to infinity, startNode to 0
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900>auto</span> <span style=color:#268bd2>distances</span> = <span style=color:#859900>new</span> <span style=color:#859900;font-weight:700>int</span>[<span style=color:#859900;font-weight:700>int</span>];
+</span></span><span style=display:flex><span>    <span style=color:#859900>foreach</span> (<span style=color:#268bd2>i</span>; <span style=color:#2aa198;font-weight:700>0</span> .. <span style=color:#268bd2>numVertices</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>i</span>] = <span style=color:#859900;font-weight:700>int</span>.<span style=color:#268bd2>max</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>startNode</span>] = <span style=color:#2aa198;font-weight:700>0</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// Relax all edges numVertices - 1 times
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900>foreach</span> (<span style=color:#268bd2>i</span>; <span style=color:#2aa198;font-weight:700>0</span> .. <span style=color:#268bd2>numVertices</span> - <span style=color:#2aa198;font-weight:700>1</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>foreach</span> (<span style=color:#268bd2>edge</span>; <span style=color:#268bd2>edges</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> (<span style=color:#268bd2>distances</span>[<span style=color:#268bd2>edge</span>.<span style=color:#268bd2>u</span>] != <span style=color:#859900;font-weight:700>int</span>.<span style=color:#268bd2>max</span> &amp;&amp; <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>edge</span>.<span style=color:#268bd2>u</span>] + <span style=color:#268bd2>edge</span>.<span style=color:#268bd2>weight</span> &lt; <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>edge</span>.<span style=color:#268bd2>v</span>]) {
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>edge</span>.<span style=color:#268bd2>v</span>] = <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>edge</span>.<span style=color:#268bd2>u</span>] + <span style=color:#268bd2>edge</span>.<span style=color:#268bd2>weight</span>;
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// Check for negative cycles
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900>foreach</span> (<span style=color:#268bd2>edge</span>; <span style=color:#268bd2>edges</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>distances</span>[<span style=color:#268bd2>edge</span>.<span style=color:#268bd2>u</span>] != <span style=color:#859900;font-weight:700>int</span>.<span style=color:#268bd2>max</span> &amp;&amp; <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>edge</span>.<span style=color:#268bd2>u</span>] + <span style=color:#268bd2>edge</span>.<span style=color:#268bd2>weight</span> &lt; <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>edge</span>.<span style=color:#268bd2>v</span>]) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span> <span style=color:#859900>typeof</span>(<span style=color:#859900>return</span>)(<span style=color:#859900;font-weight:700>null</span>, <span style=color:#2aa198>&#34;Graph contains a negative cycle accessible from start_node&#34;</span>);
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#859900>typeof</span>(<span style=color:#859900>return</span>)(<span style=color:#268bd2>distances</span>, <span style=color:#2aa198>&#34;&#34;</span>);
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// void main() {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     int numVertices = 5;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     BellmanFordEdge[] edges = [
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         BellmanFordEdge(0, 1, -1), BellmanFordEdge(0, 2, 4),
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         BellmanFordEdge(1, 2, 3), BellmanFordEdge(1, 3, 2), BellmanFordEdge(1, 4, 2),
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         BellmanFordEdge(3, 2, 5), BellmanFordEdge(3, 1, 1),
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         BellmanFordEdge(4, 3, -3)
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     ];
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     int startNode = 0;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     auto result = bellmanFord(numVertices, edges, startNode);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     if (result.error.length &gt; 0) {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         writeln(result.error);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     } else {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         writeln(&#34;Shortest distances: &#34;, result.distances); // [0:0, 1:-1, 2:2, 3:-2, 4:1]
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     }
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// }
+</span></span></span></code></pre></div><h2 id=code-walkthrough>Code Walkthrough</h2><p><a href=#implementation>Back to Implementation</a></p><h3 id=code-walkthrough-1>Code Walkthrough</h3><p>The <code>Bellman-Ford Algorithm</code> implements the relaxation principle iteratively to find shortest paths and detect negative cycles.</p><hr><p><strong>Initialization:</strong></p><ul><li><code>num_vertices</code>: The total number of <code>vertices</code> in the graph.</li><li><code>edges</code>: A list of <code>tuples/structs</code> in the format <code>(u, v, weight)</code>.</li><li><code>start_node</code>: The source <code>vertex</code> from which to find shortest paths.</li><li>A <code>distances</code> map/array is created. <code>distances[i]</code> stores the shortest distance from <code>start_node</code> to <code>node i</code>. Initially, <code>distances[start_node]</code> is 0, and all other <code>distances</code> are <code>infinity</code>.</li></ul><p><strong>Relaxation Phase:</strong></p><ul><li><p>This phase consists of <code>num_vertices - 1</code> iterations.</p></li><li><p>In each iteration, the algorithm iterates through <strong>all</strong> <code>edges (u, v)</code> with <code>weight w</code> in the graph.</p></li><li><p>For each <code>edge</code>, it performs a <strong>relaxation</strong> step:</p></li><li><p>If the current shortest path to <code>u</code> (<code>distances[u]</code>) is not <code>infinity</code> (meaning <code>u</code> is reachable) and <code>distances[u] + w</code> (the path through <code>u</code> to <code>v</code>) is less than the current shortest path to <code>v</code> (<code>distances[v]</code>):</p></li><li><p><code>distances[v]</code> is updated to <code>distances[u] + w</code>. This means a shorter path to <code>v</code> has been found.</p><pre><code>      &lt;/li&gt;
+</code></pre></li></li></ul><p><strong>Negative Cycle Detection Phase:</strong></p><ul><li>After <code>num_vertices - 1</code> iterations, all shortest paths (if no negative cycles exist) should be finalized.</li><li>A <code>V</code>-th (or <code>num_vertices</code>-th) iteration is performed over all <code>edges</code>.</li><li>If, during this <code>V</code>-th iteration, any <code>distance</code> <code>distances[v]</code> is still updated, it signifies that there is a negative cycle reachable from the <code>start_node</code>. This is because a path length would continue to decrease indefinitely due to the negative cycle.</li></ul><p><strong>Result:</strong></p><ul><li>If no negative cycle is detected, the <code>distances</code> map/array contains the shortest paths from <code>start_node</code> to all other <code>vertices</code>.</li><li>Otherwise, an indication of a negative cycle is returned.</li></ul><p><a href=#implementation>Back to Implementation</a></p><h2 id=applications>Applications</h2><h3 id=application>Application</h3><p>The <code>Bellman-Ford Algorithm</code> is crucial in scenarios where negative edge weights are a possibility, and especially for detecting negative cycles.</p><ul><li><strong>Network Routing Protocols:</strong> Used in protocols like the Distance Vector Routing Protocol (e.g., RIP) to compute shortest paths. The ability to handle negative weights is important, though negative cycles can cause issues if not detected.</li><li><strong>Arbitrage Detection:</strong> In financial markets, if currencies are nodes and exchange rates are edge weights (transformed logarithmically), a negative cycle indicates an arbitrage opportunity (a sequence of trades that yields a profit without risk).</li><li><strong>Graph Analysis with Negative Costs:</strong> Any problem where &ldquo;costs&rdquo; can represent benefits (negative costs) and you need to find the shortest path, such as optimizing resource usage or minimizing penalties.</li><li><strong>Distributed Systems:</strong> For certain synchronization and resource allocation problems where negative values might indicate resource availability or gain.</li></ul></div></article><div class=navigation style="margin-top:5rem;display:flex;justify-content:space-between;border-top:1px solid var(--border);padding-top:2rem"><a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/algorithms/graph_shortest_paths_mst/boruvka/ class=nav-btn>← Previous</a>
+<a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/algorithms/graph_shortest_paths_mst/ class=nav-btn>Up</a>
+<span></span></div></main><footer class=footer><p>Built with Hugo. No scripts. No tracking. Just the truth.</p></footer><script>document.addEventListener("DOMContentLoaded",function(){const n=document.body,s=document.createTreeWalker(n,NodeFilter.SHOW_TEXT,null,!1);let e;const t=[];for(;e=s.nextNode();)e.nodeValue.includes("[-]")&&t.push(e);t.forEach(e=>{const t=document.createElement("span");t.innerHTML=e.nodeValue.replace(/\[-\]/g,'<span class="started-icon" title="Started"></span>'),e.parentNode.replaceChild(t,e)})})</script><script>const body=document.getElementById("theme-body"),btn=document.getElementById("theme-toggle"),currentTheme=localStorage.getItem("theme");function updateButtonText(){body.classList.contains("theme-terminal")?btn.textContent="Light Mode":btn.textContent="Dark Mode"}currentTheme==="terminal"&&body.classList.add("theme-terminal"),updateButtonText(),btn.addEventListener("click",()=>{body.classList.toggle("theme-terminal"),updateButtonText();let e="natural";body.classList.contains("theme-terminal")&&(e="terminal"),localStorage.setItem("theme",e)})</script></body></html>

@@ -1,716 +1,203 @@
-<!DOCTYPE html>
-<html lang="en-us">
-<head><script src="/sdet-prep-site/livereload.js?mindelay=10&amp;v=2&amp;port=41691&amp;path=sdet-prep-site/livereload" data-no-instant defer></script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> | SDET Interview Preparation Kit</title>
-    <link rel="stylesheet" href="http://localhost:41691/sdet-prep-site/css/style.css">
-    <link rel="stylesheet" href="http://localhost:41691/sdet-prep-site/css/terminal.css">
-    
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
-    
-    
-    <link rel="stylesheet" href="http://localhost:41691/sdet-prep-site/lib/katex/katex.min.css">
-    <script defer src="http://localhost:41691/sdet-prep-site/lib/katex/katex.min.js"></script>
-    <script defer src="http://localhost:41691/sdet-prep-site/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            renderMathInElement(document.body, {
-                delimiters: [
-                    {left: "$$", right: "$$", display: true},
-                    {left: "$", right: "$", display: false}
-                ]
-            });
-        });
-    </script>
-</head>
-<body id="theme-body">
-    <button id="theme-toggle">Switch Theme</button>
-    <header>
-        <nav>
-            <ul>
-                <li><a href="http://localhost:41691/sdet-prep-site/">Index</a></li>
-                
-            </ul>
-        </nav>
-        <div class="site-breadcrumb">
-            <a href="http://localhost:41691/sdet-prep-site/">Home</a>
-            
-                
-                    <span>/</span> <a href="http://localhost:41691/sdet-prep-site/">SDET Interview Dashboard</a>
-                
-            
-                
-                    <span>/</span> <a href="http://localhost:41691/sdet-prep-site/misc-backup/">QA Automation Interview Preparation</a>
-                
-            
-            
-                <span>/</span> 
-            
-        </div>
-    </header>
-
-    <main>
-        
-<article>
-    
-    <h1></h1>
-    <div class="content-body" style="margin-top: 2rem;">
-        <h1 id="java-regex-cheat-sheet">Java regex cheat sheet</h1>
-<p><strong>User:</strong> Mohammed Shahid (<a href="mailto:shahid.xkcd@gmail.com">shahid.xkcd@gmail.com</a>)<br>
-<strong>Created:</strong> 12/1/2025 7:05:59<br>
-<strong>Updated:</strong> 12/1/2025 7:36:06<br>
-<strong>Exported:</strong> 1/31/2026 18:05:43<br>
-<strong>Link:</strong> <a href="https://chatgpt.com/c/692cf0ce-7bf0-8323-a303-db9311f61099">https://chatgpt.com/c/692cf0ce-7bf0-8323-a303-db9311f61099</a></p>
-<h2 id="prompt">Prompt:</h2>
-<p>teach me Java RegeEx And All i need to know No BS , strigh tto the point and give me things to remember so i dont&rsquo; forget the main thingy so  i can recall without memorizing syntax like a soydev</p>
-<h2 id="response">Response:</h2>
-<p>Got you. Here is <strong>Java Regex explained like a systems programmer</strong>, no fluff, no soydev energy.<br>
-This is everything you need to know + how to <em>actually</em> remember it.</p>
-<hr>
-<h1 id="-1-the-only-mental-model-you-need">🚀 1. The Only Mental Model You Need</h1>
-<p>A regex in Java is just:</p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>Pattern  +  Matcher  +  Input String
-</span></span></code></pre></div><p>Java’s regex is <em>basically</em> PCRE-lite.</p>
-<p>Workflow:</p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#268bd2">Pattern</span> <span style="color:#268bd2">p</span> = <span style="color:#268bd2">Pattern</span>.<span style="color:#268bd2">compile</span>(<span style="color:#2aa198">&#34;regex&#34;</span>);
-</span></span><span style="display:flex;"><span><span style="color:#268bd2">Matcher</span> <span style="color:#268bd2">m</span> = <span style="color:#268bd2">p</span>.<span style="color:#268bd2">matcher</span>(<span style="color:#2aa198">&#34;input&#34;</span>);
-</span></span><span style="display:flex;"><span><span style="color:#268bd2">m</span>.<span style="color:#268bd2">find</span>();    <span style="color:#93a1a1;font-style:italic">// search</span>
-</span></span><span style="display:flex;"><span><span style="color:#268bd2">m</span>.<span style="color:#268bd2">matches</span>(); <span style="color:#93a1a1;font-style:italic">// full match</span>
-</span></span></code></pre></div><hr>
-<h1 id="-2-core-syntax-you-must-remember-minimal-essential">🎯 2. Core Syntax You Must Remember (Minimal, Essential)</h1>
-<h2 id="literals"><strong>Literals</strong></h2>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>a    → literal &#39;a&#39;
-</span></span><span style="display:flex;"><span>\.   → dot literal
-</span></span></code></pre></div><h2 id="character-classes"><strong>Character classes</strong></h2>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>[abc]    → a or b or c
-</span></span><span style="display:flex;"><span>[^abc]   → NOT a/b/c
-</span></span><span style="display:flex;"><span>[a-zA-Z] → ranges
-</span></span></code></pre></div><p><strong>Shorthand:</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>\d  → digits
-</span></span><span style="display:flex;"><span>\D  → non-digits
-</span></span><span style="display:flex;"><span>\w  → letters + digits + _
-</span></span><span style="display:flex;"><span>\W  → not \w
-</span></span><span style="display:flex;"><span>\s  → whitespace
-</span></span><span style="display:flex;"><span>\S  → not whitespace
-</span></span></code></pre></div><h2 id="quantifiers"><strong>Quantifiers</strong></h2>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>*  → 0+
-</span></span><span style="display:flex;"><span>+  → 1+
-</span></span><span style="display:flex;"><span>?  → 0 or 1
-</span></span><span style="display:flex;"><span>{n}       → exactly n
-</span></span><span style="display:flex;"><span>{n,}      → n or more
-</span></span><span style="display:flex;"><span>{n,m}     → between n and m
-</span></span></code></pre></div><p><strong>Greedy vs Lazy:</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>.*      → greedy
-</span></span><span style="display:flex;"><span>.*?     → lazy
-</span></span></code></pre></div><h2 id="anchors"><strong>Anchors</strong></h2>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>^   → start of string
-</span></span><span style="display:flex;"><span>$   → end of string
-</span></span><span style="display:flex;"><span>\b  → word boundary
-</span></span><span style="display:flex;"><span>\B  → not boundary
-</span></span></code></pre></div><h2 id="groups"><strong>Groups</strong></h2>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>(abc)       → capturing group
-</span></span><span style="display:flex;"><span>(?:abc)     → non-capturing
-</span></span><span style="display:flex;"><span>(?=abc)     → lookahead
-</span></span><span style="display:flex;"><span>(?!abc)     → negative lookahead
-</span></span></code></pre></div><p>Java does NOT have lookbehind until Java 9+ (now it does):</p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>(?&lt;=abc)  → lookbehind
-</span></span><span style="display:flex;"><span>(?&lt;!abc)  → negative lookbehind
-</span></span></code></pre></div><hr>
-<h1 id="-3-java-specific-gotchas">⚙️ 3. Java-Specific Gotchas</h1>
-<p>Java needs <strong>double escaping</strong>, because strings process escapes <em>before</em> regex sees them.</p>
-<p>Examples:</p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>&#34;\\d&#34;    // becomes \d in regex
-</span></span><span style="display:flex;"><span>&#34;\\.&#34;    // literal dot
-</span></span><span style="display:flex;"><span>&#34;\\\\\\&#34; // 3 actual backslashes in regex
-</span></span></code></pre></div><p><strong>Rule:</strong><br>
-👉 <em>If regex uses a <code>\</code>, Java needs <code>\\</code>.</em></p>
-<hr>
-<h1 id="-4-useful-patterns-you-should-memorize-because-they-appear-everywhere">🔥 4. Useful Patterns You Should Memorize (because they appear everywhere)</h1>
-<table>
-  <thead>
-      <tr>
-          <th>Purpose</th>
-          <th>Regex</th>
-          <th>Notes</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td>Word</td>
-          <td><code>\\w+</code></td>
-          <td>underscores included</td>
-      </tr>
-      <tr>
-          <td>Integer</td>
-          <td><code>-?\\d+</code></td>
-          <td>optional minus</td>
-      </tr>
-      <tr>
-          <td>Decimal</td>
-          <td><code>-?\\d+(\\.\\d+)?</code></td>
-          <td>lazy decimal</td>
-      </tr>
-      <tr>
-          <td>Email</td>
-          <td><code>^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$</code></td>
-          <td>practical, not perfect</td>
-      </tr>
-      <tr>
-          <td>Whitespace cleanup</td>
-          <td><code>\\s+</code></td>
-          <td>normalize spaces</td>
-      </tr>
-      <tr>
-          <td>Extract digits</td>
-          <td><code>\\d+</code></td>
-          <td>trivial</td>
-      </tr>
-  </tbody>
-</table>
-<hr>
-<h1 id="-5-how-to-think-about-regex-3-rules-to-recall-everything">🧠 5. How To Think About Regex: 3 Rules to Recall Everything</h1>
-<h3 id="rule-1-regex-is-a-tiny-language"><strong>Rule 1: Regex is a tiny language</strong></h3>
-<ul>
-<li>Characters = literals</li>
-<li><code>[]</code> = pick one</li>
-<li><code>()</code> = group or capture</li>
-<li><code>? * + {}</code> = repeat</li>
-<li><code>^ $ \b</code> = borders</li>
-</ul>
-<p>If you remember this hierarchy, you almost <strong>never</strong> need to memorize syntax.</p>
-<h3 id="rule-2-escape-anything-that-means-something"><strong>Rule 2: Escape anything that “means something”</strong></h3>
-<p><code>.</code> <code>+</code> <code>*</code> <code>?</code> <code>(</code> <code>)</code> <code>[</code> <code>]</code> <code>^</code> <code>$</code> <code>\</code> <code>|</code></p>
-<p>→ If you want literal of these, prefix with <code>\\</code> in Java.</p>
-<h3 id="rule-3-engine-moves-left--right"><strong>Rule 3: Engine moves left → right</strong></h3>
-<p>Match = greedy<br>
-Match? → fallback<br>
-Lookarounds don&rsquo;t consume text</p>
-<hr>
-<h1 id="-6-java-code-snippets-you-will-use-constantly">💻 6. Java Code Snippets You Will Use Constantly</h1>
-<h2 id="find-all-occurrences"><strong>Find all occurrences</strong></h2>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#268bd2">Pattern</span> <span style="color:#268bd2">p</span> = <span style="color:#268bd2">Pattern</span>.<span style="color:#268bd2">compile</span>(<span style="color:#2aa198">&#34;word&#34;</span>);
-</span></span><span style="display:flex;"><span><span style="color:#268bd2">Matcher</span> <span style="color:#268bd2">m</span> = <span style="color:#268bd2">p</span>.<span style="color:#268bd2">matcher</span>(<span style="color:#268bd2">text</span>);
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#859900">while</span> (<span style="color:#268bd2">m</span>.<span style="color:#268bd2">find</span>()) {
-</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>(<span style="color:#268bd2">m</span>.<span style="color:#268bd2">group</span>());
-</span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><h2 id="replace"><strong>Replace</strong></h2>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#268bd2">text</span> = <span style="color:#268bd2">text</span>.<span style="color:#268bd2">replaceAll</span>(<span style="color:#2aa198">&#34;foo&#34;</span>, <span style="color:#2aa198">&#34;bar&#34;</span>);
-</span></span></code></pre></div><h2 id="group-extraction"><strong>Group extraction</strong></h2>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#268bd2">Pattern</span> <span style="color:#268bd2">p</span> = <span style="color:#268bd2">Pattern</span>.<span style="color:#268bd2">compile</span>(<span style="color:#2aa198">&#34;Name: (\\w+)&#34;</span>);
-</span></span><span style="display:flex;"><span><span style="color:#268bd2">Matcher</span> <span style="color:#268bd2">m</span> = <span style="color:#268bd2">p</span>.<span style="color:#268bd2">matcher</span>(<span style="color:#268bd2">text</span>);
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#859900">if</span> (<span style="color:#268bd2">m</span>.<span style="color:#268bd2">find</span>()) {
-</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">System</span>.<span style="color:#268bd2">out</span>.<span style="color:#268bd2">println</span>(<span style="color:#268bd2">m</span>.<span style="color:#268bd2">group</span>(<span style="color:#268bd2">1</span>)); <span style="color:#93a1a1;font-style:italic">// captured name</span>
-</span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><h2 id="match-whole-string"><strong>Match whole string</strong></h2>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#859900">if</span> (<span style="color:#268bd2">text</span>.<span style="color:#268bd2">matches</span>(<span style="color:#2aa198">&#34;\\d+&#34;</span>)) {
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// only digits</span>
-</span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><hr>
-<h1 id="-7-typical-interview-questions-with-quick-answers">🧨 7. Typical Interview Questions (with quick answers)</h1>
-<h3 id="q-greedy-vs-lazy"><strong>Q: Greedy vs lazy?</strong></h3>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>Greedy → .* (take max, backtrack)
-</span></span><span style="display:flex;"><span>Lazy   → .*? (take min, expand)
-</span></span></code></pre></div><h3 id="q"><strong>Q: <code>matches()</code> vs <code>find()</code>?</strong></h3>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>matches() → whole string must match  
-</span></span><span style="display:flex;"><span>find()    → search anywhere
-</span></span></code></pre></div><h3 id="q-how-to-escape-backslashes"><strong>Q: How to escape backslashes?</strong></h3>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>Java requires \\ for \
-</span></span></code></pre></div><h3 id="q-lookahead-vs-lookbehind"><strong>Q: Lookahead vs lookbehind?</strong></h3>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>Lookahead:  (?=x)
-</span></span><span style="display:flex;"><span>Lookbehind: (?&lt;=x)
-</span></span></code></pre></div><hr>
-<h1 id="-8-a-minimal-memory-checklist-the-only-things-to-remember">🎒 8. A Minimal Memory Checklist (The ONLY things to remember)</h1>
-<p>Memorize this block. Nothing else.</p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>[]  → character class
-</span></span><span style="display:flex;"><span>()  → group / capture
-</span></span><span style="display:flex;"><span>* + ? {n,m} → quantifiers
-</span></span><span style="display:flex;"><span>^ $ → anchors
-</span></span><span style="display:flex;"><span>\b → boundary
-</span></span><span style="display:flex;"><span>\d \w \s → shorthand
-</span></span><span style="display:flex;"><span>\\ → Java escape
-</span></span><span style="display:flex;"><span>.*? → lazy
-</span></span></code></pre></div><p>If you know these, you can build ANY regex on the fly.</p>
-<hr>
-<h1 id="if-you-want">If you want:</h1>
-<p>I can also give you:<br>
-✔ Problem → Regex solution<br>
-✔ Exercises to build regex muscle<br>
-✔ Java regex cheatsheet PDF<br>
-✔ “Regex mindset” examples specifically for <strong>Java automation, Selenium, and text parsing</strong></p>
-<p>Just say <strong>give more</strong>.</p>
-<h2 id="prompt-1">Prompt:</h2>
-<p>and also all the methods</p>
-<h2 id="response-1">Response:</h2>
-<p>Here are <strong>ALL the important Java regex methods</strong> — <strong>no BS, no fluff, no soydev explanations</strong>.<br>
-These are the ONLY methods you ever use in real work.</p>
-<hr>
-<h1 id="-part-1--string-regex-methods">🔥 PART 1 — <code>String</code> Regex Methods</h1>
-<p>Java has built-in regex methods <em>on the <code>String</code> class</em>.<br>
-These are the ones you’ll use 90% of the time.</p>
-<hr>
-<h2 id="1"><strong>1. <code>matches(String regex)</code></strong></h2>
-<p>Checks <em>whole string</em> matches pattern.</p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>&#34;123&#34;.matches(&#34;\\d+&#34;);  // true
-</span></span></code></pre></div><p><strong>Important:</strong> Not for searching. Use <code>find()</code> for that.</p>
-<hr>
-<h2 id="2"><strong>2. <code>replaceAll(String regex, String replacement)</code></strong></h2>
-<p>Replace ALL matches.</p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>text.replaceAll(&#34;\\s+&#34;, &#34; &#34;);
-</span></span></code></pre></div><hr>
-<h2 id="3"><strong>3. <code>replaceFirst(String regex, String replacement)</code></strong></h2>
-<p>Replace only the first match.</p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>text.replaceFirst(&#34;\\d&#34;, &#34;#&#34;);
-</span></span></code></pre></div><hr>
-<h2 id="4"><strong>4. <code>split(String regex)</code></strong></h2>
-<p>Split by regex.</p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>String[] parts = text.split(&#34;\\s+&#34;);
-</span></span></code></pre></div><hr>
-<h1 id="-part-2--pattern-class-methods">🔥 PART 2 — <code>Pattern</code> CLASS METHODS</h1>
-<p><code>Pattern</code> = compiled regex.</p>
-<hr>
-<h2 id="1-1"><strong>1. <code>compile(String regex)</code></strong></h2>
-<p>Compile regex to a Pattern.</p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>Pattern p = Pattern.compile(&#34;\\d+&#34;);
-</span></span></code></pre></div><hr>
-<h2 id="2-1"><strong>2. <code>matcher(CharSequence input)</code></strong></h2>
-<p>Attach pattern to a string.</p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>Matcher m = p.matcher(text);
-</span></span></code></pre></div><hr>
-<h2 id="3-1"><strong>3. <code>split(CharSequence input)</code></strong></h2>
-<p>Same as <code>String.split</code>, but uses an existing Pattern.</p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>p.split(&#34;a b c&#34;);
-</span></span></code></pre></div><hr>
-<h2 id="4-1"><strong>4. <code>matches(String regex, CharSequence input)</code></strong></h2>
-<p>Static helper. Rarely used.</p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>Pattern.matches(&#34;\\d+&#34;, &#34;123&#34;);
-</span></span></code></pre></div><hr>
-<h2 id="5-flags-with-compile"><strong>5. Flags with compile</strong></h2>
-<p>Flags modify regex behavior.</p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>Pattern.compile(&#34;abc&#34;, Pattern.CASE_INSENSITIVE);
-</span></span></code></pre></div><p>Common flags:</p>
-<table>
-  <thead>
-      <tr>
-          <th>Flag</th>
-          <th>Meaning</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td><code>Pattern.CASE_INSENSITIVE</code></td>
-          <td>Ignore case</td>
-      </tr>
-      <tr>
-          <td><code>Pattern.MULTILINE</code></td>
-          <td>^ and $ match line boundaries</td>
-      </tr>
-      <tr>
-          <td><code>Pattern.DOTALL</code></td>
-          <td><code>.</code> matches newline</td>
-      </tr>
-      <tr>
-          <td><code>Pattern.UNICODE_CASE</code></td>
-          <td>Proper unicode case folding</td>
-      </tr>
-      <tr>
-          <td><code>Pattern.COMMENTS</code></td>
-          <td>Allow whitespace &amp; <code>#</code> comments</td>
-      </tr>
-  </tbody>
-</table>
-<p>Combine flags:</p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>Pattern p = Pattern.compile(&#34;abc&#34;, Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-</span></span></code></pre></div><hr>
-<h1 id="-part-3--matcher-class-methods">🔥 PART 3 — <code>Matcher</code> CLASS METHODS</h1>
-<p>This is where ALL the actual work happens.</p>
-<hr>
-<h1 id="search-methods">SEARCH METHODS</h1>
-<h2 id="1-2"><strong>1. <code>find()</code></strong></h2>
-<p>Find next match.</p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>while (m.find()) {
-</span></span><span style="display:flex;"><span>    m.group();
-</span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><hr>
-<h2 id="2-2"><strong>2. <code>find(int start)</code></strong></h2>
-<p>Start search at index.</p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>m.find(10);
-</span></span></code></pre></div><hr>
-<h2 id="3-2"><strong>3. <code>lookingAt()</code></strong></h2>
-<p>Matches from start of string (not full string).</p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>m.lookingAt();
-</span></span></code></pre></div><hr>
-<h2 id="4-2"><strong>4. <code>matches()</code></strong></h2>
-<p>Full string match.</p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>m.matches();
-</span></span></code></pre></div><hr>
-<h1 id="group--capture-methods">GROUP &amp; CAPTURE METHODS</h1>
-<h2 id="5"><strong>5. <code>group()</code></strong></h2>
-<p>Returns the entire match.</p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>m.group();
-</span></span></code></pre></div><hr>
-<h2 id="6"><strong>6. <code>group(int index)</code></strong></h2>
-<p>Returns a specific capture group.</p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>m.group(1);
-</span></span></code></pre></div><hr>
-<h2 id="7"><strong>7. <code>groupCount()</code></strong></h2>
-<p>Number of capturing groups.</p>
-<hr>
-<h2 id="8"><strong>8. <code>start()</code></strong></h2>
-<p>Start index of the whole match.</p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>m.start();
-</span></span></code></pre></div><hr>
-<h2 id="9"><strong>9. <code>start(int group)</code></strong></h2>
-<p>Start of capture group.</p>
-<hr>
-<h2 id="10"><strong>10. <code>end()</code></strong></h2>
-<p>End index of match.</p>
-<hr>
-<h2 id="11"><strong>11. <code>end(int group)</code></strong></h2>
-<p>End of capture group.</p>
-<hr>
-<h1 id="replacement-methods">REPLACEMENT METHODS</h1>
-<h2 id="12"><strong>12. <code>replaceAll(String replacement)</code></strong></h2>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>m.replaceAll(&#34;#&#34;);
-</span></span></code></pre></div><hr>
-<h2 id="13"><strong>13. <code>replaceFirst(String replacement)</code></strong></h2>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>m.replaceFirst(&#34;@&#34;);
-</span></span></code></pre></div><hr>
-<h2 id="14"><strong>14. <code>appendReplacement(StringBuilder sb, String replacement)</code></strong></h2>
-<p>Manual streaming replacement (advanced).</p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>StringBuilder sb = new StringBuilder();
-</span></span><span style="display:flex;"><span>while (m.find()) {
-</span></span><span style="display:flex;"><span>    m.appendReplacement(sb, &#34;REPLACED&#34;);
-</span></span><span style="display:flex;"><span>}
-</span></span><span style="display:flex;"><span>m.appendTail(sb);
-</span></span></code></pre></div><hr>
-<h2 id="15"><strong>15. <code>appendTail(StringBuilder sb)</code></strong></h2>
-<p>Finish the streaming replace.</p>
-<hr>
-<h1 id="other-matcher-methods">OTHER MATCHER METHODS</h1>
-<h2 id="16"><strong>16. <code>reset()</code></strong></h2>
-<p>Send matcher back to start.</p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>m.reset();
-</span></span></code></pre></div><hr>
-<h2 id="17"><strong>17. <code>reset(CharSequence input)</code></strong></h2>
-<p>Reset + new string.</p>
-<hr>
-<h2 id="18"><strong>18. <code>pattern()</code></strong></h2>
-<p>Get the Pattern object.</p>
-<hr>
-<h2 id="19"><strong>19. <code>usePattern(Pattern newPattern)</code></strong></h2>
-<p>Change the pattern used by matcher.</p>
-<hr>
-<h2 id="20"><strong>20. <code>region(int start, int end)</code></strong></h2>
-<p>Search within a substring <em>without creating a new string</em>.</p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>m.region(0, 10);
-</span></span></code></pre></div><hr>
-<h2 id="21"><strong>21. <code>regionStart()</code>, <code>regionEnd()</code></strong></h2>
-<p>Get region bounds.</p>
-<hr>
-<h2 id="22"><strong>22. <code>hitEnd()</code></strong></h2>
-<p>Check if matcher hit the end of input on the last match attempt.</p>
-<p>Rarely needed.</p>
-<hr>
-<h2 id="23"><strong>23. <code>requireEnd()</code></strong></h2>
-<p>Check if more input <em>could</em> produce a match.</p>
-<p>Rare.</p>
-<hr>
-<h1 id="-memory-cheat-list-the-real-essentials">🧠 MEMORY CHEAT LIST (the REAL essentials)</h1>
-<h3 id="most-used-7-methods"><strong>Most used 7 methods</strong></h3>
-<p>If you remember these you know 90% of Java regex:</p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>matches()            // full match
-</span></span><span style="display:flex;"><span>find()               // search
-</span></span><span style="display:flex;"><span>group()              // matched text
-</span></span><span style="display:flex;"><span>group(n)             // capture
-</span></span><span style="display:flex;"><span>replaceAll()         // replace
-</span></span><span style="display:flex;"><span>split()              // split by regex
-</span></span><span style="display:flex;"><span>Pattern.compile()    // compile
-</span></span></code></pre></div><h3 id="moderately-used"><strong>Moderately used</strong></h3>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>lookingAt()
-</span></span><span style="display:flex;"><span>start(), end()
-</span></span><span style="display:flex;"><span>reset()
-</span></span></code></pre></div><h3 id="rareadvanced"><strong>Rare/Advanced</strong></h3>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>appendReplacement()
-</span></span><span style="display:flex;"><span>appendTail()
-</span></span><span style="display:flex;"><span>region()
-</span></span><span style="display:flex;"><span>hitEnd()
-</span></span><span style="display:flex;"><span>requireEnd()
-</span></span></code></pre></div><hr>
-<h1 id="if-you-want-1">If you want:</h1>
-<p>I can give you<br>
-✔ a 1-page printable cheat sheet<br>
-✔ exercises with increasing difficulty<br>
-✔ your own &ldquo;system programmer regex drill&rdquo; list<br>
-✔ shortcuts to recall patterns mentally</p>
-<p>Just say <strong>“more”</strong>.</p>
-<h2 id="prompt-2">Prompt:</h2>
-<p>yes</p>
-<h2 id="response-2">Response:</h2>
-<p>Great — here is the <strong>ultra-condensed, printable, zero-soydev Java Regex cheat sheet</strong> plus <strong>regex drills</strong> to burn this permanently into your brain.</p>
-<hr>
-<h1 id="-part-1--1-page-java-regex-cheat-sheet">⚡ PART 1 — 1-PAGE JAVA REGEX CHEAT SHEET</h1>
-<p>(You can literally memorize this in one sitting.)</p>
-<hr>
-<h2 id="-regex-syntax-the-real-core">🟥 REGEX SYNTAX (THE REAL CORE)</h2>
-<h3 id="character-classes-1"><strong>Character Classes</strong></h3>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>[abc]      a or b or c
-</span></span><span style="display:flex;"><span>[^abc]     NOT a/b/c
-</span></span><span style="display:flex;"><span>[a-zA-Z]   ranges
-</span></span><span style="display:flex;"><span>\d \w \s   digit / word / space
-</span></span><span style="display:flex;"><span>\D \W \S   negations
-</span></span><span style="display:flex;"><span>.          any char (except \n unless DOTALL)
-</span></span></code></pre></div><h3 id="quantifiers-1"><strong>Quantifiers</strong></h3>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>*      0+        (greedy)
-</span></span><span style="display:flex;"><span>+      1+
-</span></span><span style="display:flex;"><span>?      0 or 1
-</span></span><span style="display:flex;"><span>{n}    exactly n
-</span></span><span style="display:flex;"><span>{n,}   n or more
-</span></span><span style="display:flex;"><span>{n,m}  between n and m
-</span></span><span style="display:flex;"><span>*? +? ??   lazy versions
-</span></span></code></pre></div><h3 id="anchors-1"><strong>Anchors</strong></h3>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>^     start of string
-</span></span><span style="display:flex;"><span>$     end of string
-</span></span><span style="display:flex;"><span>\b    word boundary
-</span></span><span style="display:flex;"><span>\B    not boundary
-</span></span></code></pre></div><h3 id="groups-1"><strong>Groups</strong></h3>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>(...)       capturing group
-</span></span><span style="display:flex;"><span>(?:...)     non-capturing
-</span></span><span style="display:flex;"><span>(?=...)     positive lookahead
-</span></span><span style="display:flex;"><span>(?!...)     negative lookahead
-</span></span><span style="display:flex;"><span>(?&lt;=...)    lookbehind
-</span></span><span style="display:flex;"><span>(?&lt;!...)    negative lookbehind
-</span></span></code></pre></div><h3 id="alternation"><strong>Alternation</strong></h3>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>a|b   → a or b
-</span></span></code></pre></div><hr>
-<h2 id="-java-escapes">🟥 JAVA ESCAPES</h2>
-<p>Java needs double escaping.</p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>\\d      \d in regex
-</span></span><span style="display:flex;"><span>\\.      literal dot
-</span></span><span style="display:flex;"><span>\\\\     literal \
-</span></span></code></pre></div><p>Rule:<br>
-<strong>If your regex needs 1 slash → Java needs 2</strong>.</p>
-<hr>
-<h1 id="-part-2--java-regex-apis-hardcore-shortlist">⚡ PART 2 — JAVA REGEX APIs (HARDCORE SHORTLIST)</h1>
-<hr>
-<h2 id="-string-class">🟩 <code>String</code> class</h2>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>matches(regex)
-</span></span><span style="display:flex;"><span>replaceAll(regex, repl)
-</span></span><span style="display:flex;"><span>replaceFirst(regex, repl)
-</span></span><span style="display:flex;"><span>split(regex)
-</span></span></code></pre></div><hr>
-<h2 id="-pattern">🟩 Pattern</h2>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>Pattern.compile(regex)
-</span></span><span style="display:flex;"><span>matcher(input)
-</span></span><span style="display:flex;"><span>split(input)
-</span></span></code></pre></div><h3 id="flags">Flags</h3>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>Pattern.CASE_INSENSITIVE
-</span></span><span style="display:flex;"><span>Pattern.MULTILINE
-</span></span><span style="display:flex;"><span>Pattern.DOTALL
-</span></span><span style="display:flex;"><span>Pattern.COMMENTS
-</span></span></code></pre></div><p>Combine:</p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>Pattern.compile(&#34;abc&#34;, Pattern.CASE_INSENSITIVE | Pattern.DOTALL)
-</span></span></code></pre></div><hr>
-<h2 id="-matcher-methods-everything-you-need">🟩 Matcher Methods (Everything you need)</h2>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>find()
-</span></span><span style="display:flex;"><span>find(start)
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>matches()
-</span></span><span style="display:flex;"><span>lookingAt()
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>group()
-</span></span><span style="display:flex;"><span>group(n)
-</span></span><span style="display:flex;"><span>groupCount()
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>start()
-</span></span><span style="display:flex;"><span>start(n)
-</span></span><span style="display:flex;"><span>end()
-</span></span><span style="display:flex;"><span>end(n)
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>replaceAll(repl)
-</span></span><span style="display:flex;"><span>replaceFirst(repl)
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>appendReplacement(sb, repl)
-</span></span><span style="display:flex;"><span>appendTail(sb)
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>reset()
-</span></span><span style="display:flex;"><span>reset(newInput)
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>region(start, end)
-</span></span><span style="display:flex;"><span>regionStart()
-</span></span><span style="display:flex;"><span>regionEnd()
-</span></span></code></pre></div><hr>
-<h1 id="-part-3--memory-anchors-recall-without-memorizing">⚡ PART 3 — MEMORY “ANCHORS” (RECALL WITHOUT MEMORIZING)</h1>
-<p>This is the <strong>mental model</strong> to reconstruct regex instantly:</p>
-<h3 id="-regex--scanner--rules">🔥 <strong>Regex = Scanner + Rules</strong></h3>
-<ul>
-<li><code>[]</code> → selection</li>
-<li><code>()</code> → capture</li>
-<li><code>*+?{}</code> → repetition</li>
-<li><code>^$</code> → borders</li>
-<li><code>\</code> → escape</li>
-<li><code>|</code> → OR</li>
-</ul>
-<h3 id="-regex-engine-goes-left--right">🔥 <strong>Regex engine goes left → right</strong></h3>
-<p>Greedy = “take everything, backtrack later”<br>
-Lazy = “take nothing, expand when needed”</p>
-<h3 id="-java-always-sees-your-string-before-regex-sees-it">🔥 <strong>Java always sees your string BEFORE regex sees it</strong></h3>
-<p>Which is why you escape double.</p>
-<hr>
-<h1 id="-part-4--20-practice-drills-gradually-harder">⚡ PART 4 — 20 PRACTICE DRILLS (GRADUALLY HARDER)</h1>
-<p>Do these and you become a regex killer.</p>
-<hr>
-<h2 id="-level-1--basics">🔹 Level 1 — Basics</h2>
-<p><strong>1. Match a 10-digit mobile number</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>\\d{10}
-</span></span></code></pre></div><p><strong>2. Match lowercase letters only</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>[a-z]+
-</span></span></code></pre></div><p><strong>3. Match a filename ending in .txt</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>.+\\.txt
-</span></span></code></pre></div><hr>
-<h2 id="-level-2--groups--captures">🔹 Level 2 — Groups &amp; Captures</h2>
-<p><strong>4. Extract first name and last name</strong><br>
-Pattern:</p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>(\\w+) (\\w+)
-</span></span></code></pre></div><p><strong>5. Match integers with optional sign</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>[-+]?\\d+
-</span></span></code></pre></div><p><strong>6. Match a decimal number</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>-?\\d+(?:\\.\\d+)?
-</span></span></code></pre></div><hr>
-<h2 id="-level-3--boundaries--anchors">🔹 Level 3 — Boundaries &amp; Anchors</h2>
-<p><strong>7. Match a whole line containing only letters</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>^[a-zA-Z]+$
-</span></span></code></pre></div><p><strong>8. Match a word boundary “cat”</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>\\bcat\\b
-</span></span></code></pre></div><hr>
-<h2 id="-level-4--replace">🔹 Level 4 — Replace</h2>
-<p><strong>9. Replace multiple spaces with 1</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>replaceAll(&#34;\\s+&#34;, &#34; &#34;);
-</span></span></code></pre></div><p><strong>10. Extract only digits from a string</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>find(&#34;\\d+&#34;)
-</span></span></code></pre></div><hr>
-<h2 id="-level-5--lookaheads">🔹 Level 5 — Lookaheads</h2>
-<p><strong>11. Number followed by “kg”</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>\\d+(?=kg)
-</span></span></code></pre></div><p><strong>12. Capture only if not followed by “bad”</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>good(?!boy)
-</span></span></code></pre></div><hr>
-<h2 id="-level-6--lookbehinds">🔹 Level 6 — Lookbehinds</h2>
-<p>(Works in Java 9+)</p>
-<p><strong>13. Digits preceded by ₹</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>(?&lt;=₹)\\d+
-</span></span></code></pre></div><hr>
-<h2 id="-level-7--harder-patterns">🔹 Level 7 — Harder Patterns</h2>
-<p><strong>14. Match an email</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$
-</span></span></code></pre></div><p><strong>15. Match a URL (practical one)</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>https?://[^\\s]+
-</span></span></code></pre></div><hr>
-<h2 id="-level-8--real-world">🔹 Level 8 — Real-World</h2>
-<p><strong>16. Extract key=value pairs</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>(\\w+)=(\\w+)
-</span></span></code></pre></div><p><strong>17. Match a date (YYYY-MM-DD)</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>\\d{4}-\\d{2}-\\d{2}
-</span></span></code></pre></div><hr>
-<h2 id="-level-9--youre-now-advanced">🔹 Level 9 — You’re now advanced</h2>
-<p><strong>18. Match Java identifiers</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>[a-zA-Z_$][a-zA-Z0-9_$]*
-</span></span></code></pre></div><p><strong>19. Validate hex color</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>#?[0-9a-fA-F]{6}
-</span></span></code></pre></div><hr>
-<h2 id="-final-boss">🔥 Final Boss</h2>
-<p><strong>20. Balanced parentheses (regex hack)</strong></p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>\\((?:[^()]+|\\([^()]*\\))*\\)
-</span></span></code></pre></div><hr>
-<h1 id="-part-5--want-the-full-expert-regex-memory-system">⚡ PART 5 — WANT THE FULL “EXPERT REGEX MEMORY SYSTEM”?</h1>
-<p>I can build you a full:</p>
-<ul>
-<li>🔥 <strong>Java Regex PDF Cheat Sheet</strong></li>
-<li>🔥 <strong>Drill Course (20 days) to become regex master</strong></li>
-<li>🔥 <strong>Regex for Selenium, Web scraping, Log parsing</strong></li>
-<li>🔥 <strong>Regex patterns answer bank (100+ real-world patterns)</strong></li>
-<li>🔥 <strong>Flashcards optimized for memory</strong></li>
-</ul>
-<p>Just say <strong>&ldquo;give me expert system&rdquo;</strong> and I’ll build it.</p>
-<hr>
-<p>Powered by <a href="https://www.chatgptexporter.com">ChatGPT Exporter</a></p>
-
-    </div>
-</article>
-
-<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
-    
-    <a href="http://localhost:41691/sdet-prep-site/misc-backup/java-topics/chatgpt-java-string-exercises/" class="nav-btn">← Previous</a>
-    
-    
-    <a href="http://localhost:41691/sdet-prep-site/misc-backup/" class="nav-btn">Up</a>
-
-    
-    <a href="http://localhost:41691/sdet-prep-site/misc-backup/java-topics/chatgpt-java-records-explained/" class="nav-btn">Next →</a>
-    
-</div>
-
-    </main>
-
-    <footer class="footer">
-        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
-    </footer>
-
-    <script>
-        
-        document.addEventListener("DOMContentLoaded", function() {
-            const content = document.body;
-            
-            const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT, null, false);
-            let node;
-            const nodesToReplace = [];
-            while(node = walker.nextNode()) {
-                if (node.nodeValue.includes("[-]")) nodesToReplace.push(node);
-            }
-            nodesToReplace.forEach(textNode => {
-                const span = document.createElement('span');
-                span.innerHTML = textNode.nodeValue.replace(/\[-\]/g, '<span class="started-icon" title="Started"></span>');
-                textNode.parentNode.replaceChild(span, textNode);
-            });
-        });
-    </script>
-
-    <script>
-        const body = document.getElementById('theme-body');
-        const btn = document.getElementById('theme-toggle');
-        const currentTheme = localStorage.getItem('theme');
-
-        
-        function updateButtonText() {
-            if (body.classList.contains('theme-terminal')) {
-                btn.textContent = "Light Mode";
-            } else {
-                btn.textContent = "Dark Mode";
-            }
-        }
-
-        if (currentTheme === 'terminal') {
-            body.classList.add('theme-terminal');
-        }
-        
-        
-        updateButtonText();
-
-        btn.addEventListener('click', () => {
-            body.classList.toggle('theme-terminal');
-            updateButtonText();
-            
-            let theme = 'natural';
-            if (body.classList.contains('theme-terminal')) {
-                theme = 'terminal';
-            }
-            localStorage.setItem('theme', theme);
-        });
-    </script>
-</body>
-</html>
+<!doctype html><html lang=en-us><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>| SDET Interview Preparation Kit</title><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/css/style.css><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/css/terminal.css><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel=stylesheet><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/lib/katex/katex.min.css><script defer src=https://notxkcd.github.io/sdet-prep-site/lib/katex/katex.min.js></script><script defer src=https://notxkcd.github.io/sdet-prep-site/lib/katex/contrib/auto-render.min.js onload=renderMathInElement(document.body)></script><script>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1}]})})</script></head><body id=theme-body><button id=theme-toggle>Switch Theme</button><header><nav><ul><li><a href=https://notxkcd.github.io/sdet-prep-site/>Index</a></li></ul></nav><div class=site-breadcrumb><a href=https://notxkcd.github.io/sdet-prep-site/>Home</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/>SDET Interview Dashboard</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/misc-backup/>QA Automation Interview Preparation</a>
+<span>/</span></div></header><main><article><h1></h1><div class=content-body style=margin-top:2rem><h1 id=java-regex-cheat-sheet>Java regex cheat sheet</h1><p><strong>User:</strong> Mohammed Shahid (<a href=mailto:shahid.xkcd@gmail.com>shahid.xkcd@gmail.com</a>)<br><strong>Created:</strong> 12/1/2025 7:05:59<br><strong>Updated:</strong> 12/1/2025 7:36:06<br><strong>Exported:</strong> 1/31/2026 18:05:43<br><strong>Link:</strong> <a href=https://chatgpt.com/c/692cf0ce-7bf0-8323-a303-db9311f61099>https://chatgpt.com/c/692cf0ce-7bf0-8323-a303-db9311f61099</a></p><h2 id=prompt>Prompt:</h2><p>teach me Java RegeEx And All i need to know No BS , strigh tto the point and give me things to remember so i dont&rsquo; forget the main thingy so i can recall without memorizing syntax like a soydev</p><h2 id=response>Response:</h2><p>Got you. Here is <strong>Java Regex explained like a systems programmer</strong>, no fluff, no soydev energy.<br>This is everything you need to know + how to <em>actually</em> remember it.</p><hr><h1 id=-1-the-only-mental-model-you-need>🚀 1. The Only Mental Model You Need</h1><p>A regex in Java is just:</p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>Pattern  +  Matcher  +  Input String
+</span></span></code></pre></div><p>Java’s regex is <em>basically</em> PCRE-lite.</p><p>Workflow:</p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=display:flex><span><span style=color:#268bd2>Pattern</span> <span style=color:#268bd2>p</span> = <span style=color:#268bd2>Pattern</span>.<span style=color:#268bd2>compile</span>(<span style=color:#2aa198>&#34;regex&#34;</span>);
+</span></span><span style=display:flex><span><span style=color:#268bd2>Matcher</span> <span style=color:#268bd2>m</span> = <span style=color:#268bd2>p</span>.<span style=color:#268bd2>matcher</span>(<span style=color:#2aa198>&#34;input&#34;</span>);
+</span></span><span style=display:flex><span><span style=color:#268bd2>m</span>.<span style=color:#268bd2>find</span>();    <span style=color:#93a1a1;font-style:italic>// search</span>
+</span></span><span style=display:flex><span><span style=color:#268bd2>m</span>.<span style=color:#268bd2>matches</span>(); <span style=color:#93a1a1;font-style:italic>// full match</span>
+</span></span></code></pre></div><hr><h1 id=-2-core-syntax-you-must-remember-minimal-essential>🎯 2. Core Syntax You Must Remember (Minimal, Essential)</h1><h2 id=literals><strong>Literals</strong></h2><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>a    → literal &#39;a&#39;
+</span></span><span style=display:flex><span>\.   → dot literal
+</span></span></code></pre></div><h2 id=character-classes><strong>Character classes</strong></h2><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>[abc]    → a or b or c
+</span></span><span style=display:flex><span>[^abc]   → NOT a/b/c
+</span></span><span style=display:flex><span>[a-zA-Z] → ranges
+</span></span></code></pre></div><p><strong>Shorthand:</strong></p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>\d  → digits
+</span></span><span style=display:flex><span>\D  → non-digits
+</span></span><span style=display:flex><span>\w  → letters + digits + _
+</span></span><span style=display:flex><span>\W  → not \w
+</span></span><span style=display:flex><span>\s  → whitespace
+</span></span><span style=display:flex><span>\S  → not whitespace
+</span></span></code></pre></div><h2 id=quantifiers><strong>Quantifiers</strong></h2><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>*  → 0+
+</span></span><span style=display:flex><span>+  → 1+
+</span></span><span style=display:flex><span>?  → 0 or 1
+</span></span><span style=display:flex><span>{n}       → exactly n
+</span></span><span style=display:flex><span>{n,}      → n or more
+</span></span><span style=display:flex><span>{n,m}     → between n and m
+</span></span></code></pre></div><p><strong>Greedy vs Lazy:</strong></p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>.*      → greedy
+</span></span><span style=display:flex><span>.*?     → lazy
+</span></span></code></pre></div><h2 id=anchors><strong>Anchors</strong></h2><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>^   → start of string
+</span></span><span style=display:flex><span>$   → end of string
+</span></span><span style=display:flex><span>\b  → word boundary
+</span></span><span style=display:flex><span>\B  → not boundary
+</span></span></code></pre></div><h2 id=groups><strong>Groups</strong></h2><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>(abc)       → capturing group
+</span></span><span style=display:flex><span>(?:abc)     → non-capturing
+</span></span><span style=display:flex><span>(?=abc)     → lookahead
+</span></span><span style=display:flex><span>(?!abc)     → negative lookahead
+</span></span></code></pre></div><p>Java does NOT have lookbehind until Java 9+ (now it does):</p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>(?&lt;=abc)  → lookbehind
+</span></span><span style=display:flex><span>(?&lt;!abc)  → negative lookbehind
+</span></span></code></pre></div><hr><h1 id=-3-java-specific-gotchas>⚙️ 3. Java-Specific Gotchas</h1><p>Java needs <strong>double escaping</strong>, because strings process escapes <em>before</em> regex sees them.</p><p>Examples:</p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>&#34;\\d&#34;    // becomes \d in regex
+</span></span><span style=display:flex><span>&#34;\\.&#34;    // literal dot
+</span></span><span style=display:flex><span>&#34;\\\\\\&#34; // 3 actual backslashes in regex
+</span></span></code></pre></div><p><strong>Rule:</strong><br>👉 <em>If regex uses a <code>\</code>, Java needs <code>\\</code>.</em></p><hr><h1 id=-4-useful-patterns-you-should-memorize-because-they-appear-everywhere>🔥 4. Useful Patterns You Should Memorize (because they appear everywhere)</h1><table><thead><tr><th>Purpose</th><th>Regex</th><th>Notes</th></tr></thead><tbody><tr><td>Word</td><td><code>\\w+</code></td><td>underscores included</td></tr><tr><td>Integer</td><td><code>-?\\d+</code></td><td>optional minus</td></tr><tr><td>Decimal</td><td><code>-?\\d+(\\.\\d+)?</code></td><td>lazy decimal</td></tr><tr><td>Email</td><td><code>^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$</code></td><td>practical, not perfect</td></tr><tr><td>Whitespace cleanup</td><td><code>\\s+</code></td><td>normalize spaces</td></tr><tr><td>Extract digits</td><td><code>\\d+</code></td><td>trivial</td></tr></tbody></table><hr><h1 id=-5-how-to-think-about-regex-3-rules-to-recall-everything>🧠 5. How To Think About Regex: 3 Rules to Recall Everything</h1><h3 id=rule-1-regex-is-a-tiny-language><strong>Rule 1: Regex is a tiny language</strong></h3><ul><li>Characters = literals</li><li><code>[]</code> = pick one</li><li><code>()</code> = group or capture</li><li><code>? * + {}</code> = repeat</li><li><code>^ $ \b</code> = borders</li></ul><p>If you remember this hierarchy, you almost <strong>never</strong> need to memorize syntax.</p><h3 id=rule-2-escape-anything-that-means-something><strong>Rule 2: Escape anything that “means something”</strong></h3><p><code>.</code> <code>+</code> <code>*</code> <code>?</code> <code>(</code> <code>)</code> <code>[</code> <code>]</code> <code>^</code> <code>$</code> <code>\</code> <code>|</code></p><p>→ If you want literal of these, prefix with <code>\\</code> in Java.</p><h3 id=rule-3-engine-moves-left--right><strong>Rule 3: Engine moves left → right</strong></h3><p>Match = greedy<br>Match? → fallback<br>Lookarounds don&rsquo;t consume text</p><hr><h1 id=-6-java-code-snippets-you-will-use-constantly>💻 6. Java Code Snippets You Will Use Constantly</h1><h2 id=find-all-occurrences><strong>Find all occurrences</strong></h2><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=display:flex><span><span style=color:#268bd2>Pattern</span> <span style=color:#268bd2>p</span> = <span style=color:#268bd2>Pattern</span>.<span style=color:#268bd2>compile</span>(<span style=color:#2aa198>&#34;word&#34;</span>);
+</span></span><span style=display:flex><span><span style=color:#268bd2>Matcher</span> <span style=color:#268bd2>m</span> = <span style=color:#268bd2>p</span>.<span style=color:#268bd2>matcher</span>(<span style=color:#268bd2>text</span>);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>while</span> (<span style=color:#268bd2>m</span>.<span style=color:#268bd2>find</span>()) {
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>System</span>.<span style=color:#268bd2>out</span>.<span style=color:#268bd2>println</span>(<span style=color:#268bd2>m</span>.<span style=color:#268bd2>group</span>());
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h2 id=replace><strong>Replace</strong></h2><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=display:flex><span><span style=color:#268bd2>text</span> = <span style=color:#268bd2>text</span>.<span style=color:#268bd2>replaceAll</span>(<span style=color:#2aa198>&#34;foo&#34;</span>, <span style=color:#2aa198>&#34;bar&#34;</span>);
+</span></span></code></pre></div><h2 id=group-extraction><strong>Group extraction</strong></h2><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=display:flex><span><span style=color:#268bd2>Pattern</span> <span style=color:#268bd2>p</span> = <span style=color:#268bd2>Pattern</span>.<span style=color:#268bd2>compile</span>(<span style=color:#2aa198>&#34;Name: (\\w+)&#34;</span>);
+</span></span><span style=display:flex><span><span style=color:#268bd2>Matcher</span> <span style=color:#268bd2>m</span> = <span style=color:#268bd2>p</span>.<span style=color:#268bd2>matcher</span>(<span style=color:#268bd2>text</span>);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>if</span> (<span style=color:#268bd2>m</span>.<span style=color:#268bd2>find</span>()) {
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>System</span>.<span style=color:#268bd2>out</span>.<span style=color:#268bd2>println</span>(<span style=color:#268bd2>m</span>.<span style=color:#268bd2>group</span>(<span style=color:#268bd2>1</span>)); <span style=color:#93a1a1;font-style:italic>// captured name</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h2 id=match-whole-string><strong>Match whole string</strong></h2><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=display:flex><span><span style=color:#859900>if</span> (<span style=color:#268bd2>text</span>.<span style=color:#268bd2>matches</span>(<span style=color:#2aa198>&#34;\\d+&#34;</span>)) {
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// only digits</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><hr><h1 id=-7-typical-interview-questions-with-quick-answers>🧨 7. Typical Interview Questions (with quick answers)</h1><h3 id=q-greedy-vs-lazy><strong>Q: Greedy vs lazy?</strong></h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>Greedy → .* (take max, backtrack)
+</span></span><span style=display:flex><span>Lazy   → .*? (take min, expand)
+</span></span></code></pre></div><h3 id=q><strong>Q: <code>matches()</code> vs <code>find()</code>?</strong></h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>matches() → whole string must match  
+</span></span><span style=display:flex><span>find()    → search anywhere
+</span></span></code></pre></div><h3 id=q-how-to-escape-backslashes><strong>Q: How to escape backslashes?</strong></h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>Java requires \\ for \
+</span></span></code></pre></div><h3 id=q-lookahead-vs-lookbehind><strong>Q: Lookahead vs lookbehind?</strong></h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>Lookahead:  (?=x)
+</span></span><span style=display:flex><span>Lookbehind: (?&lt;=x)
+</span></span></code></pre></div><hr><h1 id=-8-a-minimal-memory-checklist-the-only-things-to-remember>🎒 8. A Minimal Memory Checklist (The ONLY things to remember)</h1><p>Memorize this block. Nothing else.</p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>[]  → character class
+</span></span><span style=display:flex><span>()  → group / capture
+</span></span><span style=display:flex><span>* + ? {n,m} → quantifiers
+</span></span><span style=display:flex><span>^ $ → anchors
+</span></span><span style=display:flex><span>\b → boundary
+</span></span><span style=display:flex><span>\d \w \s → shorthand
+</span></span><span style=display:flex><span>\\ → Java escape
+</span></span><span style=display:flex><span>.*? → lazy
+</span></span></code></pre></div><p>If you know these, you can build ANY regex on the fly.</p><hr><h1 id=if-you-want>If you want:</h1><p>I can also give you:<br>✔ Problem → Regex solution<br>✔ Exercises to build regex muscle<br>✔ Java regex cheatsheet PDF<br>✔ “Regex mindset” examples specifically for <strong>Java automation, Selenium, and text parsing</strong></p><p>Just say <strong>give more</strong>.</p><h2 id=prompt-1>Prompt:</h2><p>and also all the methods</p><h2 id=response-1>Response:</h2><p>Here are <strong>ALL the important Java regex methods</strong> — <strong>no BS, no fluff, no soydev explanations</strong>.<br>These are the ONLY methods you ever use in real work.</p><hr><h1 id=-part-1--string-regex-methods>🔥 PART 1 — <code>String</code> Regex Methods</h1><p>Java has built-in regex methods <em>on the <code>String</code> class</em>.<br>These are the ones you’ll use 90% of the time.</p><hr><h2 id=1><strong>1. <code>matches(String regex)</code></strong></h2><p>Checks <em>whole string</em> matches pattern.</p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>&#34;123&#34;.matches(&#34;\\d+&#34;);  // true
+</span></span></code></pre></div><p><strong>Important:</strong> Not for searching. Use <code>find()</code> for that.</p><hr><h2 id=2><strong>2. <code>replaceAll(String regex, String replacement)</code></strong></h2><p>Replace ALL matches.</p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>text.replaceAll(&#34;\\s+&#34;, &#34; &#34;);
+</span></span></code></pre></div><hr><h2 id=3><strong>3. <code>replaceFirst(String regex, String replacement)</code></strong></h2><p>Replace only the first match.</p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>text.replaceFirst(&#34;\\d&#34;, &#34;#&#34;);
+</span></span></code></pre></div><hr><h2 id=4><strong>4. <code>split(String regex)</code></strong></h2><p>Split by regex.</p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>String[] parts = text.split(&#34;\\s+&#34;);
+</span></span></code></pre></div><hr><h1 id=-part-2--pattern-class-methods>🔥 PART 2 — <code>Pattern</code> CLASS METHODS</h1><p><code>Pattern</code> = compiled regex.</p><hr><h2 id=1-1><strong>1. <code>compile(String regex)</code></strong></h2><p>Compile regex to a Pattern.</p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>Pattern p = Pattern.compile(&#34;\\d+&#34;);
+</span></span></code></pre></div><hr><h2 id=2-1><strong>2. <code>matcher(CharSequence input)</code></strong></h2><p>Attach pattern to a string.</p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>Matcher m = p.matcher(text);
+</span></span></code></pre></div><hr><h2 id=3-1><strong>3. <code>split(CharSequence input)</code></strong></h2><p>Same as <code>String.split</code>, but uses an existing Pattern.</p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>p.split(&#34;a b c&#34;);
+</span></span></code></pre></div><hr><h2 id=4-1><strong>4. <code>matches(String regex, CharSequence input)</code></strong></h2><p>Static helper. Rarely used.</p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>Pattern.matches(&#34;\\d+&#34;, &#34;123&#34;);
+</span></span></code></pre></div><hr><h2 id=5-flags-with-compile><strong>5. Flags with compile</strong></h2><p>Flags modify regex behavior.</p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>Pattern.compile(&#34;abc&#34;, Pattern.CASE_INSENSITIVE);
+</span></span></code></pre></div><p>Common flags:</p><table><thead><tr><th>Flag</th><th>Meaning</th></tr></thead><tbody><tr><td><code>Pattern.CASE_INSENSITIVE</code></td><td>Ignore case</td></tr><tr><td><code>Pattern.MULTILINE</code></td><td>^ and $ match line boundaries</td></tr><tr><td><code>Pattern.DOTALL</code></td><td><code>.</code> matches newline</td></tr><tr><td><code>Pattern.UNICODE_CASE</code></td><td>Proper unicode case folding</td></tr><tr><td><code>Pattern.COMMENTS</code></td><td>Allow whitespace & <code>#</code> comments</td></tr></tbody></table><p>Combine flags:</p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>Pattern p = Pattern.compile(&#34;abc&#34;, Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+</span></span></code></pre></div><hr><h1 id=-part-3--matcher-class-methods>🔥 PART 3 — <code>Matcher</code> CLASS METHODS</h1><p>This is where ALL the actual work happens.</p><hr><h1 id=search-methods>SEARCH METHODS</h1><h2 id=1-2><strong>1. <code>find()</code></strong></h2><p>Find next match.</p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>while (m.find()) {
+</span></span><span style=display:flex><span>    m.group();
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><hr><h2 id=2-2><strong>2. <code>find(int start)</code></strong></h2><p>Start search at index.</p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>m.find(10);
+</span></span></code></pre></div><hr><h2 id=3-2><strong>3. <code>lookingAt()</code></strong></h2><p>Matches from start of string (not full string).</p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>m.lookingAt();
+</span></span></code></pre></div><hr><h2 id=4-2><strong>4. <code>matches()</code></strong></h2><p>Full string match.</p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>m.matches();
+</span></span></code></pre></div><hr><h1 id=group--capture-methods>GROUP & CAPTURE METHODS</h1><h2 id=5><strong>5. <code>group()</code></strong></h2><p>Returns the entire match.</p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>m.group();
+</span></span></code></pre></div><hr><h2 id=6><strong>6. <code>group(int index)</code></strong></h2><p>Returns a specific capture group.</p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>m.group(1);
+</span></span></code></pre></div><hr><h2 id=7><strong>7. <code>groupCount()</code></strong></h2><p>Number of capturing groups.</p><hr><h2 id=8><strong>8. <code>start()</code></strong></h2><p>Start index of the whole match.</p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>m.start();
+</span></span></code></pre></div><hr><h2 id=9><strong>9. <code>start(int group)</code></strong></h2><p>Start of capture group.</p><hr><h2 id=10><strong>10. <code>end()</code></strong></h2><p>End index of match.</p><hr><h2 id=11><strong>11. <code>end(int group)</code></strong></h2><p>End of capture group.</p><hr><h1 id=replacement-methods>REPLACEMENT METHODS</h1><h2 id=12><strong>12. <code>replaceAll(String replacement)</code></strong></h2><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>m.replaceAll(&#34;#&#34;);
+</span></span></code></pre></div><hr><h2 id=13><strong>13. <code>replaceFirst(String replacement)</code></strong></h2><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>m.replaceFirst(&#34;@&#34;);
+</span></span></code></pre></div><hr><h2 id=14><strong>14. <code>appendReplacement(StringBuilder sb, String replacement)</code></strong></h2><p>Manual streaming replacement (advanced).</p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>StringBuilder sb = new StringBuilder();
+</span></span><span style=display:flex><span>while (m.find()) {
+</span></span><span style=display:flex><span>    m.appendReplacement(sb, &#34;REPLACED&#34;);
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>m.appendTail(sb);
+</span></span></code></pre></div><hr><h2 id=15><strong>15. <code>appendTail(StringBuilder sb)</code></strong></h2><p>Finish the streaming replace.</p><hr><h1 id=other-matcher-methods>OTHER MATCHER METHODS</h1><h2 id=16><strong>16. <code>reset()</code></strong></h2><p>Send matcher back to start.</p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>m.reset();
+</span></span></code></pre></div><hr><h2 id=17><strong>17. <code>reset(CharSequence input)</code></strong></h2><p>Reset + new string.</p><hr><h2 id=18><strong>18. <code>pattern()</code></strong></h2><p>Get the Pattern object.</p><hr><h2 id=19><strong>19. <code>usePattern(Pattern newPattern)</code></strong></h2><p>Change the pattern used by matcher.</p><hr><h2 id=20><strong>20. <code>region(int start, int end)</code></strong></h2><p>Search within a substring <em>without creating a new string</em>.</p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>m.region(0, 10);
+</span></span></code></pre></div><hr><h2 id=21><strong>21. <code>regionStart()</code>, <code>regionEnd()</code></strong></h2><p>Get region bounds.</p><hr><h2 id=22><strong>22. <code>hitEnd()</code></strong></h2><p>Check if matcher hit the end of input on the last match attempt.</p><p>Rarely needed.</p><hr><h2 id=23><strong>23. <code>requireEnd()</code></strong></h2><p>Check if more input <em>could</em> produce a match.</p><p>Rare.</p><hr><h1 id=-memory-cheat-list-the-real-essentials>🧠 MEMORY CHEAT LIST (the REAL essentials)</h1><h3 id=most-used-7-methods><strong>Most used 7 methods</strong></h3><p>If you remember these you know 90% of Java regex:</p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>matches()            // full match
+</span></span><span style=display:flex><span>find()               // search
+</span></span><span style=display:flex><span>group()              // matched text
+</span></span><span style=display:flex><span>group(n)             // capture
+</span></span><span style=display:flex><span>replaceAll()         // replace
+</span></span><span style=display:flex><span>split()              // split by regex
+</span></span><span style=display:flex><span>Pattern.compile()    // compile
+</span></span></code></pre></div><h3 id=moderately-used><strong>Moderately used</strong></h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>lookingAt()
+</span></span><span style=display:flex><span>start(), end()
+</span></span><span style=display:flex><span>reset()
+</span></span></code></pre></div><h3 id=rareadvanced><strong>Rare/Advanced</strong></h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>appendReplacement()
+</span></span><span style=display:flex><span>appendTail()
+</span></span><span style=display:flex><span>region()
+</span></span><span style=display:flex><span>hitEnd()
+</span></span><span style=display:flex><span>requireEnd()
+</span></span></code></pre></div><hr><h1 id=if-you-want-1>If you want:</h1><p>I can give you<br>✔ a 1-page printable cheat sheet<br>✔ exercises with increasing difficulty<br>✔ your own &ldquo;system programmer regex drill&rdquo; list<br>✔ shortcuts to recall patterns mentally</p><p>Just say <strong>“more”</strong>.</p><h2 id=prompt-2>Prompt:</h2><p>yes</p><h2 id=response-2>Response:</h2><p>Great — here is the <strong>ultra-condensed, printable, zero-soydev Java Regex cheat sheet</strong> plus <strong>regex drills</strong> to burn this permanently into your brain.</p><hr><h1 id=-part-1--1-page-java-regex-cheat-sheet>⚡ PART 1 — 1-PAGE JAVA REGEX CHEAT SHEET</h1><p>(You can literally memorize this in one sitting.)</p><hr><h2 id=-regex-syntax-the-real-core>🟥 REGEX SYNTAX (THE REAL CORE)</h2><h3 id=character-classes-1><strong>Character Classes</strong></h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>[abc]      a or b or c
+</span></span><span style=display:flex><span>[^abc]     NOT a/b/c
+</span></span><span style=display:flex><span>[a-zA-Z]   ranges
+</span></span><span style=display:flex><span>\d \w \s   digit / word / space
+</span></span><span style=display:flex><span>\D \W \S   negations
+</span></span><span style=display:flex><span>.          any char (except \n unless DOTALL)
+</span></span></code></pre></div><h3 id=quantifiers-1><strong>Quantifiers</strong></h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>*      0+        (greedy)
+</span></span><span style=display:flex><span>+      1+
+</span></span><span style=display:flex><span>?      0 or 1
+</span></span><span style=display:flex><span>{n}    exactly n
+</span></span><span style=display:flex><span>{n,}   n or more
+</span></span><span style=display:flex><span>{n,m}  between n and m
+</span></span><span style=display:flex><span>*? +? ??   lazy versions
+</span></span></code></pre></div><h3 id=anchors-1><strong>Anchors</strong></h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>^     start of string
+</span></span><span style=display:flex><span>$     end of string
+</span></span><span style=display:flex><span>\b    word boundary
+</span></span><span style=display:flex><span>\B    not boundary
+</span></span></code></pre></div><h3 id=groups-1><strong>Groups</strong></h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>(...)       capturing group
+</span></span><span style=display:flex><span>(?:...)     non-capturing
+</span></span><span style=display:flex><span>(?=...)     positive lookahead
+</span></span><span style=display:flex><span>(?!...)     negative lookahead
+</span></span><span style=display:flex><span>(?&lt;=...)    lookbehind
+</span></span><span style=display:flex><span>(?&lt;!...)    negative lookbehind
+</span></span></code></pre></div><h3 id=alternation><strong>Alternation</strong></h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>a|b   → a or b
+</span></span></code></pre></div><hr><h2 id=-java-escapes>🟥 JAVA ESCAPES</h2><p>Java needs double escaping.</p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>\\d      \d in regex
+</span></span><span style=display:flex><span>\\.      literal dot
+</span></span><span style=display:flex><span>\\\\     literal \
+</span></span></code></pre></div><p>Rule:<br><strong>If your regex needs 1 slash → Java needs 2</strong>.</p><hr><h1 id=-part-2--java-regex-apis-hardcore-shortlist>⚡ PART 2 — JAVA REGEX APIs (HARDCORE SHORTLIST)</h1><hr><h2 id=-string-class>🟩 <code>String</code> class</h2><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>matches(regex)
+</span></span><span style=display:flex><span>replaceAll(regex, repl)
+</span></span><span style=display:flex><span>replaceFirst(regex, repl)
+</span></span><span style=display:flex><span>split(regex)
+</span></span></code></pre></div><hr><h2 id=-pattern>🟩 Pattern</h2><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>Pattern.compile(regex)
+</span></span><span style=display:flex><span>matcher(input)
+</span></span><span style=display:flex><span>split(input)
+</span></span></code></pre></div><h3 id=flags>Flags</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>Pattern.CASE_INSENSITIVE
+</span></span><span style=display:flex><span>Pattern.MULTILINE
+</span></span><span style=display:flex><span>Pattern.DOTALL
+</span></span><span style=display:flex><span>Pattern.COMMENTS
+</span></span></code></pre></div><p>Combine:</p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>Pattern.compile(&#34;abc&#34;, Pattern.CASE_INSENSITIVE | Pattern.DOTALL)
+</span></span></code></pre></div><hr><h2 id=-matcher-methods-everything-you-need>🟩 Matcher Methods (Everything you need)</h2><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>find()
+</span></span><span style=display:flex><span>find(start)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>matches()
+</span></span><span style=display:flex><span>lookingAt()
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>group()
+</span></span><span style=display:flex><span>group(n)
+</span></span><span style=display:flex><span>groupCount()
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>start()
+</span></span><span style=display:flex><span>start(n)
+</span></span><span style=display:flex><span>end()
+</span></span><span style=display:flex><span>end(n)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>replaceAll(repl)
+</span></span><span style=display:flex><span>replaceFirst(repl)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>appendReplacement(sb, repl)
+</span></span><span style=display:flex><span>appendTail(sb)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>reset()
+</span></span><span style=display:flex><span>reset(newInput)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>region(start, end)
+</span></span><span style=display:flex><span>regionStart()
+</span></span><span style=display:flex><span>regionEnd()
+</span></span></code></pre></div><hr><h1 id=-part-3--memory-anchors-recall-without-memorizing>⚡ PART 3 — MEMORY “ANCHORS” (RECALL WITHOUT MEMORIZING)</h1><p>This is the <strong>mental model</strong> to reconstruct regex instantly:</p><h3 id=-regex--scanner--rules>🔥 <strong>Regex = Scanner + Rules</strong></h3><ul><li><code>[]</code> → selection</li><li><code>()</code> → capture</li><li><code>*+?{}</code> → repetition</li><li><code>^$</code> → borders</li><li><code>\</code> → escape</li><li><code>|</code> → OR</li></ul><h3 id=-regex-engine-goes-left--right>🔥 <strong>Regex engine goes left → right</strong></h3><p>Greedy = “take everything, backtrack later”<br>Lazy = “take nothing, expand when needed”</p><h3 id=-java-always-sees-your-string-before-regex-sees-it>🔥 <strong>Java always sees your string BEFORE regex sees it</strong></h3><p>Which is why you escape double.</p><hr><h1 id=-part-4--20-practice-drills-gradually-harder>⚡ PART 4 — 20 PRACTICE DRILLS (GRADUALLY HARDER)</h1><p>Do these and you become a regex killer.</p><hr><h2 id=-level-1--basics>🔹 Level 1 — Basics</h2><p><strong>1. Match a 10-digit mobile number</strong></p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>\\d{10}
+</span></span></code></pre></div><p><strong>2. Match lowercase letters only</strong></p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>[a-z]+
+</span></span></code></pre></div><p><strong>3. Match a filename ending in .txt</strong></p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>.+\\.txt
+</span></span></code></pre></div><hr><h2 id=-level-2--groups--captures>🔹 Level 2 — Groups & Captures</h2><p><strong>4. Extract first name and last name</strong><br>Pattern:</p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>(\\w+) (\\w+)
+</span></span></code></pre></div><p><strong>5. Match integers with optional sign</strong></p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>[-+]?\\d+
+</span></span></code></pre></div><p><strong>6. Match a decimal number</strong></p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>-?\\d+(?:\\.\\d+)?
+</span></span></code></pre></div><hr><h2 id=-level-3--boundaries--anchors>🔹 Level 3 — Boundaries & Anchors</h2><p><strong>7. Match a whole line containing only letters</strong></p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>^[a-zA-Z]+$
+</span></span></code></pre></div><p><strong>8. Match a word boundary “cat”</strong></p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>\\bcat\\b
+</span></span></code></pre></div><hr><h2 id=-level-4--replace>🔹 Level 4 — Replace</h2><p><strong>9. Replace multiple spaces with 1</strong></p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>replaceAll(&#34;\\s+&#34;, &#34; &#34;);
+</span></span></code></pre></div><p><strong>10. Extract only digits from a string</strong></p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>find(&#34;\\d+&#34;)
+</span></span></code></pre></div><hr><h2 id=-level-5--lookaheads>🔹 Level 5 — Lookaheads</h2><p><strong>11. Number followed by “kg”</strong></p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>\\d+(?=kg)
+</span></span></code></pre></div><p><strong>12. Capture only if not followed by “bad”</strong></p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>good(?!boy)
+</span></span></code></pre></div><hr><h2 id=-level-6--lookbehinds>🔹 Level 6 — Lookbehinds</h2><p>(Works in Java 9+)</p><p><strong>13. Digits preceded by ₹</strong></p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>(?&lt;=₹)\\d+
+</span></span></code></pre></div><hr><h2 id=-level-7--harder-patterns>🔹 Level 7 — Harder Patterns</h2><p><strong>14. Match an email</strong></p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$
+</span></span></code></pre></div><p><strong>15. Match a URL (practical one)</strong></p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>https?://[^\\s]+
+</span></span></code></pre></div><hr><h2 id=-level-8--real-world>🔹 Level 8 — Real-World</h2><p><strong>16. Extract key=value pairs</strong></p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>(\\w+)=(\\w+)
+</span></span></code></pre></div><p><strong>17. Match a date (YYYY-MM-DD)</strong></p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>\\d{4}-\\d{2}-\\d{2}
+</span></span></code></pre></div><hr><h2 id=-level-9--youre-now-advanced>🔹 Level 9 — You’re now advanced</h2><p><strong>18. Match Java identifiers</strong></p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>[a-zA-Z_$][a-zA-Z0-9_$]*
+</span></span></code></pre></div><p><strong>19. Validate hex color</strong></p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>#?[0-9a-fA-F]{6}
+</span></span></code></pre></div><hr><h2 id=-final-boss>🔥 Final Boss</h2><p><strong>20. Balanced parentheses (regex hack)</strong></p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>\\((?:[^()]+|\\([^()]*\\))*\\)
+</span></span></code></pre></div><hr><h1 id=-part-5--want-the-full-expert-regex-memory-system>⚡ PART 5 — WANT THE FULL “EXPERT REGEX MEMORY SYSTEM”?</h1><p>I can build you a full:</p><ul><li>🔥 <strong>Java Regex PDF Cheat Sheet</strong></li><li>🔥 <strong>Drill Course (20 days) to become regex master</strong></li><li>🔥 <strong>Regex for Selenium, Web scraping, Log parsing</strong></li><li>🔥 <strong>Regex patterns answer bank (100+ real-world patterns)</strong></li><li>🔥 <strong>Flashcards optimized for memory</strong></li></ul><p>Just say <strong>&ldquo;give me expert system&rdquo;</strong> and I’ll build it.</p><hr><p>Powered by <a href=https://www.chatgptexporter.com>ChatGPT Exporter</a></p></div></article><div class=navigation style="margin-top:5rem;display:flex;justify-content:space-between;border-top:1px solid var(--border);padding-top:2rem"><a href=https://notxkcd.github.io/sdet-prep-site/misc-backup/java-topics/chatgpt-java-string-exercises/ class=nav-btn>← Previous</a>
+<a href=https://notxkcd.github.io/sdet-prep-site/misc-backup/ class=nav-btn>Up</a>
+<a href=https://notxkcd.github.io/sdet-prep-site/misc-backup/java-topics/chatgpt-java-records-explained/ class=nav-btn>Next →</a></div></main><footer class=footer><p>Built with Hugo. No scripts. No tracking. Just the truth.</p></footer><script>document.addEventListener("DOMContentLoaded",function(){const n=document.body,s=document.createTreeWalker(n,NodeFilter.SHOW_TEXT,null,!1);let e;const t=[];for(;e=s.nextNode();)e.nodeValue.includes("[-]")&&t.push(e);t.forEach(e=>{const t=document.createElement("span");t.innerHTML=e.nodeValue.replace(/\[-\]/g,'<span class="started-icon" title="Started"></span>'),e.parentNode.replaceChild(t,e)})})</script><script>const body=document.getElementById("theme-body"),btn=document.getElementById("theme-toggle"),currentTheme=localStorage.getItem("theme");function updateButtonText(){body.classList.contains("theme-terminal")?btn.textContent="Light Mode":btn.textContent="Dark Mode"}currentTheme==="terminal"&&body.classList.add("theme-terminal"),updateButtonText(),btn.addEventListener("click",()=>{body.classList.toggle("theme-terminal"),updateButtonText();let e="natural";body.classList.contains("theme-terminal")&&(e="terminal"),localStorage.setItem("theme",e)})</script></body></html>

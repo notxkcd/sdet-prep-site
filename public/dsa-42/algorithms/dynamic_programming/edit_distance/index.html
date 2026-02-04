@@ -1,473 +1,259 @@
-<!DOCTYPE html>
-<html lang="en-us">
-<head><script src="/sdet-prep-site/livereload.js?mindelay=10&amp;v=2&amp;port=41691&amp;path=sdet-prep-site/livereload" data-no-instant defer></script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Distance (Levenshtein Distance) | SDET Interview Preparation Kit</title>
-    <link rel="stylesheet" href="http://localhost:41691/sdet-prep-site/css/style.css">
-    <link rel="stylesheet" href="http://localhost:41691/sdet-prep-site/css/terminal.css">
-    
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
-    
-    
-    <link rel="stylesheet" href="http://localhost:41691/sdet-prep-site/lib/katex/katex.min.css">
-    <script defer src="http://localhost:41691/sdet-prep-site/lib/katex/katex.min.js"></script>
-    <script defer src="http://localhost:41691/sdet-prep-site/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            renderMathInElement(document.body, {
-                delimiters: [
-                    {left: "$$", right: "$$", display: true},
-                    {left: "$", right: "$", display: false}
-                ]
-            });
-        });
-    </script>
-</head>
-<body id="theme-body">
-    <button id="theme-toggle">Switch Theme</button>
-    <header>
-        <nav>
-            <ul>
-                <li><a href="http://localhost:41691/sdet-prep-site/">Index</a></li>
-                
-            </ul>
-        </nav>
-        <div class="site-breadcrumb">
-            <a href="http://localhost:41691/sdet-prep-site/">Home</a>
-            
-                
-                    <span>/</span> <a href="http://localhost:41691/sdet-prep-site/">SDET Interview Dashboard</a>
-                
-            
-                
-                    <span>/</span> <a href="http://localhost:41691/sdet-prep-site/dsa-42/">42 Algorithms &amp; 42 Data Structures</a>
-                
-            
-                
-                    <span>/</span> <a href="http://localhost:41691/sdet-prep-site/dsa-42/algorithms/">Algorithms</a>
-                
-            
-                
-                    <span>/</span> <a href="http://localhost:41691/sdet-prep-site/dsa-42/algorithms/dynamic_programming/">Dynamic Programming</a>
-                
-            
-            
-                <span>/</span> Edit Distance (Levenshtein Distance)
-            
-        </div>
-    </header>
-
-    <main>
-        
-<article>
-    
-    <h1>Edit Distance (Levenshtein Distance)</h1>
-    <div class="content-body" style="margin-top: 2rem;">
-        <p>The <code>Edit Distance</code>, often known as <code>Levenshtein Distance</code>, is a metric for measuring the difference between two sequences (typically strings). It quantifies how dissimilar two strings are by counting the minimum number of single-character edits (insertions, deletions, or substitutions) required to change one word into the other.</p>
-<p>This problem is a classic application of <code>dynamic programming</code>, where the solution builds upon the optimal solutions of smaller subproblems. It&rsquo;s widely used in spell checkers, DNA sequence analysis, and natural language processing.</p>
-<h2 id="how-it-works">How it Works</h2>
-<h3 id="how-it-works-expanded">How it Works (Expanded)</h3>
-<p>The <code>Edit Distance</code> algorithm uses a 2D <code>DP table</code> (matrix) to store the minimum <code>edit distance</code> between all possible prefixes of the two input strings. <code>dp[i][j]</code> represents the <code>Levenshtein distance</code> between <code>string1[0...i-1]</code> and <code>string2[0...j-1]</code>.</p>
-<hr>
-<p>Example: Edit Distance between &ldquo;kitten&rdquo; and &ldquo;sitting&rdquo;</p>
-<p>Initialize a DP table (matrix) of size (m+1) x (n+1)</p>
-<ul>
-<li>dp[i][0] = i (cost of deleting all chars from string1)</li>
-<li>dp[0][j] = j (cost of inserting all chars from string2)</li>
-</ul>
-<p>For dp[i][j]:</p>
-<ul>
-<li>If string1[i-1] == string2[j-1]: dp[i][j] = dp[i-1][j-1] (no cost if characters match)</li>
-<li>Else: dp[i][j] = 1 + min(dp[i-1][j],   // Deletion
-dp[i][j-1],   // Insertion
-dp[i-1][j-1]) // Substitution</li>
-</ul>
-<p>The final dp[m][n] value is the edit distance.</p>
-<p><a href="#code-walkthrough">Jump to Code Walkthrough</a></p>
-<h2 id="implementation">Implementation</h2>
-<h3 id="python">Python</h3>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#859900">def</span> <span style="color:#268bd2">edit_distance</span>(<span style="color:#268bd2">str1</span>, <span style="color:#268bd2">str2</span>):
-</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">m</span> = <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">str1</span>)
-</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">n</span> = <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">str2</span>)
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># dp[i][j] stores the edit distance between str1[0..i-1] and str2[0..j-1]</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">dp</span> = [[<span style="color:#2aa198;font-weight:bold">0</span> <span style="color:#859900">for</span> <span style="color:#268bd2">_</span> <span style="color:#859900">in</span> <span style="color:#cb4b16">range</span>(<span style="color:#268bd2">n</span> + <span style="color:#2aa198;font-weight:bold">1</span>)] <span style="color:#859900">for</span> <span style="color:#268bd2">_</span> <span style="color:#859900">in</span> <span style="color:#cb4b16">range</span>(<span style="color:#268bd2">m</span> + <span style="color:#2aa198;font-weight:bold">1</span>)]
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># Initialize base cases</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># If str1 is empty, distance is number of insertions to get str2</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> <span style="color:#859900">in</span> <span style="color:#cb4b16">range</span>(<span style="color:#268bd2">m</span> + <span style="color:#2aa198;font-weight:bold">1</span>):
-</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#2aa198;font-weight:bold">0</span>] = <span style="color:#268bd2">i</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># If str2 is empty, distance is number of deletions to get str1</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">j</span> <span style="color:#859900">in</span> <span style="color:#cb4b16">range</span>(<span style="color:#268bd2">n</span> + <span style="color:#2aa198;font-weight:bold">1</span>):
-</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">dp</span>[<span style="color:#2aa198;font-weight:bold">0</span>][<span style="color:#268bd2">j</span>] = <span style="color:#268bd2">j</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># Fill dp table</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> <span style="color:#859900">in</span> <span style="color:#cb4b16">range</span>(<span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">m</span> + <span style="color:#2aa198;font-weight:bold">1</span>):
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> <span style="color:#268bd2">j</span> <span style="color:#859900">in</span> <span style="color:#cb4b16">range</span>(<span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">n</span> + <span style="color:#2aa198;font-weight:bold">1</span>):
-</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> <span style="color:#268bd2">str1</span>[<span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>] == <span style="color:#268bd2">str2</span>[<span style="color:#268bd2">j</span> - <span style="color:#2aa198;font-weight:bold">1</span>]:
-</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">j</span> - <span style="color:#2aa198;font-weight:bold">1</span>] <span style="color:#93a1a1;font-style:italic"># Characters match, no cost</span>
-</span></span><span style="display:flex;"><span>            <span style="color:#859900">else</span>:
-</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#2aa198;font-weight:bold">1</span> + <span style="color:#cb4b16">min</span>(<span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">j</span>],      <span style="color:#93a1a1;font-style:italic"># Deletion</span>
-</span></span><span style="display:flex;"><span>                                   <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span> - <span style="color:#2aa198;font-weight:bold">1</span>],      <span style="color:#93a1a1;font-style:italic"># Insertion</span>
-</span></span><span style="display:flex;"><span>                                   <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">j</span> - <span style="color:#2aa198;font-weight:bold">1</span>])  <span style="color:#93a1a1;font-style:italic"># Substitution</span>
-</span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">m</span>][<span style="color:#268bd2">n</span>]
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># Example</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># str1 = &#34;kitten&#34;</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># str2 = &#34;sitting&#34;</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(edit_distance(str1, str2)) # 3 (k -&gt; s, e -&gt; i, _ -&gt; g)</span>
-</span></span></code></pre></div><h3 id="javascript">Javascript</h3>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#859900">function</span> <span style="color:#268bd2">editDistance</span>(<span style="color:#268bd2">str1</span>, <span style="color:#268bd2">str2</span>) {
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">const</span> <span style="color:#268bd2">m</span> = <span style="color:#268bd2">str1</span>.<span style="color:#268bd2">length</span>;
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">const</span> <span style="color:#268bd2">n</span> = <span style="color:#268bd2">str2</span>.<span style="color:#268bd2">length</span>;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// dp[i][j] stores the edit distance between str1[0..i-1] and str2[0..j-1]
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">const</span> <span style="color:#268bd2">dp</span> = <span style="color:#cb4b16">Array</span>(<span style="color:#268bd2">m</span> + <span style="color:#2aa198;font-weight:bold">1</span>).<span style="color:#268bd2">fill</span>(<span style="color:#2aa198;font-weight:bold">0</span>).<span style="color:#268bd2">map</span>(() =&gt; <span style="color:#cb4b16">Array</span>(<span style="color:#268bd2">n</span> + <span style="color:#2aa198;font-weight:bold">1</span>).<span style="color:#268bd2">fill</span>(<span style="color:#2aa198;font-weight:bold">0</span>));
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Initialize base cases
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#93a1a1;font-style:italic">// If str1 is empty, distance is number of insertions to get str2
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt;= <span style="color:#268bd2">m</span>; <span style="color:#268bd2">i</span>++) {
-</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#2aa198;font-weight:bold">0</span>] = <span style="color:#268bd2">i</span>;
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// If str2 is empty, distance is number of deletions to get str1
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">j</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">j</span> &lt;= <span style="color:#268bd2">n</span>; <span style="color:#268bd2">j</span>++) {
-</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">dp</span>[<span style="color:#2aa198;font-weight:bold">0</span>][<span style="color:#268bd2">j</span>] = <span style="color:#268bd2">j</span>;
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Fill dp table
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#268bd2">i</span> &lt;= <span style="color:#268bd2">m</span>; <span style="color:#268bd2">i</span>++) {
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">j</span> = <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#268bd2">j</span> &lt;= <span style="color:#268bd2">n</span>; <span style="color:#268bd2">j</span>++) {
-</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">str1</span>[<span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>] === <span style="color:#268bd2">str2</span>[<span style="color:#268bd2">j</span> - <span style="color:#2aa198;font-weight:bold">1</span>]) {
-</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">j</span> - <span style="color:#2aa198;font-weight:bold">1</span>]; <span style="color:#93a1a1;font-style:italic">// Characters match, no cost
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            } <span style="color:#859900">else</span> {
-</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#2aa198;font-weight:bold">1</span> + <span style="color:#cb4b16">Math</span>.<span style="color:#268bd2">min</span>(<span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">j</span>],      <span style="color:#93a1a1;font-style:italic">// Deletion
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                                        <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span> - <span style="color:#2aa198;font-weight:bold">1</span>],      <span style="color:#93a1a1;font-style:italic">// Insertion
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                                        <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">j</span> - <span style="color:#2aa198;font-weight:bold">1</span>]);  <span style="color:#93a1a1;font-style:italic">// Substitution
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            }
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">m</span>][<span style="color:#268bd2">n</span>];
-</span></span><span style="display:flex;"><span>}
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const str1 = &#34;kitten&#34;;
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const str2 = &#34;sitting&#34;;
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(editDistance(str1, str2)); // 3
-</span></span></span></code></pre></div><h3 id="typescript">Typescript</h3>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-typescript" data-lang="typescript"><span style="display:flex;"><span><span style="color:#859900">function</span> <span style="color:#268bd2">editDistanceTS</span>(<span style="color:#268bd2">str1</span>: <span style="color:#859900;font-weight:bold">string</span>, <span style="color:#268bd2">str2</span>: <span style="color:#859900;font-weight:bold">string</span>): <span style="color:#859900;font-weight:bold">number</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">const</span> <span style="color:#268bd2">m</span> = <span style="color:#268bd2">str1</span>.<span style="color:#268bd2">length</span>;
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">const</span> <span style="color:#268bd2">n</span> = <span style="color:#268bd2">str2</span>.<span style="color:#268bd2">length</span>;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// dp[i][j] stores the edit distance between str1[0..i-1] and str2[0..j-1]
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">const</span> <span style="color:#268bd2">dp</span>: <span style="color:#859900;font-weight:bold">number</span>[][] = <span style="color:#cb4b16">Array</span>(<span style="color:#268bd2">m</span> + <span style="color:#2aa198;font-weight:bold">1</span>).<span style="color:#268bd2">fill</span>(<span style="color:#2aa198;font-weight:bold">0</span>).<span style="color:#268bd2">map</span>(() =&gt; <span style="color:#cb4b16">Array</span>(<span style="color:#268bd2">n</span> + <span style="color:#2aa198;font-weight:bold">1</span>).<span style="color:#268bd2">fill</span>(<span style="color:#2aa198;font-weight:bold">0</span>));
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Initialize base cases
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#93a1a1;font-style:italic">// If str1 is empty, distance is number of insertions to get str2
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt;= <span style="color:#268bd2">m</span>; <span style="color:#268bd2">i</span>++) {
-</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#2aa198;font-weight:bold">0</span>] = <span style="color:#268bd2">i</span>;
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// If str2 is empty, distance is number of deletions to get str1
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">j</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">j</span> &lt;= <span style="color:#268bd2">n</span>; <span style="color:#268bd2">j</span>++) {
-</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">dp</span>[<span style="color:#2aa198;font-weight:bold">0</span>][<span style="color:#268bd2">j</span>] = <span style="color:#268bd2">j</span>;
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Fill dp table
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#268bd2">i</span> &lt;= <span style="color:#268bd2">m</span>; <span style="color:#268bd2">i</span>++) {
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">j</span> = <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#268bd2">j</span> &lt;= <span style="color:#268bd2">n</span>; <span style="color:#268bd2">j</span>++) {
-</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">str1</span>[<span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>] === <span style="color:#268bd2">str2</span>[<span style="color:#268bd2">j</span> - <span style="color:#2aa198;font-weight:bold">1</span>]) {
-</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">j</span> - <span style="color:#2aa198;font-weight:bold">1</span>]; <span style="color:#93a1a1;font-style:italic">// Characters match, no cost
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            } <span style="color:#859900">else</span> {
-</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#2aa198;font-weight:bold">1</span> + <span style="color:#cb4b16">Math</span>.<span style="color:#268bd2">min</span>(<span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">j</span>],      <span style="color:#93a1a1;font-style:italic">// Deletion
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                                        <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span> - <span style="color:#2aa198;font-weight:bold">1</span>],      <span style="color:#93a1a1;font-style:italic">// Insertion
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                                        <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">j</span> - <span style="color:#2aa198;font-weight:bold">1</span>]);  <span style="color:#93a1a1;font-style:italic">// Substitution
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            }
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">m</span>][<span style="color:#268bd2">n</span>];
-</span></span><span style="display:flex;"><span>}
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const str1TS = &#34;kitten&#34;;
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const str2TS = &#34;sitting&#34;;
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(editDistanceTS(str1TS, str2TS)); // 3
-</span></span></span></code></pre></div><h3 id="cpp">Cpp</h3>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;string&gt;</span><span style="color:#93a1a1;font-style:italic">
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;vector&gt;</span><span style="color:#93a1a1;font-style:italic">
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;iostream&gt;</span><span style="color:#93a1a1;font-style:italic">
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;algorithm&gt;</span><span style="color:#93a1a1;font-style:italic"> </span><span style="color:#93a1a1;font-style:italic">// For std::min
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
-</span></span><span style="display:flex;"><span><span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">editDistance</span>(<span style="color:#859900">const</span> <span style="color:#268bd2">std</span>::<span style="color:#268bd2">string</span>&amp; <span style="color:#268bd2">str1</span>, <span style="color:#859900">const</span> <span style="color:#268bd2">std</span>::<span style="color:#268bd2">string</span>&amp; <span style="color:#268bd2">str2</span>) {
-</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">m</span> = <span style="color:#268bd2">str1</span>.<span style="color:#268bd2">length</span>();
-</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">n</span> = <span style="color:#268bd2">str2</span>.<span style="color:#268bd2">length</span>();
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// dp[i][j] stores the edit distance between str1[0..i-1] and str2[0..j-1]
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt;&gt; <span style="color:#268bd2">dp</span>(<span style="color:#268bd2">m</span> + <span style="color:#2aa198;font-weight:bold">1</span>, <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt;(<span style="color:#268bd2">n</span> + <span style="color:#2aa198;font-weight:bold">1</span>));
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Initialize base cases
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#93a1a1;font-style:italic">// If str1 is empty, distance is number of insertions to get str2
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt;= <span style="color:#268bd2">m</span>; <span style="color:#268bd2">i</span>++) {
-</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#2aa198;font-weight:bold">0</span>] = <span style="color:#268bd2">i</span>;
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// If str2 is empty, distance is number of deletions to get str1
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">j</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">j</span> &lt;= <span style="color:#268bd2">n</span>; <span style="color:#268bd2">j</span>++) {
-</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">dp</span>[<span style="color:#2aa198;font-weight:bold">0</span>][<span style="color:#268bd2">j</span>] = <span style="color:#268bd2">j</span>;
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Fill dp table
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#268bd2">i</span> &lt;= <span style="color:#268bd2">m</span>; <span style="color:#268bd2">i</span>++) {
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">j</span> = <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#268bd2">j</span> &lt;= <span style="color:#268bd2">n</span>; <span style="color:#268bd2">j</span>++) {
-</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">str1</span>[<span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>] == <span style="color:#268bd2">str2</span>[<span style="color:#268bd2">j</span> - <span style="color:#2aa198;font-weight:bold">1</span>]) {
-</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">j</span> - <span style="color:#2aa198;font-weight:bold">1</span>]; <span style="color:#93a1a1;font-style:italic">// Characters match, no cost
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            } <span style="color:#859900">else</span> {
-</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#2aa198;font-weight:bold">1</span> + <span style="color:#268bd2">std</span>::<span style="color:#268bd2">min</span>({<span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">j</span>],      <span style="color:#93a1a1;font-style:italic">// Deletion
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                                        <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span> - <span style="color:#2aa198;font-weight:bold">1</span>],      <span style="color:#93a1a1;font-style:italic">// Insertion
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                                        <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">j</span> - <span style="color:#2aa198;font-weight:bold">1</span>]});  <span style="color:#93a1a1;font-style:italic">// Substitution
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            }
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">m</span>][<span style="color:#268bd2">n</span>];
-</span></span><span style="display:flex;"><span>}
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// int main() {
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::string str1 = &#34;kitten&#34;;
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::string str2 = &#34;sitting&#34;;
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; &#34;Edit Distance: &#34; &lt;&lt; editDistance(str1, str2) &lt;&lt; std::endl; // 3
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     return 0;
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
-</span></span></span></code></pre></div><h3 id="go">Go</h3>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">package</span> <span style="color:#268bd2">main</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#2aa198">&#34;fmt&#34;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> <span style="color:#268bd2">editDistance</span>(<span style="color:#268bd2">str1</span>, <span style="color:#268bd2">str2</span> <span style="color:#859900;font-weight:bold">string</span>) <span style="color:#859900;font-weight:bold">int</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">m</span> := <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">str1</span>)
-</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">n</span> := <span style="color:#cb4b16">len</span>(<span style="color:#268bd2">str2</span>)
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// dp[i][j] stores the edit distance between str1[0..i-1] and str2[0..j-1]</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">dp</span> := <span style="color:#cb4b16">make</span>([][]<span style="color:#859900;font-weight:bold">int</span>, <span style="color:#268bd2">m</span>+<span style="color:#2aa198;font-weight:bold">1</span>)
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> := <span style="color:#859900">range</span> <span style="color:#268bd2">dp</span> {
-</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>] = <span style="color:#cb4b16">make</span>([]<span style="color:#859900;font-weight:bold">int</span>, <span style="color:#268bd2">n</span>+<span style="color:#2aa198;font-weight:bold">1</span>)
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Initialize base cases</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// If str1 is empty, distance is number of insertions to get str2</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> := <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt;= <span style="color:#268bd2">m</span>; <span style="color:#268bd2">i</span>++ {
-</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#2aa198;font-weight:bold">0</span>] = <span style="color:#268bd2">i</span>
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// If str2 is empty, distance is number of deletions to get str1</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">j</span> := <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">j</span> &lt;= <span style="color:#268bd2">n</span>; <span style="color:#268bd2">j</span>++ {
-</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">dp</span>[<span style="color:#2aa198;font-weight:bold">0</span>][<span style="color:#268bd2">j</span>] = <span style="color:#268bd2">j</span>
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Fill dp table</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> := <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#268bd2">i</span> &lt;= <span style="color:#268bd2">m</span>; <span style="color:#268bd2">i</span>++ {
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> <span style="color:#268bd2">j</span> := <span style="color:#2aa198;font-weight:bold">1</span>; <span style="color:#268bd2">j</span> &lt;= <span style="color:#268bd2">n</span>; <span style="color:#268bd2">j</span>++ {
-</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> <span style="color:#268bd2">str1</span>[<span style="color:#268bd2">i</span>-<span style="color:#2aa198;font-weight:bold">1</span>] == <span style="color:#268bd2">str2</span>[<span style="color:#268bd2">j</span>-<span style="color:#2aa198;font-weight:bold">1</span>] {
-</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>-<span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">j</span>-<span style="color:#2aa198;font-weight:bold">1</span>] <span style="color:#93a1a1;font-style:italic">// Characters match, no cost</span>
-</span></span><span style="display:flex;"><span>            } <span style="color:#859900">else</span> {
-</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#2aa198;font-weight:bold">1</span> + <span style="color:#cb4b16">min</span>(<span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>-<span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">j</span>],      <span style="color:#93a1a1;font-style:italic">// Deletion</span>
-</span></span><span style="display:flex;"><span>                                   <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>-<span style="color:#2aa198;font-weight:bold">1</span>],      <span style="color:#93a1a1;font-style:italic">// Insertion</span>
-</span></span><span style="display:flex;"><span>                                   <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>-<span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">j</span>-<span style="color:#2aa198;font-weight:bold">1</span>])  <span style="color:#93a1a1;font-style:italic">// Substitution</span>
-</span></span><span style="display:flex;"><span>            }
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">m</span>][<span style="color:#268bd2">n</span>]
-</span></span><span style="display:flex;"><span>}
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#859900">func</span> <span style="color:#cb4b16">min</span>(<span style="color:#268bd2">a</span>, <span style="color:#268bd2">b</span>, <span style="color:#268bd2">c</span> <span style="color:#859900;font-weight:bold">int</span>) <span style="color:#859900;font-weight:bold">int</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#268bd2">a</span> &lt; <span style="color:#268bd2">b</span> {
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">a</span> &lt; <span style="color:#268bd2">c</span> {
-</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#268bd2">a</span>
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">c</span>
-</span></span><span style="display:flex;"><span>    } <span style="color:#859900">else</span> {
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#268bd2">b</span> &lt; <span style="color:#268bd2">c</span> {
-</span></span><span style="display:flex;"><span>            <span style="color:#859900">return</span> <span style="color:#268bd2">b</span>
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">c</span>
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>}
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// func main() {</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     str1 := &#34;kitten&#34;</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     str2 := &#34;sitting&#34;</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     fmt.Println(&#34;Edit Distance:&#34;, editDistance(str1, str2)) // 3</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }</span>
-</span></span></code></pre></div><h3 id="d">D</h3>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-d" data-lang="d"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.stdio</span>;
-</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.array</span>;
-</span></span><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">std.algorithm</span>; <span style="color:#93a1a1;font-style:italic">// For std.algorithm.min
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
-</span></span><span style="display:flex;"><span><span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">editDistance</span>(<span style="color:#cb4b16">string</span> <span style="color:#268bd2">str1</span>, <span style="color:#cb4b16">string</span> <span style="color:#268bd2">str2</span>) {
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">auto</span> <span style="color:#268bd2">m</span> = <span style="color:#268bd2">str1</span>.<span style="color:#268bd2">length</span>;
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">auto</span> <span style="color:#268bd2">n</span> = <span style="color:#268bd2">str2</span>.<span style="color:#268bd2">length</span>;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// dp[i][j] stores the edit distance between str1[0..i-1] and str2[0..j-1]
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">auto</span> <span style="color:#268bd2">dp</span> = <span style="color:#859900">new</span> <span style="color:#859900;font-weight:bold">int</span>[<span style="color:#268bd2">m</span> + <span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">n</span> + <span style="color:#2aa198;font-weight:bold">1</span>];
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Initialize base cases
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#93a1a1;font-style:italic">// If str1 is empty, distance is number of insertions to get str2
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">foreach</span> (<span style="color:#268bd2">i</span>; <span style="color:#2aa198;font-weight:bold">0</span> .. <span style="color:#268bd2">m</span> + <span style="color:#2aa198;font-weight:bold">1</span>) {
-</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#2aa198;font-weight:bold">0</span>] = <span style="color:#268bd2">i</span>;
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// If str2 is empty, distance is number of deletions to get str1
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">foreach</span> (<span style="color:#268bd2">j</span>; <span style="color:#2aa198;font-weight:bold">0</span> .. <span style="color:#268bd2">n</span> + <span style="color:#2aa198;font-weight:bold">1</span>) {
-</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">dp</span>[<span style="color:#2aa198;font-weight:bold">0</span>][<span style="color:#268bd2">j</span>] = <span style="color:#268bd2">j</span>;
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic">// Fill dp table
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    <span style="color:#859900">foreach</span> (<span style="color:#268bd2">i</span>; <span style="color:#2aa198;font-weight:bold">1</span> .. <span style="color:#268bd2">m</span> + <span style="color:#2aa198;font-weight:bold">1</span>) {
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">foreach</span> (<span style="color:#268bd2">j</span>; <span style="color:#2aa198;font-weight:bold">1</span> .. <span style="color:#268bd2">n</span> + <span style="color:#2aa198;font-weight:bold">1</span>) {
-</span></span><span style="display:flex;"><span>            <span style="color:#859900">if</span> (<span style="color:#268bd2">str1</span>[<span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>] == <span style="color:#268bd2">str2</span>[<span style="color:#268bd2">j</span> - <span style="color:#2aa198;font-weight:bold">1</span>]) {
-</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">j</span> - <span style="color:#2aa198;font-weight:bold">1</span>]; <span style="color:#93a1a1;font-style:italic">// Characters match, no cost
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            } <span style="color:#859900">else</span> {
-</span></span><span style="display:flex;"><span>                <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span>] = <span style="color:#2aa198;font-weight:bold">1</span> + <span style="color:#268bd2">min</span>(<span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">j</span>],      <span style="color:#93a1a1;font-style:italic">// Deletion
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                                   <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span>][<span style="color:#268bd2">j</span> - <span style="color:#2aa198;font-weight:bold">1</span>],      <span style="color:#93a1a1;font-style:italic">// Insertion
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>                                   <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">i</span> - <span style="color:#2aa198;font-weight:bold">1</span>][<span style="color:#268bd2">j</span> - <span style="color:#2aa198;font-weight:bold">1</span>]);  <span style="color:#93a1a1;font-style:italic">// Substitution
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>            }
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">return</span> <span style="color:#268bd2">dp</span>[<span style="color:#268bd2">m</span>][<span style="color:#268bd2">n</span>];
-</span></span><span style="display:flex;"><span>}
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// void main() {
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     string str1 = &#34;kitten&#34;;
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     string str2 = &#34;sitting&#34;;
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     writeln(&#34;Edit Distance: &#34;, editDistance(str1, str2)); // 3
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
-</span></span></span></code></pre></div><h2 id="code-walkthrough">Code Walkthrough</h2>
-<p><a href="#implementation">Back to Implementation</a></p>
-<h3 id="code-walkthrough-1">Code Walkthrough</h3>
-<p>The <code>Edit Distance</code> algorithm uses <code>dynamic programming</code> to fill a 2D table representing the <code>edit distance</code> between all prefixes of the two input strings.</p>
-<hr>
-<p><strong>Initialization:</strong></p>
-<ul>
-<li>A 2D <code>dp</code> table (<code>m+1</code> rows, <code>n+1</code> columns) is created.</li>
-<li>The first row <code>dp[i][0]</code> is initialized from 0 to <code>m</code>, representing the cost of deleting <code>i</code> characters from <code>str1</code> to make it empty.</li>
-<li>The first column <code>dp[0][j]</code> is initialized from 0 to <code>n</code>, representing the cost of inserting <code>j</code> characters to make an empty string <code>str2</code>.</li>
-</ul>
-<p><strong>Filling the DP Table:</strong></p>
-<ul>
-<li>
-<p>The <code>dp</code> table is filled iteratively for <code>i</code> from 1 to <code>m</code> and <code>j</code> from 1 to <code>n</code>.</p>
-</li>
-<li>
-<p>For each cell <code>dp[i][j]</code>:</p>
-</li>
-<li>
-<p>If <code>str1[i-1]</code> (the <code>i</code>-th character of <code>str1</code>) matches <code>str2[j-1]</code> (the <code>j</code>-th character of <code>str2</code>), then no <code>edit</code> operation is needed for these characters. The <code>edit distance</code> is simply inherited from the previous diagonal cell: <code>dp[i-1][j-1]</code>.</p>
-</li>
-<li>
-<p>If the characters do not match, an <code>edit</code> operation (deletion, insertion, or substitution) is required. The cost of this operation is <code>1</code> plus the minimum <code>edit distance</code> from three possibilities:</p>
-</li>
-<li>
-<p><code>dp[i-1][j]</code>: Cost of deleting <code>str1[i-1]</code>.</p>
-</li>
-<li>
-<p><code>dp[i][j-1]</code>: Cost of inserting <code>str2[j-1]</code>.</p>
-</li>
-<li>
-<p><code>dp[i-1][j-1]</code>: Cost of substituting <code>str1[i-1]</code> with <code>str2[j-1]</code>.</p>
-<pre><code>      &lt;/li&gt;
-</code></pre>
-  </li>
-</li>
-</ul>
-<p><strong>Result:</strong></p>
-<ul>
-<li>The final <code>edit distance</code> between <code>str1</code> and <code>str2</code> is stored in <code>dp[m][n]</code>.</li>
-</ul>
-<p><a href="#implementation">Back to Implementation</a></p>
-<h2 id="applications">Applications</h2>
-<h3 id="application">Application</h3>
-<p>The <code>Edit Distance (Levenshtein Distance)</code> algorithm has a wide array of practical applications:</p>
-<ul>
-<li><strong>Spell Checkers and Autocorrection:</strong> Suggesting corrections for misspelled words by finding dictionary words with the minimum <code>edit distance</code>.</li>
-<li><strong>DNA Sequence Alignment:</strong> Measuring the similarity between biological sequences to understand evolutionary relationships or identify functional similarities.</li>
-<li><strong>Plagiarism Detection:</strong> Quantifying the textual similarity between documents.</li>
-<li><strong>Optical Character Recognition (OCR) Error Correction:</strong> Correcting errors introduced during the scanning of text.</li>
-<li><strong>Natural Language Processing (NLP):</strong> Used in tasks like machine translation evaluation, fuzzy string matching, and text comparison.</li>
-</ul>
-
-    </div>
-</article>
-
-<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
-    
-    <a href="http://localhost:41691/sdet-prep-site/dsa-42/algorithms/dynamic_programming/knapsack/" class="nav-btn">← Previous</a>
-    
-    
-    <a href="http://localhost:41691/sdet-prep-site/dsa-42/algorithms/dynamic_programming/" class="nav-btn">Up</a>
-
-    
-    <a href="http://localhost:41691/sdet-prep-site/dsa-42/algorithms/dynamic_programming/coin_change/" class="nav-btn">Next →</a>
-    
-</div>
-
-    </main>
-
-    <footer class="footer">
-        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
-    </footer>
-
-    <script>
-        
-        document.addEventListener("DOMContentLoaded", function() {
-            const content = document.body;
-            
-            const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT, null, false);
-            let node;
-            const nodesToReplace = [];
-            while(node = walker.nextNode()) {
-                if (node.nodeValue.includes("[-]")) nodesToReplace.push(node);
-            }
-            nodesToReplace.forEach(textNode => {
-                const span = document.createElement('span');
-                span.innerHTML = textNode.nodeValue.replace(/\[-\]/g, '<span class="started-icon" title="Started"></span>');
-                textNode.parentNode.replaceChild(span, textNode);
-            });
-        });
-    </script>
-
-    <script>
-        const body = document.getElementById('theme-body');
-        const btn = document.getElementById('theme-toggle');
-        const currentTheme = localStorage.getItem('theme');
-
-        
-        function updateButtonText() {
-            if (body.classList.contains('theme-terminal')) {
-                btn.textContent = "Light Mode";
-            } else {
-                btn.textContent = "Dark Mode";
-            }
-        }
-
-        if (currentTheme === 'terminal') {
-            body.classList.add('theme-terminal');
-        }
-        
-        
-        updateButtonText();
-
-        btn.addEventListener('click', () => {
-            body.classList.toggle('theme-terminal');
-            updateButtonText();
-            
-            let theme = 'natural';
-            if (body.classList.contains('theme-terminal')) {
-                theme = 'terminal';
-            }
-            localStorage.setItem('theme', theme);
-        });
-    </script>
-</body>
-</html>
+<!doctype html><html lang=en-us><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Edit Distance (Levenshtein Distance) | SDET Interview Preparation Kit</title><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/css/style.css><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/css/terminal.css><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel=stylesheet><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/lib/katex/katex.min.css><script defer src=https://notxkcd.github.io/sdet-prep-site/lib/katex/katex.min.js></script><script defer src=https://notxkcd.github.io/sdet-prep-site/lib/katex/contrib/auto-render.min.js onload=renderMathInElement(document.body)></script><script>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1}]})})</script></head><body id=theme-body><button id=theme-toggle>Switch Theme</button><header><nav><ul><li><a href=https://notxkcd.github.io/sdet-prep-site/>Index</a></li></ul></nav><div class=site-breadcrumb><a href=https://notxkcd.github.io/sdet-prep-site/>Home</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/>SDET Interview Dashboard</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/>42 Algorithms & 42 Data Structures</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/algorithms/>Algorithms</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/algorithms/dynamic_programming/>Dynamic Programming</a>
+<span>/</span> Edit Distance (Levenshtein Distance)</div></header><main><article><h1>Edit Distance (Levenshtein Distance)</h1><div class=content-body style=margin-top:2rem><p>The <code>Edit Distance</code>, often known as <code>Levenshtein Distance</code>, is a metric for measuring the difference between two sequences (typically strings). It quantifies how dissimilar two strings are by counting the minimum number of single-character edits (insertions, deletions, or substitutions) required to change one word into the other.</p><p>This problem is a classic application of <code>dynamic programming</code>, where the solution builds upon the optimal solutions of smaller subproblems. It&rsquo;s widely used in spell checkers, DNA sequence analysis, and natural language processing.</p><h2 id=how-it-works>How it Works</h2><h3 id=how-it-works-expanded>How it Works (Expanded)</h3><p>The <code>Edit Distance</code> algorithm uses a 2D <code>DP table</code> (matrix) to store the minimum <code>edit distance</code> between all possible prefixes of the two input strings. <code>dp[i][j]</code> represents the <code>Levenshtein distance</code> between <code>string1[0...i-1]</code> and <code>string2[0...j-1]</code>.</p><hr><p>Example: Edit Distance between &ldquo;kitten&rdquo; and &ldquo;sitting&rdquo;</p><p>Initialize a DP table (matrix) of size (m+1) x (n+1)</p><ul><li>dp[i][0] = i (cost of deleting all chars from string1)</li><li>dp[0][j] = j (cost of inserting all chars from string2)</li></ul><p>For dp[i][j]:</p><ul><li>If string1[i-1] == string2[j-1]: dp[i][j] = dp[i-1][j-1] (no cost if characters match)</li><li>Else: dp[i][j] = 1 + min(dp[i-1][j], // Deletion
+dp[i][j-1], // Insertion
+dp[i-1][j-1]) // Substitution</li></ul><p>The final dp[m][n] value is the edit distance.</p><p><a href=#code-walkthrough>Jump to Code Walkthrough</a></p><h2 id=implementation>Implementation</h2><h3 id=python>Python</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#859900>def</span> <span style=color:#268bd2>edit_distance</span>(<span style=color:#268bd2>str1</span>, <span style=color:#268bd2>str2</span>):
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>m</span> = <span style=color:#cb4b16>len</span>(<span style=color:#268bd2>str1</span>)
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>n</span> = <span style=color:#cb4b16>len</span>(<span style=color:#268bd2>str2</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic># dp[i][j] stores the edit distance between str1[0..i-1] and str2[0..j-1]</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>dp</span> = [[<span style=color:#2aa198;font-weight:700>0</span> <span style=color:#859900>for</span> <span style=color:#268bd2>_</span> <span style=color:#859900>in</span> <span style=color:#cb4b16>range</span>(<span style=color:#268bd2>n</span> + <span style=color:#2aa198;font-weight:700>1</span>)] <span style=color:#859900>for</span> <span style=color:#268bd2>_</span> <span style=color:#859900>in</span> <span style=color:#cb4b16>range</span>(<span style=color:#268bd2>m</span> + <span style=color:#2aa198;font-weight:700>1</span>)]
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic># Initialize base cases</span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic># If str1 is empty, distance is number of insertions to get str2</span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>for</span> <span style=color:#268bd2>i</span> <span style=color:#859900>in</span> <span style=color:#cb4b16>range</span>(<span style=color:#268bd2>m</span> + <span style=color:#2aa198;font-weight:700>1</span>):
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>dp</span>[<span style=color:#268bd2>i</span>][<span style=color:#2aa198;font-weight:700>0</span>] = <span style=color:#268bd2>i</span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic># If str2 is empty, distance is number of deletions to get str1</span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>for</span> <span style=color:#268bd2>j</span> <span style=color:#859900>in</span> <span style=color:#cb4b16>range</span>(<span style=color:#268bd2>n</span> + <span style=color:#2aa198;font-weight:700>1</span>):
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>dp</span>[<span style=color:#2aa198;font-weight:700>0</span>][<span style=color:#268bd2>j</span>] = <span style=color:#268bd2>j</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic># Fill dp table</span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>for</span> <span style=color:#268bd2>i</span> <span style=color:#859900>in</span> <span style=color:#cb4b16>range</span>(<span style=color:#2aa198;font-weight:700>1</span>, <span style=color:#268bd2>m</span> + <span style=color:#2aa198;font-weight:700>1</span>):
+</span></span><span style=display:flex><span>        <span style=color:#859900>for</span> <span style=color:#268bd2>j</span> <span style=color:#859900>in</span> <span style=color:#cb4b16>range</span>(<span style=color:#2aa198;font-weight:700>1</span>, <span style=color:#268bd2>n</span> + <span style=color:#2aa198;font-weight:700>1</span>):
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> <span style=color:#268bd2>str1</span>[<span style=color:#268bd2>i</span> - <span style=color:#2aa198;font-weight:700>1</span>] == <span style=color:#268bd2>str2</span>[<span style=color:#268bd2>j</span> - <span style=color:#2aa198;font-weight:700>1</span>]:
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>dp</span>[<span style=color:#268bd2>i</span>][<span style=color:#268bd2>j</span>] = <span style=color:#268bd2>dp</span>[<span style=color:#268bd2>i</span> - <span style=color:#2aa198;font-weight:700>1</span>][<span style=color:#268bd2>j</span> - <span style=color:#2aa198;font-weight:700>1</span>] <span style=color:#93a1a1;font-style:italic># Characters match, no cost</span>
+</span></span><span style=display:flex><span>            <span style=color:#859900>else</span>:
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>dp</span>[<span style=color:#268bd2>i</span>][<span style=color:#268bd2>j</span>] = <span style=color:#2aa198;font-weight:700>1</span> + <span style=color:#cb4b16>min</span>(<span style=color:#268bd2>dp</span>[<span style=color:#268bd2>i</span> - <span style=color:#2aa198;font-weight:700>1</span>][<span style=color:#268bd2>j</span>],      <span style=color:#93a1a1;font-style:italic># Deletion</span>
+</span></span><span style=display:flex><span>                                   <span style=color:#268bd2>dp</span>[<span style=color:#268bd2>i</span>][<span style=color:#268bd2>j</span> - <span style=color:#2aa198;font-weight:700>1</span>],      <span style=color:#93a1a1;font-style:italic># Insertion</span>
+</span></span><span style=display:flex><span>                                   <span style=color:#268bd2>dp</span>[<span style=color:#268bd2>i</span> - <span style=color:#2aa198;font-weight:700>1</span>][<span style=color:#268bd2>j</span> - <span style=color:#2aa198;font-weight:700>1</span>])  <span style=color:#93a1a1;font-style:italic># Substitution</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>dp</span>[<span style=color:#268bd2>m</span>][<span style=color:#268bd2>n</span>]
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># Example</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># str1 = &#34;kitten&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># str2 = &#34;sitting&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># print(edit_distance(str1, str2)) # 3 (k -&gt; s, e -&gt; i, _ -&gt; g)</span>
+</span></span></code></pre></div><h3 id=javascript>Javascript</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=display:flex><span><span style=color:#859900>function</span> <span style=color:#268bd2>editDistance</span>(<span style=color:#268bd2>str1</span>, <span style=color:#268bd2>str2</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#859900>const</span> <span style=color:#268bd2>m</span> = <span style=color:#268bd2>str1</span>.<span style=color:#268bd2>length</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900>const</span> <span style=color:#268bd2>n</span> = <span style=color:#268bd2>str2</span>.<span style=color:#268bd2>length</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// dp[i][j] stores the edit distance between str1[0..i-1] and str2[0..j-1]
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900>const</span> <span style=color:#268bd2>dp</span> = <span style=color:#cb4b16>Array</span>(<span style=color:#268bd2>m</span> + <span style=color:#2aa198;font-weight:700>1</span>).<span style=color:#268bd2>fill</span>(<span style=color:#2aa198;font-weight:700>0</span>).<span style=color:#268bd2>map</span>(() =&gt; <span style=color:#cb4b16>Array</span>(<span style=color:#268bd2>n</span> + <span style=color:#2aa198;font-weight:700>1</span>).<span style=color:#268bd2>fill</span>(<span style=color:#2aa198;font-weight:700>0</span>));
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// Initialize base cases
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#93a1a1;font-style:italic>// If str1 is empty, distance is number of insertions to get str2
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900>for</span> (<span style=color:#859900>let</span> <span style=color:#268bd2>i</span> = <span style=color:#2aa198;font-weight:700>0</span>; <span style=color:#268bd2>i</span> &lt;= <span style=color:#268bd2>m</span>; <span style=color:#268bd2>i</span>++) {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>dp</span>[<span style=color:#268bd2>i</span>][<span style=color:#2aa198;font-weight:700>0</span>] = <span style=color:#268bd2>i</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// If str2 is empty, distance is number of deletions to get str1
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900>for</span> (<span style=color:#859900>let</span> <span style=color:#268bd2>j</span> = <span style=color:#2aa198;font-weight:700>0</span>; <span style=color:#268bd2>j</span> &lt;= <span style=color:#268bd2>n</span>; <span style=color:#268bd2>j</span>++) {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>dp</span>[<span style=color:#2aa198;font-weight:700>0</span>][<span style=color:#268bd2>j</span>] = <span style=color:#268bd2>j</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// Fill dp table
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900>for</span> (<span style=color:#859900>let</span> <span style=color:#268bd2>i</span> = <span style=color:#2aa198;font-weight:700>1</span>; <span style=color:#268bd2>i</span> &lt;= <span style=color:#268bd2>m</span>; <span style=color:#268bd2>i</span>++) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>for</span> (<span style=color:#859900>let</span> <span style=color:#268bd2>j</span> = <span style=color:#2aa198;font-weight:700>1</span>; <span style=color:#268bd2>j</span> &lt;= <span style=color:#268bd2>n</span>; <span style=color:#268bd2>j</span>++) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> (<span style=color:#268bd2>str1</span>[<span style=color:#268bd2>i</span> - <span style=color:#2aa198;font-weight:700>1</span>] === <span style=color:#268bd2>str2</span>[<span style=color:#268bd2>j</span> - <span style=color:#2aa198;font-weight:700>1</span>]) {
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>dp</span>[<span style=color:#268bd2>i</span>][<span style=color:#268bd2>j</span>] = <span style=color:#268bd2>dp</span>[<span style=color:#268bd2>i</span> - <span style=color:#2aa198;font-weight:700>1</span>][<span style=color:#268bd2>j</span> - <span style=color:#2aa198;font-weight:700>1</span>]; <span style=color:#93a1a1;font-style:italic>// Characters match, no cost
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>dp</span>[<span style=color:#268bd2>i</span>][<span style=color:#268bd2>j</span>] = <span style=color:#2aa198;font-weight:700>1</span> + <span style=color:#cb4b16>Math</span>.<span style=color:#268bd2>min</span>(<span style=color:#268bd2>dp</span>[<span style=color:#268bd2>i</span> - <span style=color:#2aa198;font-weight:700>1</span>][<span style=color:#268bd2>j</span>],      <span style=color:#93a1a1;font-style:italic>// Deletion
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>                                        <span style=color:#268bd2>dp</span>[<span style=color:#268bd2>i</span>][<span style=color:#268bd2>j</span> - <span style=color:#2aa198;font-weight:700>1</span>],      <span style=color:#93a1a1;font-style:italic>// Insertion
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>                                        <span style=color:#268bd2>dp</span>[<span style=color:#268bd2>i</span> - <span style=color:#2aa198;font-weight:700>1</span>][<span style=color:#268bd2>j</span> - <span style=color:#2aa198;font-weight:700>1</span>]);  <span style=color:#93a1a1;font-style:italic>// Substitution
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>dp</span>[<span style=color:#268bd2>m</span>][<span style=color:#268bd2>n</span>];
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const str1 = &#34;kitten&#34;;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const str2 = &#34;sitting&#34;;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// console.log(editDistance(str1, str2)); // 3
+</span></span></span></code></pre></div><h3 id=typescript>Typescript</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-typescript data-lang=typescript><span style=display:flex><span><span style=color:#859900>function</span> <span style=color:#268bd2>editDistanceTS</span>(<span style=color:#268bd2>str1</span>: <span style=color:#859900;font-weight:700>string</span>, <span style=color:#268bd2>str2</span>: <span style=color:#859900;font-weight:700>string</span>): <span style=color:#859900;font-weight:700>number</span> {
+</span></span><span style=display:flex><span>    <span style=color:#859900>const</span> <span style=color:#268bd2>m</span> = <span style=color:#268bd2>str1</span>.<span style=color:#268bd2>length</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900>const</span> <span style=color:#268bd2>n</span> = <span style=color:#268bd2>str2</span>.<span style=color:#268bd2>length</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// dp[i][j] stores the edit distance between str1[0..i-1] and str2[0..j-1]
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900>const</span> <span style=color:#268bd2>dp</span>: <span style=color:#859900;font-weight:700>number</span>[][] = <span style=color:#cb4b16>Array</span>(<span style=color:#268bd2>m</span> + <span style=color:#2aa198;font-weight:700>1</span>).<span style=color:#268bd2>fill</span>(<span style=color:#2aa198;font-weight:700>0</span>).<span style=color:#268bd2>map</span>(() =&gt; <span style=color:#cb4b16>Array</span>(<span style=color:#268bd2>n</span> + <span style=color:#2aa198;font-weight:700>1</span>).<span style=color:#268bd2>fill</span>(<span style=color:#2aa198;font-weight:700>0</span>));
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// Initialize base cases
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#93a1a1;font-style:italic>// If str1 is empty, distance is number of insertions to get str2
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900>for</span> (<span style=color:#859900>let</span> <span style=color:#268bd2>i</span> = <span style=color:#2aa198;font-weight:700>0</span>; <span style=color:#268bd2>i</span> &lt;= <span style=color:#268bd2>m</span>; <span style=color:#268bd2>i</span>++) {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>dp</span>[<span style=color:#268bd2>i</span>][<span style=color:#2aa198;font-weight:700>0</span>] = <span style=color:#268bd2>i</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// If str2 is empty, distance is number of deletions to get str1
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900>for</span> (<span style=color:#859900>let</span> <span style=color:#268bd2>j</span> = <span style=color:#2aa198;font-weight:700>0</span>; <span style=color:#268bd2>j</span> &lt;= <span style=color:#268bd2>n</span>; <span style=color:#268bd2>j</span>++) {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>dp</span>[<span style=color:#2aa198;font-weight:700>0</span>][<span style=color:#268bd2>j</span>] = <span style=color:#268bd2>j</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// Fill dp table
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900>for</span> (<span style=color:#859900>let</span> <span style=color:#268bd2>i</span> = <span style=color:#2aa198;font-weight:700>1</span>; <span style=color:#268bd2>i</span> &lt;= <span style=color:#268bd2>m</span>; <span style=color:#268bd2>i</span>++) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>for</span> (<span style=color:#859900>let</span> <span style=color:#268bd2>j</span> = <span style=color:#2aa198;font-weight:700>1</span>; <span style=color:#268bd2>j</span> &lt;= <span style=color:#268bd2>n</span>; <span style=color:#268bd2>j</span>++) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> (<span style=color:#268bd2>str1</span>[<span style=color:#268bd2>i</span> - <span style=color:#2aa198;font-weight:700>1</span>] === <span style=color:#268bd2>str2</span>[<span style=color:#268bd2>j</span> - <span style=color:#2aa198;font-weight:700>1</span>]) {
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>dp</span>[<span style=color:#268bd2>i</span>][<span style=color:#268bd2>j</span>] = <span style=color:#268bd2>dp</span>[<span style=color:#268bd2>i</span> - <span style=color:#2aa198;font-weight:700>1</span>][<span style=color:#268bd2>j</span> - <span style=color:#2aa198;font-weight:700>1</span>]; <span style=color:#93a1a1;font-style:italic>// Characters match, no cost
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>dp</span>[<span style=color:#268bd2>i</span>][<span style=color:#268bd2>j</span>] = <span style=color:#2aa198;font-weight:700>1</span> + <span style=color:#cb4b16>Math</span>.<span style=color:#268bd2>min</span>(<span style=color:#268bd2>dp</span>[<span style=color:#268bd2>i</span> - <span style=color:#2aa198;font-weight:700>1</span>][<span style=color:#268bd2>j</span>],      <span style=color:#93a1a1;font-style:italic>// Deletion
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>                                        <span style=color:#268bd2>dp</span>[<span style=color:#268bd2>i</span>][<span style=color:#268bd2>j</span> - <span style=color:#2aa198;font-weight:700>1</span>],      <span style=color:#93a1a1;font-style:italic>// Insertion
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>                                        <span style=color:#268bd2>dp</span>[<span style=color:#268bd2>i</span> - <span style=color:#2aa198;font-weight:700>1</span>][<span style=color:#268bd2>j</span> - <span style=color:#2aa198;font-weight:700>1</span>]);  <span style=color:#93a1a1;font-style:italic>// Substitution
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>dp</span>[<span style=color:#268bd2>m</span>][<span style=color:#268bd2>n</span>];
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const str1TS = &#34;kitten&#34;;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const str2TS = &#34;sitting&#34;;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// console.log(editDistanceTS(str1TS, str2TS)); // 3
+</span></span></span></code></pre></div><h3 id=cpp>Cpp</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-cpp data-lang=cpp><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;string&gt;</span><span style=color:#93a1a1;font-style:italic>
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;vector&gt;</span><span style=color:#93a1a1;font-style:italic>
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;iostream&gt;</span><span style=color:#93a1a1;font-style:italic>
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;algorithm&gt;</span><span style=color:#93a1a1;font-style:italic> </span><span style=color:#93a1a1;font-style:italic>// For std::min
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>editDistance</span>(<span style=color:#859900>const</span> <span style=color:#268bd2>std</span>::<span style=color:#268bd2>string</span>&amp; <span style=color:#268bd2>str1</span>, <span style=color:#859900>const</span> <span style=color:#268bd2>std</span>::<span style=color:#268bd2>string</span>&amp; <span style=color:#268bd2>str2</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>m</span> = <span style=color:#268bd2>str1</span>.<span style=color:#268bd2>length</span>();
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>n</span> = <span style=color:#268bd2>str2</span>.<span style=color:#268bd2>length</span>();
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// dp[i][j] stores the edit distance between str1[0..i-1] and str2[0..j-1]
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#268bd2>std</span>::<span style=color:#268bd2>vector</span>&lt;<span style=color:#268bd2>std</span>::<span style=color:#268bd2>vector</span>&lt;<span style=color:#859900;font-weight:700>int</span>&gt;&gt; <span style=color:#268bd2>dp</span>(<span style=color:#268bd2>m</span> + <span style=color:#2aa198;font-weight:700>1</span>, <span style=color:#268bd2>std</span>::<span style=color:#268bd2>vector</span>&lt;<span style=color:#859900;font-weight:700>int</span>&gt;(<span style=color:#268bd2>n</span> + <span style=color:#2aa198;font-weight:700>1</span>));
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// Initialize base cases
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#93a1a1;font-style:italic>// If str1 is empty, distance is number of insertions to get str2
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900>for</span> (<span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>i</span> = <span style=color:#2aa198;font-weight:700>0</span>; <span style=color:#268bd2>i</span> &lt;= <span style=color:#268bd2>m</span>; <span style=color:#268bd2>i</span>++) {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>dp</span>[<span style=color:#268bd2>i</span>][<span style=color:#2aa198;font-weight:700>0</span>] = <span style=color:#268bd2>i</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// If str2 is empty, distance is number of deletions to get str1
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900>for</span> (<span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>j</span> = <span style=color:#2aa198;font-weight:700>0</span>; <span style=color:#268bd2>j</span> &lt;= <span style=color:#268bd2>n</span>; <span style=color:#268bd2>j</span>++) {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>dp</span>[<span style=color:#2aa198;font-weight:700>0</span>][<span style=color:#268bd2>j</span>] = <span style=color:#268bd2>j</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// Fill dp table
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900>for</span> (<span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>i</span> = <span style=color:#2aa198;font-weight:700>1</span>; <span style=color:#268bd2>i</span> &lt;= <span style=color:#268bd2>m</span>; <span style=color:#268bd2>i</span>++) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>for</span> (<span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>j</span> = <span style=color:#2aa198;font-weight:700>1</span>; <span style=color:#268bd2>j</span> &lt;= <span style=color:#268bd2>n</span>; <span style=color:#268bd2>j</span>++) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> (<span style=color:#268bd2>str1</span>[<span style=color:#268bd2>i</span> - <span style=color:#2aa198;font-weight:700>1</span>] == <span style=color:#268bd2>str2</span>[<span style=color:#268bd2>j</span> - <span style=color:#2aa198;font-weight:700>1</span>]) {
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>dp</span>[<span style=color:#268bd2>i</span>][<span style=color:#268bd2>j</span>] = <span style=color:#268bd2>dp</span>[<span style=color:#268bd2>i</span> - <span style=color:#2aa198;font-weight:700>1</span>][<span style=color:#268bd2>j</span> - <span style=color:#2aa198;font-weight:700>1</span>]; <span style=color:#93a1a1;font-style:italic>// Characters match, no cost
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>dp</span>[<span style=color:#268bd2>i</span>][<span style=color:#268bd2>j</span>] = <span style=color:#2aa198;font-weight:700>1</span> + <span style=color:#268bd2>std</span>::<span style=color:#268bd2>min</span>({<span style=color:#268bd2>dp</span>[<span style=color:#268bd2>i</span> - <span style=color:#2aa198;font-weight:700>1</span>][<span style=color:#268bd2>j</span>],      <span style=color:#93a1a1;font-style:italic>// Deletion
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>                                        <span style=color:#268bd2>dp</span>[<span style=color:#268bd2>i</span>][<span style=color:#268bd2>j</span> - <span style=color:#2aa198;font-weight:700>1</span>],      <span style=color:#93a1a1;font-style:italic>// Insertion
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>                                        <span style=color:#268bd2>dp</span>[<span style=color:#268bd2>i</span> - <span style=color:#2aa198;font-weight:700>1</span>][<span style=color:#268bd2>j</span> - <span style=color:#2aa198;font-weight:700>1</span>]});  <span style=color:#93a1a1;font-style:italic>// Substitution
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>dp</span>[<span style=color:#268bd2>m</span>][<span style=color:#268bd2>n</span>];
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// int main() {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     std::string str1 = &#34;kitten&#34;;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     std::string str2 = &#34;sitting&#34;;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     std::cout &lt;&lt; &#34;Edit Distance: &#34; &lt;&lt; editDistance(str1, str2) &lt;&lt; std::endl; // 3
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     return 0;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// }
+</span></span></span></code></pre></div><h3 id=go>Go</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#dc322f;font-weight:700>package</span> <span style=color:#268bd2>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#2aa198>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>func</span> <span style=color:#268bd2>editDistance</span>(<span style=color:#268bd2>str1</span>, <span style=color:#268bd2>str2</span> <span style=color:#859900;font-weight:700>string</span>) <span style=color:#859900;font-weight:700>int</span> {
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>m</span> := <span style=color:#cb4b16>len</span>(<span style=color:#268bd2>str1</span>)
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>n</span> := <span style=color:#cb4b16>len</span>(<span style=color:#268bd2>str2</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// dp[i][j] stores the edit distance between str1[0..i-1] and str2[0..j-1]</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>dp</span> := <span style=color:#cb4b16>make</span>([][]<span style=color:#859900;font-weight:700>int</span>, <span style=color:#268bd2>m</span>+<span style=color:#2aa198;font-weight:700>1</span>)
+</span></span><span style=display:flex><span>    <span style=color:#859900>for</span> <span style=color:#268bd2>i</span> := <span style=color:#859900>range</span> <span style=color:#268bd2>dp</span> {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>dp</span>[<span style=color:#268bd2>i</span>] = <span style=color:#cb4b16>make</span>([]<span style=color:#859900;font-weight:700>int</span>, <span style=color:#268bd2>n</span>+<span style=color:#2aa198;font-weight:700>1</span>)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// Initialize base cases</span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// If str1 is empty, distance is number of insertions to get str2</span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>for</span> <span style=color:#268bd2>i</span> := <span style=color:#2aa198;font-weight:700>0</span>; <span style=color:#268bd2>i</span> &lt;= <span style=color:#268bd2>m</span>; <span style=color:#268bd2>i</span>++ {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>dp</span>[<span style=color:#268bd2>i</span>][<span style=color:#2aa198;font-weight:700>0</span>] = <span style=color:#268bd2>i</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// If str2 is empty, distance is number of deletions to get str1</span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>for</span> <span style=color:#268bd2>j</span> := <span style=color:#2aa198;font-weight:700>0</span>; <span style=color:#268bd2>j</span> &lt;= <span style=color:#268bd2>n</span>; <span style=color:#268bd2>j</span>++ {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>dp</span>[<span style=color:#2aa198;font-weight:700>0</span>][<span style=color:#268bd2>j</span>] = <span style=color:#268bd2>j</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// Fill dp table</span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>for</span> <span style=color:#268bd2>i</span> := <span style=color:#2aa198;font-weight:700>1</span>; <span style=color:#268bd2>i</span> &lt;= <span style=color:#268bd2>m</span>; <span style=color:#268bd2>i</span>++ {
+</span></span><span style=display:flex><span>        <span style=color:#859900>for</span> <span style=color:#268bd2>j</span> := <span style=color:#2aa198;font-weight:700>1</span>; <span style=color:#268bd2>j</span> &lt;= <span style=color:#268bd2>n</span>; <span style=color:#268bd2>j</span>++ {
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> <span style=color:#268bd2>str1</span>[<span style=color:#268bd2>i</span>-<span style=color:#2aa198;font-weight:700>1</span>] == <span style=color:#268bd2>str2</span>[<span style=color:#268bd2>j</span>-<span style=color:#2aa198;font-weight:700>1</span>] {
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>dp</span>[<span style=color:#268bd2>i</span>][<span style=color:#268bd2>j</span>] = <span style=color:#268bd2>dp</span>[<span style=color:#268bd2>i</span>-<span style=color:#2aa198;font-weight:700>1</span>][<span style=color:#268bd2>j</span>-<span style=color:#2aa198;font-weight:700>1</span>] <span style=color:#93a1a1;font-style:italic>// Characters match, no cost</span>
+</span></span><span style=display:flex><span>            } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>dp</span>[<span style=color:#268bd2>i</span>][<span style=color:#268bd2>j</span>] = <span style=color:#2aa198;font-weight:700>1</span> + <span style=color:#cb4b16>min</span>(<span style=color:#268bd2>dp</span>[<span style=color:#268bd2>i</span>-<span style=color:#2aa198;font-weight:700>1</span>][<span style=color:#268bd2>j</span>],      <span style=color:#93a1a1;font-style:italic>// Deletion</span>
+</span></span><span style=display:flex><span>                                   <span style=color:#268bd2>dp</span>[<span style=color:#268bd2>i</span>][<span style=color:#268bd2>j</span>-<span style=color:#2aa198;font-weight:700>1</span>],      <span style=color:#93a1a1;font-style:italic>// Insertion</span>
+</span></span><span style=display:flex><span>                                   <span style=color:#268bd2>dp</span>[<span style=color:#268bd2>i</span>-<span style=color:#2aa198;font-weight:700>1</span>][<span style=color:#268bd2>j</span>-<span style=color:#2aa198;font-weight:700>1</span>])  <span style=color:#93a1a1;font-style:italic>// Substitution</span>
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>dp</span>[<span style=color:#268bd2>m</span>][<span style=color:#268bd2>n</span>]
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>func</span> <span style=color:#cb4b16>min</span>(<span style=color:#268bd2>a</span>, <span style=color:#268bd2>b</span>, <span style=color:#268bd2>c</span> <span style=color:#859900;font-weight:700>int</span>) <span style=color:#859900;font-weight:700>int</span> {
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> <span style=color:#268bd2>a</span> &lt; <span style=color:#268bd2>b</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> <span style=color:#268bd2>a</span> &lt; <span style=color:#268bd2>c</span> {
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span> <span style=color:#268bd2>a</span>
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>c</span>
+</span></span><span style=display:flex><span>    } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> <span style=color:#268bd2>b</span> &lt; <span style=color:#268bd2>c</span> {
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span> <span style=color:#268bd2>b</span>
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>c</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// func main() {</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     str1 := &#34;kitten&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     str2 := &#34;sitting&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     fmt.Println(&#34;Edit Distance:&#34;, editDistance(str1, str2)) // 3</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// }</span>
+</span></span></code></pre></div><h3 id=d>D</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-d data-lang=d><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>std.stdio</span>;
+</span></span><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>std.array</span>;
+</span></span><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>std.algorithm</span>; <span style=color:#93a1a1;font-style:italic>// For std.algorithm.min
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>editDistance</span>(<span style=color:#cb4b16>string</span> <span style=color:#268bd2>str1</span>, <span style=color:#cb4b16>string</span> <span style=color:#268bd2>str2</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#859900>auto</span> <span style=color:#268bd2>m</span> = <span style=color:#268bd2>str1</span>.<span style=color:#268bd2>length</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900>auto</span> <span style=color:#268bd2>n</span> = <span style=color:#268bd2>str2</span>.<span style=color:#268bd2>length</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// dp[i][j] stores the edit distance between str1[0..i-1] and str2[0..j-1]
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900>auto</span> <span style=color:#268bd2>dp</span> = <span style=color:#859900>new</span> <span style=color:#859900;font-weight:700>int</span>[<span style=color:#268bd2>m</span> + <span style=color:#2aa198;font-weight:700>1</span>][<span style=color:#268bd2>n</span> + <span style=color:#2aa198;font-weight:700>1</span>];
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// Initialize base cases
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#93a1a1;font-style:italic>// If str1 is empty, distance is number of insertions to get str2
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900>foreach</span> (<span style=color:#268bd2>i</span>; <span style=color:#2aa198;font-weight:700>0</span> .. <span style=color:#268bd2>m</span> + <span style=color:#2aa198;font-weight:700>1</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>dp</span>[<span style=color:#268bd2>i</span>][<span style=color:#2aa198;font-weight:700>0</span>] = <span style=color:#268bd2>i</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// If str2 is empty, distance is number of deletions to get str1
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900>foreach</span> (<span style=color:#268bd2>j</span>; <span style=color:#2aa198;font-weight:700>0</span> .. <span style=color:#268bd2>n</span> + <span style=color:#2aa198;font-weight:700>1</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>dp</span>[<span style=color:#2aa198;font-weight:700>0</span>][<span style=color:#268bd2>j</span>] = <span style=color:#268bd2>j</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// Fill dp table
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900>foreach</span> (<span style=color:#268bd2>i</span>; <span style=color:#2aa198;font-weight:700>1</span> .. <span style=color:#268bd2>m</span> + <span style=color:#2aa198;font-weight:700>1</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>foreach</span> (<span style=color:#268bd2>j</span>; <span style=color:#2aa198;font-weight:700>1</span> .. <span style=color:#268bd2>n</span> + <span style=color:#2aa198;font-weight:700>1</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> (<span style=color:#268bd2>str1</span>[<span style=color:#268bd2>i</span> - <span style=color:#2aa198;font-weight:700>1</span>] == <span style=color:#268bd2>str2</span>[<span style=color:#268bd2>j</span> - <span style=color:#2aa198;font-weight:700>1</span>]) {
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>dp</span>[<span style=color:#268bd2>i</span>][<span style=color:#268bd2>j</span>] = <span style=color:#268bd2>dp</span>[<span style=color:#268bd2>i</span> - <span style=color:#2aa198;font-weight:700>1</span>][<span style=color:#268bd2>j</span> - <span style=color:#2aa198;font-weight:700>1</span>]; <span style=color:#93a1a1;font-style:italic>// Characters match, no cost
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>dp</span>[<span style=color:#268bd2>i</span>][<span style=color:#268bd2>j</span>] = <span style=color:#2aa198;font-weight:700>1</span> + <span style=color:#268bd2>min</span>(<span style=color:#268bd2>dp</span>[<span style=color:#268bd2>i</span> - <span style=color:#2aa198;font-weight:700>1</span>][<span style=color:#268bd2>j</span>],      <span style=color:#93a1a1;font-style:italic>// Deletion
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>                                   <span style=color:#268bd2>dp</span>[<span style=color:#268bd2>i</span>][<span style=color:#268bd2>j</span> - <span style=color:#2aa198;font-weight:700>1</span>],      <span style=color:#93a1a1;font-style:italic>// Insertion
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>                                   <span style=color:#268bd2>dp</span>[<span style=color:#268bd2>i</span> - <span style=color:#2aa198;font-weight:700>1</span>][<span style=color:#268bd2>j</span> - <span style=color:#2aa198;font-weight:700>1</span>]);  <span style=color:#93a1a1;font-style:italic>// Substitution
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>dp</span>[<span style=color:#268bd2>m</span>][<span style=color:#268bd2>n</span>];
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// void main() {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     string str1 = &#34;kitten&#34;;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     string str2 = &#34;sitting&#34;;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     writeln(&#34;Edit Distance: &#34;, editDistance(str1, str2)); // 3
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// }
+</span></span></span></code></pre></div><h2 id=code-walkthrough>Code Walkthrough</h2><p><a href=#implementation>Back to Implementation</a></p><h3 id=code-walkthrough-1>Code Walkthrough</h3><p>The <code>Edit Distance</code> algorithm uses <code>dynamic programming</code> to fill a 2D table representing the <code>edit distance</code> between all prefixes of the two input strings.</p><hr><p><strong>Initialization:</strong></p><ul><li>A 2D <code>dp</code> table (<code>m+1</code> rows, <code>n+1</code> columns) is created.</li><li>The first row <code>dp[i][0]</code> is initialized from 0 to <code>m</code>, representing the cost of deleting <code>i</code> characters from <code>str1</code> to make it empty.</li><li>The first column <code>dp[0][j]</code> is initialized from 0 to <code>n</code>, representing the cost of inserting <code>j</code> characters to make an empty string <code>str2</code>.</li></ul><p><strong>Filling the DP Table:</strong></p><ul><li><p>The <code>dp</code> table is filled iteratively for <code>i</code> from 1 to <code>m</code> and <code>j</code> from 1 to <code>n</code>.</p></li><li><p>For each cell <code>dp[i][j]</code>:</p></li><li><p>If <code>str1[i-1]</code> (the <code>i</code>-th character of <code>str1</code>) matches <code>str2[j-1]</code> (the <code>j</code>-th character of <code>str2</code>), then no <code>edit</code> operation is needed for these characters. The <code>edit distance</code> is simply inherited from the previous diagonal cell: <code>dp[i-1][j-1]</code>.</p></li><li><p>If the characters do not match, an <code>edit</code> operation (deletion, insertion, or substitution) is required. The cost of this operation is <code>1</code> plus the minimum <code>edit distance</code> from three possibilities:</p></li><li><p><code>dp[i-1][j]</code>: Cost of deleting <code>str1[i-1]</code>.</p></li><li><p><code>dp[i][j-1]</code>: Cost of inserting <code>str2[j-1]</code>.</p></li><li><p><code>dp[i-1][j-1]</code>: Cost of substituting <code>str1[i-1]</code> with <code>str2[j-1]</code>.</p><pre><code>      &lt;/li&gt;
+</code></pre></li></li></ul><p><strong>Result:</strong></p><ul><li>The final <code>edit distance</code> between <code>str1</code> and <code>str2</code> is stored in <code>dp[m][n]</code>.</li></ul><p><a href=#implementation>Back to Implementation</a></p><h2 id=applications>Applications</h2><h3 id=application>Application</h3><p>The <code>Edit Distance (Levenshtein Distance)</code> algorithm has a wide array of practical applications:</p><ul><li><strong>Spell Checkers and Autocorrection:</strong> Suggesting corrections for misspelled words by finding dictionary words with the minimum <code>edit distance</code>.</li><li><strong>DNA Sequence Alignment:</strong> Measuring the similarity between biological sequences to understand evolutionary relationships or identify functional similarities.</li><li><strong>Plagiarism Detection:</strong> Quantifying the textual similarity between documents.</li><li><strong>Optical Character Recognition (OCR) Error Correction:</strong> Correcting errors introduced during the scanning of text.</li><li><strong>Natural Language Processing (NLP):</strong> Used in tasks like machine translation evaluation, fuzzy string matching, and text comparison.</li></ul></div></article><div class=navigation style="margin-top:5rem;display:flex;justify-content:space-between;border-top:1px solid var(--border);padding-top:2rem"><a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/algorithms/dynamic_programming/knapsack/ class=nav-btn>← Previous</a>
+<a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/algorithms/dynamic_programming/ class=nav-btn>Up</a>
+<a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/algorithms/dynamic_programming/coin_change/ class=nav-btn>Next →</a></div></main><footer class=footer><p>Built with Hugo. No scripts. No tracking. Just the truth.</p></footer><script>document.addEventListener("DOMContentLoaded",function(){const n=document.body,s=document.createTreeWalker(n,NodeFilter.SHOW_TEXT,null,!1);let e;const t=[];for(;e=s.nextNode();)e.nodeValue.includes("[-]")&&t.push(e);t.forEach(e=>{const t=document.createElement("span");t.innerHTML=e.nodeValue.replace(/\[-\]/g,'<span class="started-icon" title="Started"></span>'),e.parentNode.replaceChild(t,e)})})</script><script>const body=document.getElementById("theme-body"),btn=document.getElementById("theme-toggle"),currentTheme=localStorage.getItem("theme");function updateButtonText(){body.classList.contains("theme-terminal")?btn.textContent="Light Mode":btn.textContent="Dark Mode"}currentTheme==="terminal"&&body.classList.add("theme-terminal"),updateButtonText(),btn.addEventListener("click",()=>{body.classList.toggle("theme-terminal"),updateButtonText();let e="natural";body.classList.contains("theme-terminal")&&(e="terminal"),localStorage.setItem("theme",e)})</script></body></html>

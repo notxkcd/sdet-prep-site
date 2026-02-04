@@ -13,6 +13,7 @@ help:
 	@echo "make check-categorized - Toggle categorized questions status"
 	@echo "make focus            - List all started tasks across the project"
 	@echo "make clean            - Remove build artifacts"
+	@echo "make publish          - Build and deploy to GitHub Pages"
 
 # Start the Hugo development server
 serve:
@@ -21,6 +22,23 @@ serve:
 # Build the final static site
 build:
 	hugo --minify
+
+# Publish to GitHub Pages
+publish: clean build
+	@echo "Publishing to GitHub..."
+	# Push Source
+	git add .
+	git commit -m "Site update" || true
+	git push origin master
+	# Push Public
+	cd public && \
+	git init && \
+	git checkout -b gh-pages && \
+	git add . && \
+	git commit -m "Deploy site" && \
+	git remote add origin https://github.com/notxkcd/sdet-prep-site.git && \
+	git push --force origin gh-pages
+	@echo "Deployed Successfully!"
 
 # Interactive task manager for company questions
 check-companies:

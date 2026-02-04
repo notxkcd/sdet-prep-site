@@ -1,351 +1,166 @@
-<!DOCTYPE html>
-<html lang="en-us">
-<head><script src="/sdet-prep-site/livereload.js?mindelay=10&amp;v=2&amp;port=41691&amp;path=sdet-prep-site/livereload" data-no-instant defer></script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CRDT | SDET Interview Preparation Kit</title>
-    <link rel="stylesheet" href="http://localhost:41691/sdet-prep-site/css/style.css">
-    <link rel="stylesheet" href="http://localhost:41691/sdet-prep-site/css/terminal.css">
-    
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
-    
-    
-    <link rel="stylesheet" href="http://localhost:41691/sdet-prep-site/lib/katex/katex.min.css">
-    <script defer src="http://localhost:41691/sdet-prep-site/lib/katex/katex.min.js"></script>
-    <script defer src="http://localhost:41691/sdet-prep-site/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            renderMathInElement(document.body, {
-                delimiters: [
-                    {left: "$$", right: "$$", display: true},
-                    {left: "$", right: "$", display: false}
-                ]
-            });
-        });
-    </script>
-</head>
-<body id="theme-body">
-    <button id="theme-toggle">Switch Theme</button>
-    <header>
-        <nav>
-            <ul>
-                <li><a href="http://localhost:41691/sdet-prep-site/">Index</a></li>
-                
-            </ul>
-        </nav>
-        <div class="site-breadcrumb">
-            <a href="http://localhost:41691/sdet-prep-site/">Home</a>
-            
-                
-                    <span>/</span> <a href="http://localhost:41691/sdet-prep-site/">SDET Interview Dashboard</a>
-                
-            
-                
-                    <span>/</span> <a href="http://localhost:41691/sdet-prep-site/dsa-42/">42 Algorithms &amp; 42 Data Structures</a>
-                
-            
-                
-                    <span>/</span> <a href="http://localhost:41691/sdet-prep-site/dsa-42/data_structures/">Data Structures</a>
-                
-            
-                
-                    <span>/</span> <a href="http://localhost:41691/sdet-prep-site/dsa-42/data_structures/specialized/">Specialized</a>
-                
-            
-            
-                <span>/</span> CRDT
-            
-        </div>
-    </header>
-
-    <main>
-        
-<article>
-    
-    <h1>CRDT</h1>
-    <div class="content-body" style="margin-top: 2rem;">
-        <p>A <code>CRDT (Conflict-free Replicated Data Type)</code> is a data structure that is designed to be replicated across multiple computers in a network, where updates can be made independently and concurrently without the need for complex synchronization or consensus mechanisms. The mathematical properties of <code>CRDTs</code> guarantee that these concurrent updates will eventually converge to a consistent state.</p>
-<p>This makes them &ldquo;amazing&rdquo; for building collaborative applications like online text editors, shared whiteboards, and distributed databases where multiple users can make changes simultaneously without conflicts.</p>
-<h2 id="how-it-works">How it Works</h2>
-<h3 id="how-it-works-expanded">How it Works (Expanded)</h3>
-<p>There are two main types of <code>CRDTs</code>: <code>State-based (CvRDTs)</code> and <code>Operation-based (CmRDTs)</code>.</p>
-<ul>
-<li><strong><code>State-based (Convergent Replicated Data Types)</code>:</strong> Each replica merges its state with the state of other replicas. The merge function must be commutative, associative, and idempotent.</li>
-<li><strong><code>Operation-based (Commutative Replicated Data Types)</code>:</strong> Operations (updates) are sent to other replicas and applied. The operations must be commutative, meaning they can be applied in any order and still result in the same final state.</li>
-</ul>
-<p>A simple example is the <strong><code>G-Counter (Grow-Only Counter)</code></strong>, a state-based <code>CRDT</code>.</p>
-<hr>
-<p>Example G-Counter (3 replicas):</p>
-<p>Replica A: [0, 0, 0]
+<!doctype html><html lang=en-us><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>CRDT | SDET Interview Preparation Kit</title><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/css/style.css><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/css/terminal.css><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel=stylesheet><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/lib/katex/katex.min.css><script defer src=https://notxkcd.github.io/sdet-prep-site/lib/katex/katex.min.js></script><script defer src=https://notxkcd.github.io/sdet-prep-site/lib/katex/contrib/auto-render.min.js onload=renderMathInElement(document.body)></script><script>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1}]})})</script></head><body id=theme-body><button id=theme-toggle>Switch Theme</button><header><nav><ul><li><a href=https://notxkcd.github.io/sdet-prep-site/>Index</a></li></ul></nav><div class=site-breadcrumb><a href=https://notxkcd.github.io/sdet-prep-site/>Home</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/>SDET Interview Dashboard</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/>42 Algorithms & 42 Data Structures</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/data_structures/>Data Structures</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/data_structures/specialized/>Specialized</a>
+<span>/</span> CRDT</div></header><main><article><h1>CRDT</h1><div class=content-body style=margin-top:2rem><p>A <code>CRDT (Conflict-free Replicated Data Type)</code> is a data structure that is designed to be replicated across multiple computers in a network, where updates can be made independently and concurrently without the need for complex synchronization or consensus mechanisms. The mathematical properties of <code>CRDTs</code> guarantee that these concurrent updates will eventually converge to a consistent state.</p><p>This makes them &ldquo;amazing&rdquo; for building collaborative applications like online text editors, shared whiteboards, and distributed databases where multiple users can make changes simultaneously without conflicts.</p><h2 id=how-it-works>How it Works</h2><h3 id=how-it-works-expanded>How it Works (Expanded)</h3><p>There are two main types of <code>CRDTs</code>: <code>State-based (CvRDTs)</code> and <code>Operation-based (CmRDTs)</code>.</p><ul><li><strong><code>State-based (Convergent Replicated Data Types)</code>:</strong> Each replica merges its state with the state of other replicas. The merge function must be commutative, associative, and idempotent.</li><li><strong><code>Operation-based (Commutative Replicated Data Types)</code>:</strong> Operations (updates) are sent to other replicas and applied. The operations must be commutative, meaning they can be applied in any order and still result in the same final state.</li></ul><p>A simple example is the <strong><code>G-Counter (Grow-Only Counter)</code></strong>, a state-based <code>CRDT</code>.</p><hr><p>Example G-Counter (3 replicas):</p><p>Replica A: [0, 0, 0]
 Replica B: [0, 0, 0]
-Replica C: [0, 0, 0]</p>
-<ul>
-<li>Replica A increments its own count: A -&gt; [1, 0, 0]</li>
-<li>Replica C increments its own count: C -&gt; [0, 0, 1]</li>
-</ul>
-<p>Now, A and C sync. The merge operation is a pairwise maximum of the vectors:</p>
-<ul>
-<li>Merge(A, C) -&gt; [max(1,0), max(0,0), max(0,1)] -&gt; [1, 0, 1]</li>
-<li>Both A and C now have the state [1, 0, 1].</li>
-<li>Replica B increments its own count twice: B -&gt; [0, 2, 0]</li>
-<li>B syncs with A: Merge(B, A) -&gt; [max(0,1), max(2,0), max(0,1)] -&gt; [1, 2, 1]</li>
-<li>Both A and B now have the state [1, 2, 1].</li>
-</ul>
-<p>The total value of the counter is the sum of the vector: 1 + 2 + 1 = 4.</p>
-<p><a href="#code-walkthrough">Jump to Code Walkthrough</a></p>
-<h2 id="implementation">Implementation</h2>
-<h3 id="python">Python</h3>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># Conceptual implementation of a G-Counter (Grow-Only Counter) CRDT in Python</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#cb4b16">GCounter</span>:
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">__init__</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">num_replicas</span>, <span style="color:#268bd2">replica_id</span>):
-</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">num_replicas</span> = <span style="color:#268bd2">num_replicas</span>
-</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">replica_id</span> = <span style="color:#268bd2">replica_id</span>
-</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">payload</span> = [<span style="color:#2aa198;font-weight:bold">0</span>] * <span style="color:#268bd2">num_replicas</span> <span style="color:#93a1a1;font-style:italic"># Vector of counts for each replica</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">increment</span>(<span style="color:#cb4b16">self</span>):
-</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># Only increment the count for this replica&#39;s index</span>
-</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">payload</span>[<span style="color:#cb4b16">self</span>.<span style="color:#268bd2">replica_id</span>] += <span style="color:#2aa198;font-weight:bold">1</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">@property</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">value</span>(<span style="color:#cb4b16">self</span>):
-</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># The total value is the sum of all counts in the payload vector</span>
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#cb4b16">sum</span>(<span style="color:#cb4b16">self</span>.<span style="color:#268bd2">payload</span>)
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">merge</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">other_gcounter</span>):
-</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># Merge by taking the pairwise maximum of the payloads</span>
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">if</span> <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">num_replicas</span> != <span style="color:#268bd2">other_gcounter</span>.<span style="color:#268bd2">num_replicas</span>:
-</span></span><span style="display:flex;"><span>            <span style="color:#859900">raise</span> <span style="color:#268bd2">ValueError</span>(<span style="color:#2aa198">&#34;Counters must have the same number of replicas to merge.&#34;</span>)
-</span></span><span style="display:flex;"><span>        
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> <span style="color:#268bd2">i</span> <span style="color:#859900">in</span> <span style="color:#cb4b16">range</span>(<span style="color:#cb4b16">self</span>.<span style="color:#268bd2">num_replicas</span>):
-</span></span><span style="display:flex;"><span>            <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">payload</span>[<span style="color:#268bd2">i</span>] = <span style="color:#cb4b16">max</span>(<span style="color:#cb4b16">self</span>.<span style="color:#268bd2">payload</span>[<span style="color:#268bd2">i</span>], <span style="color:#268bd2">other_gcounter</span>.<span style="color:#268bd2">payload</span>[<span style="color:#268bd2">i</span>])
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># Example Usage:</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># Imagine 3 replicas (A, B, C)</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># replica_a = GCounter(num_replicas=3, replica_id=0)</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># replica_b = GCounter(num_replicas=3, replica_id=1)</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># replica_c = GCounter(num_replicas=3, replica_id=2)</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># replica_a.increment()</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(f&#34;Replica A value: {replica_a.value}&#34;) # 1</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># replica_b.increment()</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># replica_b.increment()</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(f&#34;Replica B value: {replica_b.value}&#34;) # 2</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># replica_a.merge(replica_b)</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(f&#34;Replica A after merging with B: {replica_a.value}&#34;) # 3</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(f&#34;Replica B after merging with A (state unchanged): {replica_b.value}&#34;) # 2</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># replica_b.merge(replica_a)</span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># print(f&#34;Replica B after merging with A: {replica_b.value}&#34;) # 3</span>
-</span></span></code></pre></div><h3 id="javascript">Javascript</h3>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Conceptual implementation of a G-Counter (Grow-Only Counter) CRDT in JavaScript
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
-</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#268bd2">GCounter</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">constructor</span>(<span style="color:#268bd2">numReplicas</span>, <span style="color:#268bd2">replicaId</span>) {
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">numReplicas</span> = <span style="color:#268bd2">numReplicas</span>;
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">replicaId</span> = <span style="color:#268bd2">replicaId</span>;
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">payload</span> = <span style="color:#859900">new</span> <span style="color:#cb4b16">Array</span>(<span style="color:#268bd2">numReplicas</span>).<span style="color:#268bd2">fill</span>(<span style="color:#2aa198;font-weight:bold">0</span>); <span style="color:#93a1a1;font-style:italic">// Vector of counts for each replica
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>    }
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">increment</span>() {
-</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Only increment the count for this replica&#39;s index
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">this</span>.<span style="color:#268bd2">payload</span>[<span style="color:#859900">this</span>.<span style="color:#268bd2">replicaId</span>]++;
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">getValue</span>() {
-</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// The total value is the sum of all counts in the payload vector
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">return</span> <span style="color:#859900">this</span>.<span style="color:#268bd2">payload</span>.<span style="color:#268bd2">reduce</span>((<span style="color:#268bd2">sum</span>, <span style="color:#268bd2">val</span>) =&gt; <span style="color:#268bd2">sum</span> + <span style="color:#268bd2">val</span>, <span style="color:#2aa198;font-weight:bold">0</span>);
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">merge</span>(<span style="color:#268bd2">otherGCounter</span>) {
-</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Merge by taking the pairwise maximum of the payloads
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">if</span> (<span style="color:#859900">this</span>.<span style="color:#268bd2">numReplicas</span> !== <span style="color:#268bd2">otherGCounter</span>.<span style="color:#268bd2">numReplicas</span>) {
-</span></span><span style="display:flex;"><span>            <span style="color:#859900">throw</span> <span style="color:#859900">new</span> <span style="color:#cb4b16">Error</span>(<span style="color:#2aa198">&#34;Counters must have the same number of replicas to merge.&#34;</span>);
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>        
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> (<span style="color:#859900">let</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#859900">this</span>.<span style="color:#268bd2">numReplicas</span>; <span style="color:#268bd2">i</span>++) {
-</span></span><span style="display:flex;"><span>            <span style="color:#859900">this</span>.<span style="color:#268bd2">payload</span>[<span style="color:#268bd2">i</span>] = <span style="color:#cb4b16">Math</span>.<span style="color:#268bd2">max</span>(<span style="color:#859900">this</span>.<span style="color:#268bd2">payload</span>[<span style="color:#268bd2">i</span>], <span style="color:#268bd2">otherGCounter</span>.<span style="color:#268bd2">payload</span>[<span style="color:#268bd2">i</span>]);
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>}
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Example Usage:
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Imagine 3 replicas (A, B, C)
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const replicaA = new GCounter(3, 0);
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const replicaB = new GCounter(3, 1);
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// const replicaC = new GCounter(3, 2);
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// replicaA.increment();
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&lt;code&gt;Replica A value: ${replicaA.getValue()}&lt;/code&gt;); // 1
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// replicaB.increment();
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// replicaB.increment();
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&lt;code&gt;Replica B value: ${replicaB.getValue()}&lt;/code&gt;); // 2
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// replicaA.merge(replicaB);
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&lt;code&gt;Replica A after merging with B: ${replicaA.getValue()}&lt;/code&gt;); // 3
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&lt;code&gt;Replica B after merging with A (state unchanged): ${replicaB.getValue()}&lt;/code&gt;); // 2
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// replicaB.merge(replicaA);
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// console.log(&lt;code&gt;Replica B after merging with A: ${replicaB.getValue()}&lt;/code&gt;); // 3
-</span></span></span></code></pre></div><h3 id="cpp">Cpp</h3>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;vector&gt;</span><span style="color:#93a1a1;font-style:italic">
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;numeric&gt;</span><span style="color:#93a1a1;font-style:italic">   </span><span style="color:#93a1a1;font-style:italic">// For std::accumulate
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;algorithm&gt;</span><span style="color:#93a1a1;font-style:italic"> </span><span style="color:#93a1a1;font-style:italic">// For std::max
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;stdexcept&gt;</span><span style="color:#93a1a1;font-style:italic">
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">#include</span> <span style="color:#93a1a1;font-style:italic">&lt;iostream&gt;</span><span style="color:#93a1a1;font-style:italic">
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Conceptual implementation of a G-Counter (Grow-Only Counter) CRDT
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span><span style="color:#859900">class</span> <span style="color:#cb4b16">GCounter</span> {
-</span></span><span style="display:flex;"><span><span style="color:#859900">private</span>:
-</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">std</span>::<span style="color:#268bd2">vector</span>&lt;<span style="color:#859900;font-weight:bold">int</span>&gt; <span style="color:#268bd2">payload</span>;
-</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">num_replicas</span>;
-</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">replica_id</span>;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#859900">public</span>:
-</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">GCounter</span>(<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">n_replicas</span>, <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">r_id</span>) : <span style="color:#268bd2">num_replicas</span>(<span style="color:#268bd2">n_replicas</span>), <span style="color:#268bd2">replica_id</span>(<span style="color:#268bd2">r_id</span>) {
-</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">payload</span>.<span style="color:#268bd2">resize</span>(<span style="color:#268bd2">n_replicas</span>, <span style="color:#2aa198;font-weight:bold">0</span>);
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">increment</span>() {
-</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Only increment the count for this replica&#39;s index
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#268bd2">payload</span>[<span style="color:#268bd2">replica_id</span>]++;
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">getValue</span>() <span style="color:#859900">const</span> {
-</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// The total value is the sum of all counts in the payload vector
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">return</span> <span style="color:#268bd2">std</span>::<span style="color:#268bd2">accumulate</span>(<span style="color:#268bd2">payload</span>.<span style="color:#268bd2">begin</span>(), <span style="color:#268bd2">payload</span>.<span style="color:#268bd2">end</span>(), <span style="color:#2aa198;font-weight:bold">0</span>);
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#859900;font-weight:bold">void</span> <span style="color:#268bd2">merge</span>(<span style="color:#859900">const</span> <span style="color:#268bd2">GCounter</span>&amp; <span style="color:#268bd2">other_gcounter</span>) {
-</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic">// Merge by taking the pairwise maximum of the payloads
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>        <span style="color:#859900">if</span> (<span style="color:#268bd2">num_replicas</span> != <span style="color:#268bd2">other_gcounter</span>.<span style="color:#268bd2">num_replicas</span>) {
-</span></span><span style="display:flex;"><span>            <span style="color:#859900">throw</span> <span style="color:#268bd2">std</span>::<span style="color:#268bd2">runtime_error</span>(<span style="color:#2aa198">&#34;Counters must have the same number of replicas to merge.&#34;</span>);
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>        
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">for</span> (<span style="color:#859900;font-weight:bold">int</span> <span style="color:#268bd2">i</span> = <span style="color:#2aa198;font-weight:bold">0</span>; <span style="color:#268bd2">i</span> &lt; <span style="color:#268bd2">num_replicas</span>; ++<span style="color:#268bd2">i</span>) {
-</span></span><span style="display:flex;"><span>            <span style="color:#268bd2">payload</span>[<span style="color:#268bd2">i</span>] = <span style="color:#268bd2">std</span>::<span style="color:#268bd2">max</span>(<span style="color:#268bd2">payload</span>[<span style="color:#268bd2">i</span>], <span style="color:#268bd2">other_gcounter</span>.<span style="color:#268bd2">payload</span>[<span style="color:#268bd2">i</span>]);
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>};
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// Example Usage:
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// int main() {
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     // Imagine 3 replicas (A, B, C)
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     GCounter replicaA(3, 0);
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     GCounter replicaB(3, 1);
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     GCounter replicaC(3, 2);
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     replicaA.increment();
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; &#34;Replica A value: &#34; &lt;&lt; replicaA.getValue() &lt;&lt; std::endl; // 1
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     replicaB.increment();
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     replicaB.increment();
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; &#34;Replica B value: &#34; &lt;&lt; replicaB.getValue() &lt;&lt; std::endl; // 2
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     replicaA.merge(replicaB);
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; &#34;Replica A after merging with B: &#34; &lt;&lt; replicaA.getValue() &lt;&lt; std::endl; // 3
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; &#34;Replica B after merging with A (state unchanged): &#34; &lt;&lt; replicaB.getValue() &lt;&lt; std::endl; // 2
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"></span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     replicaB.merge(replicaA);
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     std::cout &lt;&lt; &#34;Replica B after merging with A: &#34; &lt;&lt; replicaB.getValue() &lt;&lt; std::endl; // 3
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">//     return 0;
-</span></span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic">// }
-</span></span></span></code></pre></div><h2 id="code-walkthrough">Code Walkthrough</h2>
-<p><a href="#implementation">Back to Implementation</a></p>
-<h3 id="code-walkthrough-1">Code Walkthrough</h3>
-<p>The code demonstrates a <code>G-Counter</code>, one of the simplest <code>CRDTs</code>. Each replica maintains a vector representing the state of the entire system from its perspective.</p>
-<hr>
-<p><strong><code>GCounter</code> Class:</strong></p>
-<ul>
-<li><code>num_replicas</code>: The total number of participants (replicas) in the system.</li>
-<li><code>replica_id</code>: The unique identifier (index) for the current replica.</li>
-<li><code>payload</code>: A <code>vector</code> or <code>array</code> of size <code>num_replicas</code>. <code>payload[i]</code> stores the number of increments observed at replica <code>i</code>.</li>
-<li><strong><code>increment()</code>:</strong> The only update operation. A replica can only increment its own counter in the <code>payload</code> vector.</li>
-<li><strong><code>value()</code> or <code>getValue()</code>:</strong> The total value is the sum of all elements in the <code>payload</code> vector.</li>
-<li><strong><code>merge(other)</code>:</strong> Takes another <code>GCounter</code>&rsquo;s state and merges it by taking the element-wise maximum of the two <code>payload</code> vectors. This ensures that no increment is ever lost.</li>
-</ul>
-<p><a href="#implementation">Back to Implementation</a></p>
-<h2 id="applications">Applications</h2>
-<h3 id="application">Application</h3>
-<p>CRDTs are the foundational technology for many modern real-time collaborative and distributed systems. Their primary application is in building applications where multiple users can edit shared data concurrently, such as <strong>collaborative text editors (e.g., Google Docs, Figma)</strong>, shared whiteboards, and multiplayer games. They are also used in distributed databases and caching systems (like <strong>Riak</strong>) to ensure high availability and eventual consistency across geographically distributed replicas without requiring expensive, real-time consensus.</p>
-
-    </div>
-</article>
-
-<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
-    
-    <a href="http://localhost:41691/sdet-prep-site/dsa-42/data_structures/specialized/dancing_links/" class="nav-btn">← Previous</a>
-    
-    
-    <a href="http://localhost:41691/sdet-prep-site/dsa-42/data_structures/specialized/" class="nav-btn">Up</a>
-
-    
-    <a href="http://localhost:41691/sdet-prep-site/dsa-42/data_structures/specialized/count_min_sketch/" class="nav-btn">Next →</a>
-    
-</div>
-
-    </main>
-
-    <footer class="footer">
-        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
-    </footer>
-
-    <script>
-        
-        document.addEventListener("DOMContentLoaded", function() {
-            const content = document.body;
-            
-            const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT, null, false);
-            let node;
-            const nodesToReplace = [];
-            while(node = walker.nextNode()) {
-                if (node.nodeValue.includes("[-]")) nodesToReplace.push(node);
-            }
-            nodesToReplace.forEach(textNode => {
-                const span = document.createElement('span');
-                span.innerHTML = textNode.nodeValue.replace(/\[-\]/g, '<span class="started-icon" title="Started"></span>');
-                textNode.parentNode.replaceChild(span, textNode);
-            });
-        });
-    </script>
-
-    <script>
-        const body = document.getElementById('theme-body');
-        const btn = document.getElementById('theme-toggle');
-        const currentTheme = localStorage.getItem('theme');
-
-        
-        function updateButtonText() {
-            if (body.classList.contains('theme-terminal')) {
-                btn.textContent = "Light Mode";
-            } else {
-                btn.textContent = "Dark Mode";
-            }
-        }
-
-        if (currentTheme === 'terminal') {
-            body.classList.add('theme-terminal');
-        }
-        
-        
-        updateButtonText();
-
-        btn.addEventListener('click', () => {
-            body.classList.toggle('theme-terminal');
-            updateButtonText();
-            
-            let theme = 'natural';
-            if (body.classList.contains('theme-terminal')) {
-                theme = 'terminal';
-            }
-            localStorage.setItem('theme', theme);
-        });
-    </script>
-</body>
-</html>
+Replica C: [0, 0, 0]</p><ul><li>Replica A increments its own count: A -> [1, 0, 0]</li><li>Replica C increments its own count: C -> [0, 0, 1]</li></ul><p>Now, A and C sync. The merge operation is a pairwise maximum of the vectors:</p><ul><li>Merge(A, C) -> [max(1,0), max(0,0), max(0,1)] -> [1, 0, 1]</li><li>Both A and C now have the state [1, 0, 1].</li><li>Replica B increments its own count twice: B -> [0, 2, 0]</li><li>B syncs with A: Merge(B, A) -> [max(0,1), max(2,0), max(0,1)] -> [1, 2, 1]</li><li>Both A and B now have the state [1, 2, 1].</li></ul><p>The total value of the counter is the sum of the vector: 1 + 2 + 1 = 4.</p><p><a href=#code-walkthrough>Jump to Code Walkthrough</a></p><h2 id=implementation>Implementation</h2><h3 id=python>Python</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># Conceptual implementation of a G-Counter (Grow-Only Counter) CRDT in Python</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>class</span> <span style=color:#cb4b16>GCounter</span>:
+</span></span><span style=display:flex><span>    <span style=color:#859900>def</span> <span style=color:#268bd2>__init__</span>(<span style=color:#cb4b16>self</span>, <span style=color:#268bd2>num_replicas</span>, <span style=color:#268bd2>replica_id</span>):
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>num_replicas</span> = <span style=color:#268bd2>num_replicas</span>
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>replica_id</span> = <span style=color:#268bd2>replica_id</span>
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>payload</span> = [<span style=color:#2aa198;font-weight:700>0</span>] * <span style=color:#268bd2>num_replicas</span> <span style=color:#93a1a1;font-style:italic># Vector of counts for each replica</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>def</span> <span style=color:#268bd2>increment</span>(<span style=color:#cb4b16>self</span>):
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic># Only increment the count for this replica&#39;s index</span>
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>payload</span>[<span style=color:#cb4b16>self</span>.<span style=color:#268bd2>replica_id</span>] += <span style=color:#2aa198;font-weight:700>1</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>@property</span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>def</span> <span style=color:#268bd2>value</span>(<span style=color:#cb4b16>self</span>):
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic># The total value is the sum of all counts in the payload vector</span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#cb4b16>sum</span>(<span style=color:#cb4b16>self</span>.<span style=color:#268bd2>payload</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>def</span> <span style=color:#268bd2>merge</span>(<span style=color:#cb4b16>self</span>, <span style=color:#268bd2>other_gcounter</span>):
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic># Merge by taking the pairwise maximum of the payloads</span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>num_replicas</span> != <span style=color:#268bd2>other_gcounter</span>.<span style=color:#268bd2>num_replicas</span>:
+</span></span><span style=display:flex><span>            <span style=color:#859900>raise</span> <span style=color:#268bd2>ValueError</span>(<span style=color:#2aa198>&#34;Counters must have the same number of replicas to merge.&#34;</span>)
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>for</span> <span style=color:#268bd2>i</span> <span style=color:#859900>in</span> <span style=color:#cb4b16>range</span>(<span style=color:#cb4b16>self</span>.<span style=color:#268bd2>num_replicas</span>):
+</span></span><span style=display:flex><span>            <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>payload</span>[<span style=color:#268bd2>i</span>] = <span style=color:#cb4b16>max</span>(<span style=color:#cb4b16>self</span>.<span style=color:#268bd2>payload</span>[<span style=color:#268bd2>i</span>], <span style=color:#268bd2>other_gcounter</span>.<span style=color:#268bd2>payload</span>[<span style=color:#268bd2>i</span>])
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># Example Usage:</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># Imagine 3 replicas (A, B, C)</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># replica_a = GCounter(num_replicas=3, replica_id=0)</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># replica_b = GCounter(num_replicas=3, replica_id=1)</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># replica_c = GCounter(num_replicas=3, replica_id=2)</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># replica_a.increment()</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># print(f&#34;Replica A value: {replica_a.value}&#34;) # 1</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># replica_b.increment()</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># replica_b.increment()</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># print(f&#34;Replica B value: {replica_b.value}&#34;) # 2</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># replica_a.merge(replica_b)</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># print(f&#34;Replica A after merging with B: {replica_a.value}&#34;) # 3</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># print(f&#34;Replica B after merging with A (state unchanged): {replica_b.value}&#34;) # 2</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># replica_b.merge(replica_a)</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># print(f&#34;Replica B after merging with A: {replica_b.value}&#34;) # 3</span>
+</span></span></code></pre></div><h3 id=javascript>Javascript</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// Conceptual implementation of a G-Counter (Grow-Only Counter) CRDT in JavaScript
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#859900>class</span> <span style=color:#268bd2>GCounter</span> {
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>constructor</span>(<span style=color:#268bd2>numReplicas</span>, <span style=color:#268bd2>replicaId</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>numReplicas</span> = <span style=color:#268bd2>numReplicas</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>replicaId</span> = <span style=color:#268bd2>replicaId</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>payload</span> = <span style=color:#859900>new</span> <span style=color:#cb4b16>Array</span>(<span style=color:#268bd2>numReplicas</span>).<span style=color:#268bd2>fill</span>(<span style=color:#2aa198;font-weight:700>0</span>); <span style=color:#93a1a1;font-style:italic>// Vector of counts for each replica
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>increment</span>() {
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic>// Only increment the count for this replica&#39;s index
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>payload</span>[<span style=color:#859900>this</span>.<span style=color:#268bd2>replicaId</span>]++;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>getValue</span>() {
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic>// The total value is the sum of all counts in the payload vector
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        <span style=color:#859900>return</span> <span style=color:#859900>this</span>.<span style=color:#268bd2>payload</span>.<span style=color:#268bd2>reduce</span>((<span style=color:#268bd2>sum</span>, <span style=color:#268bd2>val</span>) =&gt; <span style=color:#268bd2>sum</span> + <span style=color:#268bd2>val</span>, <span style=color:#2aa198;font-weight:700>0</span>);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>merge</span>(<span style=color:#268bd2>otherGCounter</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic>// Merge by taking the pairwise maximum of the payloads
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        <span style=color:#859900>if</span> (<span style=color:#859900>this</span>.<span style=color:#268bd2>numReplicas</span> !== <span style=color:#268bd2>otherGCounter</span>.<span style=color:#268bd2>numReplicas</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>throw</span> <span style=color:#859900>new</span> <span style=color:#cb4b16>Error</span>(<span style=color:#2aa198>&#34;Counters must have the same number of replicas to merge.&#34;</span>);
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>for</span> (<span style=color:#859900>let</span> <span style=color:#268bd2>i</span> = <span style=color:#2aa198;font-weight:700>0</span>; <span style=color:#268bd2>i</span> &lt; <span style=color:#859900>this</span>.<span style=color:#268bd2>numReplicas</span>; <span style=color:#268bd2>i</span>++) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>this</span>.<span style=color:#268bd2>payload</span>[<span style=color:#268bd2>i</span>] = <span style=color:#cb4b16>Math</span>.<span style=color:#268bd2>max</span>(<span style=color:#859900>this</span>.<span style=color:#268bd2>payload</span>[<span style=color:#268bd2>i</span>], <span style=color:#268bd2>otherGCounter</span>.<span style=color:#268bd2>payload</span>[<span style=color:#268bd2>i</span>]);
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// Example Usage:
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// Imagine 3 replicas (A, B, C)
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const replicaA = new GCounter(3, 0);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const replicaB = new GCounter(3, 1);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const replicaC = new GCounter(3, 2);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// replicaA.increment();
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// console.log(&lt;code&gt;Replica A value: ${replicaA.getValue()}&lt;/code&gt;); // 1
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// replicaB.increment();
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// replicaB.increment();
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// console.log(&lt;code&gt;Replica B value: ${replicaB.getValue()}&lt;/code&gt;); // 2
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// replicaA.merge(replicaB);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// console.log(&lt;code&gt;Replica A after merging with B: ${replicaA.getValue()}&lt;/code&gt;); // 3
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// console.log(&lt;code&gt;Replica B after merging with A (state unchanged): ${replicaB.getValue()}&lt;/code&gt;); // 2
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// replicaB.merge(replicaA);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// console.log(&lt;code&gt;Replica B after merging with A: ${replicaB.getValue()}&lt;/code&gt;); // 3
+</span></span></span></code></pre></div><h3 id=cpp>Cpp</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-cpp data-lang=cpp><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;vector&gt;</span><span style=color:#93a1a1;font-style:italic>
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;numeric&gt;</span><span style=color:#93a1a1;font-style:italic>   </span><span style=color:#93a1a1;font-style:italic>// For std::accumulate
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;algorithm&gt;</span><span style=color:#93a1a1;font-style:italic> </span><span style=color:#93a1a1;font-style:italic>// For std::max
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;stdexcept&gt;</span><span style=color:#93a1a1;font-style:italic>
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;iostream&gt;</span><span style=color:#93a1a1;font-style:italic>
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// Conceptual implementation of a G-Counter (Grow-Only Counter) CRDT
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span><span style=color:#859900>class</span> <span style=color:#cb4b16>GCounter</span> {
+</span></span><span style=display:flex><span><span style=color:#859900>private</span>:
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>std</span>::<span style=color:#268bd2>vector</span>&lt;<span style=color:#859900;font-weight:700>int</span>&gt; <span style=color:#268bd2>payload</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>num_replicas</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>replica_id</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>public</span>:
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>GCounter</span>(<span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>n_replicas</span>, <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>r_id</span>) : <span style=color:#268bd2>num_replicas</span>(<span style=color:#268bd2>n_replicas</span>), <span style=color:#268bd2>replica_id</span>(<span style=color:#268bd2>r_id</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>payload</span>.<span style=color:#268bd2>resize</span>(<span style=color:#268bd2>n_replicas</span>, <span style=color:#2aa198;font-weight:700>0</span>);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>void</span> <span style=color:#268bd2>increment</span>() {
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic>// Only increment the count for this replica&#39;s index
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        <span style=color:#268bd2>payload</span>[<span style=color:#268bd2>replica_id</span>]++;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>getValue</span>() <span style=color:#859900>const</span> {
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic>// The total value is the sum of all counts in the payload vector
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        <span style=color:#859900>return</span> <span style=color:#268bd2>std</span>::<span style=color:#268bd2>accumulate</span>(<span style=color:#268bd2>payload</span>.<span style=color:#268bd2>begin</span>(), <span style=color:#268bd2>payload</span>.<span style=color:#268bd2>end</span>(), <span style=color:#2aa198;font-weight:700>0</span>);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>void</span> <span style=color:#268bd2>merge</span>(<span style=color:#859900>const</span> <span style=color:#268bd2>GCounter</span>&amp; <span style=color:#268bd2>other_gcounter</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic>// Merge by taking the pairwise maximum of the payloads
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>num_replicas</span> != <span style=color:#268bd2>other_gcounter</span>.<span style=color:#268bd2>num_replicas</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>throw</span> <span style=color:#268bd2>std</span>::<span style=color:#268bd2>runtime_error</span>(<span style=color:#2aa198>&#34;Counters must have the same number of replicas to merge.&#34;</span>);
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>for</span> (<span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>i</span> = <span style=color:#2aa198;font-weight:700>0</span>; <span style=color:#268bd2>i</span> &lt; <span style=color:#268bd2>num_replicas</span>; ++<span style=color:#268bd2>i</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>payload</span>[<span style=color:#268bd2>i</span>] = <span style=color:#268bd2>std</span>::<span style=color:#268bd2>max</span>(<span style=color:#268bd2>payload</span>[<span style=color:#268bd2>i</span>], <span style=color:#268bd2>other_gcounter</span>.<span style=color:#268bd2>payload</span>[<span style=color:#268bd2>i</span>]);
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>};
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// Example Usage:
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// int main() {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     // Imagine 3 replicas (A, B, C)
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     GCounter replicaA(3, 0);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     GCounter replicaB(3, 1);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     GCounter replicaC(3, 2);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     replicaA.increment();
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     std::cout &lt;&lt; &#34;Replica A value: &#34; &lt;&lt; replicaA.getValue() &lt;&lt; std::endl; // 1
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     replicaB.increment();
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     replicaB.increment();
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     std::cout &lt;&lt; &#34;Replica B value: &#34; &lt;&lt; replicaB.getValue() &lt;&lt; std::endl; // 2
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     replicaA.merge(replicaB);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     std::cout &lt;&lt; &#34;Replica A after merging with B: &#34; &lt;&lt; replicaA.getValue() &lt;&lt; std::endl; // 3
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     std::cout &lt;&lt; &#34;Replica B after merging with A (state unchanged): &#34; &lt;&lt; replicaB.getValue() &lt;&lt; std::endl; // 2
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     replicaB.merge(replicaA);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     std::cout &lt;&lt; &#34;Replica B after merging with A: &#34; &lt;&lt; replicaB.getValue() &lt;&lt; std::endl; // 3
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     return 0;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// }
+</span></span></span></code></pre></div><h2 id=code-walkthrough>Code Walkthrough</h2><p><a href=#implementation>Back to Implementation</a></p><h3 id=code-walkthrough-1>Code Walkthrough</h3><p>The code demonstrates a <code>G-Counter</code>, one of the simplest <code>CRDTs</code>. Each replica maintains a vector representing the state of the entire system from its perspective.</p><hr><p><strong><code>GCounter</code> Class:</strong></p><ul><li><code>num_replicas</code>: The total number of participants (replicas) in the system.</li><li><code>replica_id</code>: The unique identifier (index) for the current replica.</li><li><code>payload</code>: A <code>vector</code> or <code>array</code> of size <code>num_replicas</code>. <code>payload[i]</code> stores the number of increments observed at replica <code>i</code>.</li><li><strong><code>increment()</code>:</strong> The only update operation. A replica can only increment its own counter in the <code>payload</code> vector.</li><li><strong><code>value()</code> or <code>getValue()</code>:</strong> The total value is the sum of all elements in the <code>payload</code> vector.</li><li><strong><code>merge(other)</code>:</strong> Takes another <code>GCounter</code>&rsquo;s state and merges it by taking the element-wise maximum of the two <code>payload</code> vectors. This ensures that no increment is ever lost.</li></ul><p><a href=#implementation>Back to Implementation</a></p><h2 id=applications>Applications</h2><h3 id=application>Application</h3><p>CRDTs are the foundational technology for many modern real-time collaborative and distributed systems. Their primary application is in building applications where multiple users can edit shared data concurrently, such as <strong>collaborative text editors (e.g., Google Docs, Figma)</strong>, shared whiteboards, and multiplayer games. They are also used in distributed databases and caching systems (like <strong>Riak</strong>) to ensure high availability and eventual consistency across geographically distributed replicas without requiring expensive, real-time consensus.</p></div></article><div class=navigation style="margin-top:5rem;display:flex;justify-content:space-between;border-top:1px solid var(--border);padding-top:2rem"><a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/data_structures/specialized/dancing_links/ class=nav-btn>← Previous</a>
+<a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/data_structures/specialized/ class=nav-btn>Up</a>
+<a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/data_structures/specialized/count_min_sketch/ class=nav-btn>Next →</a></div></main><footer class=footer><p>Built with Hugo. No scripts. No tracking. Just the truth.</p></footer><script>document.addEventListener("DOMContentLoaded",function(){const n=document.body,s=document.createTreeWalker(n,NodeFilter.SHOW_TEXT,null,!1);let e;const t=[];for(;e=s.nextNode();)e.nodeValue.includes("[-]")&&t.push(e);t.forEach(e=>{const t=document.createElement("span");t.innerHTML=e.nodeValue.replace(/\[-\]/g,'<span class="started-icon" title="Started"></span>'),e.parentNode.replaceChild(t,e)})})</script><script>const body=document.getElementById("theme-body"),btn=document.getElementById("theme-toggle"),currentTheme=localStorage.getItem("theme");function updateButtonText(){body.classList.contains("theme-terminal")?btn.textContent="Light Mode":btn.textContent="Dark Mode"}currentTheme==="terminal"&&body.classList.add("theme-terminal"),updateButtonText(),btn.addEventListener("click",()=>{body.classList.toggle("theme-terminal"),updateButtonText();let e="natural";body.classList.contains("theme-terminal")&&(e="terminal"),localStorage.setItem("theme",e)})</script></body></html>

@@ -1,210 +1,52 @@
-<!DOCTYPE html>
-<html lang="en-us">
-<head><script src="/sdet-prep-site/livereload.js?mindelay=10&amp;v=2&amp;port=41691&amp;path=sdet-prep-site/livereload" data-no-instant defer></script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Step 9: Real-world Constraints | SDET Interview Preparation Kit</title>
-    <link rel="stylesheet" href="http://localhost:41691/sdet-prep-site/css/style.css">
-    <link rel="stylesheet" href="http://localhost:41691/sdet-prep-site/css/terminal.css">
-    
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
-    
-    
-    <link rel="stylesheet" href="http://localhost:41691/sdet-prep-site/lib/katex/katex.min.css">
-    <script defer src="http://localhost:41691/sdet-prep-site/lib/katex/katex.min.js"></script>
-    <script defer src="http://localhost:41691/sdet-prep-site/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            renderMathInElement(document.body, {
-                delimiters: [
-                    {left: "$$", right: "$$", display: true},
-                    {left: "$", right: "$", display: false}
-                ]
-            });
-        });
-    </script>
-</head>
-<body id="theme-body">
-    <button id="theme-toggle">Switch Theme</button>
-    <header>
-        <nav>
-            <ul>
-                <li><a href="http://localhost:41691/sdet-prep-site/">Index</a></li>
-                
-            </ul>
-        </nav>
-        <div class="site-breadcrumb">
-            <a href="http://localhost:41691/sdet-prep-site/">Home</a>
-            
-                
-                    <span>/</span> <a href="http://localhost:41691/sdet-prep-site/">SDET Interview Dashboard</a>
-                
-            
-                
-                    <span>/</span> <a href="http://localhost:41691/sdet-prep-site/api-from-first-principle/">API from First Principles</a>
-                
-            
-            
-                <span>/</span> Step 9: Real-world Constraints
-            
-        </div>
-    </header>
-
-    <main>
-        
-<article>
-    
-    <h1>Step 9: Real-world Constraints</h1>
-    <div class="content-body" style="margin-top: 2rem;">
-        <h2 id="1-what-problem-this-step-solves">1. What problem this step solves</h2>
-<p>If you put your API on the public internet, someone will try to break it.</p>
-<ul>
-<li>A hacker will try to steal your data.</li>
-<li>A &ldquo;bot&rdquo; will try to send 1,000,000 requests a second, crashing your server.</li>
-<li>A user will try to read someone else&rsquo;s private messages.
-We need to add &ldquo;The Security Layer.&rdquo;</li>
-</ul>
-<h2 id="2-concepts-introduced-in-this-step">2. Concepts introduced in this step</h2>
-<ul>
-<li><strong>Authentication (AuthN):</strong> &ldquo;Who are you?&rdquo; (usually via an <code>API Key</code> or <code>Token</code>).</li>
-<li><strong>Authorization (AuthZ):</strong> &ldquo;What are you allowed to do?&rdquo; (e.g., Admin vs User).</li>
-<li><strong>Rate Limiting:</strong> Restricting a user to X requests per minute.</li>
-<li><strong>HTTPS/TLS:</strong> Encrypting the data so it can&rsquo;t be read by people in the middle (like at a coffee shop Wi-Fi).</li>
-</ul>
-<h2 id="3-why-these-concepts-exist-why-focused">3. Why these concepts exist (WHY-focused)</h2>
-<p><strong>API Keys</strong> are like a digital driver&rsquo;s license. Without them, you don&rsquo;t even let the person in the door.
+<!doctype html><html lang=en-us><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Step 9: Real-world Constraints | SDET Interview Preparation Kit</title><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/css/style.css><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/css/terminal.css><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel=stylesheet><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/lib/katex/katex.min.css><script defer src=https://notxkcd.github.io/sdet-prep-site/lib/katex/katex.min.js></script><script defer src=https://notxkcd.github.io/sdet-prep-site/lib/katex/contrib/auto-render.min.js onload=renderMathInElement(document.body)></script><script>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1}]})})</script></head><body id=theme-body><button id=theme-toggle>Switch Theme</button><header><nav><ul><li><a href=https://notxkcd.github.io/sdet-prep-site/>Index</a></li></ul></nav><div class=site-breadcrumb><a href=https://notxkcd.github.io/sdet-prep-site/>Home</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/>SDET Interview Dashboard</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/api-from-first-principle/>API from First Principles</a>
+<span>/</span> Step 9: Real-world Constraints</div></header><main><article><h1>Step 9: Real-world Constraints</h1><div class=content-body style=margin-top:2rem><h2 id=1-what-problem-this-step-solves>1. What problem this step solves</h2><p>If you put your API on the public internet, someone will try to break it.</p><ul><li>A hacker will try to steal your data.</li><li>A &ldquo;bot&rdquo; will try to send 1,000,000 requests a second, crashing your server.</li><li>A user will try to read someone else&rsquo;s private messages.
+We need to add &ldquo;The Security Layer.&rdquo;</li></ul><h2 id=2-concepts-introduced-in-this-step>2. Concepts introduced in this step</h2><ul><li><strong>Authentication (AuthN):</strong> &ldquo;Who are you?&rdquo; (usually via an <code>API Key</code> or <code>Token</code>).</li><li><strong>Authorization (AuthZ):</strong> &ldquo;What are you allowed to do?&rdquo; (e.g., Admin vs User).</li><li><strong>Rate Limiting:</strong> Restricting a user to X requests per minute.</li><li><strong>HTTPS/TLS:</strong> Encrypting the data so it can&rsquo;t be read by people in the middle (like at a coffee shop Wi-Fi).</li></ul><h2 id=3-why-these-concepts-exist-why-focused>3. Why these concepts exist (WHY-focused)</h2><p><strong>API Keys</strong> are like a digital driver&rsquo;s license. Without them, you don&rsquo;t even let the person in the door.
 <strong>Rate Limiting</strong> is about &ldquo;Fair Use.&rdquo; If one person uses all your CPU, the API becomes slow for everyone else.
-<strong>HTTPS</strong> is mandatory today. Without it, your API keys and passwords travel as plain text, and anyone on your network can &ldquo;sniff&rdquo; them.</p>
-<h2 id="4-common-confusions--doubts-explicit-qa">4. Common confusions &amp; doubts (explicit Q&amp;A)</h2>
-<p><strong>Q: Where do I put the API Key? In the URL?</strong><br>
-A: NO. Putting keys in the URL (<code>/api/data?key=123</code>) is dangerous because URLs are often saved in browser history and server logs. Put them in the <strong>HTTP Headers</strong> (e.g., <code>Authorization: Bearer my-secret-key</code>).</p>
-<p><strong>Q: Is Rate Limiting the same as a Firewall?</strong><br>
-A: A firewall usually blocks IP addresses. Rate limiting is smarter; it might allow a user to browse quickly but slow them down if they try to download your whole database.</p>
-<p><strong>Q: How do I generate an API key?</strong><br>
-A: It&rsquo;s just a long, random, unique string. In Python, you can use <code>secrets.token_hex(32)</code>.</p>
-<h2 id="5-ascii-diagrams">5. ASCII diagrams</h2>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>THE SECURITY CHECKPOINT:
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>[Client Request] 
-</span></span><span style="display:flex;"><span>      |
-</span></span><span style="display:flex;"><span>      V
-</span></span><span style="display:flex;"><span>[HTTPS Encryption Layer] ---&gt; [Decrypted Request]
-</span></span><span style="display:flex;"><span>                                     |
-</span></span><span style="display:flex;"><span>                                     V
-</span></span><span style="display:flex;"><span>[Rate Limiter] -------------&gt; [Are they over limit? (429 Too Many Requests)]
-</span></span><span style="display:flex;"><span>                                     |
-</span></span><span style="display:flex;"><span>                                     V
-</span></span><span style="display:flex;"><span>[Authentication] -----------&gt; [Do they have a valid API Key? (401 Unauthorized)]
-</span></span><span style="display:flex;"><span>                                     |
-</span></span><span style="display:flex;"><span>                                     V
-</span></span><span style="display:flex;"><span>[Authorization] ------------&gt; [Can they edit THIS resource? (403 Forbidden)]
-</span></span><span style="display:flex;"><span>                                     |
-</span></span><span style="display:flex;"><span>                                     V
-</span></span><span style="display:flex;"><span>[Your API Logic]
-</span></span></code></pre></div><h2 id="6-full-working-python-code">6. Full working Python code</h2>
-<p><em>We will implement a simple middleware-style check for an API Key.</em></p>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># Mock database of valid keys</span>
-</span></span><span style="display:flex;"><span><span style="color:#268bd2">VALID_KEYS</span> = {<span style="color:#2aa198">&#34;user_abc&#34;</span>: <span style="color:#2aa198">&#34;Alice&#34;</span>, <span style="color:#2aa198">&#34;user_xyz&#34;</span>: <span style="color:#2aa198">&#34;Bob&#34;</span>}
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#859900">def</span> <span style="color:#268bd2">security_middleware</span>(<span style="color:#268bd2">headers</span>):
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># 1. Check for the header</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">auth_header</span> = <span style="color:#268bd2">headers</span>.<span style="color:#268bd2">get</span>(<span style="color:#2aa198">&#34;Authorization&#34;</span>)
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#859900">not</span> <span style="color:#268bd2">auth_header</span>:
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#859900;font-weight:bold">False</span>, <span style="color:#2aa198;font-weight:bold">401</span>, <span style="color:#2aa198">&#34;Missing API Key&#34;</span>
-</span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># 2. Extract key (Format: &#39;Bearer &lt;key&gt;&#39;)</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">try</span>:
-</span></span><span style="display:flex;"><span>        <span style="color:#268bd2">key</span> = <span style="color:#268bd2">auth_header</span>.<span style="color:#268bd2">split</span>(<span style="color:#2aa198">&#34; &#34;</span>)[<span style="color:#2aa198;font-weight:bold">1</span>]
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">except</span> <span style="color:#268bd2">IndexError</span>:
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#859900;font-weight:bold">False</span>, <span style="color:#2aa198;font-weight:bold">400</span>, <span style="color:#2aa198">&#34;Invalid Authorization format&#34;</span>
-</span></span><span style="display:flex;"><span>        
-</span></span><span style="display:flex;"><span>    <span style="color:#93a1a1;font-style:italic"># 3. Check validity</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">if</span> <span style="color:#268bd2">key</span> <span style="color:#859900">in</span> <span style="color:#268bd2">VALID_KEYS</span>:
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#859900;font-weight:bold">True</span>, <span style="color:#2aa198;font-weight:bold">200</span>, <span style="color:#268bd2">VALID_KEYS</span>[<span style="color:#268bd2">key</span>]
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">else</span>:
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#859900;font-weight:bold">False</span>, <span style="color:#2aa198;font-weight:bold">403</span>, <span style="color:#2aa198">&#34;Invalid API Key&#34;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># Simulation</span>
-</span></span><span style="display:flex;"><span><span style="color:#cb4b16">print</span>(<span style="color:#2aa198">f</span><span style="color:#2aa198">&#34;No Key: </span><span style="color:#2aa198">{</span><span style="color:#268bd2">security_middleware</span>({})<span style="color:#2aa198">}</span><span style="color:#2aa198">&#34;</span>)
-</span></span><span style="display:flex;"><span><span style="color:#cb4b16">print</span>(<span style="color:#2aa198">f</span><span style="color:#2aa198">&#34;Wrong Key: </span><span style="color:#2aa198">{</span><span style="color:#268bd2">security_middleware</span>({<span style="color:#2aa198">&#39;Authorization&#39;</span>: <span style="color:#2aa198">&#39;Bearer 123&#39;</span>})<span style="color:#2aa198">}</span><span style="color:#2aa198">&#34;</span>)
-</span></span><span style="display:flex;"><span><span style="color:#cb4b16">print</span>(<span style="color:#2aa198">f</span><span style="color:#2aa198">&#34;Correct Key: </span><span style="color:#2aa198">{</span><span style="color:#268bd2">security_middleware</span>({<span style="color:#2aa198">&#39;Authorization&#39;</span>: <span style="color:#2aa198">&#39;Bearer user_abc&#39;</span>})<span style="color:#2aa198">}</span><span style="color:#2aa198">&#34;</span>)
-</span></span></code></pre></div><h2 id="7-how-this-connects-to-the-next-step">7. How this connects to the next step</h2>
-<p>You now understand the entire stack: from the mental model to the protocol, the transport, the data format, the naming conventions, and the security. In the <strong>Final Step (Step 10)</strong>, we will put it all together and see how &ldquo;Frameworks&rdquo; like Flask or FastAPI simply automate everything we&rsquo;ve done by hand.</p>
-
-    </div>
-</article>
-
-<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
-    
-    <span></span>
-    
-    
-    <a href="http://localhost:41691/sdet-prep-site/api-from-first-principle/" class="nav-btn">Up</a>
-
-    
-    <a href="http://localhost:41691/sdet-prep-site/api-from-first-principle/step-8-client-discipline/" class="nav-btn">Next →</a>
-    
-</div>
-
-    </main>
-
-    <footer class="footer">
-        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
-    </footer>
-
-    <script>
-        
-        document.addEventListener("DOMContentLoaded", function() {
-            const content = document.body;
-            
-            const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT, null, false);
-            let node;
-            const nodesToReplace = [];
-            while(node = walker.nextNode()) {
-                if (node.nodeValue.includes("[-]")) nodesToReplace.push(node);
-            }
-            nodesToReplace.forEach(textNode => {
-                const span = document.createElement('span');
-                span.innerHTML = textNode.nodeValue.replace(/\[-\]/g, '<span class="started-icon" title="Started"></span>');
-                textNode.parentNode.replaceChild(span, textNode);
-            });
-        });
-    </script>
-
-    <script>
-        const body = document.getElementById('theme-body');
-        const btn = document.getElementById('theme-toggle');
-        const currentTheme = localStorage.getItem('theme');
-
-        
-        function updateButtonText() {
-            if (body.classList.contains('theme-terminal')) {
-                btn.textContent = "Light Mode";
-            } else {
-                btn.textContent = "Dark Mode";
-            }
-        }
-
-        if (currentTheme === 'terminal') {
-            body.classList.add('theme-terminal');
-        }
-        
-        
-        updateButtonText();
-
-        btn.addEventListener('click', () => {
-            body.classList.toggle('theme-terminal');
-            updateButtonText();
-            
-            let theme = 'natural';
-            if (body.classList.contains('theme-terminal')) {
-                theme = 'terminal';
-            }
-            localStorage.setItem('theme', theme);
-        });
-    </script>
-</body>
-</html>
+<strong>HTTPS</strong> is mandatory today. Without it, your API keys and passwords travel as plain text, and anyone on your network can &ldquo;sniff&rdquo; them.</p><h2 id=4-common-confusions--doubts-explicit-qa>4. Common confusions & doubts (explicit Q&amp;A)</h2><p><strong>Q: Where do I put the API Key? In the URL?</strong><br>A: NO. Putting keys in the URL (<code>/api/data?key=123</code>) is dangerous because URLs are often saved in browser history and server logs. Put them in the <strong>HTTP Headers</strong> (e.g., <code>Authorization: Bearer my-secret-key</code>).</p><p><strong>Q: Is Rate Limiting the same as a Firewall?</strong><br>A: A firewall usually blocks IP addresses. Rate limiting is smarter; it might allow a user to browse quickly but slow them down if they try to download your whole database.</p><p><strong>Q: How do I generate an API key?</strong><br>A: It&rsquo;s just a long, random, unique string. In Python, you can use <code>secrets.token_hex(32)</code>.</p><h2 id=5-ascii-diagrams>5. ASCII diagrams</h2><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-text data-lang=text><span style=display:flex><span>THE SECURITY CHECKPOINT:
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>[Client Request] 
+</span></span><span style=display:flex><span>      |
+</span></span><span style=display:flex><span>      V
+</span></span><span style=display:flex><span>[HTTPS Encryption Layer] ---&gt; [Decrypted Request]
+</span></span><span style=display:flex><span>                                     |
+</span></span><span style=display:flex><span>                                     V
+</span></span><span style=display:flex><span>[Rate Limiter] -------------&gt; [Are they over limit? (429 Too Many Requests)]
+</span></span><span style=display:flex><span>                                     |
+</span></span><span style=display:flex><span>                                     V
+</span></span><span style=display:flex><span>[Authentication] -----------&gt; [Do they have a valid API Key? (401 Unauthorized)]
+</span></span><span style=display:flex><span>                                     |
+</span></span><span style=display:flex><span>                                     V
+</span></span><span style=display:flex><span>[Authorization] ------------&gt; [Can they edit THIS resource? (403 Forbidden)]
+</span></span><span style=display:flex><span>                                     |
+</span></span><span style=display:flex><span>                                     V
+</span></span><span style=display:flex><span>[Your API Logic]
+</span></span></code></pre></div><h2 id=6-full-working-python-code>6. Full working Python code</h2><p><em>We will implement a simple middleware-style check for an API Key.</em></p><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># Mock database of valid keys</span>
+</span></span><span style=display:flex><span><span style=color:#268bd2>VALID_KEYS</span> = {<span style=color:#2aa198>&#34;user_abc&#34;</span>: <span style=color:#2aa198>&#34;Alice&#34;</span>, <span style=color:#2aa198>&#34;user_xyz&#34;</span>: <span style=color:#2aa198>&#34;Bob&#34;</span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>def</span> <span style=color:#268bd2>security_middleware</span>(<span style=color:#268bd2>headers</span>):
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic># 1. Check for the header</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>auth_header</span> = <span style=color:#268bd2>headers</span>.<span style=color:#268bd2>get</span>(<span style=color:#2aa198>&#34;Authorization&#34;</span>)
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> <span style=color:#859900>not</span> <span style=color:#268bd2>auth_header</span>:
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#859900;font-weight:700>False</span>, <span style=color:#2aa198;font-weight:700>401</span>, <span style=color:#2aa198>&#34;Missing API Key&#34;</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic># 2. Extract key (Format: &#39;Bearer &lt;key&gt;&#39;)</span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>try</span>:
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>key</span> = <span style=color:#268bd2>auth_header</span>.<span style=color:#268bd2>split</span>(<span style=color:#2aa198>&#34; &#34;</span>)[<span style=color:#2aa198;font-weight:700>1</span>]
+</span></span><span style=display:flex><span>    <span style=color:#859900>except</span> <span style=color:#268bd2>IndexError</span>:
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#859900;font-weight:700>False</span>, <span style=color:#2aa198;font-weight:700>400</span>, <span style=color:#2aa198>&#34;Invalid Authorization format&#34;</span>
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic># 3. Check validity</span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> <span style=color:#268bd2>key</span> <span style=color:#859900>in</span> <span style=color:#268bd2>VALID_KEYS</span>:
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#859900;font-weight:700>True</span>, <span style=color:#2aa198;font-weight:700>200</span>, <span style=color:#268bd2>VALID_KEYS</span>[<span style=color:#268bd2>key</span>]
+</span></span><span style=display:flex><span>    <span style=color:#859900>else</span>:
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#859900;font-weight:700>False</span>, <span style=color:#2aa198;font-weight:700>403</span>, <span style=color:#2aa198>&#34;Invalid API Key&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># Simulation</span>
+</span></span><span style=display:flex><span><span style=color:#cb4b16>print</span>(<span style=color:#2aa198>f</span><span style=color:#2aa198>&#34;No Key: </span><span style=color:#2aa198>{</span><span style=color:#268bd2>security_middleware</span>({})<span style=color:#2aa198>}</span><span style=color:#2aa198>&#34;</span>)
+</span></span><span style=display:flex><span><span style=color:#cb4b16>print</span>(<span style=color:#2aa198>f</span><span style=color:#2aa198>&#34;Wrong Key: </span><span style=color:#2aa198>{</span><span style=color:#268bd2>security_middleware</span>({<span style=color:#2aa198>&#39;Authorization&#39;</span>: <span style=color:#2aa198>&#39;Bearer 123&#39;</span>})<span style=color:#2aa198>}</span><span style=color:#2aa198>&#34;</span>)
+</span></span><span style=display:flex><span><span style=color:#cb4b16>print</span>(<span style=color:#2aa198>f</span><span style=color:#2aa198>&#34;Correct Key: </span><span style=color:#2aa198>{</span><span style=color:#268bd2>security_middleware</span>({<span style=color:#2aa198>&#39;Authorization&#39;</span>: <span style=color:#2aa198>&#39;Bearer user_abc&#39;</span>})<span style=color:#2aa198>}</span><span style=color:#2aa198>&#34;</span>)
+</span></span></code></pre></div><h2 id=7-how-this-connects-to-the-next-step>7. How this connects to the next step</h2><p>You now understand the entire stack: from the mental model to the protocol, the transport, the data format, the naming conventions, and the security. In the <strong>Final Step (Step 10)</strong>, we will put it all together and see how &ldquo;Frameworks&rdquo; like Flask or FastAPI simply automate everything we&rsquo;ve done by hand.</p></div></article><div class=navigation style="margin-top:5rem;display:flex;justify-content:space-between;border-top:1px solid var(--border);padding-top:2rem"><span></span>
+<a href=https://notxkcd.github.io/sdet-prep-site/api-from-first-principle/ class=nav-btn>Up</a>
+<a href=https://notxkcd.github.io/sdet-prep-site/api-from-first-principle/step-8-client-discipline/ class=nav-btn>Next →</a></div></main><footer class=footer><p>Built with Hugo. No scripts. No tracking. Just the truth.</p></footer><script>document.addEventListener("DOMContentLoaded",function(){const n=document.body,s=document.createTreeWalker(n,NodeFilter.SHOW_TEXT,null,!1);let e;const t=[];for(;e=s.nextNode();)e.nodeValue.includes("[-]")&&t.push(e);t.forEach(e=>{const t=document.createElement("span");t.innerHTML=e.nodeValue.replace(/\[-\]/g,'<span class="started-icon" title="Started"></span>'),e.parentNode.replaceChild(t,e)})})</script><script>const body=document.getElementById("theme-body"),btn=document.getElementById("theme-toggle"),currentTheme=localStorage.getItem("theme");function updateButtonText(){body.classList.contains("theme-terminal")?btn.textContent="Light Mode":btn.textContent="Dark Mode"}currentTheme==="terminal"&&body.classList.add("theme-terminal"),updateButtonText(),btn.addEventListener("click",()=>{body.classList.toggle("theme-terminal"),updateButtonText();let e="natural";body.classList.contains("theme-terminal")&&(e="terminal"),localStorage.setItem("theme",e)})</script></body></html>

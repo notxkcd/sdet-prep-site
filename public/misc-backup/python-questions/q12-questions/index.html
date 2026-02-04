@@ -1,224 +1,71 @@
-<!DOCTYPE html>
-<html lang="en-us">
-<head><script src="/sdet-prep-site/livereload.js?mindelay=10&amp;v=2&amp;port=41691&amp;path=sdet-prep-site/livereload" data-no-instant defer></script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Questions - oops | SDET Interview Preparation Kit</title>
-    <link rel="stylesheet" href="http://localhost:41691/sdet-prep-site/css/style.css">
-    <link rel="stylesheet" href="http://localhost:41691/sdet-prep-site/css/terminal.css">
-    
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
-    
-    
-    <link rel="stylesheet" href="http://localhost:41691/sdet-prep-site/lib/katex/katex.min.css">
-    <script defer src="http://localhost:41691/sdet-prep-site/lib/katex/katex.min.js"></script>
-    <script defer src="http://localhost:41691/sdet-prep-site/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            renderMathInElement(document.body, {
-                delimiters: [
-                    {left: "$$", right: "$$", display: true},
-                    {left: "$", right: "$", display: false}
-                ]
-            });
-        });
-    </script>
-</head>
-<body id="theme-body">
-    <button id="theme-toggle">Switch Theme</button>
-    <header>
-        <nav>
-            <ul>
-                <li><a href="http://localhost:41691/sdet-prep-site/">Index</a></li>
-                
-            </ul>
-        </nav>
-        <div class="site-breadcrumb">
-            <a href="http://localhost:41691/sdet-prep-site/">Home</a>
-            
-                
-                    <span>/</span> <a href="http://localhost:41691/sdet-prep-site/">SDET Interview Dashboard</a>
-                
-            
-                
-                    <span>/</span> <a href="http://localhost:41691/sdet-prep-site/misc-backup/">QA Automation Interview Preparation</a>
-                
-            
-                
-                    <span>/</span> <a href="http://localhost:41691/sdet-prep-site/misc-backup/python-questions/">Python Interview Questions</a>
-                
-            
-            
-                <span>/</span> Questions - oops
-            
-        </div>
-    </header>
-
-    <main>
-        
-<article>
-    
-    <h1>Questions - oops</h1>
-    <div class="content-body" style="margin-top: 2rem;">
-        <h1 id="python-programming-interview-questions-sorted-by-difficulty---oopsmd">Python Programming Interview Questions (Sorted by Difficulty) - oops.md</h1>
-<h2 id="intermediate">Intermediate</h2>
-<ul>
-<li><a href="#demonstrate-treating-a-subclass-instance-as-a-superclass-instance-polymorphism">Demonstrate treating a subclass instance as a superclass instance (Polymorphism).</a></li>
-<li><a href="#demonstrate-the-use-of-abstract-class-abc-and-private-or-protected-fields-with-getters">Demonstrate the use of <code>abstract</code> class (ABC) and <code>private</code> (or protected) fields with getters.</a></li>
-</ul>
-<h2 id="advanced">Advanced</h2>
-<ul>
-<li><a href="#write-a-program-that-demonstrates-the-four-pillars-of-oop-abstraction-encapsulation-inheritance-and-polymorphism-using-an-animal-superclass-and-a-dog-subclass">Write a program that demonstrates the four pillars of OOP (Abstraction, Encapsulation, Inheritance, and Polymorphism) using an <code>Animal</code> superclass and a <code>Dog</code> subclass.</a></li>
-</ul>
-<hr>
-<h1 id="answers">Answers</h1>
-<h2 id="intermediate-1">Intermediate</h2>
-<h3 id="demonstrate-treating-a-subclass-instance-as-a-superclass-instance-polymorphism"><a id="demonstrate-treating-a-subclass-instance-as-a-superclass-instance-polymorphism"></a>Demonstrate treating a subclass instance as a superclass instance (Polymorphism).</h3>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#cb4b16">Animal</span>:
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">move</span>(<span style="color:#cb4b16">self</span>):
-</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">print</span>(<span style="color:#2aa198">&#34;Moving&#34;</span>)
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#cb4b16">Dog</span>(<span style="color:#268bd2">Animal</span>):
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">bark</span>(<span style="color:#cb4b16">self</span>):
-</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">print</span>(<span style="color:#2aa198">&#34;Woof!&#34;</span>)
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#268bd2">dog</span> = <span style="color:#268bd2">Dog</span>()
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># In Python, typing is duck typing, but inheritance implies IS-A relationship</span>
-</span></span><span style="display:flex;"><span><span style="color:#268bd2">animal</span>: <span style="color:#268bd2">Animal</span> = <span style="color:#268bd2">dog</span> 
-</span></span><span style="display:flex;"><span><span style="color:#268bd2">animal</span>.<span style="color:#268bd2">move</span>()
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># animal.bark() # Static checkers would complain, but runtime allows if obj has method</span>
-</span></span></code></pre></div><p><a href="#intermediate">Back to Top</a></p>
-<h3 id="demonstrate-the-use-of-abstract-class-abc-and-private-or-protected-fields-with-getters"><a id="demonstrate-the-use-of-abstract-class-abc-and-private-or-protected-fields-with-getters"></a>Demonstrate the use of <code>abstract</code> class (ABC) and <code>private</code> (or protected) fields with getters.</h3>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">from</span> <span style="color:#268bd2">abc</span> <span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">ABC</span>, <span style="color:#268bd2">abstractmethod</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#cb4b16">Shape</span>(<span style="color:#268bd2">ABC</span>):
-</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">@abstractmethod</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">get_area</span>(<span style="color:#cb4b16">self</span>):
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">pass</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#cb4b16">Circle</span>(<span style="color:#268bd2">Shape</span>):
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">__init__</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">radius</span>):
-</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">_radius</span> = <span style="color:#268bd2">radius</span> <span style="color:#93a1a1;font-style:italic"># Protected convention</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">@property</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">radius</span>(<span style="color:#cb4b16">self</span>):
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">_radius</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">get_area</span>(<span style="color:#cb4b16">self</span>):
-</span></span><span style="display:flex;"><span>        <span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">math</span>
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#268bd2">math</span>.<span style="color:#268bd2">pi</span> * <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">_radius</span> ** <span style="color:#2aa198;font-weight:bold">2</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#268bd2">c</span> = <span style="color:#268bd2">Circle</span>(<span style="color:#2aa198;font-weight:bold">5</span>)
-</span></span><span style="display:flex;"><span><span style="color:#cb4b16">print</span>(<span style="color:#268bd2">c</span>.<span style="color:#268bd2">radius</span>)
-</span></span><span style="display:flex;"><span><span style="color:#cb4b16">print</span>(<span style="color:#268bd2">c</span>.<span style="color:#268bd2">get_area</span>())
-</span></span></code></pre></div><p><a href="#intermediate">Back to Top</a></p>
-<h2 id="advanced-1">Advanced</h2>
-<h3 id="write-a-program-that-demonstrates-the-four-pillars-of-oop-abstraction-encapsulation-inheritance-and-polymorphism-using-an-animal-superclass-and-a-dog-subclass"><a id="write-a-program-that-demonstrates-the-four-pillars-of-oop-abstraction-encapsulation-inheritance-and-polymorphism-using-an-animal-superclass-and-a-dog-subclass"></a>Write a program that demonstrates the four pillars of OOP (Abstraction, Encapsulation, Inheritance, and Polymorphism) using an <code>Animal</code> superclass and a <code>Dog</code> subclass.</h3>
-<div class="highlight"><pre tabindex="0" style="color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#dc322f;font-weight:bold">from</span> <span style="color:#268bd2">abc</span> <span style="color:#dc322f;font-weight:bold">import</span> <span style="color:#268bd2">ABC</span>, <span style="color:#268bd2">abstractmethod</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># 1. Abstraction</span>
-</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#cb4b16">Animal</span>(<span style="color:#268bd2">ABC</span>):
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">__init__</span>(<span style="color:#cb4b16">self</span>, <span style="color:#268bd2">name</span>):
-</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># 2. Encapsulation</span>
-</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">__name</span> = <span style="color:#268bd2">name</span> <span style="color:#93a1a1;font-style:italic"># Private attribute</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">@property</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">name</span>(<span style="color:#cb4b16">self</span>):
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">return</span> <span style="color:#cb4b16">self</span>.<span style="color:#268bd2">__name</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">@abstractmethod</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">make_sound</span>(<span style="color:#cb4b16">self</span>):
-</span></span><span style="display:flex;"><span>        <span style="color:#859900">pass</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#93a1a1;font-style:italic"># 3. Inheritance</span>
-</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#cb4b16">Dog</span>(<span style="color:#268bd2">Animal</span>):
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">make_sound</span>(<span style="color:#cb4b16">self</span>):
-</span></span><span style="display:flex;"><span>        <span style="color:#93a1a1;font-style:italic"># 4. Polymorphism</span>
-</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">print</span>(<span style="color:#2aa198">f</span><span style="color:#2aa198">&#34;</span><span style="color:#2aa198">{</span><span style="color:#cb4b16">self</span>.<span style="color:#268bd2">name</span><span style="color:#2aa198">}</span><span style="color:#2aa198"> says Woof!&#34;</span>)
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#859900">class</span> <span style="color:#cb4b16">Cat</span>(<span style="color:#268bd2">Animal</span>):
-</span></span><span style="display:flex;"><span>    <span style="color:#859900">def</span> <span style="color:#268bd2">make_sound</span>(<span style="color:#cb4b16">self</span>):
-</span></span><span style="display:flex;"><span>        <span style="color:#cb4b16">print</span>(<span style="color:#2aa198">f</span><span style="color:#2aa198">&#34;</span><span style="color:#2aa198">{</span><span style="color:#cb4b16">self</span>.<span style="color:#268bd2">name</span><span style="color:#2aa198">}</span><span style="color:#2aa198"> says Meow!&#34;</span>)
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#268bd2">animals</span> = [<span style="color:#268bd2">Dog</span>(<span style="color:#2aa198">&#34;Buddy&#34;</span>), <span style="color:#268bd2">Cat</span>(<span style="color:#2aa198">&#34;Whiskers&#34;</span>)]
-</span></span><span style="display:flex;"><span><span style="color:#859900">for</span> <span style="color:#268bd2">animal</span> <span style="color:#859900">in</span> <span style="color:#268bd2">animals</span>:
-</span></span><span style="display:flex;"><span>    <span style="color:#268bd2">animal</span>.<span style="color:#268bd2">make_sound</span>()
-</span></span></code></pre></div><p><a href="#advanced">Back to Top</a></p>
-
-    </div>
-</article>
-
-<div class="navigation" style="margin-top: 5rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 2rem;">
-    
-    <span></span>
-    
-    
-    <a href="http://localhost:41691/sdet-prep-site/misc-backup/python-questions/" class="nav-btn">Up</a>
-
-    
-    <a href="http://localhost:41691/sdet-prep-site/misc-backup/python-questions/q11-questions/" class="nav-btn">Next →</a>
-    
-</div>
-
-    </main>
-
-    <footer class="footer">
-        <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
-    </footer>
-
-    <script>
-        
-        document.addEventListener("DOMContentLoaded", function() {
-            const content = document.body;
-            
-            const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT, null, false);
-            let node;
-            const nodesToReplace = [];
-            while(node = walker.nextNode()) {
-                if (node.nodeValue.includes("[-]")) nodesToReplace.push(node);
-            }
-            nodesToReplace.forEach(textNode => {
-                const span = document.createElement('span');
-                span.innerHTML = textNode.nodeValue.replace(/\[-\]/g, '<span class="started-icon" title="Started"></span>');
-                textNode.parentNode.replaceChild(span, textNode);
-            });
-        });
-    </script>
-
-    <script>
-        const body = document.getElementById('theme-body');
-        const btn = document.getElementById('theme-toggle');
-        const currentTheme = localStorage.getItem('theme');
-
-        
-        function updateButtonText() {
-            if (body.classList.contains('theme-terminal')) {
-                btn.textContent = "Light Mode";
-            } else {
-                btn.textContent = "Dark Mode";
-            }
-        }
-
-        if (currentTheme === 'terminal') {
-            body.classList.add('theme-terminal');
-        }
-        
-        
-        updateButtonText();
-
-        btn.addEventListener('click', () => {
-            body.classList.toggle('theme-terminal');
-            updateButtonText();
-            
-            let theme = 'natural';
-            if (body.classList.contains('theme-terminal')) {
-                theme = 'terminal';
-            }
-            localStorage.setItem('theme', theme);
-        });
-    </script>
-</body>
-</html>
+<!doctype html><html lang=en-us><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Questions - oops | SDET Interview Preparation Kit</title><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/css/style.css><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/css/terminal.css><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel=stylesheet><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/lib/katex/katex.min.css><script defer src=https://notxkcd.github.io/sdet-prep-site/lib/katex/katex.min.js></script><script defer src=https://notxkcd.github.io/sdet-prep-site/lib/katex/contrib/auto-render.min.js onload=renderMathInElement(document.body)></script><script>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1}]})})</script></head><body id=theme-body><button id=theme-toggle>Switch Theme</button><header><nav><ul><li><a href=https://notxkcd.github.io/sdet-prep-site/>Index</a></li></ul></nav><div class=site-breadcrumb><a href=https://notxkcd.github.io/sdet-prep-site/>Home</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/>SDET Interview Dashboard</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/misc-backup/>QA Automation Interview Preparation</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/misc-backup/python-questions/>Python Interview Questions</a>
+<span>/</span> Questions - oops</div></header><main><article><h1>Questions - oops</h1><div class=content-body style=margin-top:2rem><h1 id=python-programming-interview-questions-sorted-by-difficulty---oopsmd>Python Programming Interview Questions (Sorted by Difficulty) - oops.md</h1><h2 id=intermediate>Intermediate</h2><ul><li><a href=#demonstrate-treating-a-subclass-instance-as-a-superclass-instance-polymorphism>Demonstrate treating a subclass instance as a superclass instance (Polymorphism).</a></li><li><a href=#demonstrate-the-use-of-abstract-class-abc-and-private-or-protected-fields-with-getters>Demonstrate the use of <code>abstract</code> class (ABC) and <code>private</code> (or protected) fields with getters.</a></li></ul><h2 id=advanced>Advanced</h2><ul><li><a href=#write-a-program-that-demonstrates-the-four-pillars-of-oop-abstraction-encapsulation-inheritance-and-polymorphism-using-an-animal-superclass-and-a-dog-subclass>Write a program that demonstrates the four pillars of OOP (Abstraction, Encapsulation, Inheritance, and Polymorphism) using an <code>Animal</code> superclass and a <code>Dog</code> subclass.</a></li></ul><hr><h1 id=answers>Answers</h1><h2 id=intermediate-1>Intermediate</h2><h3 id=demonstrate-treating-a-subclass-instance-as-a-superclass-instance-polymorphism><a id=demonstrate-treating-a-subclass-instance-as-a-superclass-instance-polymorphism></a>Demonstrate treating a subclass instance as a superclass instance (Polymorphism).</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#859900>class</span> <span style=color:#cb4b16>Animal</span>:
+</span></span><span style=display:flex><span>    <span style=color:#859900>def</span> <span style=color:#268bd2>move</span>(<span style=color:#cb4b16>self</span>):
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>print</span>(<span style=color:#2aa198>&#34;Moving&#34;</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>class</span> <span style=color:#cb4b16>Dog</span>(<span style=color:#268bd2>Animal</span>):
+</span></span><span style=display:flex><span>    <span style=color:#859900>def</span> <span style=color:#268bd2>bark</span>(<span style=color:#cb4b16>self</span>):
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>print</span>(<span style=color:#2aa198>&#34;Woof!&#34;</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#268bd2>dog</span> = <span style=color:#268bd2>Dog</span>()
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># In Python, typing is duck typing, but inheritance implies IS-A relationship</span>
+</span></span><span style=display:flex><span><span style=color:#268bd2>animal</span>: <span style=color:#268bd2>Animal</span> = <span style=color:#268bd2>dog</span> 
+</span></span><span style=display:flex><span><span style=color:#268bd2>animal</span>.<span style=color:#268bd2>move</span>()
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># animal.bark() # Static checkers would complain, but runtime allows if obj has method</span>
+</span></span></code></pre></div><p><a href=#intermediate>Back to Top</a></p><h3 id=demonstrate-the-use-of-abstract-class-abc-and-private-or-protected-fields-with-getters><a id=demonstrate-the-use-of-abstract-class-abc-and-private-or-protected-fields-with-getters></a>Demonstrate the use of <code>abstract</code> class (ABC) and <code>private</code> (or protected) fields with getters.</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#dc322f;font-weight:700>from</span> <span style=color:#268bd2>abc</span> <span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>ABC</span>, <span style=color:#268bd2>abstractmethod</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>class</span> <span style=color:#cb4b16>Shape</span>(<span style=color:#268bd2>ABC</span>):
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>@abstractmethod</span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>def</span> <span style=color:#268bd2>get_area</span>(<span style=color:#cb4b16>self</span>):
+</span></span><span style=display:flex><span>        <span style=color:#859900>pass</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>class</span> <span style=color:#cb4b16>Circle</span>(<span style=color:#268bd2>Shape</span>):
+</span></span><span style=display:flex><span>    <span style=color:#859900>def</span> <span style=color:#268bd2>__init__</span>(<span style=color:#cb4b16>self</span>, <span style=color:#268bd2>radius</span>):
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>_radius</span> = <span style=color:#268bd2>radius</span> <span style=color:#93a1a1;font-style:italic># Protected convention</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>@property</span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>def</span> <span style=color:#268bd2>radius</span>(<span style=color:#cb4b16>self</span>):
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>_radius</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>def</span> <span style=color:#268bd2>get_area</span>(<span style=color:#cb4b16>self</span>):
+</span></span><span style=display:flex><span>        <span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>math</span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>math</span>.<span style=color:#268bd2>pi</span> * <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>_radius</span> ** <span style=color:#2aa198;font-weight:700>2</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#268bd2>c</span> = <span style=color:#268bd2>Circle</span>(<span style=color:#2aa198;font-weight:700>5</span>)
+</span></span><span style=display:flex><span><span style=color:#cb4b16>print</span>(<span style=color:#268bd2>c</span>.<span style=color:#268bd2>radius</span>)
+</span></span><span style=display:flex><span><span style=color:#cb4b16>print</span>(<span style=color:#268bd2>c</span>.<span style=color:#268bd2>get_area</span>())
+</span></span></code></pre></div><p><a href=#intermediate>Back to Top</a></p><h2 id=advanced-1>Advanced</h2><h3 id=write-a-program-that-demonstrates-the-four-pillars-of-oop-abstraction-encapsulation-inheritance-and-polymorphism-using-an-animal-superclass-and-a-dog-subclass><a id=write-a-program-that-demonstrates-the-four-pillars-of-oop-abstraction-encapsulation-inheritance-and-polymorphism-using-an-animal-superclass-and-a-dog-subclass></a>Write a program that demonstrates the four pillars of OOP (Abstraction, Encapsulation, Inheritance, and Polymorphism) using an <code>Animal</code> superclass and a <code>Dog</code> subclass.</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#dc322f;font-weight:700>from</span> <span style=color:#268bd2>abc</span> <span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>ABC</span>, <span style=color:#268bd2>abstractmethod</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># 1. Abstraction</span>
+</span></span><span style=display:flex><span><span style=color:#859900>class</span> <span style=color:#cb4b16>Animal</span>(<span style=color:#268bd2>ABC</span>):
+</span></span><span style=display:flex><span>    <span style=color:#859900>def</span> <span style=color:#268bd2>__init__</span>(<span style=color:#cb4b16>self</span>, <span style=color:#268bd2>name</span>):
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic># 2. Encapsulation</span>
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>__name</span> = <span style=color:#268bd2>name</span> <span style=color:#93a1a1;font-style:italic># Private attribute</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>@property</span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>def</span> <span style=color:#268bd2>name</span>(<span style=color:#cb4b16>self</span>):
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>__name</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>@abstractmethod</span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>def</span> <span style=color:#268bd2>make_sound</span>(<span style=color:#cb4b16>self</span>):
+</span></span><span style=display:flex><span>        <span style=color:#859900>pass</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># 3. Inheritance</span>
+</span></span><span style=display:flex><span><span style=color:#859900>class</span> <span style=color:#cb4b16>Dog</span>(<span style=color:#268bd2>Animal</span>):
+</span></span><span style=display:flex><span>    <span style=color:#859900>def</span> <span style=color:#268bd2>make_sound</span>(<span style=color:#cb4b16>self</span>):
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic># 4. Polymorphism</span>
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>print</span>(<span style=color:#2aa198>f</span><span style=color:#2aa198>&#34;</span><span style=color:#2aa198>{</span><span style=color:#cb4b16>self</span>.<span style=color:#268bd2>name</span><span style=color:#2aa198>}</span><span style=color:#2aa198> says Woof!&#34;</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>class</span> <span style=color:#cb4b16>Cat</span>(<span style=color:#268bd2>Animal</span>):
+</span></span><span style=display:flex><span>    <span style=color:#859900>def</span> <span style=color:#268bd2>make_sound</span>(<span style=color:#cb4b16>self</span>):
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>print</span>(<span style=color:#2aa198>f</span><span style=color:#2aa198>&#34;</span><span style=color:#2aa198>{</span><span style=color:#cb4b16>self</span>.<span style=color:#268bd2>name</span><span style=color:#2aa198>}</span><span style=color:#2aa198> says Meow!&#34;</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#268bd2>animals</span> = [<span style=color:#268bd2>Dog</span>(<span style=color:#2aa198>&#34;Buddy&#34;</span>), <span style=color:#268bd2>Cat</span>(<span style=color:#2aa198>&#34;Whiskers&#34;</span>)]
+</span></span><span style=display:flex><span><span style=color:#859900>for</span> <span style=color:#268bd2>animal</span> <span style=color:#859900>in</span> <span style=color:#268bd2>animals</span>:
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>animal</span>.<span style=color:#268bd2>make_sound</span>()
+</span></span></code></pre></div><p><a href=#advanced>Back to Top</a></p></div></article><div class=navigation style="margin-top:5rem;display:flex;justify-content:space-between;border-top:1px solid var(--border);padding-top:2rem"><span></span>
+<a href=https://notxkcd.github.io/sdet-prep-site/misc-backup/python-questions/ class=nav-btn>Up</a>
+<a href=https://notxkcd.github.io/sdet-prep-site/misc-backup/python-questions/q11-questions/ class=nav-btn>Next →</a></div></main><footer class=footer><p>Built with Hugo. No scripts. No tracking. Just the truth.</p></footer><script>document.addEventListener("DOMContentLoaded",function(){const n=document.body,s=document.createTreeWalker(n,NodeFilter.SHOW_TEXT,null,!1);let e;const t=[];for(;e=s.nextNode();)e.nodeValue.includes("[-]")&&t.push(e);t.forEach(e=>{const t=document.createElement("span");t.innerHTML=e.nodeValue.replace(/\[-\]/g,'<span class="started-icon" title="Started"></span>'),e.parentNode.replaceChild(t,e)})})</script><script>const body=document.getElementById("theme-body"),btn=document.getElementById("theme-toggle"),currentTheme=localStorage.getItem("theme");function updateButtonText(){body.classList.contains("theme-terminal")?btn.textContent="Light Mode":btn.textContent="Dark Mode"}currentTheme==="terminal"&&body.classList.add("theme-terminal"),updateButtonText(),btn.addEventListener("click",()=>{body.classList.toggle("theme-terminal"),updateButtonText();let e="natural";body.classList.contains("theme-terminal")&&(e="terminal"),localStorage.setItem("theme",e)})</script></body></html>
