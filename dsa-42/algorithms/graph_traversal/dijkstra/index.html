@@ -1,0 +1,366 @@
+<!doctype html><html lang=en-us><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Dijkstra | SDET Interview Preparation Kit</title><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/css/style.css><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/css/terminal.css><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel=stylesheet><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/lib/katex/katex.min.css><script defer src=https://notxkcd.github.io/sdet-prep-site/lib/katex/katex.min.js></script><script defer src=https://notxkcd.github.io/sdet-prep-site/lib/katex/contrib/auto-render.min.js onload=renderMathInElement(document.body)></script><script>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1}]})})</script></head><body id=theme-body><button id=theme-toggle>Switch Theme</button><header><nav><ul><li><a href=https://notxkcd.github.io/sdet-prep-site/>Index</a></li></ul></nav><div class=site-breadcrumb><a href=https://notxkcd.github.io/sdet-prep-site/>Home</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/>SDET Interview Dashboard</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/>42 Algorithms & 42 Data Structures</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/algorithms/>Algorithms</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/algorithms/graph_traversal/>Graph Traversal</a>
+<span>/</span> Dijkstra</div></header><main><article><h1>Dijkstra</h1><div class=content-body style=margin-top:2rem><p><code>Dijkstra's Algorithm</code> is a classic and widely used algorithm for finding the shortest paths between <code>nodes</code> in a graph, which may represent, for example, road networks. It was conceived by computer scientist Edsger W. Dijkstra in 1956. The algorithm finds the shortest path from a given &ldquo;source&rdquo; <code>node</code> to all other <em>nodes</em> in a weighted graph with non-negative edge weights.</p><p>It works by maintaining a set of visited <code>nodes</code> and their shortest known distances from the source. It iteratively selects the unvisited <code>node</code> with the smallest known distance, marks it as visited, and updates the distances of its neighbors.</p><h2 id=how-it-works>How it Works</h2><h3 id=how-it-works-expanded>How it Works (Expanded)</h3><p><code>Dijkstra's Algorithm</code> uses a <code>priority queue</code> to efficiently select the unvisited <code>node</code> with the smallest distance at each step. This ensures that once a <em>node</em> is marked as visited, the path found to it is the shortest possible one.</p><hr><p>Example: Find shortest paths from A
+Graph: A-B(1), A-C(4), B-C(2), B-D(5), C-D(1)</p><ol><li>Start at A. Distances: {A:0, B:inf, C:inf, D:inf}. Priority Queue (PQ): [(0,A)].</li><li>Pop (0,A). Path to A is 0.</li></ol><ul><li>Visit neighbors B, C.</li><li>Update dist(B): 0+1=1. Push (1,B) to PQ.</li><li>Update dist(C): 0+4=4. Push (4,C) to PQ.</li><li>PQ: [(1,B), (4,C)].</li></ul><ol start=3><li>Pop (1,B). Path to B is 1.</li></ol><ul><li>Visit neighbors C, D.</li><li>Update dist(C): 1+2=3 &lt; 4. Update. Push (3,C) to PQ.</li><li>Update dist(D): 1+5=6. Push (6,D) to PQ.</li><li>PQ: [(3,C), (4,C - stale), (6,D)].</li></ul><ol start=4><li>Pop (3,C). Path to C is 3.</li></ol><ul><li>Visit neighbor D.</li><li>Update dist(D): 3+1=4 &lt; 6. Update. Push (4,D) to PQ.</li><li>PQ: [(4,C), (4,D), (6,D - stale)].</li></ul><ol start=5><li>Pop (4,C). C already visited with shorter path. Ignore.</li><li>Pop (4,D). Path to D is 4.</li></ol><ul><li>All neighbors visited.</li></ul><ol start=7><li>&mldr; and so on until PQ is empty.</li></ol><p>Final shortest paths from A: A:0, B:1, C:3, D:4</p><p><a href=#code-walkthrough>Jump to Code Walkthrough</a></p><h2 id=implementation>Implementation</h2><h3 id=python>Python</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>heapq</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>def</span> <span style=color:#268bd2>dijkstra</span>(<span style=color:#268bd2>graph</span>, <span style=color:#268bd2>start_node</span>):
+</span></span><span style=display:flex><span>    <span style=color:#2aa198>&#34;&#34;&#34;
+</span></span></span><span style=display:flex><span><span style=color:#2aa198>    Finds the shortest paths from a start_node to all other nodes in a weighted graph.
+</span></span></span><span style=display:flex><span><span style=color:#2aa198>    &lt;code&gt;graph&lt;/code&gt; is a dict of dicts: {node: {neighbor: weight}}.
+</span></span></span><span style=display:flex><span><span style=color:#2aa198>    &#34;&#34;&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>distances</span> = {<span style=color:#268bd2>node</span>: <span style=color:#cb4b16>float</span>(<span style=color:#2aa198>&#39;infinity&#39;</span>) <span style=color:#859900>for</span> <span style=color:#268bd2>node</span> <span style=color:#859900>in</span> <span style=color:#268bd2>graph</span>}
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>start_node</span>] = <span style=color:#2aa198;font-weight:700>0</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>priority_queue</span> = [(<span style=color:#2aa198;font-weight:700>0</span>, <span style=color:#268bd2>start_node</span>)]
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#859900>while</span> <span style=color:#268bd2>priority_queue</span>:
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>current_distance</span>, <span style=color:#268bd2>current_node</span> = <span style=color:#268bd2>heapq</span>.<span style=color:#268bd2>heappop</span>(<span style=color:#268bd2>priority_queue</span>)
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic># Nodes can be added to the priority queue multiple times. We only</span>
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic># process a node the first time we remove it from the priority queue.</span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> <span style=color:#268bd2>current_distance</span> &gt; <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>current_node</span>]:
+</span></span><span style=display:flex><span>            <span style=color:#859900>continue</span>
+</span></span><span style=display:flex><span>            
+</span></span><span style=display:flex><span>        <span style=color:#859900>for</span> <span style=color:#268bd2>neighbor</span>, <span style=color:#268bd2>weight</span> <span style=color:#859900>in</span> <span style=color:#268bd2>graph</span>[<span style=color:#268bd2>current_node</span>].<span style=color:#268bd2>items</span>():
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>distance</span> = <span style=color:#268bd2>current_distance</span> + <span style=color:#268bd2>weight</span>
+</span></span><span style=display:flex><span>            
+</span></span><span style=display:flex><span>            <span style=color:#93a1a1;font-style:italic># If we found a shorter path to the neighbor</span>
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> <span style=color:#268bd2>distance</span> &lt; <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>neighbor</span>]:
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>neighbor</span>] = <span style=color:#268bd2>distance</span>
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>heapq</span>.<span style=color:#268bd2>heappush</span>(<span style=color:#268bd2>priority_queue</span>, (<span style=color:#268bd2>distance</span>, <span style=color:#268bd2>neighbor</span>))
+</span></span><span style=display:flex><span>                
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>distances</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># Example</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># graph = {</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#     &#39;A&#39;: {&#39;B&#39;: 1, &#39;C&#39;: 4},</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#     &#39;B&#39;: {&#39;A&#39;: 1, &#39;C&#39;: 2, &#39;D&#39;: 5},</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#     &#39;C&#39;: {&#39;A&#39;: 4, &#39;B&#39;: 2, &#39;D&#39;: 1},</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#     &#39;D&#39;: {&#39;B&#39;: 5, &#39;C&#39;: 1}</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># }</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># print(dijkstra(graph, &#39;A&#39;)) # {&#39;A&#39;: 0, &#39;B&#39;: 1, &#39;C&#39;: 3, &#39;D&#39;: 4}</span>
+</span></span></code></pre></div><h3 id=javascript>Javascript</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// JavaScript doesn&#39;t have a built-in Priority Queue, so a simple array-based one is used.
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// For production, a library like &#39;tinyqueue&#39; or a custom min-heap implementation is better.
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#859900>function</span> <span style=color:#268bd2>dijkstra</span>(<span style=color:#268bd2>graph</span>, <span style=color:#268bd2>startNode</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#859900>const</span> <span style=color:#268bd2>distances</span> = {};
+</span></span><span style=display:flex><span>    <span style=color:#859900>const</span> <span style=color:#268bd2>visited</span> = <span style=color:#859900>new</span> <span style=color:#268bd2>Set</span>();
+</span></span><span style=display:flex><span>    <span style=color:#859900>const</span> <span style=color:#268bd2>pq</span> = []; <span style=color:#93a1a1;font-style:italic>// Simple priority queue (array)
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// Initialize distances
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900>for</span> (<span style=color:#859900>const</span> <span style=color:#268bd2>node</span> <span style=color:#859900>in</span> <span style=color:#268bd2>graph</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>node</span>] = <span style=color:#859900;font-weight:700>Infinity</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>startNode</span>] = <span style=color:#2aa198;font-weight:700>0</span>;
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>pq</span>.<span style=color:#268bd2>push</span>({ <span style=color:#268bd2>node</span>: <span style=color:#268bd2>startNode</span>, <span style=color:#268bd2>distance</span>: <span style=color:#2aa198;font-weight:700>0</span> });
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>while</span> (<span style=color:#268bd2>pq</span>.<span style=color:#268bd2>length</span> &gt; <span style=color:#2aa198;font-weight:700>0</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic>// Sort to simulate priority queue (inefficient but simple for demo)
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        <span style=color:#268bd2>pq</span>.<span style=color:#268bd2>sort</span>((<span style=color:#268bd2>a</span>, <span style=color:#268bd2>b</span>) =&gt; <span style=color:#268bd2>a</span>.<span style=color:#268bd2>distance</span> - <span style=color:#268bd2>b</span>.<span style=color:#268bd2>distance</span>);
+</span></span><span style=display:flex><span>        <span style=color:#859900>const</span> { <span style=color:#268bd2>node</span>: <span style=color:#268bd2>currentNode</span>, <span style=color:#268bd2>distance</span>: <span style=color:#268bd2>currentDistance</span> } = <span style=color:#268bd2>pq</span>.<span style=color:#268bd2>shift</span>();
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>visited</span>.<span style=color:#268bd2>has</span>(<span style=color:#268bd2>currentNode</span>)) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>continue</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>visited</span>.<span style=color:#268bd2>add</span>(<span style=color:#268bd2>currentNode</span>);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>currentDistance</span> &gt; <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>currentNode</span>]) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>continue</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>const</span> <span style=color:#268bd2>neighbors</span> = <span style=color:#268bd2>graph</span>[<span style=color:#268bd2>currentNode</span>] || {};
+</span></span><span style=display:flex><span>        <span style=color:#859900>for</span> (<span style=color:#859900>const</span> <span style=color:#268bd2>neighbor</span> <span style=color:#859900>in</span> <span style=color:#268bd2>neighbors</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>const</span> <span style=color:#268bd2>weight</span> = <span style=color:#268bd2>neighbors</span>[<span style=color:#268bd2>neighbor</span>];
+</span></span><span style=display:flex><span>            <span style=color:#859900>const</span> <span style=color:#268bd2>distance</span> = <span style=color:#268bd2>currentDistance</span> + <span style=color:#268bd2>weight</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> (<span style=color:#268bd2>distance</span> &lt; <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>neighbor</span>]) {
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>neighbor</span>] = <span style=color:#268bd2>distance</span>;
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>pq</span>.<span style=color:#268bd2>push</span>({ <span style=color:#268bd2>node</span>: <span style=color:#268bd2>neighbor</span>, <span style=color:#268bd2>distance</span>: <span style=color:#268bd2>distance</span> });
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>distances</span>;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const graph = {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     &#39;A&#39;: { &#39;B&#39;: 1, &#39;C&#39;: 4 },
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     &#39;B&#39;: { &#39;A&#39;: 1, &#39;C&#39;: 2, &#39;D&#39;: 5 },
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     &#39;C&#39;: { &#39;A&#39;: 4, &#39;B&#39;: 2, &#39;D&#39;: 1 },
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     &#39;D&#39;: { &#39;B&#39;: 5, &#39;C&#39;: 1 }
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// };
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// console.log(dijkstra(graph, &#39;A&#39;)); // { A: 0, B: 1, C: 3, D: 4 }
+</span></span></span></code></pre></div><h3 id=typescript>Typescript</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-typescript data-lang=typescript><span style=display:flex><span><span style=color:#859900>interface</span> <span style=color:#268bd2>Graph</span> {
+</span></span><span style=display:flex><span>    [<span style=color:#268bd2>key</span>: <span style=color:#859900;font-weight:700>string</span>]: { [<span style=color:#268bd2>key</span>: <span style=color:#859900;font-weight:700>string</span>]: <span style=color:#859900;font-weight:700>number</span> };
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>interface</span> <span style=color:#268bd2>Distance</span> {
+</span></span><span style=display:flex><span>    [<span style=color:#268bd2>key</span>: <span style=color:#859900;font-weight:700>string</span>]: <span style=color:#859900;font-weight:700>number</span>;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>interface</span> <span style=color:#268bd2>PQNode</span> {
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>node</span>: <span style=color:#859900;font-weight:700>string</span>;
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>distance</span>: <span style=color:#859900;font-weight:700>number</span>;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>function</span> <span style=color:#268bd2>dijkstraTS</span>(<span style=color:#268bd2>graph</span>: <span style=color:#859900;font-weight:700>Graph</span>, <span style=color:#268bd2>startNode</span>: <span style=color:#859900;font-weight:700>string</span>): <span style=color:#268bd2>Distance</span> {
+</span></span><span style=display:flex><span>    <span style=color:#859900>const</span> <span style=color:#268bd2>distances</span>: <span style=color:#859900;font-weight:700>Distance</span> = {};
+</span></span><span style=display:flex><span>    <span style=color:#859900>const</span> <span style=color:#268bd2>visited</span>: <span style=color:#859900;font-weight:700>Set</span>&lt;<span style=color:#268bd2;font-weight:700>string</span>&gt; = <span style=color:#859900>new</span> <span style=color:#268bd2>Set</span>();
+</span></span><span style=display:flex><span>    <span style=color:#859900>const</span> <span style=color:#268bd2>pq</span>: <span style=color:#859900;font-weight:700>PQNode</span>[] = []; <span style=color:#93a1a1;font-style:italic>// Simple priority queue (array)
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// Initialize distances
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900>for</span> (<span style=color:#859900>const</span> <span style=color:#268bd2>node</span> <span style=color:#859900>in</span> <span style=color:#268bd2>graph</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>node</span>] = <span style=color:#859900;font-weight:700>Infinity</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>startNode</span>] = <span style=color:#2aa198;font-weight:700>0</span>;
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>pq</span>.<span style=color:#268bd2>push</span>({ <span style=color:#268bd2>node</span>: <span style=color:#859900;font-weight:700>startNode</span>, <span style=color:#268bd2>distance</span>: <span style=color:#859900;font-weight:700>0</span> });
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>while</span> (<span style=color:#268bd2>pq</span>.<span style=color:#268bd2>length</span> &gt; <span style=color:#2aa198;font-weight:700>0</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic>// Sort to simulate priority queue
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        <span style=color:#268bd2>pq</span>.<span style=color:#268bd2>sort</span>((<span style=color:#268bd2>a</span>, <span style=color:#268bd2>b</span>) =&gt; <span style=color:#268bd2>a</span>.<span style=color:#268bd2>distance</span> - <span style=color:#268bd2>b</span>.<span style=color:#268bd2>distance</span>);
+</span></span><span style=display:flex><span>        <span style=color:#859900>const</span> { <span style=color:#268bd2>node</span>: <span style=color:#859900;font-weight:700>currentNode</span>, <span style=color:#268bd2>distance</span>: <span style=color:#859900;font-weight:700>currentDistance</span> } = <span style=color:#268bd2>pq</span>.<span style=color:#268bd2>shift</span>()!;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>visited</span>.<span style=color:#268bd2>has</span>(<span style=color:#268bd2>currentNode</span>)) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>continue</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>visited</span>.<span style=color:#268bd2>add</span>(<span style=color:#268bd2>currentNode</span>);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>currentDistance</span> &gt; <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>currentNode</span>]) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>continue</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>const</span> <span style=color:#268bd2>neighbors</span> = <span style=color:#268bd2>graph</span>[<span style=color:#268bd2>currentNode</span>] || {};
+</span></span><span style=display:flex><span>        <span style=color:#859900>for</span> (<span style=color:#859900>const</span> <span style=color:#268bd2>neighbor</span> <span style=color:#859900>in</span> <span style=color:#268bd2>neighbors</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>const</span> <span style=color:#268bd2>weight</span> = <span style=color:#268bd2>neighbors</span>[<span style=color:#268bd2>neighbor</span>];
+</span></span><span style=display:flex><span>            <span style=color:#859900>const</span> <span style=color:#268bd2>distance</span> = <span style=color:#268bd2>currentDistance</span> + <span style=color:#268bd2>weight</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> (<span style=color:#268bd2>distance</span> &lt; <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>neighbor</span>]) {
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>neighbor</span>] = <span style=color:#268bd2>distance</span>;
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>pq</span>.<span style=color:#268bd2>push</span>({ <span style=color:#268bd2>node</span>: <span style=color:#859900;font-weight:700>neighbor</span>, <span style=color:#268bd2>distance</span>: <span style=color:#859900;font-weight:700>distance</span> });
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>distances</span>;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const graphTS: Graph = {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     &#39;A&#39;: { &#39;B&#39;: 1, &#39;C&#39;: 4 },
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     &#39;B&#39;: { &#39;A&#39;: 1, &#39;C&#39;: 2, &#39;D&#39;: 5 },
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     &#39;C&#39;: { &#39;A&#39;: 4, &#39;B&#39;: 2, &#39;D&#39;: 1 },
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     &#39;D&#39;: { &#39;B&#39;: 5, &#39;C&#39;: 1 }
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// };
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// console.log(dijkstraTS(graphTS, &#39;A&#39;)); // { A: 0, B: 1, C: 3, D: 4 }
+</span></span></span></code></pre></div><h3 id=cpp>Cpp</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-cpp data-lang=cpp><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;iostream&gt;</span><span style=color:#93a1a1;font-style:italic>
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;vector&gt;</span><span style=color:#93a1a1;font-style:italic>
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;queue&gt;</span><span style=color:#93a1a1;font-style:italic>
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;map&gt;</span><span style=color:#93a1a1;font-style:italic>
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;limits&gt;</span><span style=color:#93a1a1;font-style:italic> </span><span style=color:#93a1a1;font-style:italic>// For std::numeric_limits
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;utility&gt;</span><span style=color:#93a1a1;font-style:italic> </span><span style=color:#93a1a1;font-style:italic>// For std::pair
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#859900>using</span> <span style=color:#268bd2>Graph</span> = <span style=color:#268bd2>std</span>::<span style=color:#268bd2>map</span>&lt;<span style=color:#859900;font-weight:700>char</span>, <span style=color:#268bd2>std</span>::<span style=color:#268bd2>map</span>&lt;<span style=color:#859900;font-weight:700>char</span>, <span style=color:#859900;font-weight:700>int</span>&gt;&gt;;
+</span></span><span style=display:flex><span><span style=color:#859900>using</span> <span style=color:#268bd2>Distances</span> = <span style=color:#268bd2>std</span>::<span style=color:#268bd2>map</span>&lt;<span style=color:#859900;font-weight:700>char</span>, <span style=color:#859900;font-weight:700>int</span>&gt;;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#268bd2>Distances</span> <span style=color:#268bd2>dijkstra</span>(<span style=color:#859900>const</span> <span style=color:#268bd2>Graph</span>&amp; <span style=color:#268bd2>graph</span>, <span style=color:#859900;font-weight:700>char</span> <span style=color:#268bd2>startNode</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>Distances</span> <span style=color:#268bd2>distances</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900>for</span> (<span style=color:#859900>const</span> <span style=color:#859900>auto</span>&amp; <span style=color:#268bd2>pair</span> : <span style=color:#268bd2>graph</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>pair</span>.<span style=color:#268bd2>first</span>] = <span style=color:#268bd2>std</span>::<span style=color:#268bd2>numeric_limits</span>&lt;<span style=color:#859900;font-weight:700>int</span>&gt;::<span style=color:#268bd2>max</span>();
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>startNode</span>] = <span style=color:#2aa198;font-weight:700>0</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>using</span> <span style=color:#268bd2>PQElement</span> = <span style=color:#268bd2>std</span>::<span style=color:#268bd2>pair</span>&lt;<span style=color:#859900;font-weight:700>int</span>, <span style=color:#859900;font-weight:700>char</span>&gt;;
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>std</span>::<span style=color:#268bd2>priority_queue</span>&lt;<span style=color:#268bd2>PQElement</span>, <span style=color:#268bd2>std</span>::<span style=color:#268bd2>vector</span>&lt;<span style=color:#268bd2>PQElement</span>&gt;, <span style=color:#268bd2>std</span>::<span style=color:#268bd2>greater</span>&lt;<span style=color:#268bd2>PQElement</span>&gt;&gt; <span style=color:#268bd2>pq</span>;
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>pq</span>.<span style=color:#268bd2>push</span>({<span style=color:#2aa198;font-weight:700>0</span>, <span style=color:#268bd2>startNode</span>});
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>while</span> (!<span style=color:#268bd2>pq</span>.<span style=color:#268bd2>empty</span>()) {
+</span></span><span style=display:flex><span>        <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>currentDistance</span> = <span style=color:#268bd2>pq</span>.<span style=color:#268bd2>top</span>().<span style=color:#268bd2>first</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900;font-weight:700>char</span> <span style=color:#268bd2>currentNode</span> = <span style=color:#268bd2>pq</span>.<span style=color:#268bd2>top</span>().<span style=color:#268bd2>second</span>;
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>pq</span>.<span style=color:#268bd2>pop</span>();
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>currentDistance</span> &gt; <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>currentNode</span>]) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>continue</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>auto</span> <span style=color:#268bd2>it</span> = <span style=color:#268bd2>graph</span>.<span style=color:#268bd2>find</span>(<span style=color:#268bd2>currentNode</span>);
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>it</span> != <span style=color:#268bd2>graph</span>.<span style=color:#268bd2>end</span>()) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>for</span> (<span style=color:#859900>const</span> <span style=color:#859900>auto</span>&amp; <span style=color:#268bd2>neighbor_pair</span> : <span style=color:#268bd2>it</span>-&gt;<span style=color:#268bd2>second</span>) {
+</span></span><span style=display:flex><span>                <span style=color:#859900;font-weight:700>char</span> <span style=color:#268bd2>neighbor</span> = <span style=color:#268bd2>neighbor_pair</span>.<span style=color:#268bd2>first</span>;
+</span></span><span style=display:flex><span>                <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>weight</span> = <span style=color:#268bd2>neighbor_pair</span>.<span style=color:#268bd2>second</span>;
+</span></span><span style=display:flex><span>                <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>distance</span> = <span style=color:#268bd2>currentDistance</span> + <span style=color:#268bd2>weight</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>                <span style=color:#859900>if</span> (<span style=color:#268bd2>distance</span> &lt; <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>neighbor</span>]) {
+</span></span><span style=display:flex><span>                    <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>neighbor</span>] = <span style=color:#268bd2>distance</span>;
+</span></span><span style=display:flex><span>                    <span style=color:#268bd2>pq</span>.<span style=color:#268bd2>push</span>({<span style=color:#268bd2>distance</span>, <span style=color:#268bd2>neighbor</span>});
+</span></span><span style=display:flex><span>                }
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>distances</span>;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// int main() {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     Graph graph = {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         {&#39;A&#39;, {{&#39;B&#39;, 1}, {&#39;C&#39;, 4}}},
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         {&#39;B&#39;, {{&#39;A&#39;, 1}, {&#39;C&#39;, 2}, {&#39;D&#39;, 5}}},
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         {&#39;C&#39;, {{&#39;A&#39;, 4}, {&#39;B&#39;, 2}, {&#39;D&#39;, 1}}},
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         {&#39;D&#39;, {{&#39;B&#39;, 5}, {&#39;C&#39;, 1}}}
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     };
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     Distances result = dijkstra(graph, &#39;A&#39;);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     for (const auto&amp; pair : result) {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         std::cout &lt;&lt; pair.first &lt;&lt; &#34;: &#34; &lt;&lt; pair.second &lt;&lt; std::endl;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     }
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// }
+</span></span></span></code></pre></div><h3 id=go>Go</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#dc322f;font-weight:700>package</span> <span style=color:#268bd2>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> (
+</span></span><span style=display:flex><span>    <span style=color:#2aa198>&#34;container/heap&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#2aa198>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#2aa198>&#34;math&#34;</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// Item for the priority queue</span>
+</span></span><span style=display:flex><span><span style=color:#859900>type</span> <span style=color:#268bd2>Item</span> <span style=color:#859900>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>node</span>     <span style=color:#859900;font-weight:700>string</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>distance</span> <span style=color:#859900;font-weight:700>int</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>index</span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#93a1a1;font-style:italic>// Index of the item in the heap</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// A PriorityQueue implements heap.Interface and holds Items.</span>
+</span></span><span style=display:flex><span><span style=color:#859900>type</span> <span style=color:#268bd2>PriorityQueue</span> []&lt;<span style=color:#268bd2>em</span>&gt;<span style=color:#268bd2>Item</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>func</span> (<span style=color:#268bd2>pq</span> <span style=color:#268bd2>PriorityQueue</span>) <span style=color:#268bd2>Len</span>() <span style=color:#859900;font-weight:700>int</span> { <span style=color:#859900>return</span> <span style=color:#cb4b16>len</span>(<span style=color:#268bd2>pq</span>) }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>func</span> (<span style=color:#268bd2>pq</span> <span style=color:#268bd2>PriorityQueue</span>) <span style=color:#268bd2>Less</span>(<span style=color:#268bd2>i</span>, <span style=color:#268bd2>j</span> <span style=color:#859900;font-weight:700>int</span>) <span style=color:#859900;font-weight:700>bool</span> {
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>pq</span>[<span style=color:#268bd2>i</span>].<span style=color:#268bd2>distance</span> &lt; <span style=color:#268bd2>pq</span>[<span style=color:#268bd2>j</span>].<span style=color:#268bd2>distance</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>func</span> (<span style=color:#268bd2>pq</span> <span style=color:#268bd2>PriorityQueue</span>) <span style=color:#268bd2>Swap</span>(<span style=color:#268bd2>i</span>, <span style=color:#268bd2>j</span> <span style=color:#859900;font-weight:700>int</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>pq</span>[<span style=color:#268bd2>i</span>], <span style=color:#268bd2>pq</span>[<span style=color:#268bd2>j</span>] = <span style=color:#268bd2>pq</span>[<span style=color:#268bd2>j</span>], <span style=color:#268bd2>pq</span>[<span style=color:#268bd2>i</span>]
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>pq</span>[<span style=color:#268bd2>i</span>].<span style=color:#268bd2>index</span> = <span style=color:#268bd2>i</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>pq</span>[<span style=color:#268bd2>j</span>].<span style=color:#268bd2>index</span> = <span style=color:#268bd2>j</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>func</span> (<span style=color:#268bd2>pq</span> &lt;/<span style=color:#268bd2>em</span>&gt;<span style=color:#268bd2>PriorityQueue</span>) <span style=color:#268bd2>Push</span>(<span style=color:#268bd2>x</span> <span style=color:#859900>interface</span>{}) {
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>n</span> := <span style=color:#cb4b16>len</span>(&lt;<span style=color:#268bd2>em</span>&gt;<span style=color:#268bd2>pq</span>)
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>item</span> := <span style=color:#268bd2>x</span>.(&lt;/<span style=color:#268bd2>em</span>&gt;<span style=color:#268bd2>Item</span>)
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>item</span>.<span style=color:#268bd2>index</span> = <span style=color:#268bd2>n</span>
+</span></span><span style=display:flex><span>    &lt;<span style=color:#268bd2>em</span>&gt;<span style=color:#268bd2>pq</span> = <span style=color:#cb4b16>append</span>(&lt;/<span style=color:#268bd2>em</span>&gt;<span style=color:#268bd2>pq</span>, <span style=color:#268bd2>item</span>)
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>func</span> (<span style=color:#268bd2>pq</span> &lt;<span style=color:#268bd2>em</span>&gt;<span style=color:#268bd2>PriorityQueue</span>) <span style=color:#268bd2>Pop</span>() <span style=color:#859900>interface</span>{} {
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>old</span> := &lt;/<span style=color:#268bd2>em</span>&gt;<span style=color:#268bd2>pq</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>n</span> := <span style=color:#cb4b16>len</span>(<span style=color:#268bd2>old</span>)
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>item</span> := <span style=color:#268bd2>old</span>[<span style=color:#268bd2>n</span>-<span style=color:#2aa198;font-weight:700>1</span>]
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>old</span>[<span style=color:#268bd2>n</span>-<span style=color:#2aa198;font-weight:700>1</span>] = <span style=color:#859900;font-weight:700>nil</span>  <span style=color:#93a1a1;font-style:italic>// avoid memory leak</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>item</span>.<span style=color:#268bd2>index</span> = -<span style=color:#2aa198;font-weight:700>1</span> <span style=color:#93a1a1;font-style:italic>// for safety</span>
+</span></span><span style=display:flex><span>    &lt;<span style=color:#268bd2>em</span>&gt;<span style=color:#268bd2>pq</span> = <span style=color:#268bd2>old</span>[<span style=color:#2aa198;font-weight:700>0</span> : <span style=color:#268bd2>n</span>-<span style=color:#2aa198;font-weight:700>1</span>]
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>item</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>func</span> <span style=color:#268bd2>dijkstra</span>(<span style=color:#268bd2>graph</span> <span style=color:#859900>map</span>[<span style=color:#859900;font-weight:700>string</span>]<span style=color:#859900>map</span>[<span style=color:#859900;font-weight:700>string</span>]<span style=color:#859900;font-weight:700>int</span>, <span style=color:#268bd2>startNode</span> <span style=color:#859900;font-weight:700>string</span>) <span style=color:#859900>map</span>[<span style=color:#859900;font-weight:700>string</span>]<span style=color:#859900;font-weight:700>int</span> {
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>distances</span> := <span style=color:#cb4b16>make</span>(<span style=color:#859900>map</span>[<span style=color:#859900;font-weight:700>string</span>]<span style=color:#859900;font-weight:700>int</span>)
+</span></span><span style=display:flex><span>    <span style=color:#859900>for</span> <span style=color:#268bd2>node</span> := <span style=color:#859900>range</span> <span style=color:#268bd2>graph</span> {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>node</span>] = <span style=color:#268bd2>math</span>.<span style=color:#268bd2>MaxInt32</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>startNode</span>] = <span style=color:#2aa198;font-weight:700>0</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>pq</span> := <span style=color:#cb4b16>make</span>(<span style=color:#268bd2>PriorityQueue</span>, <span style=color:#2aa198;font-weight:700>0</span>)
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>heap</span>.<span style=color:#268bd2>Init</span>(&amp;<span style=color:#268bd2>pq</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>heap</span>.<span style=color:#268bd2>Push</span>(&amp;<span style=color:#268bd2>pq</span>, &amp;<span style=color:#268bd2>Item</span>{<span style=color:#268bd2>node</span>: <span style=color:#268bd2>startNode</span>, <span style=color:#268bd2>distance</span>: <span style=color:#2aa198;font-weight:700>0</span>})
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>for</span> <span style=color:#268bd2>pq</span>.<span style=color:#268bd2>Len</span>() &gt; <span style=color:#2aa198;font-weight:700>0</span> {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>currentItem</span> := <span style=color:#268bd2>heap</span>.<span style=color:#268bd2>Pop</span>(&amp;<span style=color:#268bd2>pq</span>).(&lt;/<span style=color:#268bd2>em</span>&gt;<span style=color:#268bd2>Item</span>)
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>currentNode</span> := <span style=color:#268bd2>currentItem</span>.<span style=color:#268bd2>node</span>
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>currentDistance</span> := <span style=color:#268bd2>currentItem</span>.<span style=color:#268bd2>distance</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> <span style=color:#268bd2>currentDistance</span> &gt; <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>currentNode</span>] {
+</span></span><span style=display:flex><span>            <span style=color:#859900>continue</span>
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>for</span> <span style=color:#268bd2>neighbor</span>, <span style=color:#268bd2>weight</span> := <span style=color:#859900>range</span> <span style=color:#268bd2>graph</span>[<span style=color:#268bd2>currentNode</span>] {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>distance</span> := <span style=color:#268bd2>currentDistance</span> + <span style=color:#268bd2>weight</span>
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> <span style=color:#268bd2>distance</span> &lt; <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>neighbor</span>] {
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>neighbor</span>] = <span style=color:#268bd2>distance</span>
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>heap</span>.<span style=color:#268bd2>Push</span>(&amp;<span style=color:#268bd2>pq</span>, &amp;<span style=color:#268bd2>Item</span>{<span style=color:#268bd2>node</span>: <span style=color:#268bd2>neighbor</span>, <span style=color:#268bd2>distance</span>: <span style=color:#268bd2>distance</span>})
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>distances</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// func main() {</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     graph := map[string]map[string]int{</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         &#34;A&#34;: {&#34;B&#34;: 1, &#34;C&#34;: 4},</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         &#34;B&#34;: {&#34;A&#34;: 1, &#34;C&#34;: 2, &#34;D&#34;: 5},</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         &#34;C&#34;: {&#34;A&#34;: 4, &#34;B&#34;: 2, &#34;D&#34;: 1},</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         &#34;D&#34;: {&#34;B&#34;: 5, &#34;C&#34;: 1},</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     }</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     fmt.Println(dijkstra(graph, &#34;A&#34;)) // map[A:0 B:1 C:3 D:4]</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// }</span>
+</span></span></code></pre></div><h3 id=d>D</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-d data-lang=d><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>std.stdio</span>;
+</span></span><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>std.container.binaryheap</span>;
+</span></span><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>std.typecons</span>;
+</span></span><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>std.experimental.allocator</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>auto</span> <span style=color:#268bd2>dijkstra</span>(<span style=color:#859900;font-weight:700>int</span>[<span style=color:#cb4b16>string</span>][<span style=color:#cb4b16>string</span>] <span style=color:#268bd2>graph</span>, <span style=color:#cb4b16>string</span> <span style=color:#268bd2>startNode</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#859900>auto</span> <span style=color:#268bd2>distances</span> = <span style=color:#859900>new</span> <span style=color:#859900;font-weight:700>int</span>[<span style=color:#cb4b16>string</span>];
+</span></span><span style=display:flex><span>    <span style=color:#859900>foreach</span> (<span style=color:#268bd2>node</span>; <span style=color:#268bd2>graph</span>.<span style=color:#268bd2>keys</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>node</span>] = <span style=color:#859900;font-weight:700>int</span>.<span style=color:#268bd2>max</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>startNode</span>] = <span style=color:#2aa198;font-weight:700>0</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>alias</span> <span style=color:#268bd2>PQElement</span> = <span style=color:#268bd2>Tuple</span>!(<span style=color:#859900;font-weight:700>int</span>, <span style=color:#2aa198>&#34;distance&#34;</span>, <span style=color:#cb4b16>string</span>, <span style=color:#2aa198>&#34;node&#34;</span>);
+</span></span><span style=display:flex><span>    <span style=color:#859900>auto</span> <span style=color:#268bd2>pq</span> = <span style=color:#268bd2>binaryHeap</span>!<span style=color:#268bd2>PQElement</span>((<span style=color:#268bd2>a</span>, <span style=color:#268bd2>b</span>) =&gt; <span style=color:#268bd2>a</span>.<span style=color:#268bd2>distance</span> &lt; <span style=color:#268bd2>b</span>.<span style=color:#268bd2>distance</span>)();
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>pq</span>.<span style=color:#268bd2>insert</span>(<span style=color:#268bd2>PQElement</span>(<span style=color:#2aa198;font-weight:700>0</span>, <span style=color:#268bd2>startNode</span>));
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#859900>auto</span> <span style=color:#268bd2>visited</span> = <span style=color:#859900>new</span> <span style=color:#859900;font-weight:700>bool</span>[<span style=color:#cb4b16>string</span>];
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>while</span> (!<span style=color:#268bd2>pq</span>.<span style=color:#268bd2>empty</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>auto</span> <span style=color:#268bd2>current</span> = <span style=color:#268bd2>pq</span>.<span style=color:#268bd2>front</span>;
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>pq</span>.<span style=color:#268bd2>removeFront</span>();
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>currentDistance</span> = <span style=color:#268bd2>current</span>.<span style=color:#268bd2>distance</span>;
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>string</span> <span style=color:#268bd2>currentNode</span> = <span style=color:#268bd2>current</span>.<span style=color:#268bd2>node</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>currentNode</span> <span style=color:#859900>in</span> <span style=color:#268bd2>visited</span>) <span style=color:#859900>continue</span>;
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>visited</span>[<span style=color:#268bd2>currentNode</span>] = <span style=color:#859900;font-weight:700>true</span>;
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>currentDistance</span> &gt; <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>currentNode</span>]) <span style=color:#859900>continue</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#859900>auto</span> <span style=color:#268bd2>pNeighbors</span> = <span style=color:#268bd2>currentNode</span> <span style=color:#859900>in</span> <span style=color:#268bd2>graph</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>foreach</span> (<span style=color:#268bd2>neighbor</span>, <span style=color:#268bd2>weight</span>; *<span style=color:#268bd2>pNeighbors</span>) {
+</span></span><span style=display:flex><span>                <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>distance</span> = <span style=color:#268bd2>currentDistance</span> + <span style=color:#268bd2>weight</span>;
+</span></span><span style=display:flex><span>                <span style=color:#859900>if</span> (<span style=color:#268bd2>distance</span> &lt; <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>neighbor</span>]) {
+</span></span><span style=display:flex><span>                    <span style=color:#268bd2>distances</span>[<span style=color:#268bd2>neighbor</span>] = <span style=color:#268bd2>distance</span>;
+</span></span><span style=display:flex><span>                    <span style=color:#268bd2>pq</span>.<span style=color:#268bd2>insert</span>(<span style=color:#268bd2>PQElement</span>(<span style=color:#268bd2>distance</span>, <span style=color:#268bd2>neighbor</span>));
+</span></span><span style=display:flex><span>                }
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>distances</span>;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// void main() {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     auto graph = [
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         &#34;A&#34;: [&#34;B&#34;: 1, &#34;C&#34;: 4],
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         &#34;B&#34;: [&#34;A&#34;: 1, &#34;C&#34;: 2, &#34;D&#34;: 5],
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         &#34;C&#34;: [&#34;A&#34;: 4, &#34;B&#34;: 2, &#34;D&#34;: 1],
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         &#34;D&#34;: [&#34;B&#34;: 5, &#34;C&#34;: 1]
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     ];
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     auto result = dijkstra(graph, &#34;A&#34;);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     writeln(result); // [&#34;D&#34;:4, &#34;C&#34;:3, &#34;B&#34;:1, &#34;A&#34;:0]
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// }
+</span></span></span></code></pre></div><h2 id=code-walkthrough>Code Walkthrough</h2><p><a href=#implementation>Back to Implementation</a></p><h3 id=code-walkthrough-1>Code Walkthrough</h3><p><code>Dijkstra's Algorithm</code> is most efficiently implemented using a <code>priority queue</code> to store unvisited nodes, prioritized by their current shortest distance from the source.</p><hr><p><strong>Initialization:</strong></p><ul><li>A <code>distances</code> map or dictionary is created to store the shortest distance found so far from the <code>startNode</code> to every other <code>node</code>. It&rsquo;s initialized with <code>infinity</code> for all nodes except the <code>startNode</code>, which is 0.</li><li>A <code>priority queue</code> (<code>pq</code>) is created. It will store pairs of <code>(distance, node)</code>. In languages without a native min-priority queue (like JavaScript), this is often simulated with a sorted array for simplicity, though a heap is far more efficient.</li><li>The starting pair <code>(0, startNode)</code> is added to the <code>pq</code>.</li></ul><p><strong>Main Loop:</strong></p><ul><li>The loop continues as long as the <code>pq</code> is not empty.</li><li><strong>Extract Min:</strong> The element with the smallest distance is extracted from the <code>pq</code>. This is <code>currentNode</code>.</li><li><strong>Skip Stale Entries:</strong> A crucial optimization is to check if the extracted <code>currentDistance</code> is greater than the <code>distance</code> already stored for <code>currentNode</code>. If it is, it means we&rsquo;ve found a shorter path to this <code>node</code> already, so we can ignore this &ldquo;stale&rdquo; entry in the <code>pq</code> and continue.</li><li><strong>Explore Neighbors:</strong> For each <code>neighbor</code> of <code>currentNode</code>, calculate the new potential distance (<code>currentDistance + weight</code>).</li><li><strong>Update and Enqueue:</strong> If this new <code>distance</code> is shorter than the known <code>distance</code> to the <code>neighbor</code>, update the <code>distances</code> map and add the new, better path <code>(distance, neighbor)</code> to the <code>pq</code>.</li></ul><p><a href=#implementation>Back to Implementation</a></p><h2 id=applications>Applications</h2><h3 id=application>Application</h3><p><code>Dijkstra's Algorithm</code> is fundamental to solving shortest path problems in various domains, provided the edge weights are non-negative.</p><ul><li><strong>Routing and Navigation:</strong> Used in GPS systems and network routing protocols (like OSPF) to find the shortest path between two points.</li><li><strong>Network Analysis:</strong> Finding the cheapest or fastest way to send data through a computer network.</li><li><strong>Robotics and AI:</strong> Pathfinding for autonomous vehicles or characters in a game world.</li><li><strong>Bioinformatics:</strong> Finding optimal alignments or pathways in metabolic networks.</li><li><strong>Social Network Analysis:</strong> Calculating the &ldquo;degree of separation&rdquo; between people.</li></ul></div></article><div class=navigation style="margin-top:5rem;display:flex;justify-content:space-between;border-top:1px solid var(--border);padding-top:2rem"><a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/algorithms/graph_traversal/topological_sort/ class=nav-btn>← Previous</a>
+<a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/algorithms/graph_traversal/ class=nav-btn>Up</a>
+<a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/algorithms/graph_traversal/dfs/ class=nav-btn>Next →</a></div></main><footer class=footer><p>Built with Hugo. No scripts. No tracking. Just the truth.</p></footer><script>document.addEventListener("DOMContentLoaded",function(){const n=document.body,s=document.createTreeWalker(n,NodeFilter.SHOW_TEXT,null,!1);let e;const t=[];for(;e=s.nextNode();)e.nodeValue.includes("[-]")&&t.push(e);t.forEach(e=>{const t=document.createElement("span");t.innerHTML=e.nodeValue.replace(/\[-\]/g,'<span class="started-icon" title="Started"></span>'),e.parentNode.replaceChild(t,e)})})</script><script>const body=document.getElementById("theme-body"),btn=document.getElementById("theme-toggle"),currentTheme=localStorage.getItem("theme");function updateButtonText(){body.classList.contains("theme-terminal")?btn.textContent="Light Mode":btn.textContent="Dark Mode"}currentTheme==="terminal"&&body.classList.add("theme-terminal"),updateButtonText(),btn.addEventListener("click",()=>{body.classList.toggle("theme-terminal"),updateButtonText();let e="natural";body.classList.contains("theme-terminal")&&(e="terminal"),localStorage.setItem("theme",e)})</script></body></html>

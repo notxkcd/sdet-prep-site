@@ -1,0 +1,501 @@
+<!doctype html><html lang=en-us><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Suffix Automaton | SDET Interview Preparation Kit</title><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/css/style.css><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/css/terminal.css><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel=stylesheet><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/lib/katex/katex.min.css><script defer src=https://notxkcd.github.io/sdet-prep-site/lib/katex/katex.min.js></script><script defer src=https://notxkcd.github.io/sdet-prep-site/lib/katex/contrib/auto-render.min.js onload=renderMathInElement(document.body)></script><script>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1}]})})</script></head><body id=theme-body><button id=theme-toggle>Switch Theme</button><header><nav><ul><li><a href=https://notxkcd.github.io/sdet-prep-site/>Index</a></li></ul></nav><div class=site-breadcrumb><a href=https://notxkcd.github.io/sdet-prep-site/>Home</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/>SDET Interview Dashboard</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/>42 Algorithms & 42 Data Structures</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/data_structures/>Data Structures</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/data_structures/specialized/>Specialized</a>
+<span>/</span> Suffix Automaton</div></header><main><article><h1>Suffix Automaton</h1><div class=content-body style=margin-top:2rem><p>A <code>Suffix Automaton</code> (also known as a <code>Directed Acyclic Word Graph</code> or <code>DAWG</code>) is a powerful data structure that represents all substrings of a given string. It is the smallest possible <code>deterministic finite automaton (DFA)</code> that accepts all suffixes of the string, and by extension, all its substrings.</p><p>While being extremely space-efficient (requiring <code>O(N)</code> space for a string of length <code>N</code>), it can answer complex string queries in linear time. It is a more powerful and often more efficient alternative to both <code>Suffix Trees</code> and <code>Suffix Arrays</code> for many problems.</p><h2 id=how-it-works>How it Works</h2><h3 id=how-it-works-expanded>How it Works (Expanded)</h3><p>A <code>Suffix Automaton</code> is a directed acyclic graph where each path from the <code>initial state</code> to any other <code>state</code> corresponds to a unique substring of the string. Each <code>state</code> represents a set of substrings that end at the same positions in the original string.</p><hr><p>Conceptual Suffix Automaton for &ldquo;abacaba&rdquo;:</p><p>Initial State -> a -> b -> a -> c -> a -> b -> a
+\ / | &mldr;
+\ / |
+<code>-----</code> (transitions for other substrings)</p><p>Key Components:</p><ul><li>States: Each state represents a set of substrings.</li><li>Transitions: Edges labeled with characters.</li><li>Suffix Links: Special links from a state to another state representing the longest proper suffix of the strings in the current state.</li></ul><p><a href=#code-walkthrough>Jump to Code Walkthrough</a></p><h2 id=implementation>Implementation</h2><h3 id=python>Python</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># Conceptual Suffix Automaton in Python (simplified, full implementation is very complex)</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># This focuses on the structure and online construction concept.</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>class</span> <span style=color:#cb4b16>SuffixAutomatonNode</span>:
+</span></span><span style=display:flex><span>    <span style=color:#859900>def</span> <span style=color:#268bd2>__init__</span>(<span style=color:#cb4b16>self</span>, <span style=color:#268bd2>length</span>):
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>length</span> = <span style=color:#268bd2>length</span> <span style=color:#93a1a1;font-style:italic># Length of the longest substring for this state</span>
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>link</span> = -<span style=color:#2aa198;font-weight:700>1</span> <span style=color:#93a1a1;font-style:italic># Suffix link, -1 indicates no link initially</span>
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>transitions</span> = {} <span style=color:#93a1a1;font-style:italic># map of char to state index</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>class</span> <span style=color:#cb4b16>SuffixAutomaton</span>:
+</span></span><span style=display:flex><span>    <span style=color:#859900>def</span> <span style=color:#268bd2>__init__</span>(<span style=color:#cb4b16>self</span>):
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>states</span> = [<span style=color:#268bd2>SuffixAutomatonNode</span>(<span style=color:#2aa198;font-weight:700>0</span>)] <span style=color:#93a1a1;font-style:italic># Initial state</span>
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>last</span> = <span style=color:#2aa198;font-weight:700>0</span> <span style=color:#93a1a1;font-style:italic># Index of the state corresponding to the whole string</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>def</span> <span style=color:#268bd2>extend</span>(<span style=color:#cb4b16>self</span>, <span style=color:#268bd2>char</span>):
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>new_state_idx</span> = <span style=color:#cb4b16>len</span>(<span style=color:#cb4b16>self</span>.<span style=color:#268bd2>states</span>)
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>states</span>.<span style=color:#268bd2>append</span>(<span style=color:#268bd2>SuffixAutomatonNode</span>(<span style=color:#cb4b16>self</span>.<span style=color:#268bd2>states</span>[<span style=color:#cb4b16>self</span>.<span style=color:#268bd2>last</span>].<span style=color:#268bd2>length</span> + <span style=color:#2aa198;font-weight:700>1</span>))
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>p</span> = <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>last</span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>while</span> <span style=color:#268bd2>p</span> != -<span style=color:#2aa198;font-weight:700>1</span> <span style=color:#859900>and</span> <span style=color:#268bd2>char</span> <span style=color:#859900>not</span> <span style=color:#859900>in</span> <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>states</span>[<span style=color:#268bd2>p</span>].<span style=color:#268bd2>transitions</span>:
+</span></span><span style=display:flex><span>            <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>states</span>[<span style=color:#268bd2>p</span>].<span style=color:#268bd2>transitions</span>[<span style=color:#268bd2>char</span>] = <span style=color:#268bd2>new_state_idx</span>
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>p</span> = <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>states</span>[<span style=color:#268bd2>p</span>].<span style=color:#268bd2>link</span>
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> <span style=color:#268bd2>p</span> == -<span style=color:#2aa198;font-weight:700>1</span>:
+</span></span><span style=display:flex><span>            <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>states</span>[<span style=color:#268bd2>new_state_idx</span>].<span style=color:#268bd2>link</span> = <span style=color:#2aa198;font-weight:700>0</span> <span style=color:#93a1a1;font-style:italic># Link to initial state</span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>else</span>:
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>q</span> = <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>states</span>[<span style=color:#268bd2>p</span>].<span style=color:#268bd2>transitions</span>[<span style=color:#268bd2>char</span>]
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>states</span>[<span style=color:#268bd2>q</span>].<span style=color:#268bd2>length</span> == <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>states</span>[<span style=color:#268bd2>p</span>].<span style=color:#268bd2>length</span> + <span style=color:#2aa198;font-weight:700>1</span>:
+</span></span><span style=display:flex><span>                <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>states</span>[<span style=color:#268bd2>new_state_idx</span>].<span style=color:#268bd2>link</span> = <span style=color:#268bd2>q</span>
+</span></span><span style=display:flex><span>            <span style=color:#859900>else</span>:
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>clone_idx</span> = <span style=color:#cb4b16>len</span>(<span style=color:#cb4b16>self</span>.<span style=color:#268bd2>states</span>)
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>clone_node</span> = <span style=color:#268bd2>SuffixAutomatonNode</span>(<span style=color:#cb4b16>self</span>.<span style=color:#268bd2>states</span>[<span style=color:#268bd2>p</span>].<span style=color:#268bd2>length</span> + <span style=color:#2aa198;font-weight:700>1</span>)
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>clone_node</span>.<span style=color:#268bd2>transitions</span> = <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>states</span>[<span style=color:#268bd2>q</span>].<span style=color:#268bd2>transitions</span>.<span style=color:#268bd2>copy</span>()
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>clone_node</span>.<span style=color:#268bd2>link</span> = <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>states</span>[<span style=color:#268bd2>q</span>].<span style=color:#268bd2>link</span>
+</span></span><span style=display:flex><span>                <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>states</span>.<span style=color:#268bd2>append</span>(<span style=color:#268bd2>clone_node</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>                <span style=color:#859900>while</span> <span style=color:#268bd2>p</span> != -<span style=color:#2aa198;font-weight:700>1</span> <span style=color:#859900>and</span> <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>states</span>[<span style=color:#268bd2>p</span>].<span style=color:#268bd2>transitions</span>.<span style=color:#268bd2>get</span>(<span style=color:#268bd2>char</span>) == <span style=color:#268bd2>q</span>:
+</span></span><span style=display:flex><span>                    <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>states</span>[<span style=color:#268bd2>p</span>].<span style=color:#268bd2>transitions</span>[<span style=color:#268bd2>char</span>] = <span style=color:#268bd2>clone_idx</span>
+</span></span><span style=display:flex><span>                    <span style=color:#268bd2>p</span> = <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>states</span>[<span style=color:#268bd2>p</span>].<span style=color:#268bd2>link</span>
+</span></span><span style=display:flex><span>                
+</span></span><span style=display:flex><span>                <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>states</span>[<span style=color:#268bd2>q</span>].<span style=color:#268bd2>link</span> = <span style=color:#268bd2>clone_idx</span>
+</span></span><span style=display:flex><span>                <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>states</span>[<span style=color:#268bd2>new_state_idx</span>].<span style=color:#268bd2>link</span> = <span style=color:#268bd2>clone_idx</span>
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>last</span> = <span style=color:#268bd2>new_state_idx</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>def</span> <span style=color:#268bd2>build</span>(<span style=color:#cb4b16>self</span>, <span style=color:#268bd2>text</span>):
+</span></span><span style=display:flex><span>        <span style=color:#859900>for</span> <span style=color:#268bd2>char</span> <span style=color:#859900>in</span> <span style=color:#268bd2>text</span>:
+</span></span><span style=display:flex><span>            <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>extend</span>(<span style=color:#268bd2>char</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>def</span> <span style=color:#268bd2>contains</span>(<span style=color:#cb4b16>self</span>, <span style=color:#268bd2>pattern</span>):
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>current_state_idx</span> = <span style=color:#2aa198;font-weight:700>0</span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>for</span> <span style=color:#268bd2>char</span> <span style=color:#859900>in</span> <span style=color:#268bd2>pattern</span>:
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> <span style=color:#268bd2>char</span> <span style=color:#859900>in</span> <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>states</span>[<span style=color:#268bd2>current_state_idx</span>].<span style=color:#268bd2>transitions</span>:
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>current_state_idx</span> = <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>states</span>[<span style=color:#268bd2>current_state_idx</span>].<span style=color:#268bd2>transitions</span>[<span style=color:#268bd2>char</span>]
+</span></span><span style=display:flex><span>            <span style=color:#859900>else</span>:
+</span></span><span style=display:flex><span>                <span style=color:#859900>return</span> <span style=color:#859900;font-weight:700>False</span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#859900;font-weight:700>True</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># sa = SuffixAutomaton()</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># sa.build(&#34;abacaba&#34;)</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># print(&#34;Contains &#39;aba&#39;:&#34;, sa.contains(&#34;aba&#34;)) # Expected: True</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># print(&#34;Contains &#39;baba&#39;:&#34;, sa.contains(&#34;baba&#34;)) # Expected: False</span>
+</span></span></code></pre></div><h3 id=javascript>Javascript</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// Conceptual Suffix Automaton in JavaScript (simplified)
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#859900>class</span> <span style=color:#268bd2>SuffixAutomatonNode</span> {
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>constructor</span>(<span style=color:#268bd2>length</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>length</span> = <span style=color:#268bd2>length</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>link</span> = -<span style=color:#2aa198;font-weight:700>1</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>transitions</span> = <span style=color:#859900>new</span> <span style=color:#268bd2>Map</span>();
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>class</span> <span style=color:#268bd2>SuffixAutomaton</span> {
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>constructor</span>() {
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>states</span> = [<span style=color:#859900>new</span> <span style=color:#268bd2>SuffixAutomatonNode</span>(<span style=color:#2aa198;font-weight:700>0</span>)];
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>last</span> = <span style=color:#2aa198;font-weight:700>0</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>extend</span>(<span style=color:#859900>char</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>const</span> <span style=color:#268bd2>newStateIdx</span> = <span style=color:#859900>this</span>.<span style=color:#268bd2>states</span>.<span style=color:#268bd2>length</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>states</span>.<span style=color:#268bd2>push</span>(<span style=color:#859900>new</span> <span style=color:#268bd2>SuffixAutomatonNode</span>(<span style=color:#859900>this</span>.<span style=color:#268bd2>states</span>[<span style=color:#859900>this</span>.<span style=color:#268bd2>last</span>].<span style=color:#268bd2>length</span> + <span style=color:#2aa198;font-weight:700>1</span>));
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>let</span> <span style=color:#268bd2>p</span> = <span style=color:#859900>this</span>.<span style=color:#268bd2>last</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900>while</span> (<span style=color:#268bd2>p</span> !== -<span style=color:#2aa198;font-weight:700>1</span> &amp;&amp; !<span style=color:#859900>this</span>.<span style=color:#268bd2>states</span>[<span style=color:#268bd2>p</span>].<span style=color:#268bd2>transitions</span>.<span style=color:#268bd2>has</span>(<span style=color:#859900>char</span>)) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>this</span>.<span style=color:#268bd2>states</span>[<span style=color:#268bd2>p</span>].<span style=color:#268bd2>transitions</span>.<span style=color:#268bd2>set</span>(<span style=color:#859900>char</span>, <span style=color:#268bd2>newStateIdx</span>);
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>p</span> = <span style=color:#859900>this</span>.<span style=color:#268bd2>states</span>[<span style=color:#268bd2>p</span>].<span style=color:#268bd2>link</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>p</span> === -<span style=color:#2aa198;font-weight:700>1</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>this</span>.<span style=color:#268bd2>states</span>[<span style=color:#268bd2>newStateIdx</span>].<span style=color:#268bd2>link</span> = <span style=color:#2aa198;font-weight:700>0</span>; <span style=color:#93a1a1;font-style:italic>// Link to initial state
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>            <span style=color:#859900>const</span> <span style=color:#268bd2>qIdx</span> = <span style=color:#859900>this</span>.<span style=color:#268bd2>states</span>[<span style=color:#268bd2>p</span>].<span style=color:#268bd2>transitions</span>.<span style=color:#268bd2>get</span>(<span style=color:#859900>char</span>);
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> (<span style=color:#859900>this</span>.<span style=color:#268bd2>states</span>[<span style=color:#268bd2>qIdx</span>].<span style=color:#268bd2>length</span> === <span style=color:#859900>this</span>.<span style=color:#268bd2>states</span>[<span style=color:#268bd2>p</span>].<span style=color:#268bd2>length</span> + <span style=color:#2aa198;font-weight:700>1</span>) {
+</span></span><span style=display:flex><span>                <span style=color:#859900>this</span>.<span style=color:#268bd2>states</span>[<span style=color:#268bd2>newStateIdx</span>].<span style=color:#268bd2>link</span> = <span style=color:#268bd2>qIdx</span>;
+</span></span><span style=display:flex><span>            } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>                <span style=color:#859900>const</span> <span style=color:#268bd2>cloneIdx</span> = <span style=color:#859900>this</span>.<span style=color:#268bd2>states</span>.<span style=color:#268bd2>length</span>;
+</span></span><span style=display:flex><span>                <span style=color:#859900>const</span> <span style=color:#268bd2>cloneNode</span> = <span style=color:#859900>new</span> <span style=color:#268bd2>SuffixAutomatonNode</span>(<span style=color:#859900>this</span>.<span style=color:#268bd2>states</span>[<span style=color:#268bd2>p</span>].<span style=color:#268bd2>length</span> + <span style=color:#2aa198;font-weight:700>1</span>);
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>cloneNode</span>.<span style=color:#268bd2>transitions</span> = <span style=color:#859900>new</span> <span style=color:#268bd2>Map</span>(<span style=color:#859900>this</span>.<span style=color:#268bd2>states</span>[<span style=color:#268bd2>qIdx</span>].<span style=color:#268bd2>transitions</span>);
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>cloneNode</span>.<span style=color:#268bd2>link</span> = <span style=color:#859900>this</span>.<span style=color:#268bd2>states</span>[<span style=color:#268bd2>qIdx</span>].<span style=color:#268bd2>link</span>;
+</span></span><span style=display:flex><span>                <span style=color:#859900>this</span>.<span style=color:#268bd2>states</span>.<span style=color:#268bd2>push</span>(<span style=color:#268bd2>cloneNode</span>);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>                <span style=color:#859900>while</span> (<span style=color:#268bd2>p</span> !== -<span style=color:#2aa198;font-weight:700>1</span> &amp;&amp; <span style=color:#859900>this</span>.<span style=color:#268bd2>states</span>[<span style=color:#268bd2>p</span>].<span style=color:#268bd2>transitions</span>.<span style=color:#268bd2>get</span>(<span style=color:#859900>char</span>) === <span style=color:#268bd2>qIdx</span>) {
+</span></span><span style=display:flex><span>                    <span style=color:#859900>this</span>.<span style=color:#268bd2>states</span>[<span style=color:#268bd2>p</span>].<span style=color:#268bd2>transitions</span>.<span style=color:#268bd2>set</span>(<span style=color:#859900>char</span>, <span style=color:#268bd2>cloneIdx</span>);
+</span></span><span style=display:flex><span>                    <span style=color:#268bd2>p</span> = <span style=color:#859900>this</span>.<span style=color:#268bd2>states</span>[<span style=color:#268bd2>p</span>].<span style=color:#268bd2>link</span>;
+</span></span><span style=display:flex><span>                }
+</span></span><span style=display:flex><span>                
+</span></span><span style=display:flex><span>                <span style=color:#859900>this</span>.<span style=color:#268bd2>states</span>[<span style=color:#268bd2>qIdx</span>].<span style=color:#268bd2>link</span> = <span style=color:#268bd2>cloneIdx</span>;
+</span></span><span style=display:flex><span>                <span style=color:#859900>this</span>.<span style=color:#268bd2>states</span>[<span style=color:#268bd2>newStateIdx</span>].<span style=color:#268bd2>link</span> = <span style=color:#268bd2>cloneIdx</span>;
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>last</span> = <span style=color:#268bd2>newStateIdx</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>build</span>(<span style=color:#268bd2>text</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>for</span> (<span style=color:#859900>const</span> <span style=color:#859900>char</span> <span style=color:#859900>of</span> <span style=color:#268bd2>text</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>this</span>.<span style=color:#268bd2>extend</span>(<span style=color:#859900>char</span>);
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>contains</span>(<span style=color:#268bd2>pattern</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>let</span> <span style=color:#268bd2>currentStateIdx</span> = <span style=color:#2aa198;font-weight:700>0</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900>for</span> (<span style=color:#859900>const</span> <span style=color:#859900>char</span> <span style=color:#859900>of</span> <span style=color:#268bd2>pattern</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> (<span style=color:#859900>this</span>.<span style=color:#268bd2>states</span>[<span style=color:#268bd2>currentStateIdx</span>].<span style=color:#268bd2>transitions</span>.<span style=color:#268bd2>has</span>(<span style=color:#859900>char</span>)) {
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>currentStateIdx</span> = <span style=color:#859900>this</span>.<span style=color:#268bd2>states</span>[<span style=color:#268bd2>currentStateIdx</span>].<span style=color:#268bd2>transitions</span>.<span style=color:#268bd2>get</span>(<span style=color:#859900>char</span>);
+</span></span><span style=display:flex><span>            } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>                <span style=color:#859900>return</span> <span style=color:#859900;font-weight:700>false</span>;
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#859900;font-weight:700>true</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const sa = new SuffixAutomaton();
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// sa.build(&#34;abacaba&#34;);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// console.log(&#34;Contains &#39;aba&#39;:&#34;, sa.contains(&#34;aba&#34;)); // Expected: true
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// console.log(&#34;Contains &#39;baba&#39;:&#34;, sa.contains(&#34;baba&#34;)); // Expected: false
+</span></span></span></code></pre></div><h3 id=typescript>Typescript</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-typescript data-lang=typescript><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// Conceptual Suffix Automaton in TypeScript (simplified)
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#859900>class</span> <span style=color:#268bd2>SuffixAutomatonNodeTS</span> {
+</span></span><span style=display:flex><span>    <span style=color:#859900>public</span> <span style=color:#268bd2>length</span>: <span style=color:#859900;font-weight:700>number</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900>public</span> <span style=color:#268bd2>link</span>: <span style=color:#859900;font-weight:700>number</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900>public</span> <span style=color:#268bd2>transitions</span>: <span style=color:#859900;font-weight:700>Map</span>&lt;<span style=color:#268bd2;font-weight:700>string</span>, <span style=color:#268bd2>number</span>&gt;;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>constructor</span>(<span style=color:#268bd2>length</span>: <span style=color:#859900;font-weight:700>number</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>length</span> = <span style=color:#268bd2>length</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>link</span> = -<span style=color:#2aa198;font-weight:700>1</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>transitions</span> = <span style=color:#859900>new</span> <span style=color:#268bd2>Map</span>();
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>class</span> <span style=color:#268bd2>SuffixAutomatonTS</span> {
+</span></span><span style=display:flex><span>    <span style=color:#859900>public</span> <span style=color:#268bd2>states</span>: <span style=color:#859900;font-weight:700>SuffixAutomatonNodeTS</span>[];
+</span></span><span style=display:flex><span>    <span style=color:#859900>public</span> <span style=color:#268bd2>last</span>: <span style=color:#859900;font-weight:700>number</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>constructor</span>() {
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>states</span> = [<span style=color:#859900>new</span> <span style=color:#268bd2>SuffixAutomatonNodeTS</span>(<span style=color:#2aa198;font-weight:700>0</span>)];
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>last</span> = <span style=color:#2aa198;font-weight:700>0</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>public</span> <span style=color:#268bd2>extend</span>(<span style=color:#268bd2>char</span>: <span style=color:#859900;font-weight:700>string</span>): <span style=color:#859900>void</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>const</span> <span style=color:#268bd2>newStateIdx</span> = <span style=color:#859900>this</span>.<span style=color:#268bd2>states</span>.<span style=color:#268bd2>length</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>states</span>.<span style=color:#268bd2>push</span>(<span style=color:#859900>new</span> <span style=color:#268bd2>SuffixAutomatonNodeTS</span>(<span style=color:#859900>this</span>.<span style=color:#268bd2>states</span>[<span style=color:#859900>this</span>.<span style=color:#268bd2>last</span>].<span style=color:#268bd2>length</span> + <span style=color:#2aa198;font-weight:700>1</span>));
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>let</span> <span style=color:#268bd2>p</span> = <span style=color:#859900>this</span>.<span style=color:#268bd2>last</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900>while</span> (<span style=color:#268bd2>p</span> !== -<span style=color:#2aa198;font-weight:700>1</span> &amp;&amp; !<span style=color:#859900>this</span>.<span style=color:#268bd2>states</span>[<span style=color:#268bd2>p</span>].<span style=color:#268bd2>transitions</span>.<span style=color:#268bd2>has</span>(<span style=color:#268bd2>char</span>)) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>this</span>.<span style=color:#268bd2>states</span>[<span style=color:#268bd2>p</span>].<span style=color:#268bd2>transitions</span>.<span style=color:#859900>set</span>(<span style=color:#268bd2>char</span>, <span style=color:#268bd2>newStateIdx</span>);
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>p</span> = <span style=color:#859900>this</span>.<span style=color:#268bd2>states</span>[<span style=color:#268bd2>p</span>].<span style=color:#268bd2>link</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>p</span> === -<span style=color:#2aa198;font-weight:700>1</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>this</span>.<span style=color:#268bd2>states</span>[<span style=color:#268bd2>newStateIdx</span>].<span style=color:#268bd2>link</span> = <span style=color:#2aa198;font-weight:700>0</span>; <span style=color:#93a1a1;font-style:italic>// Link to initial state
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>            <span style=color:#859900>const</span> <span style=color:#268bd2>qIdx</span> = <span style=color:#859900>this</span>.<span style=color:#268bd2>states</span>[<span style=color:#268bd2>p</span>].<span style=color:#268bd2>transitions</span>.<span style=color:#859900>get</span>(<span style=color:#268bd2>char</span>)!;
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> (<span style=color:#859900>this</span>.<span style=color:#268bd2>states</span>[<span style=color:#268bd2>qIdx</span>].<span style=color:#268bd2>length</span> === <span style=color:#859900>this</span>.<span style=color:#268bd2>states</span>[<span style=color:#268bd2>p</span>].<span style=color:#268bd2>length</span> + <span style=color:#2aa198;font-weight:700>1</span>) {
+</span></span><span style=display:flex><span>                <span style=color:#859900>this</span>.<span style=color:#268bd2>states</span>[<span style=color:#268bd2>newStateIdx</span>].<span style=color:#268bd2>link</span> = <span style=color:#268bd2>qIdx</span>;
+</span></span><span style=display:flex><span>            } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>                <span style=color:#859900>const</span> <span style=color:#268bd2>cloneIdx</span> = <span style=color:#859900>this</span>.<span style=color:#268bd2>states</span>.<span style=color:#268bd2>length</span>;
+</span></span><span style=display:flex><span>                <span style=color:#859900>const</span> <span style=color:#268bd2>cloneNode</span> = <span style=color:#859900>new</span> <span style=color:#268bd2>SuffixAutomatonNodeTS</span>(<span style=color:#859900>this</span>.<span style=color:#268bd2>states</span>[<span style=color:#268bd2>p</span>].<span style=color:#268bd2>length</span> + <span style=color:#2aa198;font-weight:700>1</span>);
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>cloneNode</span>.<span style=color:#268bd2>transitions</span> = <span style=color:#859900>new</span> <span style=color:#268bd2>Map</span>(<span style=color:#859900>this</span>.<span style=color:#268bd2>states</span>[<span style=color:#268bd2>qIdx</span>].<span style=color:#268bd2>transitions</span>);
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>cloneNode</span>.<span style=color:#268bd2>link</span> = <span style=color:#859900>this</span>.<span style=color:#268bd2>states</span>[<span style=color:#268bd2>qIdx</span>].<span style=color:#268bd2>link</span>;
+</span></span><span style=display:flex><span>                <span style=color:#859900>this</span>.<span style=color:#268bd2>states</span>.<span style=color:#268bd2>push</span>(<span style=color:#268bd2>cloneNode</span>);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>                <span style=color:#859900>while</span> (<span style=color:#268bd2>p</span> !== -<span style=color:#2aa198;font-weight:700>1</span> &amp;&amp; <span style=color:#859900>this</span>.<span style=color:#268bd2>states</span>[<span style=color:#268bd2>p</span>].<span style=color:#268bd2>transitions</span>.<span style=color:#859900>get</span>(<span style=color:#268bd2>char</span>) === <span style=color:#268bd2>qIdx</span>) {
+</span></span><span style=display:flex><span>                    <span style=color:#859900>this</span>.<span style=color:#268bd2>states</span>[<span style=color:#268bd2>p</span>].<span style=color:#268bd2>transitions</span>.<span style=color:#859900>set</span>(<span style=color:#268bd2>char</span>, <span style=color:#268bd2>cloneIdx</span>);
+</span></span><span style=display:flex><span>                    <span style=color:#268bd2>p</span> = <span style=color:#859900>this</span>.<span style=color:#268bd2>states</span>[<span style=color:#268bd2>p</span>].<span style=color:#268bd2>link</span>;
+</span></span><span style=display:flex><span>                }
+</span></span><span style=display:flex><span>                
+</span></span><span style=display:flex><span>                <span style=color:#859900>this</span>.<span style=color:#268bd2>states</span>[<span style=color:#268bd2>qIdx</span>].<span style=color:#268bd2>link</span> = <span style=color:#268bd2>cloneIdx</span>;
+</span></span><span style=display:flex><span>                <span style=color:#859900>this</span>.<span style=color:#268bd2>states</span>[<span style=color:#268bd2>newStateIdx</span>].<span style=color:#268bd2>link</span> = <span style=color:#268bd2>cloneIdx</span>;
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>last</span> = <span style=color:#268bd2>newStateIdx</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>public</span> <span style=color:#268bd2>build</span>(<span style=color:#268bd2>text</span>: <span style=color:#859900;font-weight:700>string</span>): <span style=color:#859900>void</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>for</span> (<span style=color:#859900>const</span> <span style=color:#268bd2>char</span> <span style=color:#859900>of</span> <span style=color:#268bd2>text</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>this</span>.<span style=color:#268bd2>extend</span>(<span style=color:#268bd2>char</span>);
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>public</span> <span style=color:#268bd2>contains</span>(<span style=color:#268bd2>pattern</span>: <span style=color:#859900;font-weight:700>string</span>): <span style=color:#859900>boolean</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>let</span> <span style=color:#268bd2>currentStateIdx</span> = <span style=color:#2aa198;font-weight:700>0</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900>for</span> (<span style=color:#859900>const</span> <span style=color:#268bd2>char</span> <span style=color:#859900>of</span> <span style=color:#268bd2>pattern</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> (<span style=color:#859900>this</span>.<span style=color:#268bd2>states</span>[<span style=color:#268bd2>currentStateIdx</span>].<span style=color:#268bd2>transitions</span>.<span style=color:#268bd2>has</span>(<span style=color:#268bd2>char</span>)) {
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>currentStateIdx</span> = <span style=color:#859900>this</span>.<span style=color:#268bd2>states</span>[<span style=color:#268bd2>currentStateIdx</span>].<span style=color:#268bd2>transitions</span>.<span style=color:#859900>get</span>(<span style=color:#268bd2>char</span>)!;
+</span></span><span style=display:flex><span>            } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>                <span style=color:#859900>return</span> <span style=color:#859900;font-weight:700>false</span>;
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#859900;font-weight:700>true</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const saTS = new SuffixAutomatonTS();
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// saTS.build(&#34;abacaba&#34;);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// console.log(&#34;Contains &#39;aba&#39;:&#34;, saTS.contains(&#34;aba&#34;)); // Expected: true
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// console.log(&#34;Contains &#39;baba&#39;:&#34;, saTS.contains(&#34;baba&#34;)); // Expected: false
+</span></span></span></code></pre></div><h3 id=cpp>Cpp</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-cpp data-lang=cpp><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;iostream&gt;</span><span style=color:#93a1a1;font-style:italic>
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;string&gt;</span><span style=color:#93a1a1;font-style:italic>
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;vector&gt;</span><span style=color:#93a1a1;font-style:italic>
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;map&gt;</span><span style=color:#93a1a1;font-style:italic>
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#859900>struct</span> <span style=color:#cb4b16>SuffixAutomatonNode</span> {
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>length</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>link</span>;
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>std</span>::<span style=color:#268bd2>map</span>&lt;<span style=color:#859900;font-weight:700>char</span>, <span style=color:#859900;font-weight:700>int</span>&gt; <span style=color:#268bd2>transitions</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>SuffixAutomatonNode</span>(<span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>len</span>) : <span style=color:#268bd2>length</span>(<span style=color:#268bd2>len</span>), <span style=color:#268bd2>link</span>(-<span style=color:#2aa198;font-weight:700>1</span>) {}
+</span></span><span style=display:flex><span>};
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>class</span> <span style=color:#cb4b16>SuffixAutomaton</span> {
+</span></span><span style=display:flex><span><span style=color:#859900>public</span>:
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>std</span>::<span style=color:#268bd2>vector</span>&lt;<span style=color:#268bd2>SuffixAutomatonNode</span>&gt; <span style=color:#268bd2>states</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>last</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>SuffixAutomaton</span>() {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>states</span>.<span style=color:#268bd2>emplace_back</span>(<span style=color:#2aa198;font-weight:700>0</span>); <span style=color:#93a1a1;font-style:italic>// Initial state
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        <span style=color:#268bd2>last</span> = <span style=color:#2aa198;font-weight:700>0</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>void</span> <span style=color:#268bd2>extend</span>(<span style=color:#859900;font-weight:700>char</span> <span style=color:#268bd2>c</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>new_state_idx</span> = <span style=color:#268bd2>states</span>.<span style=color:#268bd2>size</span>();
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>states</span>.<span style=color:#268bd2>emplace_back</span>(<span style=color:#268bd2>states</span>[<span style=color:#268bd2>last</span>].<span style=color:#268bd2>length</span> + <span style=color:#2aa198;font-weight:700>1</span>);
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>p</span> = <span style=color:#268bd2>last</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900>while</span> (<span style=color:#268bd2>p</span> != -<span style=color:#2aa198;font-weight:700>1</span> &amp;&amp; <span style=color:#268bd2>states</span>[<span style=color:#268bd2>p</span>].<span style=color:#268bd2>transitions</span>.<span style=color:#268bd2>find</span>(<span style=color:#268bd2>c</span>) == <span style=color:#268bd2>states</span>[<span style=color:#268bd2>p</span>].<span style=color:#268bd2>transitions</span>.<span style=color:#268bd2>end</span>()) {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>states</span>[<span style=color:#268bd2>p</span>].<span style=color:#268bd2>transitions</span>[<span style=color:#268bd2>c</span>] = <span style=color:#268bd2>new_state_idx</span>;
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>p</span> = <span style=color:#268bd2>states</span>[<span style=color:#268bd2>p</span>].<span style=color:#268bd2>link</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>p</span> == -<span style=color:#2aa198;font-weight:700>1</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>states</span>[<span style=color:#268bd2>new_state_idx</span>].<span style=color:#268bd2>link</span> = <span style=color:#2aa198;font-weight:700>0</span>; <span style=color:#93a1a1;font-style:italic>// Link to initial state
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>            <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>q_idx</span> = <span style=color:#268bd2>states</span>[<span style=color:#268bd2>p</span>].<span style=color:#268bd2>transitions</span>[<span style=color:#268bd2>c</span>];
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> (<span style=color:#268bd2>states</span>[<span style=color:#268bd2>q_idx</span>].<span style=color:#268bd2>length</span> == <span style=color:#268bd2>states</span>[<span style=color:#268bd2>p</span>].<span style=color:#268bd2>length</span> + <span style=color:#2aa198;font-weight:700>1</span>) {
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>states</span>[<span style=color:#268bd2>new_state_idx</span>].<span style=color:#268bd2>link</span> = <span style=color:#268bd2>q_idx</span>;
+</span></span><span style=display:flex><span>            } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>                <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>clone_idx</span> = <span style=color:#268bd2>states</span>.<span style=color:#268bd2>size</span>();
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>SuffixAutomatonNode</span> <span style=color:#268bd2>clone_node</span>(<span style=color:#268bd2>states</span>[<span style=color:#268bd2>p</span>].<span style=color:#268bd2>length</span> + <span style=color:#2aa198;font-weight:700>1</span>);
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>clone_node</span>.<span style=color:#268bd2>transitions</span> = <span style=color:#268bd2>states</span>[<span style=color:#268bd2>q_idx</span>].<span style=color:#268bd2>transitions</span>;
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>clone_node</span>.<span style=color:#268bd2>link</span> = <span style=color:#268bd2>states</span>[<span style=color:#268bd2>q_idx</span>].<span style=color:#268bd2>link</span>;
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>states</span>.<span style=color:#268bd2>push_back</span>(<span style=color:#268bd2>clone_node</span>);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>                <span style=color:#859900>while</span> (<span style=color:#268bd2>p</span> != -<span style=color:#2aa198;font-weight:700>1</span> &amp;&amp; <span style=color:#268bd2>states</span>[<span style=color:#268bd2>p</span>].<span style=color:#268bd2>transitions</span>[<span style=color:#268bd2>c</span>] == <span style=color:#268bd2>q_idx</span>) {
+</span></span><span style=display:flex><span>                    <span style=color:#268bd2>states</span>[<span style=color:#268bd2>p</span>].<span style=color:#268bd2>transitions</span>[<span style=color:#268bd2>c</span>] = <span style=color:#268bd2>clone_idx</span>;
+</span></span><span style=display:flex><span>                    <span style=color:#268bd2>p</span> = <span style=color:#268bd2>states</span>[<span style=color:#268bd2>p</span>].<span style=color:#268bd2>link</span>;
+</span></span><span style=display:flex><span>                }
+</span></span><span style=display:flex><span>                
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>states</span>[<span style=color:#268bd2>q_idx</span>].<span style=color:#268bd2>link</span> = <span style=color:#268bd2>clone_idx</span>;
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>states</span>[<span style=color:#268bd2>new_state_idx</span>].<span style=color:#268bd2>link</span> = <span style=color:#268bd2>clone_idx</span>;
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>last</span> = <span style=color:#268bd2>new_state_idx</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>void</span> <span style=color:#268bd2>build</span>(<span style=color:#859900>const</span> <span style=color:#268bd2>std</span>::<span style=color:#268bd2>string</span>&amp; <span style=color:#268bd2>text</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>for</span> (<span style=color:#859900;font-weight:700>char</span> <span style=color:#268bd2>c</span> : <span style=color:#268bd2>text</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>extend</span>(<span style=color:#268bd2>c</span>);
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>bool</span> <span style=color:#268bd2>contains</span>(<span style=color:#859900>const</span> <span style=color:#268bd2>std</span>::<span style=color:#268bd2>string</span>&amp; <span style=color:#268bd2>pattern</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>current_state_idx</span> = <span style=color:#2aa198;font-weight:700>0</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900>for</span> (<span style=color:#859900;font-weight:700>char</span> <span style=color:#268bd2>c</span> : <span style=color:#268bd2>pattern</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>auto</span> <span style=color:#268bd2>it</span> = <span style=color:#268bd2>states</span>[<span style=color:#268bd2>current_state_idx</span>].<span style=color:#268bd2>transitions</span>.<span style=color:#268bd2>find</span>(<span style=color:#268bd2>c</span>);
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> (<span style=color:#268bd2>it</span> != <span style=color:#268bd2>states</span>[<span style=color:#268bd2>current_state_idx</span>].<span style=color:#268bd2>transitions</span>.<span style=color:#268bd2>end</span>()) {
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>current_state_idx</span> = <span style=color:#268bd2>it</span>-&gt;<span style=color:#268bd2>second</span>;
+</span></span><span style=display:flex><span>            } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>                <span style=color:#859900>return</span> <span style=color:#cb4b16>false</span>;
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#cb4b16>true</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>};
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// int main() {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     SuffixAutomaton sa;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     sa.build(&#34;abacaba&#34;);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     std::cout &lt;&lt; &#34;Contains &#39;aba&#39;: &#34; &lt;&lt; (sa.contains(&#34;aba&#34;) ? &#34;True&#34; : &#34;False&#34;) &lt;&lt; std::endl;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     std::cout &lt;&lt; &#34;Contains &#39;baba&#39;: &#34; &lt;&lt; (sa.contains(&#34;baba&#34;) ? &#34;True&#34; : &#34;False&#34;) &lt;&lt; std::endl;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     return 0;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// }
+</span></span></span></code></pre></div><h3 id=go>Go</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#dc322f;font-weight:700>package</span> <span style=color:#268bd2>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#2aa198>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>type</span> <span style=color:#268bd2>SuffixAutomatonNode</span> <span style=color:#859900>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>Length</span>      <span style=color:#859900;font-weight:700>int</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>Link</span>        <span style=color:#859900;font-weight:700>int</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>Transitions</span> <span style=color:#859900>map</span>[<span style=color:#859900;font-weight:700>rune</span>]<span style=color:#859900;font-weight:700>int</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>func</span> <span style=color:#268bd2>NewSuffixAutomatonNode</span>(<span style=color:#268bd2>length</span> <span style=color:#859900;font-weight:700>int</span>) &lt;<span style=color:#268bd2>em</span>&gt;<span style=color:#268bd2>SuffixAutomatonNode</span> {
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> &amp;<span style=color:#268bd2>SuffixAutomatonNode</span>{
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>Length</span>:      <span style=color:#268bd2>length</span>,
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>Link</span>:        -<span style=color:#2aa198;font-weight:700>1</span>,
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>Transitions</span>: <span style=color:#cb4b16>make</span>(<span style=color:#859900>map</span>[<span style=color:#859900;font-weight:700>rune</span>]<span style=color:#859900;font-weight:700>int</span>),
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>type</span> <span style=color:#268bd2>SuffixAutomaton</span> <span style=color:#859900>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>States</span> []&lt;/<span style=color:#268bd2>em</span>&gt;<span style=color:#268bd2>SuffixAutomatonNode</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>Last</span>   <span style=color:#859900;font-weight:700>int</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>func</span> <span style=color:#268bd2>NewSuffixAutomaton</span>() &lt;<span style=color:#268bd2>em</span>&gt;<span style=color:#268bd2>SuffixAutomaton</span> {
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> &amp;<span style=color:#268bd2>SuffixAutomaton</span>{
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>States</span>: []&lt;/<span style=color:#268bd2>em</span>&gt;<span style=color:#268bd2>SuffixAutomatonNode</span>{<span style=color:#268bd2>NewSuffixAutomatonNode</span>(<span style=color:#2aa198;font-weight:700>0</span>)},
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>Last</span>:   <span style=color:#2aa198;font-weight:700>0</span>,
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>func</span> (<span style=color:#268bd2>sa</span> &lt;<span style=color:#268bd2>em</span>&gt;<span style=color:#268bd2>SuffixAutomaton</span>) <span style=color:#268bd2>Extend</span>(<span style=color:#268bd2>char</span> <span style=color:#859900;font-weight:700>rune</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>newStateIdx</span> := <span style=color:#cb4b16>len</span>(<span style=color:#268bd2>sa</span>.<span style=color:#268bd2>States</span>)
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>sa</span>.<span style=color:#268bd2>States</span> = <span style=color:#cb4b16>append</span>(<span style=color:#268bd2>sa</span>.<span style=color:#268bd2>States</span>, <span style=color:#268bd2>NewSuffixAutomatonNode</span>(<span style=color:#268bd2>sa</span>.<span style=color:#268bd2>States</span>[<span style=color:#268bd2>sa</span>.<span style=color:#268bd2>Last</span>].<span style=color:#268bd2>Length</span>+<span style=color:#2aa198;font-weight:700>1</span>))
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>p</span> := <span style=color:#268bd2>sa</span>.<span style=color:#268bd2>Last</span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>for</span> <span style=color:#268bd2>p</span> != -<span style=color:#2aa198;font-weight:700>1</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> <span style=color:#268bd2>_</span>, <span style=color:#268bd2>ok</span> := <span style=color:#268bd2>sa</span>.<span style=color:#268bd2>States</span>[<span style=color:#268bd2>p</span>].<span style=color:#268bd2>Transitions</span>[<span style=color:#268bd2>char</span>]; !<span style=color:#268bd2>ok</span> {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>sa</span>.<span style=color:#268bd2>States</span>[<span style=color:#268bd2>p</span>].<span style=color:#268bd2>Transitions</span>[<span style=color:#268bd2>char</span>] = <span style=color:#268bd2>newStateIdx</span>
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>p</span> = <span style=color:#268bd2>sa</span>.<span style=color:#268bd2>States</span>[<span style=color:#268bd2>p</span>].<span style=color:#268bd2>Link</span>
+</span></span><span style=display:flex><span>        } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>            <span style=color:#859900>break</span>
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> <span style=color:#268bd2>p</span> == -<span style=color:#2aa198;font-weight:700>1</span> {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>sa</span>.<span style=color:#268bd2>States</span>[<span style=color:#268bd2>newStateIdx</span>].<span style=color:#268bd2>Link</span> = <span style=color:#2aa198;font-weight:700>0</span>
+</span></span><span style=display:flex><span>    } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>qIdx</span> := <span style=color:#268bd2>sa</span>.<span style=color:#268bd2>States</span>[<span style=color:#268bd2>p</span>].<span style=color:#268bd2>Transitions</span>[<span style=color:#268bd2>char</span>]
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> <span style=color:#268bd2>sa</span>.<span style=color:#268bd2>States</span>[<span style=color:#268bd2>qIdx</span>].<span style=color:#268bd2>Length</span> == <span style=color:#268bd2>sa</span>.<span style=color:#268bd2>States</span>[<span style=color:#268bd2>p</span>].<span style=color:#268bd2>Length</span>+<span style=color:#2aa198;font-weight:700>1</span> {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>sa</span>.<span style=color:#268bd2>States</span>[<span style=color:#268bd2>newStateIdx</span>].<span style=color:#268bd2>Link</span> = <span style=color:#268bd2>qIdx</span>
+</span></span><span style=display:flex><span>        } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>cloneIdx</span> := <span style=color:#cb4b16>len</span>(<span style=color:#268bd2>sa</span>.<span style=color:#268bd2>States</span>)
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>cloneNode</span> := <span style=color:#268bd2>NewSuffixAutomatonNode</span>(<span style=color:#268bd2>sa</span>.<span style=color:#268bd2>States</span>[<span style=color:#268bd2>p</span>].<span style=color:#268bd2>Length</span> + <span style=color:#2aa198;font-weight:700>1</span>)
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>cloneNode</span>.<span style=color:#268bd2>Transitions</span> = <span style=color:#cb4b16>make</span>(<span style=color:#859900>map</span>[<span style=color:#859900;font-weight:700>rune</span>]<span style=color:#859900;font-weight:700>int</span>)
+</span></span><span style=display:flex><span>            <span style=color:#859900>for</span> <span style=color:#268bd2>k</span>, <span style=color:#268bd2>v</span> := <span style=color:#859900>range</span> <span style=color:#268bd2>sa</span>.<span style=color:#268bd2>States</span>[<span style=color:#268bd2>qIdx</span>].<span style=color:#268bd2>Transitions</span> {
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>cloneNode</span>.<span style=color:#268bd2>Transitions</span>[<span style=color:#268bd2>k</span>] = <span style=color:#268bd2>v</span>
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>cloneNode</span>.<span style=color:#268bd2>Link</span> = <span style=color:#268bd2>sa</span>.<span style=color:#268bd2>States</span>[<span style=color:#268bd2>qIdx</span>].<span style=color:#268bd2>Link</span>
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>sa</span>.<span style=color:#268bd2>States</span> = <span style=color:#cb4b16>append</span>(<span style=color:#268bd2>sa</span>.<span style=color:#268bd2>States</span>, <span style=color:#268bd2>cloneNode</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>            <span style=color:#859900>for</span> <span style=color:#268bd2>p</span> != -<span style=color:#2aa198;font-weight:700>1</span> &amp;&amp; <span style=color:#268bd2>sa</span>.<span style=color:#268bd2>States</span>[<span style=color:#268bd2>p</span>].<span style=color:#268bd2>Transitions</span>[<span style=color:#268bd2>char</span>] == <span style=color:#268bd2>qIdx</span> {
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>sa</span>.<span style=color:#268bd2>States</span>[<span style=color:#268bd2>p</span>].<span style=color:#268bd2>Transitions</span>[<span style=color:#268bd2>char</span>] = <span style=color:#268bd2>cloneIdx</span>
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>p</span> = <span style=color:#268bd2>sa</span>.<span style=color:#268bd2>States</span>[<span style=color:#268bd2>p</span>].<span style=color:#268bd2>Link</span>
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>            
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>sa</span>.<span style=color:#268bd2>States</span>[<span style=color:#268bd2>qIdx</span>].<span style=color:#268bd2>Link</span> = <span style=color:#268bd2>cloneIdx</span>
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>sa</span>.<span style=color:#268bd2>States</span>[<span style=color:#268bd2>newStateIdx</span>].<span style=color:#268bd2>Link</span> = <span style=color:#268bd2>cloneIdx</span>
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>sa</span>.<span style=color:#268bd2>Last</span> = <span style=color:#268bd2>newStateIdx</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>func</span> (<span style=color:#268bd2>sa</span> &lt;/<span style=color:#268bd2>em</span>&gt;<span style=color:#268bd2>SuffixAutomaton</span>) <span style=color:#268bd2>Build</span>(<span style=color:#268bd2>text</span> <span style=color:#859900;font-weight:700>string</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#859900>for</span> <span style=color:#268bd2>_</span>, <span style=color:#268bd2>char</span> := <span style=color:#859900>range</span> <span style=color:#268bd2>text</span> {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>sa</span>.<span style=color:#268bd2>Extend</span>(<span style=color:#268bd2>char</span>)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>func</span> (<span style=color:#268bd2>sa</span> &lt;<span style=color:#268bd2>em</span>&gt;<span style=color:#268bd2>SuffixAutomaton</span>) <span style=color:#268bd2>Contains</span>(<span style=color:#268bd2>pattern</span> <span style=color:#859900;font-weight:700>string</span>) <span style=color:#859900;font-weight:700>bool</span> {
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>currentStateIdx</span> := <span style=color:#2aa198;font-weight:700>0</span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>for</span> <span style=color:#268bd2>_</span>, <span style=color:#268bd2>char</span> := <span style=color:#859900>range</span> <span style=color:#268bd2>pattern</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> <span style=color:#268bd2>nextState</span>, <span style=color:#268bd2>ok</span> := <span style=color:#268bd2>sa</span>.<span style=color:#268bd2>States</span>[<span style=color:#268bd2>currentStateIdx</span>].<span style=color:#268bd2>Transitions</span>[<span style=color:#268bd2>char</span>]; <span style=color:#268bd2>ok</span> {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>currentStateIdx</span> = <span style=color:#268bd2>nextState</span>
+</span></span><span style=display:flex><span>        } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span> <span style=color:#859900;font-weight:700>false</span>
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#859900;font-weight:700>true</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// func main() {</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     sa := NewSuffixAutomaton()</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     sa.Build(&#34;abacaba&#34;)</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     fmt.Println(&#34;Contains &#39;aba&#39;:&#34;, sa.Contains(&#34;aba&#34;))</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     fmt.Println(&#34;Contains &#39;baba&#39;:&#34;, sa.Contains(&#34;baba&#34;))</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// }</span>
+</span></span></code></pre></div><h3 id=d>D</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-d data-lang=d><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>std.stdio</span>;
+</span></span><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>std.string</span>;
+</span></span><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>std.array</span>;
+</span></span><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>std.map</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>class</span> <span style=color:#cb4b16>SuffixAutomatonNode</span> {
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>length</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>link</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span>[<span style=color:#859900;font-weight:700>char</span>] <span style=color:#268bd2>transitions</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>this</span>(<span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>len</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>length</span> = <span style=color:#268bd2>len</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>link</span> = -<span style=color:#2aa198;font-weight:700>1</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>transitions</span> = <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>class</span> <span style=color:#cb4b16>SuffixAutomaton</span> {
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>SuffixAutomatonNode</span>[] <span style=color:#268bd2>states</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>last</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>this</span>() {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>states</span> ~= <span style=color:#859900>new</span> <span style=color:#268bd2>SuffixAutomatonNode</span>(<span style=color:#2aa198;font-weight:700>0</span>);
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>last</span> = <span style=color:#2aa198;font-weight:700>0</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>void</span> <span style=color:#268bd2>extend</span>(<span style=color:#859900;font-weight:700>char</span> <span style=color:#268bd2>c</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>newStateIdx</span> = <span style=color:#859900>cast</span>(<span style=color:#859900;font-weight:700>int</span>)<span style=color:#268bd2>states</span>.<span style=color:#268bd2>length</span>;
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>states</span> ~= <span style=color:#859900>new</span> <span style=color:#268bd2>SuffixAutomatonNode</span>(<span style=color:#268bd2>states</span>[<span style=color:#268bd2>last</span>].<span style=color:#268bd2>length</span> + <span style=color:#2aa198;font-weight:700>1</span>);
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>p</span> = <span style=color:#268bd2>last</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900>while</span> (<span style=color:#268bd2>p</span> != -<span style=color:#2aa198;font-weight:700>1</span> &amp;&amp; (<span style=color:#268bd2>c</span> !<span style=color:#859900>in</span> <span style=color:#268bd2>states</span>[<span style=color:#268bd2>p</span>].<span style=color:#268bd2>transitions</span>)) {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>states</span>[<span style=color:#268bd2>p</span>].<span style=color:#268bd2>transitions</span>[<span style=color:#268bd2>c</span>] = <span style=color:#268bd2>newStateIdx</span>;
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>p</span> = <span style=color:#268bd2>states</span>[<span style=color:#268bd2>p</span>].<span style=color:#268bd2>link</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>p</span> == -<span style=color:#2aa198;font-weight:700>1</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>states</span>[<span style=color:#268bd2>newStateIdx</span>].<span style=color:#268bd2>link</span> = <span style=color:#2aa198;font-weight:700>0</span>;
+</span></span><span style=display:flex><span>        } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>            <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>qIdx</span> = <span style=color:#268bd2>states</span>[<span style=color:#268bd2>p</span>].<span style=color:#268bd2>transitions</span>[<span style=color:#268bd2>c</span>];
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> (<span style=color:#268bd2>states</span>[<span style=color:#268bd2>qIdx</span>].<span style=color:#268bd2>length</span> == <span style=color:#268bd2>states</span>[<span style=color:#268bd2>p</span>].<span style=color:#268bd2>length</span> + <span style=color:#2aa198;font-weight:700>1</span>) {
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>states</span>[<span style=color:#268bd2>newStateIdx</span>].<span style=color:#268bd2>link</span> = <span style=color:#268bd2>qIdx</span>;
+</span></span><span style=display:flex><span>            } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>                <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>cloneIdx</span> = <span style=color:#859900>cast</span>(<span style=color:#859900;font-weight:700>int</span>)<span style=color:#268bd2>states</span>.<span style=color:#268bd2>length</span>;
+</span></span><span style=display:flex><span>                <span style=color:#859900>auto</span> <span style=color:#268bd2>cloneNode</span> = <span style=color:#859900>new</span> <span style=color:#268bd2>SuffixAutomatonNode</span>(<span style=color:#268bd2>states</span>[<span style=color:#268bd2>p</span>].<span style=color:#268bd2>length</span> + <span style=color:#2aa198;font-weight:700>1</span>);
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>cloneNode</span>.<span style=color:#268bd2>transitions</span> = <span style=color:#268bd2>states</span>[<span style=color:#268bd2>qIdx</span>].<span style=color:#268bd2>transitions</span>.<span style=color:#268bd2>dup</span>;
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>cloneNode</span>.<span style=color:#268bd2>link</span> = <span style=color:#268bd2>states</span>[<span style=color:#268bd2>qIdx</span>].<span style=color:#268bd2>link</span>;
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>states</span> ~= <span style=color:#268bd2>cloneNode</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>                <span style=color:#859900>while</span> (<span style=color:#268bd2>p</span> != -<span style=color:#2aa198;font-weight:700>1</span> &amp;&amp; <span style=color:#268bd2>states</span>[<span style=color:#268bd2>p</span>].<span style=color:#268bd2>transitions</span>[<span style=color:#268bd2>c</span>] == <span style=color:#268bd2>qIdx</span>) {
+</span></span><span style=display:flex><span>                    <span style=color:#268bd2>states</span>[<span style=color:#268bd2>p</span>].<span style=color:#268bd2>transitions</span>[<span style=color:#268bd2>c</span>] = <span style=color:#268bd2>cloneIdx</span>;
+</span></span><span style=display:flex><span>                    <span style=color:#268bd2>p</span> = <span style=color:#268bd2>states</span>[<span style=color:#268bd2>p</span>].<span style=color:#268bd2>link</span>;
+</span></span><span style=display:flex><span>                }
+</span></span><span style=display:flex><span>                
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>states</span>[<span style=color:#268bd2>qIdx</span>].<span style=color:#268bd2>link</span> = <span style=color:#268bd2>cloneIdx</span>;
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>states</span>[<span style=color:#268bd2>newStateIdx</span>].<span style=color:#268bd2>link</span> = <span style=color:#268bd2>cloneIdx</span>;
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>last</span> = <span style=color:#268bd2>newStateIdx</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>void</span> <span style=color:#268bd2>build</span>(<span style=color:#cb4b16>string</span> <span style=color:#268bd2>text</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>foreach</span> (<span style=color:#859900;font-weight:700>char</span> <span style=color:#268bd2>c</span>; <span style=color:#268bd2>text</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>extend</span>(<span style=color:#268bd2>c</span>);
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>bool</span> <span style=color:#268bd2>contains</span>(<span style=color:#cb4b16>string</span> <span style=color:#268bd2>pattern</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>currentStateIdx</span> = <span style=color:#2aa198;font-weight:700>0</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900>foreach</span> (<span style=color:#859900;font-weight:700>char</span> <span style=color:#268bd2>c</span>; <span style=color:#268bd2>pattern</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> (<span style=color:#859900>auto</span> <span style=color:#268bd2>pNextState</span> = <span style=color:#268bd2>c</span> <span style=color:#859900>in</span> <span style=color:#268bd2>states</span>[<span style=color:#268bd2>currentStateIdx</span>].<span style=color:#268bd2>transitions</span>) {
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>currentStateIdx</span> = &lt;/<span style=color:#268bd2>em</span>&gt;<span style=color:#268bd2>pNextState</span>;
+</span></span><span style=display:flex><span>            } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>                <span style=color:#859900>return</span> <span style=color:#859900;font-weight:700>false</span>;
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#859900;font-weight:700>true</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// void main() {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     auto sa = new SuffixAutomaton();
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     sa.build(&#34;abacaba&#34;);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     writefln(&#34;Contains &#39;aba&#39;: %s&#34;, sa.contains(&#34;aba&#34;));
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     writefln(&#34;Contains &#39;baba&#39;: %s&#34;, sa.contains(&#34;baba&#34;));
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// }
+</span></span></span></code></pre></div><h2 id=code-walkthrough>Code Walkthrough</h2><p><a href=#implementation>Back to Implementation</a></p><h3 id=code-walkthrough-1>Code Walkthrough</h3><p>The provided code illustrates the conceptual <code>online construction</code> algorithm for a <code>Suffix Automaton</code>. This algorithm processes the string one character at a time and extends the automaton.</p><hr><p><strong><code>SuffixAutomatonNode</code> Class:</strong> Represents a state in the automaton.</p><ul><li><code>length</code>: The length of the longest string corresponding to this state.</li><li><code>link</code>: A pointer to another state. This &ldquo;<code>suffix link</code>&rdquo; points to the state corresponding to the longest proper suffix of the strings in the current state.</li><li><code>transitions</code>: A map from characters to other state indices.</li></ul><p><strong><code>SuffixAutomaton</code> Class:</strong></p><ul><li><p><code>states</code>: An array or vector storing all the <code>nodes</code> (states) of the automaton.</p></li><li><p><code>last</code>: The index of the state corresponding to the entire string processed so far.</p></li><li><p><strong><code>extend(char)</code>:</strong> This is the core of the construction algorithm.</p></li><li><p>Create a new <code>state</code> for the new, longer string.</p></li><li><p>Follow the <code>suffix links</code> from the previous <code>last</code> state, adding transitions to the new <code>state</code> for the current character.</p></li><li><p>If a transition for the character already exists, one of two cases occurs:</p></li><li><p>The transition is &ldquo;continuous&rdquo; (satisfies a length check), so the new <code>state</code>&rsquo;s <code>suffix link</code> can point directly to it.</p></li><li><p>The transition is &ldquo;non-continuous&rdquo;, which requires creating a new &ldquo;<code>clone</code>&rdquo; state to split the transition and maintain the automaton&rsquo;s properties. This is the most complex part of the algorithm.</p><pre><code>      &lt;/li&gt;
+</code></pre></li><li><p>Update <code>last</code> to point to the new <code>state</code>.</p></li></li><li><p><strong><code>build(text)</code>:</strong> Iterates through the input string and calls <code>extend</code> for each character.</p></li><li><p><strong><code>contains(pattern)</code>:</strong> Simply traverses the automaton from the initial state according to the characters in the pattern.</p></li></ul><p><a href=#implementation>Back to Implementation</a></p><h2 id=applications>Applications</h2><h3 id=application>Application</h3><p>Suffix Automata are one of the most powerful and versatile data structures for string processing, often providing the most efficient solutions to complex problems.</p><ul><li><strong>Finding All Occurrences of a Pattern:</strong> Can find all occurrences of a pattern P in a text T in <code>O(|P| + num_occurrences)</code> time after building the automaton in <code>O(|T|)</code> time.</li><li><strong>Counting Distinct Substrings:</strong> The number of distinct substrings is simply the number of unique paths from the initial state, which can be calculated in <code>O(|T|)</code>.</li><li><strong>Longest Common Substring:</strong> Can solve the longest common substring problem for two strings in linear time with respect to their lengths.</li><li><strong>Bioinformatics:</strong> Used for a wide variety of sequence alignment and pattern matching tasks in DNA and protein analysis.</li><li><strong>Data Compression:</strong> The structure of the automaton can be used to find and exploit redundancies in a string.</li></ul></div></article><div class=navigation style="margin-top:5rem;display:flex;justify-content:space-between;border-top:1px solid var(--border);padding-top:2rem"><a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/data_structures/specialized/suffix_tree/ class=nav-btn>← Previous</a>
+<a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/data_structures/specialized/ class=nav-btn>Up</a>
+<a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/data_structures/specialized/suffix_array/ class=nav-btn>Next →</a></div></main><footer class=footer><p>Built with Hugo. No scripts. No tracking. Just the truth.</p></footer><script>document.addEventListener("DOMContentLoaded",function(){const n=document.body,s=document.createTreeWalker(n,NodeFilter.SHOW_TEXT,null,!1);let e;const t=[];for(;e=s.nextNode();)e.nodeValue.includes("[-]")&&t.push(e);t.forEach(e=>{const t=document.createElement("span");t.innerHTML=e.nodeValue.replace(/\[-\]/g,'<span class="started-icon" title="Started"></span>'),e.parentNode.replaceChild(t,e)})})</script><script>const body=document.getElementById("theme-body"),btn=document.getElementById("theme-toggle"),currentTheme=localStorage.getItem("theme");function updateButtonText(){body.classList.contains("theme-terminal")?btn.textContent="Light Mode":btn.textContent="Dark Mode"}currentTheme==="terminal"&&body.classList.add("theme-terminal"),updateButtonText(),btn.addEventListener("click",()=>{body.classList.toggle("theme-terminal"),updateButtonText();let e="natural";body.classList.contains("theme-terminal")&&(e="terminal"),localStorage.setItem("theme",e)})</script></body></html>

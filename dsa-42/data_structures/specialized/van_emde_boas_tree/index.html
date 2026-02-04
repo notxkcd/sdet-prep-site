@@ -1,0 +1,791 @@
+<!doctype html><html lang=en-us><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Van Emde Boas Tree | SDET Interview Preparation Kit</title><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/css/style.css><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/css/terminal.css><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel=stylesheet><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/lib/katex/katex.min.css><script defer src=https://notxkcd.github.io/sdet-prep-site/lib/katex/katex.min.js></script><script defer src=https://notxkcd.github.io/sdet-prep-site/lib/katex/contrib/auto-render.min.js onload=renderMathInElement(document.body)></script><script>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1}]})})</script></head><body id=theme-body><button id=theme-toggle>Switch Theme</button><header><nav><ul><li><a href=https://notxkcd.github.io/sdet-prep-site/>Index</a></li></ul></nav><div class=site-breadcrumb><a href=https://notxkcd.github.io/sdet-prep-site/>Home</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/>SDET Interview Dashboard</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/>42 Algorithms & 42 Data Structures</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/data_structures/>Data Structures</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/data_structures/specialized/>Specialized</a>
+<span>/</span> Van Emde Boas Tree</div></header><main><article><h1>Van Emde Boas Tree</h1><div class=content-body style=margin-top:2rem><p>A <code>Van Emde Boas Tree (vEB Tree)</code> is a specialized tree data structure that implements an associative array (or dictionary) with integer <code>keys</code>. It is particularly notable for achieving exceptionally fast worst-case time complexities for its operations: <code>O(log log U)</code>, where <code>U</code> is the maximum possible value of a <code>key</code> (the size of the universe of <code>keys</code>), rather than <code>N</code> (the number of <code>elements</code> actually stored).</p><p>This makes <code>vEB Trees</code> incredibly efficient for operations like finding the next or previous <code>element</code> in a large range of <code>keys</code>, especially when <code>U</code> is much larger than <code>N</code>. However, this comes at the cost of high space complexity and increased implementation complexity compared to more general-purpose data structures.</p><h2 id=how-it-works>How it Works</h2><h3 id=how-it-works-expanded>How it Works (Expanded)</h3><p>A <code>vEB Tree</code> for a universe of size <code>U</code> (where <code>U</code> is a power of 2, typically <code>2^k</code>) recursively divides the universe into <code>sqrt(U)</code> &ldquo;<code>clusters</code>&rdquo; and a &ldquo;<code>summary</code>&rdquo; <code>vEB Tree</code>.</p><hr><p>Conceptual vEB Tree for Universe size U:</p><pre><code>    vEB(U)
+   /  |  \
+  /   |   \
+ /    |    \
+</code></pre><p>Summary Clusters (sqrt(U) of them)
+(vEB(sqrt(U))) (vEB(sqrt(U))) &mldr;</p><p>Key Ideas:</p><ul><li>Store min/max of current set.</li><li>Recursively manage &lsquo;clusters&rsquo; and a &lsquo;summary&rsquo; tree.</li><li>The &lsquo;summary&rsquo; tree stores which clusters are non-empty.</li></ul><h2 id=implementation>Implementation</h2><h3 id=python>Python</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># Conceptual Van Emde Boas Tree in Python (highly simplified)</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># A full implementation is very complex, especially managing recursive structures and edge cases.</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># This code aims to illustrate the class structure and basic recursive idea.</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>class</span> <span style=color:#cb4b16>VEBTree</span>:
+</span></span><span style=display:flex><span>    <span style=color:#859900>def</span> <span style=color:#268bd2>__init__</span>(<span style=color:#cb4b16>self</span>, <span style=color:#268bd2>U</span>):
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> <span style=color:#268bd2>U</span> == <span style=color:#2aa198;font-weight:700>2</span>: <span style=color:#93a1a1;font-style:italic># Base case for universe size 2</span>
+</span></span><span style=display:flex><span>            <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>min</span> = <span style=color:#859900;font-weight:700>None</span>
+</span></span><span style=display:flex><span>            <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>max</span> = <span style=color:#859900;font-weight:700>None</span>
+</span></span><span style=display:flex><span>            <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>summary</span> = <span style=color:#859900;font-weight:700>None</span> <span style=color:#93a1a1;font-style:italic># Not needed for U=2</span>
+</span></span><span style=display:flex><span>            <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>clusters</span> = [<span style=color:#859900;font-weight:700>None</span>, <span style=color:#859900;font-weight:700>None</span>] <span style=color:#93a1a1;font-style:italic># Two clusters for values 0 and 1</span>
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span>
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>U</span> = <span style=color:#268bd2>U</span>
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>min</span> = <span style=color:#859900;font-weight:700>None</span>
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>max</span> = <span style=color:#859900;font-weight:700>None</span>
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>sqrt_U</span> = <span style=color:#cb4b16>int</span>(<span style=color:#268bd2>U</span>*&lt;<span style=color:#268bd2>em</span>&gt;<span style=color:#2aa198;font-weight:700>0.5</span>)
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>low_sqrt_U</span> = <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>sqrt_U</span> <span style=color:#93a1a1;font-style:italic># For ceiling in original paper</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>summary</span> = <span style=color:#268bd2>VEBTree</span>(<span style=color:#cb4b16>self</span>.<span style=color:#268bd2>sqrt_U</span>) <span style=color:#93a1a1;font-style:italic># Summary VEB tree for clusters</span>
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>clusters</span> = [<span style=color:#859900;font-weight:700>None</span>] &lt;/<span style=color:#268bd2>em</span>&gt; <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>sqrt_U</span> <span style=color:#93a1a1;font-style:italic># Array of child VEB trees (clusters)</span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>for</span> <span style=color:#268bd2>i</span> <span style=color:#859900>in</span> <span style=color:#cb4b16>range</span>(<span style=color:#cb4b16>self</span>.<span style=color:#268bd2>sqrt_U</span>):
+</span></span><span style=display:flex><span>            <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>clusters</span>[<span style=color:#268bd2>i</span>] = <span style=color:#268bd2>VEBTree</span>(<span style=color:#cb4b16>self</span>.<span style=color:#268bd2>low_sqrt_U</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>def</span> <span style=color:#268bd2>_high</span>(<span style=color:#cb4b16>self</span>, <span style=color:#268bd2>x</span>):
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>x</span> // <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>low_sqrt_U</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>def</span> <span style=color:#268bd2>_low</span>(<span style=color:#cb4b16>self</span>, <span style=color:#268bd2>x</span>):
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>x</span> % <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>low_sqrt_U</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>def</span> <span style=color:#268bd2>_index</span>(<span style=color:#cb4b16>self</span>, <span style=color:#268bd2>high</span>, <span style=color:#268bd2>low</span>):
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>high</span> &lt;<span style=color:#268bd2>em</span>&gt; <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>low_sqrt_U</span> + <span style=color:#268bd2>low</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>def</span> <span style=color:#268bd2>is_empty</span>(<span style=color:#cb4b16>self</span>):
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>min</span> <span style=color:#859900>is</span> <span style=color:#859900;font-weight:700>None</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>def</span> <span style=color:#268bd2>insert</span>(<span style=color:#cb4b16>self</span>, <span style=color:#268bd2>x</span>):
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>is_empty</span>():
+</span></span><span style=display:flex><span>            <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>min</span> = <span style=color:#268bd2>x</span>
+</span></span><span style=display:flex><span>            <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>max</span> = <span style=color:#268bd2>x</span>
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> <span style=color:#268bd2>x</span> &lt; <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>min</span>:
+</span></span><span style=display:flex><span>            <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>min</span>, <span style=color:#268bd2>x</span> = <span style=color:#268bd2>x</span>, <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>min</span> <span style=color:#93a1a1;font-style:italic># Swap min and x</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>U</span> &gt; <span style=color:#2aa198;font-weight:700>2</span>: <span style=color:#93a1a1;font-style:italic># Recursive step for U &gt; 2</span>
+</span></span><span style=display:flex><span>            <span style=color:#93a1a1;font-style:italic># Insert x into its cluster</span>
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>cluster_idx</span> = <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>_high</span>(<span style=color:#268bd2>x</span>)
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>clusters</span>[<span style=color:#268bd2>cluster_idx</span>].<span style=color:#268bd2>is_empty</span>():
+</span></span><span style=display:flex><span>                <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>summary</span>.<span style=color:#268bd2>insert</span>(<span style=color:#268bd2>cluster_idx</span>) <span style=color:#93a1a1;font-style:italic># Mark cluster as non-empty</span>
+</span></span><span style=display:flex><span>                <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>clusters</span>[<span style=color:#268bd2>cluster_idx</span>].<span style=color:#268bd2>min</span> = <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>_low</span>(<span style=color:#268bd2>x</span>)
+</span></span><span style=display:flex><span>                <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>clusters</span>[<span style=color:#268bd2>cluster_idx</span>].<span style=color:#268bd2>max</span> = <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>_low</span>(<span style=color:#268bd2>x</span>)
+</span></span><span style=display:flex><span>            <span style=color:#859900>else</span>:
+</span></span><span style=display:flex><span>                <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>clusters</span>[<span style=color:#268bd2>cluster_idx</span>].<span style=color:#268bd2>insert</span>(<span style=color:#cb4b16>self</span>.<span style=color:#268bd2>_low</span>(<span style=color:#268bd2>x</span>))
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> <span style=color:#268bd2>x</span> &gt; <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>max</span>:
+</span></span><span style=display:flex><span>            <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>max</span> = <span style=color:#268bd2>x</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>def</span> <span style=color:#268bd2>find_next</span>(<span style=color:#cb4b16>self</span>, <span style=color:#268bd2>x</span>):
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>U</span> == <span style=color:#2aa198;font-weight:700>2</span>: <span style=color:#93a1a1;font-style:italic># Base case</span>
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> <span style=color:#268bd2>x</span> == <span style=color:#2aa198;font-weight:700>0</span> <span style=color:#859900>and</span> <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>max</span> == <span style=color:#2aa198;font-weight:700>1</span>:
+</span></span><span style=display:flex><span>                <span style=color:#859900>return</span> <span style=color:#2aa198;font-weight:700>1</span>
+</span></span><span style=display:flex><span>            <span style=color:#859900>else</span>:
+</span></span><span style=display:flex><span>                <span style=color:#859900>return</span> <span style=color:#859900;font-weight:700>None</span>
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> <span style=color:#268bd2>x</span> &lt; <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>min</span>:
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span> <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>min</span>
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic># Find x&#39;s cluster</span>
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>cluster_idx</span> = <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>_high</span>(<span style=color:#268bd2>x</span>)
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>clusters</span>[<span style=color:#268bd2>cluster_idx</span>].<span style=color:#268bd2>max</span> <span style=color:#859900>is</span> <span style=color:#859900>not</span> <span style=color:#859900;font-weight:700>None</span> <span style=color:#859900>and</span> <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>_low</span>(<span style=color:#268bd2>x</span>) &lt; <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>clusters</span>[<span style=color:#268bd2>cluster_idx</span>].<span style=color:#268bd2>max</span>:
+</span></span><span style=display:flex><span>            <span style=color:#93a1a1;font-style:italic># Next element is in the same cluster</span>
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span> <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>_index</span>(<span style=color:#268bd2>cluster_idx</span>, <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>clusters</span>[<span style=color:#268bd2>cluster_idx</span>].<span style=color:#268bd2>find_next</span>(<span style=color:#cb4b16>self</span>.<span style=color:#268bd2>_low</span>(<span style=color:#268bd2>x</span>)))
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic># Next element is in a subsequent cluster</span>
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>next_cluster_idx</span> = <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>summary</span>.<span style=color:#268bd2>find_next</span>(<span style=color:#268bd2>cluster_idx</span>)
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> <span style=color:#268bd2>next_cluster_idx</span> <span style=color:#859900>is</span> <span style=color:#859900;font-weight:700>None</span>:
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span> <span style=color:#859900;font-weight:700>None</span> <span style=color:#93a1a1;font-style:italic># No subsequent non-empty clusters</span>
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>_index</span>(<span style=color:#268bd2>next_cluster_idx</span>, <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>clusters</span>[<span style=color:#268bd2>next_cluster_idx</span>].<span style=color:#268bd2>min</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic># Delete is even more complex and omitted for conceptual simplicity.</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># Example Usage (conceptual, as full delete is very complex)</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># v = VEBTree(16) # Universe size 16 (0-15)</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># v.insert(2)</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># v.insert(3)</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># v.insert(4)</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># v.insert(14)</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># v.insert(15)</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># print(&#34;Min:&#34;, v.min) # 2</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># print(&#34;Max:&#34;, v.max) # 15</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># print(&#34;Find next for 3:&#34;, v.find_next(3)) # Expected: 4</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># print(&#34;Find next for 10:&#34;, v.find_next(10)) # Expected: 14</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># print(&#34;Find next for 15:&#34;, v.find_next(15)) # Expected: None</span>
+</span></span></code></pre></div><h3 id=javascript>Javascript</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=display:flex><span><span style=color:#859900>class</span> <span style=color:#268bd2>VEBTree</span> {
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>constructor</span>(<span style=color:#268bd2>U</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>U</span> === <span style=color:#2aa198;font-weight:700>2</span>) { <span style=color:#93a1a1;font-style:italic>// Base case for universe size 2
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#859900>this</span>.<span style=color:#268bd2>min</span> = <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>            <span style=color:#859900>this</span>.<span style=color:#268bd2>max</span> = <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>            <span style=color:#859900>this</span>.<span style=color:#268bd2>summary</span> = <span style=color:#859900;font-weight:700>null</span>; <span style=color:#93a1a1;font-style:italic>// Not needed for U=2
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#859900>this</span>.<span style=color:#268bd2>clusters</span> = [<span style=color:#859900;font-weight:700>null</span>, <span style=color:#859900;font-weight:700>null</span>]; <span style=color:#93a1a1;font-style:italic>// Two clusters for values 0 and 1
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#859900>return</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>U</span> = <span style=color:#268bd2>U</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>min</span> = <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>max</span> = <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>sqrtU</span> = <span style=color:#cb4b16>Math</span>.<span style=color:#268bd2>floor</span>(<span style=color:#cb4b16>Math</span>.<span style=color:#268bd2>sqrt</span>(<span style=color:#268bd2>U</span>));
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>lowSqrtU</span> = <span style=color:#cb4b16>Math</span>.<span style=color:#268bd2>floor</span>(<span style=color:#268bd2>U</span> / <span style=color:#859900>this</span>.<span style=color:#268bd2>sqrtU</span>); <span style=color:#93a1a1;font-style:italic>// Equivalent to ceil(U/sqrt(U)) in other contexts
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>summary</span> = <span style=color:#859900>new</span> <span style=color:#268bd2>VEBTree</span>(<span style=color:#859900>this</span>.<span style=color:#268bd2>sqrtU</span>); <span style=color:#93a1a1;font-style:italic>// Summary VEB tree for clusters
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>clusters</span> = <span style=color:#859900>new</span> <span style=color:#cb4b16>Array</span>(<span style=color:#859900>this</span>.<span style=color:#268bd2>sqrtU</span>).<span style=color:#268bd2>fill</span>(<span style=color:#859900;font-weight:700>null</span>); <span style=color:#93a1a1;font-style:italic>// Array of child VEB trees (clusters)
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        <span style=color:#859900>for</span> (<span style=color:#859900>let</span> <span style=color:#268bd2>i</span> = <span style=color:#2aa198;font-weight:700>0</span>; <span style=color:#268bd2>i</span> &lt; <span style=color:#859900>this</span>.<span style=color:#268bd2>sqrtU</span>; <span style=color:#268bd2>i</span>++) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>this</span>.<span style=color:#268bd2>clusters</span>[<span style=color:#268bd2>i</span>] = <span style=color:#859900>new</span> <span style=color:#268bd2>VEBTree</span>(<span style=color:#859900>this</span>.<span style=color:#268bd2>lowSqrtU</span>);
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>_high</span>(<span style=color:#268bd2>x</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#cb4b16>Math</span>.<span style=color:#268bd2>floor</span>(<span style=color:#268bd2>x</span> / <span style=color:#859900>this</span>.<span style=color:#268bd2>lowSqrtU</span>);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>_low</span>(<span style=color:#268bd2>x</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>x</span> % <span style=color:#859900>this</span>.<span style=color:#268bd2>lowSqrtU</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>_index</span>(<span style=color:#268bd2>high</span>, <span style=color:#268bd2>low</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>high</span> &lt;/em&gt; this.lowSqrtU + low;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>isEmpty</span>() {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#859900>this</span>.<span style=color:#268bd2>min</span> === <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>insert</span>(<span style=color:#268bd2>x</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#859900>this</span>.<span style=color:#268bd2>isEmpty</span>()) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>this</span>.<span style=color:#268bd2>min</span> = <span style=color:#268bd2>x</span>;
+</span></span><span style=display:flex><span>            <span style=color:#859900>this</span>.<span style=color:#268bd2>max</span> = <span style=color:#268bd2>x</span>;
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>x</span> &lt; <span style=color:#859900>this</span>.<span style=color:#268bd2>min</span>) {
+</span></span><span style=display:flex><span>            [<span style=color:#859900>this</span>.<span style=color:#268bd2>min</span>, <span style=color:#268bd2>x</span>] = [<span style=color:#268bd2>x</span>, <span style=color:#859900>this</span>.<span style=color:#268bd2>min</span>]; <span style=color:#93a1a1;font-style:italic>// Swap min and x
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#859900>this</span>.<span style=color:#268bd2>U</span> &gt; <span style=color:#2aa198;font-weight:700>2</span>) { <span style=color:#93a1a1;font-style:italic>// Recursive step for U &gt; 2
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#93a1a1;font-style:italic>// Insert x into its cluster
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#859900>const</span> <span style=color:#268bd2>clusterIdx</span> = <span style=color:#859900>this</span>.<span style=color:#268bd2>_high</span>(<span style=color:#268bd2>x</span>);
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> (<span style=color:#859900>this</span>.<span style=color:#268bd2>clusters</span>[<span style=color:#268bd2>clusterIdx</span>].<span style=color:#268bd2>isEmpty</span>()) {
+</span></span><span style=display:flex><span>                <span style=color:#859900>this</span>.<span style=color:#268bd2>summary</span>.<span style=color:#268bd2>insert</span>(<span style=color:#268bd2>clusterIdx</span>); <span style=color:#93a1a1;font-style:italic>// Mark cluster as non-empty
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>                <span style=color:#859900>this</span>.<span style=color:#268bd2>clusters</span>[<span style=color:#268bd2>clusterIdx</span>].<span style=color:#268bd2>min</span> = <span style=color:#859900>this</span>.<span style=color:#268bd2>_low</span>(<span style=color:#268bd2>x</span>);
+</span></span><span style=display:flex><span>                <span style=color:#859900>this</span>.<span style=color:#268bd2>clusters</span>[<span style=color:#268bd2>clusterIdx</span>].<span style=color:#268bd2>max</span> = <span style=color:#859900>this</span>.<span style=color:#268bd2>_low</span>(<span style=color:#268bd2>x</span>);
+</span></span><span style=display:flex><span>            } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>                <span style=color:#859900>this</span>.<span style=color:#268bd2>clusters</span>[<span style=color:#268bd2>clusterIdx</span>].<span style=color:#268bd2>insert</span>(<span style=color:#859900>this</span>.<span style=color:#268bd2>_low</span>(<span style=color:#268bd2>x</span>));
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>x</span> &gt; <span style=color:#859900>this</span>.<span style=color:#268bd2>max</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>this</span>.<span style=color:#268bd2>max</span> = <span style=color:#268bd2>x</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>findNext</span>(<span style=color:#268bd2>x</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#859900>this</span>.<span style=color:#268bd2>U</span> === <span style=color:#2aa198;font-weight:700>2</span>) { <span style=color:#93a1a1;font-style:italic>// Base case
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#859900>if</span> (<span style=color:#268bd2>x</span> === <span style=color:#2aa198;font-weight:700>0</span> &amp;&amp; <span style=color:#859900>this</span>.<span style=color:#268bd2>max</span> === <span style=color:#2aa198;font-weight:700>1</span>) {
+</span></span><span style=display:flex><span>                <span style=color:#859900>return</span> <span style=color:#2aa198;font-weight:700>1</span>;
+</span></span><span style=display:flex><span>            } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>                <span style=color:#859900>return</span> <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>x</span> &lt; <span style=color:#859900>this</span>.<span style=color:#268bd2>min</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span> <span style=color:#859900>this</span>.<span style=color:#268bd2>min</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic>// Find x&#39;s cluster
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        <span style=color:#859900>const</span> <span style=color:#268bd2>clusterIdx</span> = <span style=color:#859900>this</span>.<span style=color:#268bd2>_high</span>(<span style=color:#268bd2>x</span>);
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#859900>this</span>.<span style=color:#268bd2>clusters</span>[<span style=color:#268bd2>clusterIdx</span>].<span style=color:#268bd2>max</span> !== <span style=color:#859900;font-weight:700>null</span> &amp;&amp; <span style=color:#859900>this</span>.<span style=color:#268bd2>_low</span>(<span style=color:#268bd2>x</span>) &lt; <span style=color:#859900>this</span>.<span style=color:#268bd2>clusters</span>[<span style=color:#268bd2>clusterIdx</span>].<span style=color:#268bd2>max</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#93a1a1;font-style:italic>// Next element is in the same cluster
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#859900>return</span> <span style=color:#859900>this</span>.<span style=color:#268bd2>_index</span>(<span style=color:#268bd2>clusterIdx</span>, <span style=color:#859900>this</span>.<span style=color:#268bd2>clusters</span>[<span style=color:#268bd2>clusterIdx</span>].<span style=color:#268bd2>findNext</span>(<span style=color:#859900>this</span>.<span style=color:#268bd2>_low</span>(<span style=color:#268bd2>x</span>)));
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic>// Next element is in a subsequent cluster
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        <span style=color:#859900>const</span> <span style=color:#268bd2>nextClusterIdx</span> = <span style=color:#859900>this</span>.<span style=color:#268bd2>summary</span>.<span style=color:#268bd2>findNext</span>(<span style=color:#268bd2>clusterIdx</span>);
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>nextClusterIdx</span> === <span style=color:#859900;font-weight:700>null</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span> <span style=color:#859900;font-weight:700>null</span>; <span style=color:#93a1a1;font-style:italic>// No subsequent non-empty clusters
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#859900>this</span>.<span style=color:#268bd2>_index</span>(<span style=color:#268bd2>nextClusterIdx</span>, <span style=color:#859900>this</span>.<span style=color:#268bd2>clusters</span>[<span style=color:#268bd2>nextClusterIdx</span>].<span style=color:#268bd2>min</span>);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// Delete is even more complex and omitted for conceptual simplicity.
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const v = new VEBTree(16); // Universe size 16 (0-15)
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// v.insert(2);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// v.insert(3);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// v.insert(4);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// v.insert(14);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// v.insert(15);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// console.log(&#34;Min:&#34;, v.min); // 2
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// console.log(&#34;Max:&#34;, v.max); // 15
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// console.log(&#34;Find next for 3:&#34;, v.findNext(3)); // Expected: 4
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// console.log(&#34;Find next for 10:&#34;, v.findNext(10)); // Expected: 14
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// console.log(&#34;Find next for 15:&#34;, v.findNext(15)); // Expected: null
+</span></span></span></code></pre></div><h3 id=typescript>Typescript</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-typescript data-lang=typescript><span style=display:flex><span><span style=color:#859900>class</span> <span style=color:#268bd2>VEBTreeTS</span> {
+</span></span><span style=display:flex><span>    <span style=color:#859900>public</span> <span style=color:#268bd2>U</span>: <span style=color:#859900;font-weight:700>number</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900>public</span> <span style=color:#268bd2>min</span>: <span style=color:#859900;font-weight:700>number</span> | <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900>public</span> <span style=color:#268bd2>max</span>: <span style=color:#859900;font-weight:700>number</span> | <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#859900>private</span> <span style=color:#268bd2>sqrtU</span>: <span style=color:#859900;font-weight:700>number</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900>private</span> <span style=color:#268bd2>lowSqrtU</span>: <span style=color:#859900;font-weight:700>number</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>private</span> <span style=color:#268bd2>summary</span>: <span style=color:#859900;font-weight:700>VEBTreeTS</span> | <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900>private</span> <span style=color:#268bd2>clusters</span>: (<span style=color:#268bd2>VEBTreeTS</span> | <span style=color:#859900;font-weight:700>null</span>)[];
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>constructor</span>(<span style=color:#268bd2>U</span>: <span style=color:#859900;font-weight:700>number</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>U</span> &lt;= <span style=color:#2aa198;font-weight:700>1</span>) { <span style=color:#93a1a1;font-style:italic>// Handle U=0 or U=1 (empty or single element universe)
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>             <span style=color:#859900>this</span>.<span style=color:#268bd2>U</span> = <span style=color:#268bd2>U</span>;
+</span></span><span style=display:flex><span>             <span style=color:#859900>this</span>.<span style=color:#268bd2>min</span> = <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>             <span style=color:#859900>this</span>.<span style=color:#268bd2>max</span> = <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>             <span style=color:#859900>this</span>.<span style=color:#268bd2>summary</span> = <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>             <span style=color:#859900>this</span>.<span style=color:#268bd2>clusters</span> = [];
+</span></span><span style=display:flex><span>             <span style=color:#859900>return</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>U</span> === <span style=color:#2aa198;font-weight:700>2</span>) { <span style=color:#93a1a1;font-style:italic>// Base case for universe size 2
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#859900>this</span>.<span style=color:#268bd2>U</span> = <span style=color:#268bd2>U</span>;
+</span></span><span style=display:flex><span>            <span style=color:#859900>this</span>.<span style=color:#268bd2>min</span> = <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>            <span style=color:#859900>this</span>.<span style=color:#268bd2>max</span> = <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>            <span style=color:#859900>this</span>.<span style=color:#268bd2>summary</span> = <span style=color:#859900;font-weight:700>null</span>; <span style=color:#93a1a1;font-style:italic>// Not strictly needed for U=2, can be null
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#859900>this</span>.<span style=color:#268bd2>clusters</span> = [<span style=color:#859900;font-weight:700>null</span>, <span style=color:#859900;font-weight:700>null</span>]; <span style=color:#93a1a1;font-style:italic>// Two clusters for values 0 and 1
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#859900>return</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>U</span> = <span style=color:#268bd2>U</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>min</span> = <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>max</span> = <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>sqrtU</span> = <span style=color:#cb4b16>Math</span>.<span style=color:#268bd2>floor</span>(<span style=color:#cb4b16>Math</span>.<span style=color:#268bd2>sqrt</span>(<span style=color:#268bd2>U</span>));
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>lowSqrtU</span> = <span style=color:#cb4b16>Math</span>.<span style=color:#268bd2>floor</span>(<span style=color:#268bd2>U</span> / <span style=color:#859900>this</span>.<span style=color:#268bd2>sqrtU</span>);
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>summary</span> = <span style=color:#859900>new</span> <span style=color:#268bd2>VEBTreeTS</span>(<span style=color:#859900>this</span>.<span style=color:#268bd2>sqrtU</span>);
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>clusters</span> = <span style=color:#859900>new</span> <span style=color:#cb4b16>Array</span>(<span style=color:#859900>this</span>.<span style=color:#268bd2>sqrtU</span>).<span style=color:#268bd2>fill</span>(<span style=color:#859900;font-weight:700>null</span>);
+</span></span><span style=display:flex><span>        <span style=color:#859900>for</span> (<span style=color:#859900>let</span> <span style=color:#268bd2>i</span> = <span style=color:#2aa198;font-weight:700>0</span>; <span style=color:#268bd2>i</span> &lt; <span style=color:#859900>this</span>.<span style=color:#268bd2>sqrtU</span>; <span style=color:#268bd2>i</span>++) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>this</span>.<span style=color:#268bd2>clusters</span>[<span style=color:#268bd2>i</span>] = <span style=color:#859900>new</span> <span style=color:#268bd2>VEBTreeTS</span>(<span style=color:#859900>this</span>.<span style=color:#268bd2>lowSqrtU</span>);
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>private</span> <span style=color:#268bd2>_high</span>(<span style=color:#268bd2>x</span>: <span style=color:#859900;font-weight:700>number</span>): <span style=color:#859900;font-weight:700>number</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#cb4b16>Math</span>.<span style=color:#268bd2>floor</span>(<span style=color:#268bd2>x</span> / <span style=color:#859900>this</span>.<span style=color:#268bd2>lowSqrtU</span>);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>private</span> <span style=color:#268bd2>_low</span>(<span style=color:#268bd2>x</span>: <span style=color:#859900;font-weight:700>number</span>): <span style=color:#859900;font-weight:700>number</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>x</span> % <span style=color:#859900>this</span>.<span style=color:#268bd2>lowSqrtU</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>private</span> <span style=color:#268bd2>_index</span>(<span style=color:#268bd2>high</span>: <span style=color:#859900;font-weight:700>number</span>, <span style=color:#268bd2>low</span>: <span style=color:#859900;font-weight:700>number</span>): <span style=color:#859900;font-weight:700>number</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>high</span> &lt;<span style=color:#268bd2;font-weight:700>em</span>&gt; <span style=color:#859900>this</span>.<span style=color:#268bd2>lowSqrtU</span> + <span style=color:#268bd2>low</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>public</span> <span style=color:#268bd2>isEmpty</span>(): <span style=color:#859900>boolean</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#859900>this</span>.<span style=color:#268bd2>min</span> === <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>public</span> <span style=color:#268bd2>insert</span>(<span style=color:#268bd2>x</span>: <span style=color:#859900;font-weight:700>number</span>): <span style=color:#859900>void</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#859900>this</span>.<span style=color:#268bd2>isEmpty</span>()) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>this</span>.<span style=color:#268bd2>min</span> = <span style=color:#268bd2>x</span>;
+</span></span><span style=display:flex><span>            <span style=color:#859900>this</span>.<span style=color:#268bd2>max</span> = <span style=color:#268bd2>x</span>;
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>x</span> &lt; <span style=color:#859900>this</span>.<span style=color:#268bd2>min</span>!) {
+</span></span><span style=display:flex><span>            [<span style=color:#859900>this</span>.<span style=color:#268bd2>min</span>, <span style=color:#268bd2>x</span>] = [<span style=color:#268bd2>x</span>, <span style=color:#859900>this</span>.<span style=color:#268bd2>min</span>!]; <span style=color:#93a1a1;font-style:italic>// Swap min and x
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#859900>this</span>.<span style=color:#268bd2>U</span> &gt; <span style=color:#2aa198;font-weight:700>2</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>const</span> <span style=color:#268bd2>clusterIdx</span> = <span style=color:#859900>this</span>.<span style=color:#268bd2>_high</span>(<span style=color:#268bd2>x</span>);
+</span></span><span style=display:flex><span>            <span style=color:#859900>const</span> <span style=color:#268bd2>lowVal</span> = <span style=color:#859900>this</span>.<span style=color:#268bd2>_low</span>(<span style=color:#268bd2>x</span>);
+</span></span><span style=display:flex><span>            
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> (<span style=color:#859900>this</span>.<span style=color:#268bd2>clusters</span>[<span style=color:#268bd2>clusterIdx</span>]!.<span style=color:#268bd2>isEmpty</span>()) {
+</span></span><span style=display:flex><span>                <span style=color:#859900>this</span>.<span style=color:#268bd2>summary</span>!.<span style=color:#268bd2>insert</span>(<span style=color:#268bd2>clusterIdx</span>);
+</span></span><span style=display:flex><span>                <span style=color:#859900>this</span>.<span style=color:#268bd2>clusters</span>[<span style=color:#268bd2>clusterIdx</span>]!.<span style=color:#268bd2>min</span> = <span style=color:#268bd2>lowVal</span>;
+</span></span><span style=display:flex><span>                <span style=color:#859900>this</span>.<span style=color:#268bd2>clusters</span>[<span style=color:#268bd2>clusterIdx</span>]!.<span style=color:#268bd2>max</span> = <span style=color:#268bd2>lowVal</span>;
+</span></span><span style=display:flex><span>            } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>                <span style=color:#859900>this</span>.<span style=color:#268bd2>clusters</span>[<span style=color:#268bd2>clusterIdx</span>]!.<span style=color:#268bd2>insert</span>(<span style=color:#268bd2>lowVal</span>);
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>x</span> &gt; <span style=color:#859900>this</span>.<span style=color:#268bd2>max</span>!) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>this</span>.<span style=color:#268bd2>max</span> = <span style=color:#268bd2>x</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>public</span> <span style=color:#268bd2>findNext</span>(<span style=color:#268bd2>x</span>: <span style=color:#859900;font-weight:700>number</span>): <span style=color:#859900;font-weight:700>number</span> | <span style=color:#859900;font-weight:700>null</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#859900>this</span>.<span style=color:#268bd2>U</span> === <span style=color:#2aa198;font-weight:700>2</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> (<span style=color:#268bd2>x</span> === <span style=color:#2aa198;font-weight:700>0</span> &amp;&amp; <span style=color:#859900>this</span>.<span style=color:#268bd2>max</span> === <span style=color:#2aa198;font-weight:700>1</span>) {
+</span></span><span style=display:flex><span>                <span style=color:#859900>return</span> <span style=color:#2aa198;font-weight:700>1</span>;
+</span></span><span style=display:flex><span>            } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>                <span style=color:#859900>return</span> <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>x</span> &lt; <span style=color:#859900>this</span>.<span style=color:#268bd2>min</span>!) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span> <span style=color:#859900>this</span>.<span style=color:#268bd2>min</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>const</span> <span style=color:#268bd2>clusterIdx</span> = <span style=color:#859900>this</span>.<span style=color:#268bd2>_high</span>(<span style=color:#268bd2>x</span>);
+</span></span><span style=display:flex><span>        <span style=color:#859900>const</span> <span style=color:#268bd2>lowVal</span> = <span style=color:#859900>this</span>.<span style=color:#268bd2>_low</span>(<span style=color:#268bd2>x</span>);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#859900>this</span>.<span style=color:#268bd2>clusters</span>[<span style=color:#268bd2>clusterIdx</span>]!.<span style=color:#268bd2>max</span> !== <span style=color:#859900;font-weight:700>null</span> &amp;&amp; <span style=color:#268bd2>lowVal</span> &lt; <span style=color:#859900>this</span>.<span style=color:#268bd2>clusters</span>[<span style=color:#268bd2>clusterIdx</span>]!.<span style=color:#268bd2>max</span>!) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span> <span style=color:#859900>this</span>.<span style=color:#268bd2>_index</span>(<span style=color:#268bd2>clusterIdx</span>, <span style=color:#859900>this</span>.<span style=color:#268bd2>clusters</span>[<span style=color:#268bd2>clusterIdx</span>]!.<span style=color:#268bd2>findNext</span>(<span style=color:#268bd2>lowVal</span>)!);
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>const</span> <span style=color:#268bd2>nextClusterIdx</span> = <span style=color:#859900>this</span>.<span style=color:#268bd2>summary</span>!.<span style=color:#268bd2>findNext</span>(<span style=color:#268bd2>clusterIdx</span>);
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>nextClusterIdx</span> === <span style=color:#859900;font-weight:700>null</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span> <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#859900>this</span>.<span style=color:#268bd2>_index</span>(<span style=color:#268bd2>nextClusterIdx</span>, <span style=color:#859900>this</span>.<span style=color:#268bd2>clusters</span>[<span style=color:#268bd2>nextClusterIdx</span>]!.<span style=color:#268bd2>min</span>!);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const vTS = new VEBTreeTS(16);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// vTS.insert(2);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// vTS.insert(3);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// vTS.insert(4);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// vTS.insert(14);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// vTS.insert(15);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// console.log(&#34;Min:&#34;, vTS.min); // 2
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// console.log(&#34;Max:&#34;, vTS.max); // 15
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// console.log(&#34;Find next for 3:&#34;, vTS.findNext(3)); // Expected: 4
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// console.log(&#34;Find next for 10:&#34;, vTS.findNext(10)); // Expected: 14
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// console.log(&#34;Find next for 15:&#34;, vTS.findNext(15)); // Expected: null
+</span></span></span></code></pre></div><h3 id=cpp>Cpp</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-cpp data-lang=cpp><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;iostream&gt;</span><span style=color:#93a1a1;font-style:italic>
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;vector&gt;</span><span style=color:#93a1a1;font-style:italic>
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;cmath&gt;</span><span style=color:#93a1a1;font-style:italic>    </span><span style=color:#93a1a1;font-style:italic>// For sqrt, floor
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;algorithm&gt;</span><span style=color:#93a1a1;font-style:italic> </span><span style=color:#93a1a1;font-style:italic>// For std::swap
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;stdexcept&gt;</span><span style=color:#93a1a1;font-style:italic> </span><span style=color:#93a1a1;font-style:italic>// For std::invalid_argument
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// Forward declaration
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span><span style=color:#859900>class</span> <span style=color:#cb4b16>VEBTree</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>class</span> <span style=color:#cb4b16>VEBTree</span> {
+</span></span><span style=display:flex><span><span style=color:#859900>public</span>:
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>U</span>; <span style=color:#93a1a1;font-style:italic>// Size of the universe
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>min_val</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>max_val</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// For U &gt; 2
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>sqrt_U</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>low_sqrt_U</span>;
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>VEBTree</span>&lt;/<span style=color:#268bd2>em</span>&gt; <span style=color:#268bd2>summary</span>;
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>std</span>::<span style=color:#268bd2>vector</span>&lt;<span style=color:#268bd2>VEBTree</span>&lt;<span style=color:#268bd2>em</span>&gt;&gt; <span style=color:#268bd2>clusters</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>VEBTree</span>(<span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>universe_size</span>) : <span style=color:#268bd2>U</span>(<span style=color:#268bd2>universe_size</span>), <span style=color:#268bd2>min_val</span>(-<span style=color:#2aa198;font-weight:700>1</span>), <span style=color:#268bd2>max_val</span>(-<span style=color:#2aa198;font-weight:700>1</span>), <span style=color:#268bd2>summary</span>(<span style=color:#859900>nullptr</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>U</span> &lt; <span style=color:#2aa198;font-weight:700>0</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>throw</span> <span style=color:#268bd2>std</span>::<span style=color:#268bd2>invalid_argument</span>(<span style=color:#2aa198>&#34;Universe size U must be non-negative.&#34;</span>);
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>U</span> == <span style=color:#2aa198;font-weight:700>0</span> || <span style=color:#268bd2>U</span> == <span style=color:#2aa198;font-weight:700>1</span>) { <span style=color:#93a1a1;font-style:italic>// Empty or single element universe
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#93a1a1;font-style:italic>// min_val and max_val remain -1 (or some indicator of empty)
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#93a1a1;font-style:italic>// No summary or clusters needed
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#859900>return</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>U</span> == <span style=color:#2aa198;font-weight:700>2</span>) { <span style=color:#93a1a1;font-style:italic>// Base case for U=2 (universe {0, 1})
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#93a1a1;font-style:italic>// min_val and max_val remain -1
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#268bd2>clusters</span>.<span style=color:#268bd2>resize</span>(<span style=color:#2aa198;font-weight:700>2</span>, <span style=color:#859900>nullptr</span>); <span style=color:#93a1a1;font-style:italic>// Two conceptual clusters for 0 and 1
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#859900>return</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>sqrt_U</span> = <span style=color:#859900>static_cast</span>&lt;<span style=color:#859900;font-weight:700>int</span>&gt;(<span style=color:#268bd2>std</span>::<span style=color:#268bd2>floor</span>(<span style=color:#268bd2>std</span>::<span style=color:#268bd2>sqrt</span>(<span style=color:#268bd2>U</span>)));
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>low_sqrt_U</span> = <span style=color:#859900>static_cast</span>&lt;<span style=color:#859900;font-weight:700>int</span>&gt;(<span style=color:#268bd2>std</span>::<span style=color:#268bd2>ceil</span>(<span style=color:#859900>static_cast</span>&lt;<span style=color:#859900;font-weight:700>double</span>&gt;<span style=color:#268bd2>U</span> / <span style=color:#268bd2>sqrt_U</span>));
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>summary</span> = <span style=color:#859900>new</span> <span style=color:#268bd2>VEBTree</span>(<span style=color:#268bd2>sqrt_U</span>);
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>clusters</span>.<span style=color:#268bd2>resize</span>(<span style=color:#268bd2>sqrt_U</span>, <span style=color:#859900>nullptr</span>);
+</span></span><span style=display:flex><span>        <span style=color:#859900>for</span> (<span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>i</span> = <span style=color:#2aa198;font-weight:700>0</span>; <span style=color:#268bd2>i</span> &lt; <span style=color:#268bd2>sqrt_U</span>; ++<span style=color:#268bd2>i</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>clusters</span>[<span style=color:#268bd2>i</span>] = <span style=color:#859900>new</span> <span style=color:#268bd2>VEBTree</span>(<span style=color:#268bd2>low_sqrt_U</span>);
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    ~<span style=color:#268bd2>VEBTree</span>() {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>summary</span>) <span style=color:#859900>delete</span> <span style=color:#268bd2>summary</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900>for</span> (<span style=color:#268bd2>VEBTree</span>&lt;/<span style=color:#268bd2>em</span>&gt; <span style=color:#268bd2>cluster</span> : <span style=color:#268bd2>clusters</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> (<span style=color:#268bd2>cluster</span>) <span style=color:#859900>delete</span> <span style=color:#268bd2>cluster</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>bool</span> <span style=color:#268bd2>isEmpty</span>() <span style=color:#859900>const</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>min_val</span> == -<span style=color:#2aa198;font-weight:700>1</span>; <span style=color:#93a1a1;font-style:italic>// -1 indicates empty for integer keys
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>high</span>(<span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>x</span>) <span style=color:#859900>const</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>x</span> / <span style=color:#268bd2>low_sqrt_U</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>low</span>(<span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>x</span>) <span style=color:#859900>const</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>x</span> % <span style=color:#268bd2>low_sqrt_U</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>index</span>(<span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>high_val</span>, <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>low_val</span>) <span style=color:#859900>const</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>high_val</span> &lt;<span style=color:#268bd2>em</span>&gt; <span style=color:#268bd2>low_sqrt_U</span> + <span style=color:#268bd2>low_val</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>void</span> <span style=color:#268bd2>insert</span>(<span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>x</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>isEmpty</span>()) {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>min_val</span> = <span style=color:#268bd2>x</span>;
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>max_val</span> = <span style=color:#268bd2>x</span>;
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>x</span> &lt; <span style=color:#268bd2>min_val</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>std</span>::<span style=color:#268bd2>swap</span>(<span style=color:#268bd2>min_val</span>, <span style=color:#268bd2>x</span>);
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>U</span> &gt; <span style=color:#2aa198;font-weight:700>2</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>cluster_idx</span> = <span style=color:#268bd2>high</span>(<span style=color:#268bd2>x</span>);
+</span></span><span style=display:flex><span>            <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>low_val</span> = <span style=color:#268bd2>low</span>(<span style=color:#268bd2>x</span>);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> (<span style=color:#268bd2>clusters</span>[<span style=color:#268bd2>cluster_idx</span>]-&gt;<span style=color:#268bd2>isEmpty</span>()) {
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>summary</span>-&gt;<span style=color:#268bd2>insert</span>(<span style=color:#268bd2>cluster_idx</span>);
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>clusters</span>[<span style=color:#268bd2>cluster_idx</span>]-&gt;<span style=color:#268bd2>min_val</span> = <span style=color:#268bd2>low_val</span>;
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>clusters</span>[<span style=color:#268bd2>cluster_idx</span>]-&gt;<span style=color:#268bd2>max_val</span> = <span style=color:#268bd2>low_val</span>;
+</span></span><span style=display:flex><span>            } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>clusters</span>[<span style=color:#268bd2>cluster_idx</span>]-&gt;<span style=color:#268bd2>insert</span>(<span style=color:#268bd2>low_val</span>);
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>x</span> &gt; <span style=color:#268bd2>max_val</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>max_val</span> = <span style=color:#268bd2>x</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>findNext</span>(<span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>x</span>) <span style=color:#859900>const</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>U</span> == <span style=color:#2aa198;font-weight:700>0</span> || <span style=color:#268bd2>x</span> &gt;= <span style=color:#268bd2>max_val</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span> -<span style=color:#2aa198;font-weight:700>1</span>; <span style=color:#93a1a1;font-style:italic>// -1 indicates no next element
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        }
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>U</span> == <span style=color:#2aa198;font-weight:700>1</span>) { <span style=color:#93a1a1;font-style:italic>// For universe size 1, if 0 is stored, then no next
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#859900>return</span> -<span style=color:#2aa198;font-weight:700>1</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>x</span> &lt; <span style=color:#268bd2>min_val</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span> <span style=color:#268bd2>min_val</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>cluster_idx</span> = <span style=color:#268bd2>high</span>(<span style=color:#268bd2>x</span>);
+</span></span><span style=display:flex><span>        <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>low_val</span> = <span style=color:#268bd2>low</span>(<span style=color:#268bd2>x</span>);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>clusters</span>[<span style=color:#268bd2>cluster_idx</span>] != <span style=color:#859900>nullptr</span> &amp;&amp; !<span style=color:#268bd2>clusters</span>[<span style=color:#268bd2>cluster_idx</span>]-&gt;<span style=color:#268bd2>isEmpty</span>() &amp;&amp; <span style=color:#268bd2>low_val</span> &lt; <span style=color:#268bd2>clusters</span>[<span style=color:#268bd2>cluster_idx</span>]-&gt;<span style=color:#268bd2>max_val</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#93a1a1;font-style:italic>// Next element is in the same cluster
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>next_low</span> = <span style=color:#268bd2>clusters</span>[<span style=color:#268bd2>cluster_idx</span>]-&gt;<span style=color:#268bd2>findNext</span>(<span style=color:#268bd2>low_val</span>);
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> (<span style=color:#268bd2>next_low</span> != -<span style=color:#2aa198;font-weight:700>1</span>) {
+</span></span><span style=display:flex><span>                <span style=color:#859900>return</span> <span style=color:#268bd2>index</span>(<span style=color:#268bd2>cluster_idx</span>, <span style=color:#268bd2>next_low</span>);
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic>// Next element is in a subsequent cluster
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>next_cluster_idx</span> = <span style=color:#268bd2>summary</span>-&gt;<span style=color:#268bd2>findNext</span>(<span style=color:#268bd2>cluster_idx</span>);
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>next_cluster_idx</span> == -<span style=color:#2aa198;font-weight:700>1</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span> -<span style=color:#2aa198;font-weight:700>1</span>; <span style=color:#93a1a1;font-style:italic>// No subsequent non-empty clusters
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>index</span>(<span style=color:#268bd2>next_cluster_idx</span>, <span style=color:#268bd2>clusters</span>[<span style=color:#268bd2>next_cluster_idx</span>]-&gt;<span style=color:#268bd2>min_val</span>);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// Delete is even more complex and omitted for conceptual simplicity.
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>};
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// int main() {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     VEBTree v(16); // Universe size 16 (0-15)
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     v.insert(2);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     v.insert(3);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     v.insert(4);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     v.insert(14);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     v.insert(15);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     std::cout &lt;&lt; &#34;Min: &#34; &lt;&lt; v.min_val &lt;&lt; std::endl; // 2
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     std::cout &lt;&lt; &#34;Max: &#34; &lt;&lt; v.max_val &lt;&lt; std::endl; // 15
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     std::cout &lt;&lt; &#34;Find next for 3: &#34; &lt;&lt; v.findNext(3) &lt;&lt; std::endl; // Expected: 4
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     std::cout &lt;&lt; &#34;Find next for 10: &#34; &lt;&lt; v.findNext(10) &lt;&lt; std::endl; // Expected: 14
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     std::cout &lt;&lt; &#34;Find next for 15: &#34; &lt;&lt; v.findNext(15) &lt;&lt; std::endl; // Expected: -1
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     return 0;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// }
+</span></span></span></code></pre></div><h3 id=go>Go</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#dc322f;font-weight:700>package</span> <span style=color:#268bd2>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> (
+</span></span><span style=display:flex><span>    <span style=color:#2aa198>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#2aa198>&#34;math&#34;</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>type</span> <span style=color:#268bd2>VEBTree</span> <span style=color:#859900>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>U</span>       <span style=color:#859900;font-weight:700>int</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>MinVal</span>  <span style=color:#859900;font-weight:700>int</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>MaxVal</span>  <span style=color:#859900;font-weight:700>int</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>SqrtU</span>     <span style=color:#859900;font-weight:700>int</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>LowSqrtU</span> <span style=color:#859900;font-weight:700>int</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>Summary</span>  &lt;/<span style=color:#268bd2>em</span>&gt;<span style=color:#268bd2>VEBTree</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>Clusters</span> []&lt;<span style=color:#268bd2>em</span>&gt;<span style=color:#268bd2>VEBTree</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>func</span> <span style=color:#268bd2>NewVEBTree</span>(<span style=color:#268bd2>universeSize</span> <span style=color:#859900;font-weight:700>int</span>) &lt;/<span style=color:#268bd2>em</span>&gt;<span style=color:#268bd2>VEBTree</span> {
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> <span style=color:#268bd2>universeSize</span> &lt; <span style=color:#2aa198;font-weight:700>0</span> {
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>panic</span>(<span style=color:#2aa198>&#34;Universe size U must be non-negative.&#34;</span>)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> <span style=color:#268bd2>universeSize</span> == <span style=color:#2aa198;font-weight:700>0</span> || <span style=color:#268bd2>universeSize</span> == <span style=color:#2aa198;font-weight:700>1</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> &amp;<span style=color:#268bd2>VEBTree</span>{<span style=color:#268bd2>U</span>: <span style=color:#268bd2>universeSize</span>, <span style=color:#268bd2>MinVal</span>: -<span style=color:#2aa198;font-weight:700>1</span>, <span style=color:#268bd2>MaxVal</span>: -<span style=color:#2aa198;font-weight:700>1</span>} <span style=color:#93a1a1;font-style:italic>// -1 indicates empty</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> <span style=color:#268bd2>universeSize</span> == <span style=color:#2aa198;font-weight:700>2</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> &amp;<span style=color:#268bd2>VEBTree</span>{<span style=color:#268bd2>U</span>: <span style=color:#268bd2>universeSize</span>, <span style=color:#268bd2>MinVal</span>: -<span style=color:#2aa198;font-weight:700>1</span>, <span style=color:#268bd2>MaxVal</span>: -<span style=color:#2aa198;font-weight:700>1</span>, <span style=color:#268bd2>Clusters</span>: <span style=color:#cb4b16>make</span>([]&lt;<span style=color:#268bd2>em</span>&gt;<span style=color:#268bd2>VEBTree</span>, <span style=color:#2aa198;font-weight:700>2</span>)}
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>sqrtU</span> := <span style=color:#cb4b16>int</span>(<span style=color:#268bd2>math</span>.<span style=color:#268bd2>Floor</span>(<span style=color:#268bd2>math</span>.<span style=color:#268bd2>Sqrt</span>(<span style=color:#cb4b16>float64</span>(<span style=color:#268bd2>universeSize</span>))))
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>lowSqrtU</span> := <span style=color:#cb4b16>int</span>(<span style=color:#268bd2>math</span>.<span style=color:#268bd2>Ceil</span>(<span style=color:#cb4b16>float64</span>(<span style=color:#268bd2>universeSize</span>) / <span style=color:#cb4b16>float64</span>(<span style=color:#268bd2>sqrtU</span>)))
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>v</span> := &amp;<span style=color:#268bd2>VEBTree</span>{
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>U</span>:        <span style=color:#268bd2>universeSize</span>,
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>MinVal</span>:   -<span style=color:#2aa198;font-weight:700>1</span>, <span style=color:#93a1a1;font-style:italic>// -1 indicates empty</span>
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>MaxVal</span>:   -<span style=color:#2aa198;font-weight:700>1</span>, <span style=color:#93a1a1;font-style:italic>// -1 indicates empty</span>
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>SqrtU</span>:    <span style=color:#268bd2>sqrtU</span>,
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>LowSqrtU</span>: <span style=color:#268bd2>lowSqrtU</span>,
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>Summary</span>:  <span style=color:#268bd2>NewVEBTree</span>(<span style=color:#268bd2>sqrtU</span>),
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>Clusters</span>: <span style=color:#cb4b16>make</span>([]&lt;/<span style=color:#268bd2>em</span>&gt;<span style=color:#268bd2>VEBTree</span>, <span style=color:#268bd2>sqrtU</span>),
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#859900>for</span> <span style=color:#268bd2>i</span> := <span style=color:#2aa198;font-weight:700>0</span>; <span style=color:#268bd2>i</span> &lt; <span style=color:#268bd2>sqrtU</span>; <span style=color:#268bd2>i</span>++ {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>v</span>.<span style=color:#268bd2>Clusters</span>[<span style=color:#268bd2>i</span>] = <span style=color:#268bd2>NewVEBTree</span>(<span style=color:#268bd2>lowSqrtU</span>)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>v</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>func</span> (<span style=color:#268bd2>v</span> &lt;<span style=color:#268bd2>em</span>&gt;<span style=color:#268bd2>VEBTree</span>) <span style=color:#268bd2>high</span>(<span style=color:#268bd2>x</span> <span style=color:#859900;font-weight:700>int</span>) <span style=color:#859900;font-weight:700>int</span> {
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>x</span> / <span style=color:#268bd2>v</span>.<span style=color:#268bd2>LowSqrtU</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>func</span> (<span style=color:#268bd2>v</span> &lt;/<span style=color:#268bd2>em</span>&gt;<span style=color:#268bd2>VEBTree</span>) <span style=color:#268bd2>low</span>(<span style=color:#268bd2>x</span> <span style=color:#859900;font-weight:700>int</span>) <span style=color:#859900;font-weight:700>int</span> {
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>x</span> % <span style=color:#268bd2>v</span>.<span style=color:#268bd2>LowSqrtU</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>func</span> (<span style=color:#268bd2>v</span> &lt;<span style=color:#268bd2>em</span>&gt;<span style=color:#268bd2>VEBTree</span>) <span style=color:#268bd2>index</span>(<span style=color:#268bd2>highVal</span>, <span style=color:#268bd2>lowVal</span> <span style=color:#859900;font-weight:700>int</span>) <span style=color:#859900;font-weight:700>int</span> {
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>highVal</span>&lt;/<span style=color:#268bd2>em</span>&gt;<span style=color:#268bd2>v</span>.<span style=color:#268bd2>LowSqrtU</span> + <span style=color:#268bd2>lowVal</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>func</span> (<span style=color:#268bd2>v</span> &lt;<span style=color:#268bd2>em</span>&gt;<span style=color:#268bd2>VEBTree</span>) <span style=color:#268bd2>IsEmpty</span>() <span style=color:#859900;font-weight:700>bool</span> {
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>v</span>.<span style=color:#268bd2>MinVal</span> == -<span style=color:#2aa198;font-weight:700>1</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>func</span> (<span style=color:#268bd2>v</span> &lt;/<span style=color:#268bd2>em</span>&gt;<span style=color:#268bd2>VEBTree</span>) <span style=color:#268bd2>Insert</span>(<span style=color:#268bd2>x</span> <span style=color:#859900;font-weight:700>int</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> <span style=color:#268bd2>v</span>.<span style=color:#268bd2>IsEmpty</span>() {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>v</span>.<span style=color:#268bd2>MinVal</span> = <span style=color:#268bd2>x</span>
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>v</span>.<span style=color:#268bd2>MaxVal</span> = <span style=color:#268bd2>x</span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> <span style=color:#268bd2>x</span> &lt; <span style=color:#268bd2>v</span>.<span style=color:#268bd2>MinVal</span> {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>v</span>.<span style=color:#268bd2>MinVal</span>, <span style=color:#268bd2>x</span> = <span style=color:#268bd2>x</span>, <span style=color:#268bd2>v</span>.<span style=color:#268bd2>MinVal</span> <span style=color:#93a1a1;font-style:italic>// Swap min_val and x</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> <span style=color:#268bd2>v</span>.<span style=color:#268bd2>U</span> &gt; <span style=color:#2aa198;font-weight:700>2</span> {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>clusterIdx</span> := <span style=color:#268bd2>v</span>.<span style=color:#268bd2>high</span>(<span style=color:#268bd2>x</span>)
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>lowVal</span> := <span style=color:#268bd2>v</span>.<span style=color:#268bd2>low</span>(<span style=color:#268bd2>x</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> <span style=color:#268bd2>v</span>.<span style=color:#268bd2>Clusters</span>[<span style=color:#268bd2>clusterIdx</span>].<span style=color:#268bd2>IsEmpty</span>() {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>v</span>.<span style=color:#268bd2>Summary</span>.<span style=color:#268bd2>Insert</span>(<span style=color:#268bd2>clusterIdx</span>)
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>v</span>.<span style=color:#268bd2>Clusters</span>[<span style=color:#268bd2>clusterIdx</span>].<span style=color:#268bd2>MinVal</span> = <span style=color:#268bd2>lowVal</span>
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>v</span>.<span style=color:#268bd2>Clusters</span>[<span style=color:#268bd2>clusterIdx</span>].<span style=color:#268bd2>MaxVal</span> = <span style=color:#268bd2>lowVal</span>
+</span></span><span style=display:flex><span>        } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>v</span>.<span style=color:#268bd2>Clusters</span>[<span style=color:#268bd2>clusterIdx</span>].<span style=color:#268bd2>Insert</span>(<span style=color:#268bd2>lowVal</span>)
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> <span style=color:#268bd2>x</span> &gt; <span style=color:#268bd2>v</span>.<span style=color:#268bd2>MaxVal</span> {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>v</span>.<span style=color:#268bd2>MaxVal</span> = <span style=color:#268bd2>x</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>func</span> (<span style=color:#268bd2>v</span> &lt;<span style=color:#268bd2>em</span>&gt;<span style=color:#268bd2>VEBTree</span>) <span style=color:#268bd2>FindNext</span>(<span style=color:#268bd2>x</span> <span style=color:#859900;font-weight:700>int</span>) <span style=color:#859900;font-weight:700>int</span> {
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> <span style=color:#268bd2>v</span>.<span style=color:#268bd2>U</span> == <span style=color:#2aa198;font-weight:700>0</span> || <span style=color:#268bd2>x</span> &gt;= <span style=color:#268bd2>v</span>.<span style=color:#268bd2>MaxVal</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> -<span style=color:#2aa198;font-weight:700>1</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> <span style=color:#268bd2>v</span>.<span style=color:#268bd2>U</span> == <span style=color:#2aa198;font-weight:700>1</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> -<span style=color:#2aa198;font-weight:700>1</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> <span style=color:#268bd2>x</span> &lt; <span style=color:#268bd2>v</span>.<span style=color:#268bd2>MinVal</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>v</span>.<span style=color:#268bd2>MinVal</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>clusterIdx</span> := <span style=color:#268bd2>v</span>.<span style=color:#268bd2>high</span>(<span style=color:#268bd2>x</span>)
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>lowVal</span> := <span style=color:#268bd2>v</span>.<span style=color:#268bd2>low</span>(<span style=color:#268bd2>x</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> <span style=color:#268bd2>v</span>.<span style=color:#268bd2>Clusters</span>[<span style=color:#268bd2>clusterIdx</span>].<span style=color:#268bd2>MaxVal</span> != -<span style=color:#2aa198;font-weight:700>1</span> &amp;&amp; <span style=color:#268bd2>lowVal</span> &lt; <span style=color:#268bd2>v</span>.<span style=color:#268bd2>Clusters</span>[<span style=color:#268bd2>clusterIdx</span>].<span style=color:#268bd2>MaxVal</span> {
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic>// Next element is in the same cluster</span>
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>nextLow</span> := <span style=color:#268bd2>v</span>.<span style=color:#268bd2>Clusters</span>[<span style=color:#268bd2>clusterIdx</span>].<span style=color:#268bd2>FindNext</span>(<span style=color:#268bd2>lowVal</span>)
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> <span style=color:#268bd2>nextLow</span> != -<span style=color:#2aa198;font-weight:700>1</span> {
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span> <span style=color:#268bd2>v</span>.<span style=color:#268bd2>index</span>(<span style=color:#268bd2>clusterIdx</span>, <span style=color:#268bd2>nextLow</span>)
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// Next element is in a subsequent cluster</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>nextClusterIdx</span> := <span style=color:#268bd2>v</span>.<span style=color:#268bd2>Summary</span>.<span style=color:#268bd2>FindNext</span>(<span style=color:#268bd2>clusterIdx</span>)
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> <span style=color:#268bd2>nextClusterIdx</span> == -<span style=color:#2aa198;font-weight:700>1</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> -<span style=color:#2aa198;font-weight:700>1</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>v</span>.<span style=color:#268bd2>index</span>(<span style=color:#268bd2>nextClusterIdx</span>, <span style=color:#268bd2>v</span>.<span style=color:#268bd2>Clusters</span>[<span style=color:#268bd2>nextClusterIdx</span>].<span style=color:#268bd2>MinVal</span>)
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// Delete is even more complex and omitted for conceptual simplicity.</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// func main() {</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     v := NewVEBTree(16) // Universe size 16 (0-15)</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     v.Insert(2)</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     v.Insert(3)</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     v.Insert(4)</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     v.Insert(14)</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     v.Insert(15)</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     fmt.Println(&#34;Min:&#34;, v.MinVal) // 2</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     fmt.Println(&#34;Max:&#34;, v.MaxVal) // 15</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     fmt.Println(&#34;Find next for 3:&#34;, v.FindNext(3))   // Expected: 4</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     fmt.Println(&#34;Find next for 10:&#34;, v.FindNext(10)) // Expected: 14</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     fmt.Println(&#34;Find next for 15:&#34;, v.FindNext(15)) // Expected: -1</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// }</span>
+</span></span></code></pre></div><h3 id=d>D</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-d data-lang=d><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>std.stdio</span>;
+</span></span><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>std.array</span>;
+</span></span><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>std.algorithm</span>; <span style=color:#93a1a1;font-style:italic>// For std.algorithm.swap
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>std.conv</span>; <span style=color:#93a1a1;font-style:italic>// For to!string
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>std.math</span>; <span style=color:#93a1a1;font-style:italic>// For floor, sqrt, ceil
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#859900>class</span> <span style=color:#cb4b16>VEBTree</span> {
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>U</span>; <span style=color:#93a1a1;font-style:italic>// Size of the universe
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>min_val</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>max_val</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// For U &gt; 2
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>sqrt_U</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>low_sqrt_U</span>;
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>VEBTree</span> <span style=color:#268bd2>summary</span>;
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>VEBTree</span>[] <span style=color:#268bd2>clusters</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>this</span>(<span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>universe_size</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>universe_size</span> &lt; <span style=color:#2aa198;font-weight:700>0</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>throw</span> <span style=color:#859900>new</span> <span style=color:#cb4b16>Exception</span>(<span style=color:#2aa198>&#34;Universe size U must be non-negative.&#34;</span>);
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>universe_size</span> == <span style=color:#2aa198;font-weight:700>0</span> || <span style=color:#268bd2>universe_size</span> == <span style=color:#2aa198;font-weight:700>1</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>this</span>.<span style=color:#268bd2>U</span> = <span style=color:#268bd2>universe_size</span>;
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>min_val</span> = -<span style=color:#2aa198;font-weight:700>1</span>; <span style=color:#93a1a1;font-style:italic>// -1 indicates empty for integer keys
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#268bd2>max_val</span> = -<span style=color:#2aa198;font-weight:700>1</span>;
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>summary</span> = <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>clusters</span> = [];
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>universe_size</span> == <span style=color:#2aa198;font-weight:700>2</span>) { <span style=color:#93a1a1;font-style:italic>// Base case for U=2 (universe {0, 1})
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#859900>this</span>.<span style=color:#268bd2>U</span> = <span style=color:#268bd2>universe_size</span>;
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>min_val</span> = -<span style=color:#2aa198;font-weight:700>1</span>;
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>max_val</span> = -<span style=color:#2aa198;font-weight:700>1</span>;
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>summary</span> = <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>clusters</span> = <span style=color:#859900>new</span> <span style=color:#268bd2>VEBTree</span>[<span style=color:#2aa198;font-weight:700>2</span>]; <span style=color:#93a1a1;font-style:italic>// Two conceptual clusters for 0 and 1
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#859900>return</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>U</span> = <span style=color:#268bd2>universe_size</span>;
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>min_val</span> = -<span style=color:#2aa198;font-weight:700>1</span>;
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>max_val</span> = -<span style=color:#2aa198;font-weight:700>1</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>sqrt_U</span> = <span style=color:#859900>cast</span>(<span style=color:#859900;font-weight:700>int</span>)(<span style=color:#268bd2>floor</span>(<span style=color:#268bd2>sqrt</span>(<span style=color:#859900>cast</span>(<span style=color:#859900;font-weight:700>double</span>)<span style=color:#268bd2>U</span>)));
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>low_sqrt_U</span> = <span style=color:#859900>cast</span>(<span style=color:#859900;font-weight:700>int</span>)(<span style=color:#268bd2>ceil</span>(<span style=color:#859900>cast</span>(<span style=color:#859900;font-weight:700>double</span>)<span style=color:#268bd2>U</span> / <span style=color:#268bd2>sqrt_U</span>));
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>summary</span> = <span style=color:#859900>new</span> <span style=color:#268bd2>VEBTree</span>(<span style=color:#268bd2>sqrt_U</span>);
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>clusters</span> = <span style=color:#859900>new</span> <span style=color:#268bd2>VEBTree</span>[<span style=color:#268bd2>sqrt_U</span>];
+</span></span><span style=display:flex><span>        <span style=color:#859900>foreach</span> (<span style=color:#268bd2>i</span>; <span style=color:#2aa198;font-weight:700>0.</span>.<span style=color:#268bd2>sqrt_U</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>clusters</span>[<span style=color:#268bd2>i</span>] = <span style=color:#859900>new</span> <span style=color:#268bd2>VEBTree</span>(<span style=color:#268bd2>low_sqrt_U</span>);
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// No explicit destructor needed for D due to GC.
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>bool</span> <span style=color:#268bd2>isEmpty</span>() {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>min_val</span> == -<span style=color:#2aa198;font-weight:700>1</span>; <span style=color:#93a1a1;font-style:italic>// -1 indicates empty for integer keys
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>high</span>(<span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>x</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>x</span> / <span style=color:#268bd2>low_sqrt_U</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>low</span>(<span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>x</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>x</span> % <span style=color:#268bd2>low_sqrt_U</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>index</span>(<span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>high_val</span>, <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>low_val</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>high_val</span> &lt;/<span style=color:#268bd2>em</span>&gt; <span style=color:#268bd2>low_sqrt_U</span> + <span style=color:#268bd2>low_val</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>void</span> <span style=color:#268bd2>insert</span>(<span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>x</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>isEmpty</span>()) {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>min_val</span> = <span style=color:#268bd2>x</span>;
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>max_val</span> = <span style=color:#268bd2>x</span>;
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>x</span> &lt; <span style=color:#268bd2>min_val</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>swap</span>(<span style=color:#268bd2>min_val</span>, <span style=color:#268bd2>x</span>);
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>U</span> &gt; <span style=color:#2aa198;font-weight:700>2</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>cluster_idx</span> = <span style=color:#268bd2>high</span>(<span style=color:#268bd2>x</span>);
+</span></span><span style=display:flex><span>            <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>low_val</span> = <span style=color:#268bd2>low</span>(<span style=color:#268bd2>x</span>);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> (<span style=color:#268bd2>clusters</span>[<span style=color:#268bd2>cluster_idx</span>].<span style=color:#268bd2>isEmpty</span>()) {
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>summary</span>.<span style=color:#268bd2>insert</span>(<span style=color:#268bd2>cluster_idx</span>);
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>clusters</span>[<span style=color:#268bd2>cluster_idx</span>].<span style=color:#268bd2>min_val</span> = <span style=color:#268bd2>low_val</span>;
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>clusters</span>[<span style=color:#268bd2>cluster_idx</span>].<span style=color:#268bd2>max_val</span> = <span style=color:#268bd2>low_val</span>;
+</span></span><span style=display:flex><span>            } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>clusters</span>[<span style=color:#268bd2>cluster_idx</span>].<span style=color:#268bd2>insert</span>(<span style=color:#268bd2>low_val</span>);
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>x</span> &gt; <span style=color:#268bd2>max_val</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>max_val</span> = <span style=color:#268bd2>x</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>findNext</span>(<span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>x</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>U</span> == <span style=color:#2aa198;font-weight:700>0</span> || <span style=color:#268bd2>x</span> &gt;= <span style=color:#268bd2>max_val</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span> -<span style=color:#2aa198;font-weight:700>1</span>; <span style=color:#93a1a1;font-style:italic>// -1 indicates no next element
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        }
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>U</span> == <span style=color:#2aa198;font-weight:700>1</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span> -<span style=color:#2aa198;font-weight:700>1</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>x</span> &lt; <span style=color:#268bd2>min_val</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span> <span style=color:#268bd2>min_val</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>cluster_idx</span> = <span style=color:#268bd2>high</span>(<span style=color:#268bd2>x</span>);
+</span></span><span style=display:flex><span>        <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>low_val</span> = <span style=color:#268bd2>low</span>(<span style=color:#268bd2>x</span>);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>clusters</span>[<span style=color:#268bd2>cluster_idx</span>] !<span style=color:#859900>is</span> <span style=color:#859900;font-weight:700>null</span> &amp;&amp; !<span style=color:#268bd2>clusters</span>[<span style=color:#268bd2>cluster_idx</span>].<span style=color:#268bd2>isEmpty</span>() &amp;&amp; <span style=color:#268bd2>low_val</span> &lt; <span style=color:#268bd2>clusters</span>[<span style=color:#268bd2>cluster_idx</span>].<span style=color:#268bd2>max_val</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#93a1a1;font-style:italic>// Next element is in the same cluster
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>next_low</span> = <span style=color:#268bd2>clusters</span>[<span style=color:#268bd2>cluster_idx</span>].<span style=color:#268bd2>findNext</span>(<span style=color:#268bd2>low_val</span>);
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> (<span style=color:#268bd2>next_low</span> != -<span style=color:#2aa198;font-weight:700>1</span>) {
+</span></span><span style=display:flex><span>                <span style=color:#859900>return</span> <span style=color:#268bd2>index</span>(<span style=color:#268bd2>cluster_idx</span>, <span style=color:#268bd2>next_low</span>);
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic>// Next element is in a subsequent cluster
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>next_cluster_idx</span> = <span style=color:#268bd2>summary</span>.<span style=color:#268bd2>findNext</span>(<span style=color:#268bd2>cluster_idx</span>);
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>next_cluster_idx</span> == -<span style=color:#2aa198;font-weight:700>1</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span> -<span style=color:#2aa198;font-weight:700>1</span>; <span style=color:#93a1a1;font-style:italic>// No subsequent non-empty clusters
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>index</span>(<span style=color:#268bd2>next_cluster_idx</span>, <span style=color:#268bd2>clusters</span>[<span style=color:#268bd2>next_cluster_idx</span>].<span style=color:#268bd2>min_val</span>);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// Delete is even more complex and omitted for conceptual simplicity.
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// void main() {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     auto v = new VEBTree(16); // Universe size 16 (0-15)
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     v.insert(2);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     v.insert(3);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     v.insert(4);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     v.insert(14);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     v.insert(15);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     writeln(&#34;Min: &#34;, v.min_val); // 2
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     writeln(&#34;Max: &#34;, v.max_val); // 15
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     writeln(&#34;Find next for 3: &#34;, v.findNext(3)); // Expected: 4
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     writeln(&#34;Find next for 10: &#34;, v.findNext(10)); // Expected: 14
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     writeln(&#34;Find next for 15: &#34;, v.findNext(15)); // Expected: -1
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// }
+</span></span></span></code></pre></div><h2 id=applications>Applications</h2><h3 id=application>Application</h3><p>Van Emde Boas Trees are a theoretical marvel known for their extremely fast worst-case time complexities for successor, predecessor, insert, and delete operations on integer keys. While their complexity and space overhead limit their direct practical use compared to hash tables or balanced BSTs for general-purpose tasks, they are significant in:</p><ul><li><strong>Theoretical Computer Science:</strong> Used as a building block for other advanced data structures and algorithms, especially in proofs of lower bounds for certain problems.</li><li><strong>Large Integer Universes:</strong> When dealing with very large integer keys (e.g., 64-bit integers) where the universe size U is huge, and N (number of elements stored) is much smaller than U.</li><li><strong>Specialized Database Systems:</strong> Some highly optimized in-memory database or indexing systems might use vEB trees for specific integer key lookups or range queries.</li><li><strong>Router Tables:</strong> Potentially in high-performance network routers where integer IP addresses need extremely fast lookups and range queries.</li></ul></div></article><div class=navigation style="margin-top:5rem;display:flex;justify-content:space-between;border-top:1px solid var(--border);padding-top:2rem"><a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/data_structures/specialized/wavelet_tree/ class=nav-btn>← Previous</a>
+<a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/data_structures/specialized/ class=nav-btn>Up</a>
+<a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/data_structures/specialized/trie/ class=nav-btn>Next →</a></div></main><footer class=footer><p>Built with Hugo. No scripts. No tracking. Just the truth.</p></footer><script>document.addEventListener("DOMContentLoaded",function(){const n=document.body,s=document.createTreeWalker(n,NodeFilter.SHOW_TEXT,null,!1);let e;const t=[];for(;e=s.nextNode();)e.nodeValue.includes("[-]")&&t.push(e);t.forEach(e=>{const t=document.createElement("span");t.innerHTML=e.nodeValue.replace(/\[-\]/g,'<span class="started-icon" title="Started"></span>'),e.parentNode.replaceChild(t,e)})})</script><script>const body=document.getElementById("theme-body"),btn=document.getElementById("theme-toggle"),currentTheme=localStorage.getItem("theme");function updateButtonText(){body.classList.contains("theme-terminal")?btn.textContent="Light Mode":btn.textContent="Dark Mode"}currentTheme==="terminal"&&body.classList.add("theme-terminal"),updateButtonText(),btn.addEventListener("click",()=>{body.classList.toggle("theme-terminal"),updateButtonText();let e="natural";body.classList.contains("theme-terminal")&&(e="terminal"),localStorage.setItem("theme",e)})</script></body></html>

@@ -1,0 +1,4683 @@
+---
+title: Ultimate Java 21 Interview Questions (400+)
+---
+
+# Table of Contents
+
+1. <a name="q1-toc"></a>[What are the main features of Java?](#q1)
+2. <a name="q2-toc"></a>[What is the latest version of Java?](#q2)
+3. <a name="q3-toc"></a>[What are the fundamental principles of object oriented programming?](#q3)
+4. <a name="q4-toc"></a>[What do you mean by inheritance in Java?](#q4)
+5. <a name="q5-toc"></a>[What are the different types of inheritance?](#q5)
+6. <a name="q6-toc"></a>[does Java supports multiple inheritance? If not, why?](#q6)
+7. <a name="q7-toc"></a>[If Java doesn’t supports multiple inheritance, then how do you implement multiple inheritance in Java?](#q7)
+8. <a name="q8-toc"></a>[What is the parent class of all classes in Java?](#q8)
+9. <a name="q9-toc"></a>[You know that all classes in Java are inherited from java.lang.Object class. Do interfaces also inherited from java.lang.Object class?](#q9)
+10. <a name="q10-toc"></a>[How do you restrict a member of a class from inheriting to it’s sub classes?](#q10)
+11. <a name="q11-toc"></a>[Can a class extend itself?](#q11)
+12. <a name="q12-toc"></a>[Do constructors and initializers also inherited to sub classes?](#q12)
+13. <a name="q13-toc"></a>[What happens if both, super class and sub class, have a field with same name?](#q13)
+14. <a name="q14-toc"></a>[Do static members also inherited to sub classes?](#q14)
+15. <a name="q15-toc"></a>[What is the difference between super() and this()?](#q15)
+16. <a name="q16-toc"></a>[What are the differences between static initializers and instance initializers?](#q16)
+17. <a name="q17-toc"></a>[How do you instantiate a class using Java 8 method references?](#q17)
+18. <a name="q18-toc"></a>[Can you create an object without using new operator in Java?](#q18)
+19. <a name="q19-toc"></a>[What is constructor chaining?](#q19)
+20. <a name="q20-toc"></a>[Can we call sub class constructor from a super class constructor?](#q20)
+21. <a name="q21-toc"></a>[Do constructors have return type? If no, what happens if you keep return type for a constructor?](#q21)
+22. <a name="q22-toc"></a>[What is no-arg constructor?](#q22)
+23. <a name="q23-toc"></a>[What is the use of private constructors?](#q23)
+24. <a name="q24-toc"></a>[Can we use this() and super() in a method?](#q24)
+25. <a name="q25-toc"></a>[What is the difference between class variables and instance variables?](#q25)
+26. <a name="q26-toc"></a>[What is the constructor overloading? What is the use of constructor overloading?](#q26)
+27. <a name="q27-toc"></a>[What is the difference between constructor and method?](#q27)
+28. <a name="q28-toc"></a>[What are the differences between static and non-static methods?](#q28)
+29. <a name="q29-toc"></a>[Can we overload main() method?](#q29)
+30. <a name="q30-toc"></a>[Can we declare main() method as private?](#q30)
+31. <a name="q31-toc"></a>[Can we declare main() method as non-static?](#q31)
+32. <a name="q32-toc"></a>[Why main() method must be static?](#q32)
+33. <a name="q33-toc"></a>[Can we change the return type of a main() method?](#q33)
+34. <a name="q34-toc"></a>[How many types of modifiers are there in Java?](#q34)
+35. <a name="q35-toc"></a>[What are access modifiers in Java?](#q35)
+36. <a name="q36-toc"></a>[What are non-access modifiers in Java?](#q36)
+37. <a name="q37-toc"></a>[Can a method or a class be final and abstract at the same time?](#q37)
+38. <a name="q38-toc"></a>[Can we declare a class as private?](#q38)
+39. <a name="q39-toc"></a>[Can we declare an abstract method as private?](#q39)
+40. <a name="q40-toc"></a>[Can we use synchronized keyword with class?](#q40)
+41. <a name="q41-toc"></a>[A class can not be declared with synchronized keyword. Then, why we call classes like Vector, StringBuffer are synchronized classes?](#q41)
+42. <a name="q42-toc"></a>[What is type casting?](#q42)
+43. <a name="q43-toc"></a>[How many types of casting are there in Java?](#q43)
+44. <a name="q44-toc"></a>[What is auto widening and explicit narrowing?](#q44)
+45. <a name="q45-toc"></a>[What is auto-up casting and explicit down casting?](#q45)
+46. <a name="q46-toc"></a>[Can an int primitive type of data implicitly casted to Double derived type?](#q46)
+47. <a name="q47-toc"></a>[What is ClassCastException?](#q47)
+48. <a name="q48-toc"></a>[What is boxing and unboxing?](#q48)
+49. <a name="q49-toc"></a>[What is the difference between auto-widening, auto-upcasting and auto-boxing?](#q49)
+50. <a name="q50-toc"></a>[What is polymorphism in Java?](#q50)
+51. <a name="q51-toc"></a>[What is method overloading in Java?](#q51)
+52. <a name="q52-toc"></a>[What is the method signature? What are the things it consists of?](#q52)
+53. <a name="q53-toc"></a>[How do compiler differentiate overloaded methods from duplicate methods?](#q53)
+54. <a name="q54-toc"></a>[Can we declare one overloaded method as static and another one as non-static?](#q54)
+55. <a name="q55-toc"></a>[Is it possible to have two methods in a class with same method signature but different return types?](#q55)
+56. <a name="q56-toc"></a>[In MyClass , there is a method called myMethod with four different overloaded forms. All four different forms have different visibility – private, protected, public and default. Is myMethod properly overloaded?](#q56)
+57. <a name="q57-toc"></a>[Can overloaded methods be synchronized?](#q57)
+58. <a name="q58-toc"></a>[Can we declare overloaded methods as final?](#q58)
+59. <a name="q59-toc"></a>[In the below class, is constructor overloaded or is method overloaded?](#q59)
+60. <a name="q60-toc"></a>[Overloading is the best example of dynamic binding. True or false?](#q60)
+61. <a name="q61-toc"></a>[Can overloaded method be overrided?](#q61)
+62. <a name="q62-toc"></a>[What is method overriding in Java?](#q62)
+63. <a name="q63-toc"></a>[What are the rules to be followed while overriding a method?](#q63)
+64. <a name="q64-toc"></a>[Can we override static methods?](#q64)
+65. <a name="q65-toc"></a>[What happens if we change the arguments of overriding method?](#q65)
+66. <a name="q66-toc"></a>[Can we override protected method of super class as public method in the sub class?](#q66)
+67. <a name="q67-toc"></a>[Can we change the return type of overriding method from Number type to Integer type?](#q67)
+68. <a name="q68-toc"></a>[Can we override a super class method without throws clause as a method with throws clause in the sub class?](#q68)
+69. <a name="q69-toc"></a>[Can we change an exception of a method with throws clause from SQLException to NumberFormatException while overriding it?](#q69)
+70. <a name="q70-toc"></a>[Can we change an exception of a method with throws clause from unchecked to checked while overriding it?](#q70)
+71. <a name="q71-toc"></a>[How do you refer super class version of overridden method in the sub class?](#q71)
+72. <a name="q72-toc"></a>[Can we override private methods?](#q72)
+73. <a name="q73-toc"></a>[Can we remove throws clause of a method while overriding it?](#q73)
+74. <a name="q74-toc"></a>[Is it possible to override non-static methods as static?](#q74)
+75. <a name="q75-toc"></a>[Can we change an exception of a method with throws clause from checked to unchecked while overriding it?](#q75)
+76. <a name="q76-toc"></a>[Can we change the number of exceptions thrown by a method with throws clause while overriding it?](#q76)
+77. <a name="q77-toc"></a>[What is the difference between method overloading and method overriding?](#q77)
+78. <a name="q78-toc"></a>[What is static binding and dynamic binding in Java?](#q78)
+79. <a name="q79-toc"></a>[Abstract class must have only abstract methods. True or false?](#q79)
+80. <a name="q80-toc"></a>[Is it compulsory for a class which is declared as abstract to have at least one abstract method?](#q80)
+81. <a name="q81-toc"></a>[Can we use abstract keyword with constructors?](#q81)
+82. <a name="q82-toc"></a>[Why final and abstract can not be used at a time?](#q82)
+83. <a name="q83-toc"></a>[Can we instantiate a class which does not have even a single abstract method but declared as abstract?](#q83)
+84. <a name="q84-toc"></a>[Can we declare abstract methods as private? Justify your answer?](#q84)
+85. <a name="q85-toc"></a>[We can’t instantiate an abstract class. Then why constructors are allowed in abstract class?](#q85)
+86. <a name="q86-toc"></a>[Can we declare abstract methods as static?](#q86)
+87. <a name="q87-toc"></a>[Can a class contain an abstract class as a member?](#q87)
+88. <a name="q88-toc"></a>[Abstract classes can be nested. True or false?](#q88)
+89. <a name="q89-toc"></a>[Can we declare abstract methods as synchronized?](#q89)
+90. <a name="q90-toc"></a>[Can we declare local inner class as abstract?](#q90)
+91. <a name="q91-toc"></a>[Can abstract method declaration include throws clause?](#q91)
+92. <a name="q92-toc"></a>[Can abstract classes have interfaces in it?](#q92)
+93. <a name="q93-toc"></a>[Can interfaces have constructors, static initializers and instance initializers?](#q93)
+94. <a name="q94-toc"></a>[Can we re-assign a value to a field of interfaces?](#q94)
+95. <a name="q95-toc"></a>[Can we declare an Interface with abstract keyword?](#q95)
+96. <a name="q96-toc"></a>[For every Interface in java, .class file will be generated after compilation. True or false?](#q96)
+97. <a name="q97-toc"></a>[Can we override an interface method with visibility other than public?](#q97)
+98. <a name="q98-toc"></a>[Can interfaces become local members of the methods?](#q98)
+99. <a name="q99-toc"></a>[Can an interface extend a class?](#q99)
+100. <a name="q100-toc"></a>[Like classes, do interfaces also extend java.lang.Object class by default?](#q100)
+101. <a name="q101-toc"></a>[Can interfaces have static methods?](#q101)
+102. <a name="q102-toc"></a>[Can an interface have a class or another interface as it’s members?](#q102)
+103. <a name="q103-toc"></a>[What are marker interfaces? What is the use of marker interfaces?](#q103)
+104. <a name="q104-toc"></a>[What are the changes made to interfaces from Java 8?](#q104)
+105. <a name="q105-toc"></a>[What are the changes made to interfaces from Java 9?](#q105)
+106. <a name="q106-toc"></a>[How many types of nested classes are there in Java?](#q106)
+107. <a name="q107-toc"></a>[Can we access non-static members of outer class inside a static nested class?](#q107)
+108. <a name="q108-toc"></a>[What are member inner classes in Java?](#q108)
+109. <a name="q109-toc"></a>[Can member inner classes have static members in them?](#q109)
+110. <a name="q110-toc"></a>[Can we access all the members of outer class inside a member inner class?](#q110)
+111. <a name="q111-toc"></a>[Can we declare local inner classes as static?](#q111)
+112. <a name="q112-toc"></a>[Can we use local inner classes outside the method or block in which they are defined?](#q112)
+113. <a name="q113-toc"></a>[Can we declare local inner classes as private or protected or public?](#q113)
+114. <a name="q114-toc"></a>[What is the condition to use local variables inside a local inner class?](#q114)
+115. <a name="q115-toc"></a>[What are anonymous inner classes in Java?](#q115)
+116. <a name="q116-toc"></a>[What is the main difference between static and non-static nested classes?](#q116)
+117. <a name="q117-toc"></a>[What is the use of final keyword in Java?](#q117)
+118. <a name="q118-toc"></a>[What is the blank final field?](#q118)
+119. <a name="q119-toc"></a>[Can we change the state of an object to which a final reference variable is pointing?](#q119)
+120. <a name="q120-toc"></a>[What is the main difference between abstract methods and final methods?](#q120)
+121. <a name="q121-toc"></a>[What is the use of final class?](#q121)
+122. <a name="q122-toc"></a>[Can we change the value of an interface field? If not, why?](#q122)
+123. <a name="q123-toc"></a>[Where all we can initialize a final non-static global variable if it is not initialized at the time of declaration?](#q123)
+124. <a name="q124-toc"></a>[What are final class, final method and final variable?](#q124)
+125. <a name="q125-toc"></a>[Where all we can initialize a final static global variable if it is not initialized at the time of declaration?](#q125)
+126. <a name="q126-toc"></a>[Can we declare constructors as final?](#q126)
+127. <a name="q127-toc"></a>[What is ArrayStoreException in Java? When you will get this exception?](#q127)
+128. <a name="q128-toc"></a>[Can you pass the negative number as an array size?](#q128)
+129. <a name="q129-toc"></a>[Can you change the size of the array once you define it? OR Can you insert or delete the elements after creating an array?](#q129)
+130. <a name="q130-toc"></a>[What is an anonymous array? Give example?](#q130)
+131. <a name="q131-toc"></a>[What is the difference between int[] a and int a[]?](#q131)
+132. <a name="q132-toc"></a>[There are two array objects of int type. one is containing 100 elements and another one is containing 10 elements. Can you assign array of 100 elements to an array of 10 elements?](#q132)
+133. <a name="q133-toc"></a>[“int a[] = new int[3]{1, 2, 3}” – is it a legal way of defining the arrays in Java?](#q133)
+134. <a name="q134-toc"></a>[What are the differences between Array and ArrayList in Java?](#q134)
+135. <a name="q135-toc"></a>[What are the different ways of copying an array into another array?](#q135)
+136. <a name="q136-toc"></a>[What are jagged arrays in Java? Give example?](#q136)
+137. <a name="q137-toc"></a>[How do you check the equality of two arrays in java? OR How do you compare the two arrays in Java?](#q137)
+138. <a name="q138-toc"></a>[What is ArrayIndexOutOfBoundsException in Java? When it occurs?](#q138)
+139. <a name="q139-toc"></a>[How do you sort the array elements?](#q139)
+140. <a name="q140-toc"></a>[How do you find the intersection of two arrays in Java?](#q140)
+141. <a name="q141-toc"></a>[What are the different ways of declaring multidimensional arrays in Java?](#q141)
+142. <a name="q142-toc"></a>[While creating the multidimensional arrays, can you specify an array dimension after an empty dimension?](#q142)
+143. <a name="q143-toc"></a>[How do you search an array for a specific element?](#q143)
+144. <a name="q144-toc"></a>[What value does array elements get, if they are not initialized?](#q144)
+145. <a name="q145-toc"></a>[How do you find duplicate elements in an array?](#q145)
+146. <a name="q146-toc"></a>[What are the different ways to iterate over an array in Java?](#q146)
+147. <a name="q147-toc"></a>[How do you find second largest element in an array of integers?](#q147)
+148. <a name="q148-toc"></a>[How do you find all pairs of elements in an array whose sum is equal to a given number?](#q148)
+149. <a name="q149-toc"></a>[How do you separate zeros from non-zeros in an integer array?](#q149)
+150. <a name="q150-toc"></a>[How do you find continuous sub array whose sum is equal to a given number?](#q150)
+151. <a name="q151-toc"></a>[What are the drawbacks of the arrays in Java?](#q151)
+152. <a name="q152-toc"></a>[Is String a keyword in Java?](#q152)
+153. <a name="q153-toc"></a>[Is String a primitive type or derived type?](#q153)
+154. <a name="q154-toc"></a>[In how many ways you can create string objects in Java?](#q154)
+155. <a name="q155-toc"></a>[What is string constant pool?](#q155)
+156. <a name="q156-toc"></a>[What is special about string objects as compared to objects of other derived types?](#q156)
+157. <a name="q157-toc"></a>[What do you mean by mutable and immutable objects?](#q157)
+158. <a name="q158-toc"></a>[Which is the final class in these three classes – String, StringBuffer and StringBuilder?](#q158)
+159. <a name="q159-toc"></a>[What is the difference between String, StringBuffer and StringBuilder?](#q159)
+160. <a name="q160-toc"></a>[Why StringBuffer and StringBuilder classes are introduced in Java when there already exist String class to represent the set of characters?](#q160)
+161. <a name="q161-toc"></a>[How many objects will be created in the following code and where they will be stored in the memory?](#q161)
+162. <a name="q162-toc"></a>[How do you create mutable string objects?](#q162)
+163. <a name="q163-toc"></a>[Which one will you prefer among “==” and equals() method to compare two string objects?](#q163)
+164. <a name="q164-toc"></a>[Which class do you recommend among String, StringBuffer and StringBuilder classes if I want mutable and thread safe objects?](#q164)
+165. <a name="q165-toc"></a>[How do you convert given string to char array?](#q165)
+166. <a name="q166-toc"></a>[How many objects will be created in the following code and where they will be stored?](#q166)
+167. <a name="q167-toc"></a>[Where exactly string constant pool is located in the memory?](#q167)
+168. <a name="q168-toc"></a>[I am performing lots of string concatenation and string modification in my code. which class among string, StringBuffer and StringBuilder improves the performance of my code. Remember I also want thread safe code?](#q168)
+169. <a name="q169-toc"></a>[What is string intern?](#q169)
+170. <a name="q170-toc"></a>[What is the main difference between Java strings and C, C++ strings?](#q170)
+171. <a name="q171-toc"></a>[How many objects will be created in the following code and where they will be stored?](#q171)
+172. <a name="q172-toc"></a>[Can we call String class methods using string literals?](#q172)
+173. <a name="q173-toc"></a>[do you have any idea why strings have been made immutable in Java?](#q173)
+174. <a name="q174-toc"></a>[What do you think about string constant pool? Why they have provided this pool as we can store string objects in the heap memory itself?](#q174)
+175. <a name="q175-toc"></a>[What is the similarity and difference between String and StringBuffer class?](#q175)
+176. <a name="q176-toc"></a>[What is the similarity and difference between StringBuffer and StringBuilder class?](#q176)
+177. <a name="q177-toc"></a>[How do you count the number of occurrences of each character in a string?](#q177)
+178. <a name="q178-toc"></a>[How do you remove all white spaces from a string in Java?](#q178)
+179. <a name="q179-toc"></a>[How do you find duplicate characters in a string?](#q179)
+180. <a name="q180-toc"></a>[Write a Java program to reverse a string?](#q180)
+181. <a name="q181-toc"></a>[Write a Java program to check whether two strings are anagram or not?](#q181)
+182. <a name="q182-toc"></a>[Write a Java program to reverse a given string with preserving the position of spaces?](#q182)
+183. <a name="q183-toc"></a>[How do you convert string to integer and integer to string in Java?](#q183)
+184. <a name="q184-toc"></a>[Write a code to prove that strings are immutable in Java?](#q184)
+185. <a name="q185-toc"></a>[Write a code to check whether one string is a rotation of another?](#q185)
+186. <a name="q186-toc"></a>[Write a Java program to reverse each word of a given string?](#q186)
+187. <a name="q187-toc"></a>[Print all substrings of a string in Java?](#q187)
+188. <a name="q188-toc"></a>[Print common characters between two strings in alphabetical order in Java?](#q188)
+189. <a name="q189-toc"></a>[How find maximum occurring character in a string in Java?](#q189)
+190. <a name="q190-toc"></a>[What is difference between Java 8 StringJoiner, String.join() and Collectors.joining()?](#q190)
+191. <a name="q191-toc"></a>[How to reverse a sentence word by word in Java?](#q191)
+192. <a name="q192-toc"></a>[What is multithreaded programming? Does Java supports multithreaded programming? Explain with an example?](#q192)
+193. <a name="q193-toc"></a>[In how many ways, you can create threads in Java? What are those? Explain with examples?](#q193)
+194. <a name="q194-toc"></a>[How many types of threads are there in Java? Explain?](#q194)
+195. <a name="q195-toc"></a>[What is the default daemon status of a thread? How do you check it?](#q195)
+196. <a name="q196-toc"></a>[Can you convert user tread into daemon thread and vice-versa? Explain with example?](#q196)
+197. <a name="q197-toc"></a>[Is it possible to give a name to a thread? If yes, how do you do that? What will be the default name of a thread if you don’t name a thread?](#q197)
+198. <a name="q198-toc"></a>[Can we change the name of the main thread? If yes, How?](#q198)
+199. <a name="q199-toc"></a>[Do two threads can have same name? If yes then how do you identify the threads having the same name?](#q199)
+200. <a name="q200-toc"></a>[What are MIN_PRIORITY, NORM_PRIORITY and MAX_PRIORITY?](#q200)
+201. <a name="q201-toc"></a>[What is the default priority of a thread? Can we change it? If yes, how?](#q201)
+202. <a name="q202-toc"></a>[What is the priority of main thread? Can we change it?](#q202)
+203. <a name="q203-toc"></a>[What is the purpose of Thread.sleep() method?](#q203)
+204. <a name="q204-toc"></a>[Can you tell which thread is going to sleep after calling myThread.sleep(5000) in the below program? is it main thread or myThread?](#q204)
+205. <a name="q205-toc"></a>[Does the thread releases the lock it holds when it is going for sleep?](#q205)
+206. <a name="q206-toc"></a>[What is the purpose of join() method? Explain with an example?](#q206)
+207. <a name="q207-toc"></a>[What do you mean by synchronization? Explain with an example?](#q207)
+208. <a name="q208-toc"></a>[What is object lock or monitor?](#q208)
+209. <a name="q209-toc"></a>[I want only some part of the method to be synchronized, not the whole method? How do you achieve that?](#q209)
+210. <a name="q210-toc"></a>[What is the use of synchronized blocks?](#q210)
+211. <a name="q211-toc"></a>[What is mutex?](#q211)
+212. <a name="q212-toc"></a>[Is it possible to make constructors synchronized?](#q212)
+213. <a name="q213-toc"></a>[Can we use synchronized keyword with variables?](#q213)
+214. <a name="q214-toc"></a>[As you know that synchronized static methods need class level lock and synchronized non-static methods need object level lock. Is it possible to run these two methods simultaneously?](#q214)
+215. <a name="q215-toc"></a>[If a particular thread caught with exceptions while executing a synchronized method, does executing thread releases lock or not?](#q215)
+216. <a name="q216-toc"></a>[Synchronized methods or synchronized blocks – which one do you prefer?](#q216)
+217. <a name="q217-toc"></a>[What is deadlock in Java?](#q217)
+218. <a name="q218-toc"></a>[How do you programatically detect the deadlocked threads in Java?](#q218)
+219. <a name="q219-toc"></a>[What do you know about lock ordering and lock timeout?](#q219)
+220. <a name="q220-toc"></a>[How do you avoid the deadlock? Tell some tips?](#q220)
+221. <a name="q221-toc"></a>[How threads communicate with each other in Java?](#q221)
+222. <a name="q222-toc"></a>[What is the difference between wait() and sleep() methods in Java?](#q222)
+223. <a name="q223-toc"></a>[What is the difference between notify() and notifyAll() in Java?](#q223)
+224. <a name="q224-toc"></a>[Though they are used for inter thread communication, why wait(), notify() and notifyAll() methods are included in java.lang.Object class not in java.lang.Thread class?](#q224)
+225. <a name="q225-toc"></a>[What do you know about interrupt() method? Why it is used?](#q225)
+226. <a name="q226-toc"></a>[How do you check whether a thread is interrupted or not?](#q226)
+227. <a name="q227-toc"></a>[What is the difference between isInterrupted() and interrupted() methods?](#q227)
+228. <a name="q228-toc"></a>[Can a thread interrupt itself? Is it allowed in Java?](#q228)
+229. <a name="q229-toc"></a>[Explain thread life cycle? OR Explain thread states in Java?](#q229)
+230. <a name="q230-toc"></a>[In what state deadlocked threads will be?](#q230)
+231. <a name="q231-toc"></a>[What is the difference between BLOCKED and WAITING states?](#q231)
+232. <a name="q232-toc"></a>[What is the difference between WAITING and TIMED_WAITING states?](#q232)
+233. <a name="q233-toc"></a>[Can we call start() method twice?](#q233)
+234. <a name="q234-toc"></a>[What is the difference between calling start() method and calling run() method directly as anyhow start() method internally calls run() method?](#q234)
+235. <a name="q235-toc"></a>[How do you stop a thread?](#q235)
+236. <a name="q236-toc"></a>[Suppose there are two threads T1 and T2 executing their task concurrently. If an exception occurred in T1, will it effect execution of T2 or it will execute normally?](#q236)
+237. <a name="q237-toc"></a>[Which one is the better way to implement threads in Java? Is it using Thread class or using Runnable interface?](#q237)
+238. <a name="q238-toc"></a>[What is the difference between program, process and thread?](#q238)
+239. <a name="q239-toc"></a>[What are the differences between user threads and daemon threads?](#q239)
+240. <a name="q240-toc"></a>[What is the use of thread groups in Java?](#q240)
+241. <a name="q241-toc"></a>[What is the thread group of a main thread?](#q241)
+242. <a name="q242-toc"></a>[What activeCount() and activeGroupCount() methods do?](#q242)
+243. <a name="q243-toc"></a>[After Java 8, what do you think about Java? Is it still an object oriented language or it has turned into functional programming language?](#q243)
+244. <a name="q244-toc"></a>[What are the three main features of Java 8 which make Java as a functional programming language?](#q244)
+245. <a name="q245-toc"></a>[What are lambda expressions? How this feature has changed the way you write code in Java? Explain with some before Java 8 and after Java 8 examples?](#q245)
+246. <a name="q246-toc"></a>[How the signature of lambda expressions are determined?](#q246)
+247. <a name="q247-toc"></a>[How the compiler determines the return type of a lambda expression?](#q247)
+248. <a name="q248-toc"></a>[Can we use non-final local variables inside a lambda expression?](#q248)
+249. <a name="q249-toc"></a>[What are the advantages of lambda expressions?](#q249)
+250. <a name="q250-toc"></a>[What are the functional interfaces? Do they exist before Java 8 or they are the whole new features introduced in Java 8?](#q250)
+251. <a name="q251-toc"></a>[What are the new functional interfaces introduced in Java 8? In which package they have kept in?](#q251)
+252. <a name="q252-toc"></a>[What is the difference between Predicate and BiPredicate?](#q252)
+253. <a name="q253-toc"></a>[What is the difference between Function and BiFunction?](#q253)
+254. <a name="q254-toc"></a>[Which functional interface do you use if you want to perform some operations on an object and returns nothing?](#q254)
+255. <a name="q255-toc"></a>[Which functional interface is the best suitable for an operation which creates new objects?](#q255)
+256. <a name="q256-toc"></a>[When you use UnaryOperator and BinaryOperator interfaces?](#q256)
+257. <a name="q257-toc"></a>[Along with functional interfaces which support object types, Java 8 has introduced functional interfaces which support primitive types. For example, Consumer for object types and intConsumer, LongConsumer, DoubleConsumer for primitive types. What do you think, is it necessary to introduce separate interfaces for primitive types and object types?](#q257)
+258. <a name="q258-toc"></a>[How functional interfaces and lambda expressions are inter related?](#q258)
+259. <a name="q259-toc"></a>[What are the method references? What is the use of them?](#q259)
+260. <a name="q260-toc"></a>[What are the different syntax of Java 8 method references?](#q260)
+261. <a name="q261-toc"></a>[What are the major changes made to interfaces from Java 8?](#q261)
+262. <a name="q262-toc"></a>[What are default methods of an interface? Why they are introduced?](#q262)
+263. <a name="q263-toc"></a>[As interfaces can also have concrete methods from Java 8, how do you solve diamond problem i.e conflict of classes inhering multiple methods with same signature?](#q263)
+264. <a name="q264-toc"></a>[Why static methods are introduced to interfaces from Java 8?](#q264)
+265. <a name="q265-toc"></a>[What are streams? Why they are introduced?](#q265)
+266. <a name="q266-toc"></a>[Can we consider streams as another type of data structure in Java? Justify your answer?](#q266)
+267. <a name="q267-toc"></a>[What are intermediate and terminal operations?](#q267)
+268. <a name="q268-toc"></a>[What do you mean by pipeline of operations? What is the use of it?](#q268)
+269. <a name="q269-toc"></a>[“Stream operations do the iteration implicitly” what does it mean?](#q269)
+270. <a name="q270-toc"></a>[Which type of resource loading do Java 8 streams support? Lazy Loading OR Eager Loading?](#q270)
+271. <a name="q271-toc"></a>[What are short circuiting operations?](#q271)
+272. <a name="q272-toc"></a>[What are selection operations available in Java 8 Stream API?](#q272)
+273. <a name="q273-toc"></a>[What are sorting operations available in Java 8 streams?](#q273)
+274. <a name="q274-toc"></a>[What are reducing operations? Name the reducing operations available in Java 8 streams?](#q274)
+275. <a name="q275-toc"></a>[What are the matching operations available in Java 8 streams?](#q275)
+276. <a name="q276-toc"></a>[What are searching / finding operations available in Java 8 streams?](#q276)
+277. <a name="q277-toc"></a>[Name the mapping operations available in Java 8 streams?](#q277)
+278. <a name="q278-toc"></a>[What is the difference between map() and flatMap()?](#q278)
+279. <a name="q279-toc"></a>[What is the difference between limit() and skip()?](#q279)
+280. <a name="q280-toc"></a>[What is the difference between findFirst() and findAny()?](#q280)
+281. <a name="q281-toc"></a>[Do you know Stream.collect() method, Collector interface and Collectors class? What is the relation between them?](#q281)
+282. <a name="q282-toc"></a>[Name any 5 methods of Collectors class and their usage?](#q282)
+283. <a name="q283-toc"></a>[What are the differences between collections and streams?](#q283)
+284. <a name="q284-toc"></a>[What is the purpose of Java 8 Optional class?](#q284)
+285. <a name="q285-toc"></a>[What is the difference between Java 8 Spliterator and the iterators available before Java 8?](#q285)
+286. <a name="q286-toc"></a>[What is the difference between Java 8 StringJoiner, String.join() and Collectors.joining()?](#q286)
+287. <a name="q287-toc"></a>[Name three important classes of Java 8 Date and Time API?](#q287)
+288. <a name="q288-toc"></a>[How do you get current date and time using Java 8 features?](#q288)
+289. <a name="q289-toc"></a>[Given a list of students, write a Java 8 code to partition the students who got above 60% from those who didn’t?](#q289)
+290. <a name="q290-toc"></a>[Given a list of students, write a Java 8 code to get the names of top 3 performing students?](#q290)
+291. <a name="q291-toc"></a>[Given a list of students, how do you get the name and percentage of each student?](#q291)
+292. <a name="q292-toc"></a>[Given a list of students, how do you get the subjects offered in the college?](#q292)
+293. <a name="q293-toc"></a>[Given a list of students, write a Java 8 code to get highest, lowest and average percentage of students?](#q293)
+294. <a name="q294-toc"></a>[How do you get total number of students from the given list of students?](#q294)
+295. <a name="q295-toc"></a>[How do you get the students grouped by subject from the given list of students?](#q295)
+296. <a name="q296-toc"></a>[Given a list of employees, write a Java 8 code to count the number of employees in each department?](#q296)
+297. <a name="q297-toc"></a>[Given a list of employees, find out the average salary of male and female employees?](#q297)
+298. <a name="q298-toc"></a>[Write a Java 8 code to get the details of highest paid employee in the organization from the given list of employees?](#q298)
+299. <a name="q299-toc"></a>[Write the Java 8 code to get the average age of each department in an organization?](#q299)
+300. <a name="q300-toc"></a>[Given a list of employees, how do you find out who is the senior most employee in the organization?](#q300)
+301. <a name="q301-toc"></a>[Given a list of employees, get the details of the most youngest employee in the organization?](#q301)
+302. <a name="q302-toc"></a>[How do you get the number of employees in each department if you have given a list of employees?](#q302)
+303. <a name="q303-toc"></a>[Given a list of employees, find out the number of male and female employees in the organization?](#q303)
+304. <a name="q304-toc"></a>[What is an exception?](#q304)
+305. <a name="q305-toc"></a>[How the exceptions are handled in Java? OR Explain exception handling mechanism in Java?](#q305)
+306. <a name="q306-toc"></a>[What is the difference between error and exception in Java?](#q306)
+307. <a name="q307-toc"></a>[Can we keep other statements in between try, catch and finally blocks?](#q307)
+308. <a name="q308-toc"></a>[Can we write only try block without catch and finally blocks?](#q308)
+309. <a name="q309-toc"></a>[There are three statements in a try block – statement1, statement2 and statement3. After that there is a catch block to catch the exceptions occurred in the try block. Assume that exception has occurred in statement2. Does statement3 get executed or not?](#q309)
+310. <a name="q310-toc"></a>[What is unreachable catch block error?](#q310)
+311. <a name="q311-toc"></a>[Explain the hierarchy of exceptions in Java?](#q311)
+312. <a name="q312-toc"></a>[What are run time exceptions in Java. Give example?](#q312)
+313. <a name="q313-toc"></a>[What is OutOfMemoryError in Java?](#q313)
+314. <a name="q314-toc"></a>[what are checked and unchecked exceptions in Java?](#q314)
+315. <a name="q315-toc"></a>[What is the difference between ClassNotFoundException and NoClassDefFoundError in Java?](#q315)
+316. <a name="q316-toc"></a>[Can we keep the statements after finally block If the control is returning from the finally block itself?](#q316)
+317. <a name="q317-toc"></a>[Does finally block get executed If either try or catch blocks are returning the control?](#q317)
+318. <a name="q318-toc"></a>[Can we throw an exception manually? If yes, how?](#q318)
+319. <a name="q319-toc"></a>[What is Re-throwing an exception in Java?](#q319)
+320. <a name="q320-toc"></a>[What is the use of throws keyword in Java?](#q320)
+321. <a name="q321-toc"></a>[Why it is always recommended that clean up operations like closing the DB resources to keep inside a finally block?](#q321)
+322. <a name="q322-toc"></a>[What is the difference between final, finally and finalize in Java?](#q322)
+323. <a name="q323-toc"></a>[How do you create customized exceptions in Java?](#q323)
+324. <a name="q324-toc"></a>[What is ClassCastException in Java?](#q324)
+325. <a name="q325-toc"></a>[What is the difference between throw, throws and throwable in Java?](#q325)
+326. <a name="q326-toc"></a>[What is StackOverflowError in Java?](#q326)
+327. <a name="q327-toc"></a>[Can we override a super class method which is throwing an unchecked exception with checked exception in the sub class?](#q327)
+328. <a name="q328-toc"></a>[What are chained exceptions in Java?](#q328)
+329. <a name="q329-toc"></a>[Which class is the super class for all types of errors and exceptions in Java?](#q329)
+330. <a name="q330-toc"></a>[What are the legal combinations of try, catch and finally blocks?](#q330)
+331. <a name="q331-toc"></a>[What is the use of printStackTrace() method?](#q331)
+332. <a name="q332-toc"></a>[Give some examples to checked exceptions?](#q332)
+333. <a name="q333-toc"></a>[Give some examples to unchecked exceptions?](#q333)
+334. <a name="q334-toc"></a>[Do you know try-with-resources blocks? Why do we use them? When they are introduced?](#q334)
+335. <a name="q335-toc"></a>[What are the benefits of try-with-resources?](#q335)
+336. <a name="q336-toc"></a>[What are the changes made to exception handling from Java 7?](#q336)
+337. <a name="q337-toc"></a>[What are the improvements made to try-with-resources in Java 9?](#q337)
+338. <a name="q338-toc"></a>[What is the Java Collection Framework? Why it is introduced?](#q338)
+339. <a name="q339-toc"></a>[What is the root level interface of the Java collection framework?](#q339)
+340. <a name="q340-toc"></a>[What are the four main core interfaces of the Java collection framework?](#q340)
+341. <a name="q341-toc"></a>[Explain the class hierarchy of Java collection framework?](#q341)
+342. <a name="q342-toc"></a>[Why Map is not inherited from Collection interface although it is a part of Java collection framework?](#q342)
+343. <a name="q343-toc"></a>[What is Iterable interface?](#q343)
+344. <a name="q344-toc"></a>[What are the characteristics of List?](#q344)
+345. <a name="q345-toc"></a>[What are the major implementations of List interface?](#q345)
+346. <a name="q346-toc"></a>[What are the characteristics of ArrayList?](#q346)
+347. <a name="q347-toc"></a>[What are the three marker interfaces implemented by ArrayList?](#q347)
+348. <a name="q348-toc"></a>[What is the default initial capacity of ArrayList?](#q348)
+349. <a name="q349-toc"></a>[What is the main drawback of ArrayList?](#q349)
+350. <a name="q350-toc"></a>[What are the differences between array and ArrayList?](#q350)
+351. <a name="q351-toc"></a>[How Vector is different from ArrayList?](#q351)
+352. <a name="q352-toc"></a>[Why it is recommended not to use Vector class in your code?](#q352)
+353. <a name="q353-toc"></a>[What are the differences between ArrayList and Vector?](#q353)
+354. <a name="q354-toc"></a>[What are the characteristics of Queue?](#q354)
+355. <a name="q355-toc"></a>[Mention the important methods of Queue?](#q355)
+356. <a name="q356-toc"></a>[How Queue differs from List?](#q356)
+357. <a name="q357-toc"></a>[Which popular collection type implements both List and Queue?](#q357)
+358. <a name="q358-toc"></a>[What are the Characteristics of LinkedList?](#q358)
+359. <a name="q359-toc"></a>[What are the differences between ArrayList and LinkedList?](#q359)
+360. <a name="q360-toc"></a>[What is the PriorityQueue?](#q360)
+361. <a name="q361-toc"></a>[What are Deque and ArrayDeque? When they are introduced in Java?](#q361)
+362. <a name="q362-toc"></a>[What are the characteristics of sets?](#q362)
+363. <a name="q363-toc"></a>[What are the major implementations of Set interface?](#q363)
+364. <a name="q364-toc"></a>[What are the differences between List and Set?](#q364)
+365. <a name="q365-toc"></a>[What are the characteristics of HashSet?](#q365)
+366. <a name="q366-toc"></a>[How HashSet works internally in Java?](#q366)
+367. <a name="q367-toc"></a>[What are the characteristics of LinkedHashSet?](#q367)
+368. <a name="q368-toc"></a>[When you prefer LinkedHashSet over HashSet?](#q368)
+369. <a name="q369-toc"></a>[How LinkedHashSet works internally in Java?](#q369)
+370. <a name="q370-toc"></a>[What is SortedSet? Give one Example?](#q370)
+371. <a name="q371-toc"></a>[What is NavigableSet? Give one example?](#q371)
+372. <a name="q372-toc"></a>[What are the characteristics of TreeSet?](#q372)
+373. <a name="q373-toc"></a>[How HashSet, LinkedHashSet and TreeSet differ from each other?](#q373)
+374. <a name="q374-toc"></a>[What are the differences between Iterator and ListIterator?](#q374)
+375. <a name="q375-toc"></a>[How Map interface is different from other three primary interfaces of Java collection framework – List, Set and Queue?](#q375)
+376. <a name="q376-toc"></a>[What are the popular implementations of Map interface?](#q376)
+377. <a name="q377-toc"></a>[What are the characteristics of HashMap?](#q377)
+378. <a name="q378-toc"></a>[How HashMap works internally in Java?](#q378)
+379. <a name="q379-toc"></a>[What is hashing?](#q379)
+380. <a name="q380-toc"></a>[What is the initial capacity of HashMap?](#q380)
+381. <a name="q381-toc"></a>[What is the load factor of HashMap?](#q381)
+382. <a name="q382-toc"></a>[What is the threshold of an HashMap? How it is calculated?](#q382)
+383. <a name="q383-toc"></a>[What is rehashing?](#q383)
+384. <a name="q384-toc"></a>[How initial capacity and load factor affect the performance of an HashMap?](#q384)
+385. <a name="q385-toc"></a>[What are the differences between HashSet and HashMap?](#q385)
+386. <a name="q386-toc"></a>[What are the differences between HashMap and HashTable?](#q386)
+387. <a name="q387-toc"></a>[How do you remove duplicate elements from an ArrayList in Java?](#q387)
+388. <a name="q388-toc"></a>[Which Collection type do you suggest me If I want a sorted collection of objects with no duplicates?](#q388)
+389. <a name="q389-toc"></a>[What are the differences between Fail-Fast Iterators and Fail-Safe Iterators?](#q389)
+390. <a name="q390-toc"></a>[How do you convert an Array to ArrayList and an ArrayList to Array?](#q390)
+391. <a name="q391-toc"></a>[What is the difference between Collection and Collections?](#q391)
+392. <a name="q392-toc"></a>[How collections are different from Java 8 streams?](#q392)
+393. <a name="q393-toc"></a>[How do you convert HashMap to ArrayList in Java?](#q393)
+394. <a name="q394-toc"></a>[What keySet(), values() and entrySet() methods do?](#q394)
+395. <a name="q395-toc"></a>[What is the difference between Iterator and Java 8 Spliterator?](#q395)
+396. <a name="q396-toc"></a>[How do you sort an ArrayList?](#q396)
+397. <a name="q397-toc"></a>[What are the differences between HashMap and ConcurrentHashMap?](#q397)
+398. <a name="q398-toc"></a>[How do you make collections read-only or unmodifiable?](#q398)
+399. <a name="q399-toc"></a>[How do you reverse an ArrayList in Java?](#q399)
+400. <a name="q400-toc"></a>[What are the differences between synchronized HashMap, HashTable and ConcurrentHashMap?](#q400)
+401. <a name="q401-toc"></a>[How do you sort HashMap by keys?](#q401)
+402. <a name="q402-toc"></a>[How do you sort HashMap by values?](#q402)
+403. <a name="q403-toc"></a>[How do you merge two maps with same keys?](#q403)
+404. <a name="q404-toc"></a>[What do you know about Java 9 immutable collections? How they are different from unmodifiable collections returned by the Collections wrapper methods?](#q404)
+405. <a name="q405-toc"></a>[What do you know about Java 10 List.copyOf(), Set.copyOf() and Map.copyOf() methods? Why they are introduced?](#q405)
+406. <a name="q406-toc"></a>[What are the differences between Enumeration And Iterator?](#q406)
+407. <a name="q407-toc"></a>[Which is of type RandomAccess – ArrayList, LinkedList, HashSet and HashMap?](#q407)
+
+---
+
+# Answers
+
+
+<a name="q1"></a>
+### 1) What are the main features of Java? (Updated for Java 21)
+[Back to TOC](#q1-toc)
+
+**Answer:**
+Think **"POSH-R"** + **Modern Scalability**.
+- **Platform Independent:** "Write Once, Run Anywhere" via the JVM.
+- **Object-Oriented:** Everything is centered around objects (and now **Records** for data).
+- **Simple & Secure:** No pointers, automatic memory management, and a robust security manager.
+- **Highly Robust:** Strong exception handling and **Garbage Collection**.
+- **Modern Concurrency:** Now includes **Virtual Threads** (Project Loom) for massive scalability.
+
+```java
+// Modern Java 21 Feature: Virtual Threads
+public class Main {
+    public static void main(String[] args) {
+        // Creating a virtual thread - lightweight and efficient!
+        Thread.ofVirtual().start(() -> {
+            System.out.println("Hello from a Virtual Thread!");
+        });
+    }
+}
+```
+
+---
+
+<a name="q2"></a>
+### 2) What is the latest version of Java?
+[Back to TOC](#q2-toc)
+
+**Answer:**
+**Java 21** is the current major **LTS (Long Term Support)** version. It introduced stable Virtual Threads and Sequenced Collections. Java 25 is expected to be the next LTS.
+
+---
+
+<a name="q3"></a>
+### 3) What are the fundamental principles of object oriented programming?
+[Back to TOC](#q3-toc)
+
+**Answer:**
+Remember **A-PIE**:
+1.  **A**bstraction: Hiding complexity (Interfaces/Abstract Classes).
+2.  **P**olymorphism: One interface, many forms (Overloading/Overriding).
+3.  **I**nheritance: Acquiring properties from a parent (now enhanced with **Sealed Classes** for controlled inheritance).
+4.  **E**ncapsulation: Protecting data (using private fields and modern **Records**).
+
+---
+
+<a name="q4"></a>
+### 4) What do you mean by inheritance in Java?
+[Back to TOC](#q4-toc)
+
+**Answer:**
+It allows a "Child" class to inherit fields and methods from a "Parent" class.
+```java
+class Animal {
+    void eat() { System.out.println("Eating..."); }
+}
+
+class Dog extends Animal {
+    void bark() { System.out.println("Barking..."); }
+}
+
+// Dog now has both eat() and bark() methods.
+```
+
+---
+
+<a name="q5"></a>
+### 5) What are the different types of inheritance?
+[Back to TOC](#q5-toc)
+
+**Answer:**
+1.  **Single:** A -> B
+2.  **Multilevel:** A -> B -> C
+3.  **Hierarchical:** A -> B, A -> C
+4.  **Multiple:** (Only via **Interfaces**)
+5.  **Hybrid:** Combination of the above.
+
+---
+
+<a name="q6"></a>
+### 6) does Java supports multiple inheritance? If not, why?
+[Back to TOC](#q6-toc)
+
+**Answer:**
+**No**, not through classes. 
+**Why?** To avoid the **Diamond Problem**. If Class C extends both A and B, and both have a method `run()`, Class C wouldn't know which one to execute.
+
+---
+
+<a name="q7"></a>
+### 7) If Java doesn’t supports multiple inheritance, then how do you implement multiple inheritance in Java?
+[Back to TOC](#q7-toc)
+
+**Answer:**
+Using **Interfaces**. A class can implement as many interfaces as it needs.
+```java
+interface Swimmer { void swim(); }
+interface Flyer { void fly(); }
+
+class Duck implements Swimmer, Flyer {
+    public void swim() { System.out.println("Swimming..."); }
+    public void fly() { System.out.println("Flying..."); }
+}
+```
+
+---
+
+<a name="q8"></a>
+### 8) What is the parent class of all classes in Java?
+[Back to TOC](#q8-toc)
+
+**Answer:**
+`java.lang.Object`. Every class you create implicitly extends `Object`.
+
+---
+
+<a name="q9"></a>
+### 9) Do interfaces also inherited from java.lang.Object class?
+[Back to TOC](#q9-toc)
+
+**Answer:**
+**No.** Interfaces do not extend `Object`. However, they implicitly declare all of `Object`'s public methods (like `toString()`, `equals()`), so any implementation of an interface will have these methods.
+
+---
+
+<a name="q10"></a>
+### 10) How do you restrict a member of a class from inheriting to it’s sub classes?
+[Back to TOC](#q10-toc)
+
+**Answer:**
+Use the **`private`** modifier. Private members are only visible within their own class.
+
+---
+
+<a name="q11"></a>
+### 11) Can a class extend itself?
+[Back to TOC](#q11-toc)
+
+**Answer:**
+**No.** It would cause a compile-time error.
+
+---
+
+<a name="q12"></a>
+### 12) Do constructors and initializers also inherited to sub classes?
+[Back to TOC](#q12-toc)
+
+**Answer:**
+**No.** Constructors are not inherited. However, the subclass constructor **must** call the parent constructor (implicitly or explicitly via `super()`).
+
+---
+
+<a name="q13"></a>
+### 13) What happens if both, super class and sub class, have a field with same name?
+[Back to TOC](#q13-toc)
+
+**Answer:**
+This is called **Variable Hiding**. The subclass field "hides" the superclass field.
+```java
+class Parent { String name = "Parent"; }
+class Child extends Parent { 
+    String name = "Child"; 
+    void print() {
+        System.out.println(name);       // Child
+        System.out.println(super.name); // Parent
+    }
+}
+```
+
+---
+
+<a name="q14"></a>
+### 14) Do static members also inherited to sub classes?
+[Back to TOC](#q14-toc)
+
+**Answer:**
+**Yes**, but they are not overridden; they are **hidden**. You should access them using the class name.
+
+---
+
+<a name="q15"></a>
+### 15) What is the difference between super() and this()?
+[Back to TOC](#q15-toc)
+
+**Answer:**
+- `super()`: Calls the **Parent** class constructor.
+- `this()`: Calls another constructor in the **Same** class.
+*Both must be the first line in a constructor.*
+
+---
+
+<a name="q16"></a>
+### 16) What are the differences between static initializers and instance initializers?
+[Back to TOC](#q16-toc)
+
+**Answer:**
+- **Static Initializer (`static {}`):** Runs once when the class is loaded.
+- **Instance Initializer (`{}`):** Runs every time an object is created, before the constructor.
+
+---
+
+<a name="q17"></a>
+### 17) How do you instantiate a class using Java 8+ method references?
+[Back to TOC](#q17-toc)
+
+**Answer:**
+Using `ClassName::new`.
+```java
+Supplier<ArrayList<String>> listSupplier = ArrayList::new;
+ArrayList<String> list = listSupplier.get();
+```
+
+---
+
+<a name="q18"></a>
+### 18) Can you create an object without using new operator in Java?
+[Back to TOC](#q18-toc)
+
+**Answer:**
+**Yes.** 
+1. `Class.newInstance()` (Reflection - Deprecated since Java 9, use `getDeclaredConstructor().newInstance()`).
+2. `clone()` method.
+3. Deserialization.
+4. `ClassName::new` (Method Reference).
+
+---
+
+<a name="q19"></a>
+### 19) What is constructor chaining?
+[Back to TOC](#q19-toc)
+
+**Answer:**
+The process of one constructor calling another constructor (using `this()` or `super()`).
+
+---
+
+<a name="q20"></a>
+### 20) Can we call sub class constructor from a super class constructor?
+[Back to TOC](#q20-toc)
+
+**Answer:**
+**No.** The parent exists before the child; it has no knowledge of the child's constructors.
+
+---
+
+<a name="q21"></a>
+### 21) Do constructors have return type?
+[Back to TOC](#q21-toc)
+
+**Answer:**
+**No.** If you add a return type, it's no longer a constructor; it's just a method that happens to have the same name as the class.
+
+---
+
+<a name="q22"></a>
+### 22) What is no-arg constructor?
+[Back to TOC](#q22-toc)
+
+**Answer:**
+A constructor with no parameters. If you don't define any constructor, Java provides a **default no-arg constructor** for you.
+
+---
+
+<a name="q23"></a>
+### 23) What is the use of private constructors?
+[Back to TOC](#q23-toc)
+
+**Answer:**
+To **prevent instantiation**.
+**Common Uses:**
+1. **Singleton Pattern:** `private MyClass() {}`
+2. **Utility Classes:** (e.g., `java.lang.Math`).
+
+---
+
+<a name="q24"></a>
+### 24) Can we use this() and super() in a method?
+[Back to TOC](#q24-toc)
+
+**Answer:**
+**No.** They can only be used in **constructors**.
+
+---
+
+<a name="q25"></a>
+### 25) What is the difference between class variables and instance variables?
+[Back to TOC](#q25-toc)
+
+**Answer:**
+- **Class Variables (`static`):** One copy shared by all objects.
+- **Instance Variables:** Each object has its own unique copy.
+
+---
+
+<a name="q26"></a>
+### 26) What is the constructor overloading?
+[Back to TOC](#q26-toc)
+
+**Answer:**
+Defining multiple constructors with different parameter lists to initialize objects in different ways.
+
+---
+
+<a name="q27"></a>
+### 27) What is the difference between constructor and method?
+[Back to TOC](#q27-toc)
+
+**Answer:**
+- **Constructor:** Initializes an object, no return type, name must match the class.
+- **Method:** Defines behavior, has a return type, can have any name.
+
+---
+
+<a name="q28"></a>
+### 28) What are the differences between static and non-static methods?
+[Back to TOC](#q28-toc)
+
+**Answer:**
+- **Static:** Belongs to the class. Can be called without an object. Cannot access `this` or instance variables.
+- **Non-Static:** Belongs to the object. Needs an instance to be called.
+
+---
+
+<a name="q29"></a>
+### 29) Can we overload main() method?
+[Back to TOC](#q29-toc)
+
+**Answer:**
+**Yes**, but the JVM will only call the standard `public static void main(String[] args)` as the entry point.
+
+---
+
+<a name="q30"></a>
+### 30) Can we declare main() method as private?
+[Back to TOC](#q30-toc)
+
+**Answer:**
+**Yes**, it will compile, but the JVM will throw a runtime error because it can't find a *public* entry point.
+
+---
+
+<a name="q31"></a>
+### 31) Can we declare main() method as non-static?
+[Back to TOC](#q31-toc)
+
+**Answer:**
+**No.** The JVM must be able to call `main()` without creating an object of the class.
+
+---
+
+<a name="q32"></a>
+### 32) Why main() method must be static?
+[Back to TOC](#q32-toc)
+
+**Answer:**
+To avoid the "Chicken and Egg" problem. If `main` weren't static, the JVM would need to create an object to call it, but it wouldn't know *which* constructor to use.
+
+---
+
+<a name="q33"></a>
+### 33) Can we change the return type of a main() method?
+[Back to TOC](#q33-toc)
+
+**Answer:**
+**No.** It must be `void`.
+
+---
+
+<a name="q34"></a>
+### 34) How many types of modifiers are there in Java?
+[Back to TOC](#q34-toc)
+
+**Answer:**
+1.  **Access Modifiers:** (public, protected, default, private).
+2.  **Non-access Modifiers:** (static, final, abstract, synchronized, volatile, etc.).
+
+---
+
+<a name="q35"></a>
+### 35) What are access modifiers in Java?
+[Back to TOC](#q35-toc)
+
+**Answer:**
+- `private`: Class only.
+- `default`: Package only.
+- `protected`: Package + Subclasses.
+- `public`: Everywhere.
+
+---
+
+<a name="q36"></a>
+### 36) What are non-access modifiers in Java?
+[Back to TOC](#36-toc)
+
+**Answer:**
+- `static`: Class-level member.
+- `final`: Unchangeable (Constant class/method/variable).
+- **`sealed` (Java 17+):** Limits which classes can extend it.
+- `synchronized`: Thread-safe.
+
+---
+
+<a name="q37"></a>
+### 37) Can a method or a class be final and abstract at the same time?
+[Back to TOC](#37-toc)
+
+**Answer:**
+**No.** `abstract` means "must be extended/implemented," and `final` means "cannot be extended/implemented."
+
+---
+
+<a name="q38"></a>
+### 38) Can we declare a class as private?
+[Back to TOC](#38-toc)
+
+**Answer:**
+Only for **Inner Classes**. Top-level classes can only be `public` or `default`.
+
+---
+
+<a name="q39"></a>
+### 39) Can we declare an abstract method as private?
+[Back to TOC](#39-toc)
+
+**Answer:**
+**No.** It must be visible to subclasses to be implemented.
+
+---
+
+<a name="q40"></a>
+### 40) Can we use synchronized keyword with class?
+[Back to TOC](#40-toc)
+
+**Answer:**
+**No.** You synchronize methods or blocks, not the entire class definition.
+
+---
+
+<a name="q41"></a>
+### 41) A class can not be declared with synchronized keyword. Then, why we call classes like Vector, StringBuffer are synchronized classes?
+[Back to TOC](#q41-toc)
+
+**Answer:**
+It's a shorthand. It means **all methods** of that class are `synchronized`.
+*Modern Context:* In Java 21, for high concurrency, we often prefer classes like `ConcurrentHashMap` or `CopyOnWriteArrayList` over legacy synchronized classes.
+
+---
+
+<a name="q42"></a>
+### 42) What is type casting?
+[Back to TOC](#q42-toc)
+
+**Answer:**
+Assigning a value of one type to another.
+- **Widening (Implicit):** `int` to `double`.
+- **Narrowing (Explicit):** `double` to `int` (requires `(int)`).
+
+---
+
+<a name="q43"></a>
+### 43) How many types of casting are there in Java?
+[Back to TOC](#q43-toc)
+
+**Answer:**
+1.  **Primitive Casting.**
+2.  **Derived (Object) Casting.**
+
+---
+
+<a name="q44"></a>
+### 44) What is auto widening and explicit narrowing?
+[Back to TOC](#q44-toc)
+
+**Answer:**
+- **Auto Widening:** Java automatically converts small types to large ones (`byte` -> `short` -> `int` -> `long`).
+- **Explicit Narrowing:** You manually convert large types to small ones (`long` -> `int`), risking data loss.
+
+---
+
+<a name="q45"></a>
+### 45) What is auto-up casting and explicit down casting?
+[Back to TOC](#q45-toc)
+
+**Answer:**
+- **Auto-up casting:** Casting a Child to a Parent. Always safe.
+- **Explicit down casting:** Casting a Parent to a Child. Risks `ClassCastException`.
+*Modern Tip:* Use **Pattern Matching for `instanceof`** (Java 16+).
+```java
+if (obj instanceof String s) {
+    System.out.println(s.toLowerCase()); // No explicit cast needed!
+}
+```
+
+---
+
+<a name="q46"></a>
+### 46) Can an int primitive type of data implicitly casted to Double derived type?
+[Back to TOC](#q46-toc)
+
+**Answer:**
+**Yes.** First, `int` is widened to `double`, and then it's auto-boxed into `Double`.
+
+---
+
+<a name="q47"></a>
+### 47) What is ClassCastException?
+[Back to TOC](#q47-toc)
+
+**Answer:**
+A runtime exception thrown when you try to cast an object to a subclass of which it is not an instance.
+
+---
+
+<a name="q48"></a>
+### 48) What is boxing and unboxing?
+[Back to TOC](#q48-toc)
+
+**Answer:**
+- **Boxing:** Primitive to Wrapper (`int` -> `Integer`).
+- **Unboxing:** Wrapper to Primitive (`Integer` -> `int`).
+
+---
+
+<a name="q49"></a>
+### 49) What is the difference between auto-widening, auto-upcasting and auto-boxing?
+[Back to TOC](#q49-toc)
+
+**Answer:**
+- **Widening:** Primitive -> Larger Primitive.
+- **Upcasting:** Object -> Parent Object.
+- **Autoboxing:** Primitive -> Wrapper.
+
+---
+
+<a name="q50"></a>
+### 50) What is polymorphism in Java?
+[Back to TOC](#q50-toc)
+
+**Answer:**
+"Many forms."
+1.  **Static (Compile-time):** Method Overloading.
+2.  **Dynamic (Runtime):** Method Overriding.
+
+---
+
+<a name="q51"></a>
+### 51) What is method overloading in Java?
+[Back to TOC](#q51-toc)
+
+**Answer:**
+Same method name, different parameter list (type, number, or order) within the same class.
+
+---
+
+<a name="q52"></a>
+### 52) What is the method signature?
+[Back to TOC](#q52-toc)
+
+**Answer:**
+**Method Name + Parameter List**. (Return type and modifiers are NOT part of the signature).
+
+---
+
+<a name="q53"></a>
+### 53) How do compiler differentiate overloaded methods from duplicate methods?
+[Back to TOC](#q53-toc)
+
+**Answer:**
+By the **Method Signature**. If the name and parameters are identical, it's a duplicate.
+
+---
+
+<a name="q54"></a>
+### 54) Can we declare one overloaded method as static and another one as non-static?
+[Back to TOC](#q54-toc)
+
+**Answer:**
+**Yes.** As long as the signatures differ, the static/non-static modifiers don't matter for overloading.
+
+---
+
+<a name="q55"></a>
+### 55) Is it possible to have two methods in a class with same method signature but different return types?
+[Back to TOC](#q55-toc)
+
+**Answer:**
+**No.** It will cause a compile-time error because the signature (name + params) is what matters for uniqueness.
+
+---
+
+<a name="q56"></a>
+### 56) Is visibility checked for overloading?
+[Back to TOC](#q56-toc)
+
+**Answer:**
+**No.** You can have overloaded methods with different access levels (private, public, etc.).
+
+---
+
+<a name="q57"></a>
+### 57) Can overloaded methods be synchronized?
+[Back to TOC](#q57-toc)
+
+**Answer:**
+**Yes.**
+
+---
+
+<a name="q58"></a>
+### 58) Can we declare overloaded methods as final?
+[Back to TOC](#q58-toc)
+
+**Answer:**
+**Yes.**
+
+---
+
+<a name="q59"></a>
+### 59) In the below class, is constructor overloaded or is method overloaded?
+```java
+public class A {
+    public A() {} // Constructor
+    void A() {}   // Method
+}
+```
+[Back to TOC](#q59-toc)
+
+**Answer:**
+**Neither.** One is a constructor, the other is a method (because it has a return type). This is a trick question; don't name methods after your class!
+
+---
+
+<a name="q60"></a>
+### 60) Overloading is the best example of dynamic binding. True or false?
+[Back to TOC](#q60-toc)
+
+**Answer:**
+**False.** Overloading is **Static Binding** (resolved at compile-time). Overriding is Dynamic Binding.
+
+---
+
+<a name="q61"></a>
+### 61) Can overloaded method be overrided?
+[Back to TOC](#q61-toc)
+
+**Answer:**
+**Yes.** You can override any of the overloaded forms in the subclass.
+
+---
+
+<a name="q62"></a>
+### 62) What is method overriding in Java?
+[Back to TOC](#q62-toc)
+
+**Answer:**
+Redefining a parent class method in the subclass with the **exact same signature**.
+
+---
+
+<a name="q63"></a>
+### 63) What are the rules for method overriding?
+[Back to TOC](#q63-toc)
+
+**Answer:**
+1.  **Same Signature:** (Name + Params).
+2.  **Compatible Return Type:** (Can be a subclass - Covariant Return Type).
+3.  **Visibility:** Cannot be reduced (e.g., public cannot become private).
+4.  **Exceptions:** Cannot throw broader checked exceptions.
+
+---
+
+<a name="q64"></a>
+### 64) Can we override static methods?
+[Back to TOC](#q64-toc)
+
+**Answer:**
+**No.** Static methods belong to the class, not instances. If you define the same static method in a subclass, it's called **Method Hiding**.
+
+---
+
+<a name="q65"></a>
+### 65) What happens if we change the arguments of overriding method?
+[Back to TOC](#q65-toc)
+
+**Answer:**
+It becomes **Overloading**, not overriding.
+
+---
+
+<a name="q66"></a>
+### 66) Can we override protected method as public?
+[Back to TOC](#q66-toc)
+
+**Answer:**
+**Yes.** You can increase visibility, but you can't decrease it.
+
+---
+
+<a name="q67"></a>
+### 67) Can we change the return type of overriding method from Number to Integer?
+[Back to TOC](#q67-toc)
+
+**Answer:**
+**Yes.** This is **Covariant Return Type**.
+```java
+class Parent { Number get() { return 1; } }
+class Child extends Parent { Integer get() { return 2; } } // OK!
+```
+
+---
+
+<a name="q68"></a>
+### 68) Can we override a method without throws with a method with throws?
+[Back to TOC](#q68-toc)
+
+**Answer:**
+Only for **Unchecked Exceptions** (RuntimeException). You cannot add new *Checked* exceptions.
+
+---
+
+<a name="q69"></a>
+### 69) Can we change SQLException to NumberFormatException while overriding?
+[Back to TOC](#q69-toc)
+
+**Answer:**
+**Yes.** `NumberFormatException` is unchecked, so it's always allowed.
+
+---
+
+<a name="q70"></a>
+### 70) Can we change exception from unchecked to checked?
+[Back to TOC](#70-toc)
+
+**Answer:**
+**No.**
+
+---
+
+<a name="q71"></a>
+### 71) How do you refer super class version of overridden method?
+[Back to TOC](#71-toc)
+
+**Answer:**
+Using the `super` keyword: `super.myMethod()`.
+
+---
+
+<a name="q72"></a>
+### 72) Can we override private methods?
+[Back to TOC](#72-toc)
+
+**Answer:**
+**No.** Subclasses can't see them.
+
+---
+
+<a name="q73"></a>
+### 73) Can we remove throws clause while overriding?
+[Back to TOC](#73-toc)
+
+**Answer:**
+**Yes.**
+
+---
+
+<a name="q74"></a>
+### 74) Is it possible to override non-static methods as static?
+[Back to TOC](#74-toc)
+
+**Answer:**
+**No.**
+
+---
+
+<a name="q75"></a>
+### 75) Can we change checked exception to unchecked while overriding?
+[Back to TOC](#75-toc)
+
+**Answer:**
+**Yes.**
+
+---
+
+<a name="q76"></a>
+### 76) Can we change the number of exceptions?
+[Back to TOC](#76-toc)
+
+**Answer:**
+**Yes**, as long as they are more specific or fewer.
+
+---
+
+<a name="q77"></a>
+### 77) Difference between Overloading and Overriding?
+[Back to TOC](#77-toc)
+
+**Answer:**
+| Feature | Overloading | Overriding |
+| :--- | :--- | :--- |
+| **Location** | Same class | Parent/Child relationship |
+| **Signature** | Must be different | Must be same |
+| **Binding** | Static (Compile-time) | Dynamic (Runtime) |
+
+---
+
+<a name="q78"></a>
+### 78) What is static and dynamic binding?
+[Back to TOC](#78-toc)
+
+**Answer:**
+- **Static Binding:** Resolved by compiler (Overloading, private, static, final methods).
+- **Dynamic Binding:** Resolved by JVM at runtime (Overriding).
+
+---
+
+<a name="q79"></a>
+### 79) Abstract class must have only abstract methods. True or false?
+[Back to TOC](#79-toc)
+
+**Answer:**
+**False.** It can have both abstract and concrete methods.
+
+---
+
+<a name="q80"></a>
+### 80) Is it compulsory for an abstract class to have at least one abstract method?
+[Back to TOC](#80-toc)
+
+**Answer:**
+**No.** You can mark a class abstract simply to prevent it from being instantiated.
+
+---
+
+<a name="q81"></a>
+### 81) Can we use abstract keyword with constructors?
+[Back to TOC](#q81-toc)
+
+**Answer:**
+**No.** Constructors are used to initialize objects, and an abstract entity cannot be initialized.
+
+---
+
+<a name="q82"></a>
+### 82) Why final and abstract can not be used at a time?
+[Back to TOC](#q82-toc)
+
+**Answer:**
+They are logically opposite. `abstract` *requires* inheritance to be useful, while `final` *prevents* inheritance.
+
+---
+
+<a name="q83"></a>
+### 83) Can we instantiate an abstract class?
+[Back to TOC](#q83-toc)
+
+**Answer:**
+**No.** Even if it contains no abstract methods, once marked `abstract`, it cannot be instantiated.
+
+---
+
+<a name="q84"></a>
+### 84) Can we declare abstract methods as private?
+[Back to TOC](#q84-toc)
+
+**Answer:**
+**No.** Abstract methods must be visible to subclasses so they can be implemented.
+
+---
+
+<a name="q85"></a>
+### 85) We can’t instantiate an abstract class. Then why constructors are allowed in abstract class?
+[Back to TOC](#q85-toc)
+
+**Answer:**
+To initialize fields belonging to the abstract class when a concrete subclass is instantiated. The subclass constructor always calls `super()`.
+
+---
+
+<a name="q86"></a>
+### 86) Can we declare abstract methods as static?
+[Back to TOC](#q86-toc)
+
+**Answer:**
+**No.** Static methods belong to the class and cannot be overridden, but abstract methods *must* be overridden.
+
+---
+
+<a name="q87"></a>
+### 87) Can a class contain an abstract class as a member?
+[Back to TOC](#q87-toc)
+
+**Answer:**
+**Yes.** You can have a field whose type is an abstract class; at runtime, it will point to an instance of a concrete subclass.
+
+---
+
+<a name="q88"></a>
+### 88) Abstract classes can be nested. True or false?
+[Back to TOC](#q88-toc)
+
+**Answer:**
+**True.**
+
+---
+
+<a name="q89"></a>
+### 89) Can we declare abstract methods as synchronized?
+[Back to TOC](#q89-toc)
+
+**Answer:**
+**No.** Synchronization is an implementation detail. Since abstract methods have no body (implementation), they can't be synchronized. However, the overriding method in the subclass can be.
+
+---
+
+<a name="q90"></a>
+### 90) Can we declare local inner class as abstract?
+[Back to TOC](#q90-toc)
+
+**Answer:**
+**Yes.**
+
+---
+
+<a name="q91"></a>
+### 91) Can abstract method declaration include throws clause?
+[Back to TOC](#q91-toc)
+
+**Answer:**
+**Yes.**
+
+---
+
+<a name="q92"></a>
+### 92) Can abstract classes have interfaces in it?
+[Back to TOC](#q92-toc)
+
+**Answer:**
+**Yes.**
+
+---
+
+<a name="q93"></a>
+### 93) Can interfaces have constructors, static initializers and instance initializers?
+[Back to TOC](#q93-toc)
+
+**Answer:**
+**No.** Interfaces are meant to be templates for behavior, not containers for state or initialization logic.
+*Modern Context:* Since Java 8, interfaces can have `static` and `default` methods, and since Java 9, they can have `private` methods.
+
+---
+
+<a name="q94"></a>
+### 94) Can we re-assign a value to a field of interfaces?
+[Back to TOC](#q94-toc)
+
+**Answer:**
+**No.** Interface fields are implicitly **`public static final`** (constants).
+
+---
+
+<a name="q95"></a>
+### 95) Can we declare an Interface with abstract keyword?
+[Back to TOC](#q95-toc)
+
+**Answer:**
+**Yes**, but it's redundant. All interfaces are implicitly abstract.
+
+---
+
+<a name="q96"></a>
+### 96) For every Interface in java, .class file will be generated after compilation. True or false?
+[Back to TOC](#q96-toc)
+
+**Answer:**
+**True.**
+
+---
+
+<a name="q97"></a>
+### 97) Can we override an interface method with visibility other than public?
+[Back to TOC](#q97-toc)
+
+**Answer:**
+**No.** All interface methods (except private ones) are implicitly `public`. You cannot reduce visibility when implementing them.
+
+---
+
+<a name="q98"></a>
+### 98) Can interfaces become local members of the methods?
+[Back to TOC](#98-toc)
+
+**Answer:**
+**No.** Interfaces cannot be defined inside a method.
+
+---
+
+<a name="q99"></a>
+### 99) Can an interface extend a class?
+[Back to TOC](#99-toc)
+
+**Answer:**
+**No.** Interfaces can only extend other interfaces.
+
+---
+
+<a name="q100"></a>
+### 100) Like classes, do interfaces also extend java.lang.Object class by default?
+[Back to TOC](#100-toc)
+
+**Answer:**
+**No.** They don't extend anything by default. But they expose all methods of `Object` (like `toString()`, `hashCode()`) to the implementing classes.
+
+---
+
+<a name="q101"></a>
+### 101) Can interfaces have static methods?
+[Back to TOC](#101-toc)
+
+**Answer:**
+**Yes** (since Java 8). They are used for utility methods related to the interface.
+```java
+interface MyInterface {
+    static void help() { System.out.println("Helper method"); }
+}
+```
+
+---
+
+<a name="q102"></a>
+### 102) Can an interface have a class or another interface as it’s members?
+[Back to TOC](#102-toc)
+
+**Answer:**
+**Yes.** They are implicitly `public` and `static`.
+
+---
+
+<a name="q103"></a>
+### 103) What are marker interfaces? What is the use of marker interfaces?
+[Back to TOC](#103-toc)
+
+**Answer:**
+An interface with **no methods or fields**. It "marks" a class as having a certain property.
+**Examples:** `Serializable`, `Cloneable`, `Remote`.
+*Modern Context:* **Annotations** have largely replaced marker interfaces.
+
+---
+
+<a name="q104"></a>
+### 104) What are the changes made to interfaces from Java 8?
+[Back to TOC](#104-toc)
+
+**Answer:**
+1.  **Default Methods:** Methods with a body (`default` keyword).
+2.  **Static Methods:** Methods with a body (`static` keyword).
+3.  **Functional Interfaces:** Interfaces with exactly one abstract method (can be used with Lambdas).
+
+---
+
+<a name="q105"></a>
+### 105) What are the changes made to interfaces from Java 9?
+[Back to TOC](#105-toc)
+
+**Answer:**
+**Private Methods:** Interfaces can now have private methods (and private static methods) to encapsulate common logic between default methods.
+
+---
+
+<a name="q106"></a>
+### 106) How many types of nested classes are there in Java?
+[Back to TOC](#106-toc)
+
+**Answer:**
+1.  **Static Nested Classes.**
+2.  **Inner Classes (Non-static):**
+    - Member Inner Class.
+    - Local Inner Class.
+    - Anonymous Inner Class.
+
+---
+
+<a name="q107"></a>
+### 107) Can we access non-static members of outer class inside a static nested class?
+[Back to TOC](#107-toc)
+
+**Answer:**
+**No.** Static nested classes don't have a reference to an instance of the outer class. You'd need to create an object of the outer class to access its members.
+
+---
+
+<a name="q108"></a>
+### 108) What are member inner classes in Java?
+[Back to TOC](#108-toc)
+
+**Answer:**
+Classes defined inside another class (not static). To instantiate them, you **must** have an instance of the outer class.
+```java
+Outer out = new Outer();
+Outer.Inner in = out.new Inner();
+```
+
+---
+
+<a name="q109"></a>
+### 109) Can member inner classes have static members in them?
+[Back to TOC](#109-toc)
+
+**Answer:**
+**Yes** (since Java 16). Prior to Java 16, they could only have `static final` constants. Now they can have full static members.
+
+---
+
+<a name="q110"></a>
+### 110) Can we access all members of outer class inside a member inner class?
+[Back to TOC](#110-toc)
+
+**Answer:**
+**Yes**, including `private` members.
+
+---
+
+<a name="q111"></a>
+### 111) Can we declare local inner classes as static?
+[Back to TOC](#111-toc)
+
+**Answer:**
+**No.** Local inner classes are defined inside a block/method and cannot be static.
+
+---
+
+<a name="q112"></a>
+### 112) Can we use local inner classes outside the method or block?
+[Back to TOC](#112-toc)
+
+**Answer:**
+**No.** Their scope is limited to that block.
+
+---
+
+<a name="q113"></a>
+### 113) Can we declare local inner classes as private or protected or public?
+[Back to TOC](#113-toc)
+
+**Answer:**
+**No.** They don't take access modifiers (just like local variables).
+
+---
+
+<a name="q114"></a>
+### 114) What is the condition to use local variables inside a local inner class?
+[Back to TOC](#114-toc)
+
+**Answer:**
+They must be **final** or **effectively final** (never changed after being initialized).
+
+---
+
+<a name="q115"></a>
+### 115) What are anonymous inner classes in Java?
+[Back to TOC](#115-toc)
+
+**Answer:**
+Classes without a name, declared and instantiated at the same time. Often used to implement interfaces on the fly.
+```java
+Runnable r = new Runnable() {
+    @Override
+    public void run() { System.out.println("Running..."); }
+};
+```
+*Modern Context:* Usually replaced by **Lambdas** for functional interfaces.
+
+---
+
+<a name="q116"></a>
+### 116) What is the main difference between static and non-static nested classes?
+[Back to TOC](#116-toc)
+
+**Answer:**
+- **Static Nested:** Doesn't need an instance of the outer class.
+- **Inner Class (Non-static):** Requires an instance of the outer class to exist.
+
+---
+
+<a name="q117"></a>
+### 117) What is the use of final keyword in Java?
+[Back to TOC](#117-toc)
+
+**Answer:**
+1.  **Final Variable:** Value cannot be changed (Constant).
+2.  **Final Method:** Cannot be overridden.
+3.  **Final Class:** Cannot be inherited.
+
+---
+
+<a name="q118"></a>
+### 118) What is the blank final field?
+[Back to TOC](#118-toc)
+
+**Answer:**
+A final variable that is not initialized when declared. It **must** be initialized in every constructor.
+
+---
+
+<a name="q119"></a>
+### 119) Can we change the state of an object to which a final reference variable is pointing?
+[Back to TOC](#119-toc)
+
+**Answer:**
+**Yes.** You can't make the variable point to a *different* object, but you can change the *data* inside that object.
+
+---
+
+<a name="q120"></a>
+### 120) Difference between abstract methods and final methods?
+[Back to TOC](#120-toc)
+
+**Answer:**
+- **Abstract:** *Must* be implemented by a subclass.
+- **Final:** *Cannot* be overridden by a subclass.
+
+---
+
+<a name="q121"></a>
+### 121) What is the use of final class?
+[Back to TOC](#q121-toc)
+
+**Answer:**
+To prevent inheritance. 
+**Common Examples:** `String`, `Integer`, and all other wrapper classes are `final` for security and immutability reasons.
+*Modern Context:* Use **`sealed` classes** (Java 17+) if you want to allow *some* classes to extend yours but not others.
+
+---
+
+<a name="q122"></a>
+### 122) Can we change the value of an interface field?
+[Back to TOC](#q122-toc)
+
+**Answer:**
+**No.** All fields in an interface are implicitly **`public static final`** (constants).
+
+---
+
+<a name="q123"></a>
+### 123) Where can you initialize a final non-static global variable?
+[Back to TOC](#q123-toc)
+
+**Answer:**
+1.  At the time of **declaration**.
+2.  In an **Instance Initializer block**.
+3.  In **every constructor** of the class.
+
+---
+
+<a name="q124"></a>
+### 124) Definition of final class, method, and variable?
+[Back to TOC](#q124-toc)
+
+**Answer:**
+- **Final Class:** Cannot be subclassed.
+- **Final Method:** Cannot be overridden.
+- **Final Variable:** Becomes a constant (value cannot be changed after initialization).
+
+---
+
+<a name="q125"></a>
+### 125) Where can you initialize a final static global variable?
+[Back to TOC](#q125-toc)
+
+**Answer:**
+1.  At the time of **declaration**.
+2.  In a **Static Initializer block**.
+
+---
+
+<a name="q126"></a>
+### 126) Can we declare constructors as final?
+[Back to TOC](#q126-toc)
+
+**Answer:**
+**No.** Constructors are never inherited, so `final` would be meaningless.
+
+---
+
+<a name="q127"></a>
+### 127) What is ArrayStoreException?
+[Back to TOC](#q127-toc)
+
+**Answer:**
+A runtime exception thrown when you try to store an object of the wrong type in an array of objects.
+```java
+Object[] x = new String[3];
+x[0] = 10; // Throws ArrayStoreException (trying to put Integer in String array)
+```
+
+---
+
+<a name="q128"></a>
+### 128) Can you pass a negative number as an array size?
+[Back to TOC](#128-toc)
+
+**Answer:**
+**No.** It will compile, but throw a **`NegativeArraySizeException`** at runtime.
+
+---
+
+<a name="q129"></a>
+### 129) Can you change the size of an array once created?
+[Back to TOC](#129-toc)
+
+**Answer:**
+**No.** Arrays are fixed-size. If you need a dynamic size, use **`ArrayList`**.
+
+---
+
+<a name="q130"></a>
+### 130) What is an anonymous array?
+[Back to TOC](#130-toc)
+
+**Answer:**
+An array created without a name (reference). It's usually passed directly to a method.
+```java
+printArray(new int[]{1, 2, 3}); // Anonymous array
+```
+
+---
+
+<a name="q131"></a>
+### 131) Difference between int[] a and int a[]?
+[Back to TOC](#131-toc)
+
+**Answer:**
+- `int[] a`: Preferred. Clearly shows that the type is "integer array".
+- `int a[]`: Supported for C/C++ compatibility.
+
+---
+
+<a name="q132"></a>
+### 132) Can you assign an array of 100 elements to an array of 10 elements?
+[Back to TOC](#132-toc)
+
+**Answer:**
+**Yes.** You are just changing the reference. The array variable that held 10 elements will now point to the array with 100 elements.
+
+---
+
+<a name="q133"></a>
+### 133) Is "int a[] = new int[3]{1, 2, 3}" legal?
+[Back to TOC](#133-toc)
+
+**Answer:**
+**No.** If you provide the values `{1, 2, 3}`, you must NOT specify the size `[3]`.
+Correct: `int a[] = new int[]{1, 2, 3};` or just `int a[] = {1, 2, 3};`
+
+---
+
+<a name="q134"></a>
+### 134) Difference between Array and ArrayList?
+[Back to TOC](#134-toc)
+
+**Answer:**
+| Feature | Array | ArrayList |
+| :--- | :--- | :--- |
+| **Size** | Fixed | Dynamic |
+| **Type** | Primitives & Objects | Objects Only (uses Wrappers) |
+| **Performance** | Faster | Slightly slower |
+| **Methods** | `length` field | Rich API (`add`, `remove`, `sort`) |
+
+---
+
+<a name="q135"></a>
+### 135) Ways to copy an array?
+[Back to TOC](#135-toc)
+
+**Answer:**
+1.  `System.arraycopy()` (Fastest - native).
+2.  `Arrays.copyOf()`.
+3.  `clone()`.
+4.  Manual loop.
+
+---
+
+<a name="q136"></a>
+### 136) What are jagged arrays?
+[Back to TOC](#136-toc)
+
+**Answer:**
+Multi-dimensional arrays where the sub-arrays have different lengths.
+```java
+int[][] jagged = new int[2][];
+jagged[0] = new int[3];
+jagged[1] = new int[5];
+```
+
+---
+
+<a name="q137"></a>
+### 137) How to check equality of two arrays?
+[Back to TOC](#137-toc)
+
+**Answer:**
+Use **`Arrays.equals(a, b)`**. For multi-dimensional arrays, use **`Arrays.deepEquals(a, b)`**.
+*Note:* `a.equals(b)` or `a == b` only checks if they are the same reference.
+
+---
+
+<a name="q138"></a>
+### 138) What is ArrayIndexOutOfBoundsException?
+[Back to TOC](#138-toc)
+
+**Answer:**
+Thrown when you try to access an index that doesn't exist (e.g., index -1 or index >= length).
+
+---
+
+<a name="q139"></a>
+### 139) How to sort an array?
+[Back to TOC](#139-toc)
+
+**Answer:**
+Use **`Arrays.sort(arr)`**.
+
+---
+
+<a name="q140"></a>
+### 140) How to find intersection of two arrays?
+[Back to TOC](#140-toc)
+
+**Answer:**
+Convert them to **`Sets`** and use `retainAll()`.
+```java
+Set<Integer> s1 = new HashSet<>(Arrays.asList(arr1));
+Set<Integer> s2 = new HashSet<>(Arrays.asList(arr2));
+s1.retainAll(s2); // s1 now contains only the intersection
+```
+
+---
+
+<a name="q141"></a>
+### 141) Ways to declare multidimensional arrays?
+[Back to TOC](#141-toc)
+
+**Answer:**
+- `int[][] a;`
+- `int a[][];`
+- `int[] a[];`
+
+---
+
+<a name="q142"></a>
+### 142) Can you specify dimension after an empty dimension? (e.g., new int[][5])
+[Back to TOC](#142-toc)
+
+**Answer:**
+**No.** You must specify the high-level dimensions first. `new int[5][]` is valid; `new int[][5]` is not.
+
+---
+
+<a name="q143"></a>
+### 143) How to search an element in an array?
+[Back to TOC](#143-toc)
+
+**Answer:**
+1.  **Linear Search** (loop through all).
+2.  **Binary Search** (`Arrays.binarySearch(arr, key)`) - *requires sorted array*.
+
+---
+
+<a name="q144"></a>
+### 144) Default values of array elements?
+[Back to TOC](#144-toc)
+
+**Answer:**
+- Numbers: 0 / 0.0
+- Booleans: `false`
+- Objects: `null`
+
+---
+
+<a name="q145"></a>
+### 145) How to find duplicates in an array?
+[Back to TOC](#145-toc)
+
+**Answer:**
+Use a **`HashSet`**. While adding elements, if `add()` returns `false`, it's a duplicate.
+```java
+Set<Integer> set = new HashSet<>();
+for (int i : arr) {
+    if (!set.add(i)) { System.out.println("Duplicate: " + i); }
+}
+```
+
+---
+
+<a name="q146"></a>
+### 146) Ways to iterate over an array?
+[Back to TOC](#146-toc)
+
+**Answer:**
+1.  For loop.
+2.  Enhanced for loop (`for(int i : arr)`).
+3.  **Streams (Java 8+):** `Arrays.stream(arr).forEach(...)`.
+
+---
+
+<a name="q147"></a>
+### 147) How to find second largest element?
+[Back to TOC](#147-toc)
+
+**Answer:**
+Iterate once while keeping track of `largest` and `secondLargest`.
+*Modern Approach:* `Arrays.stream(arr).boxed().sorted(Comparator.reverseOrder()).skip(1).findFirst();`
+
+---
+
+<a name="q148"></a>
+### 148) Find all pairs whose sum is equal to a given number?
+[Back to TOC](#148-toc)
+
+**Answer:**
+Use a **`HashSet`** to store seen numbers and check if `(target - current)` exists in the set.
+```java
+for (int i : arr) {
+    int complement = target - i;
+    if (set.contains(complement)) {
+        System.out.println(i + " + " + complement);
+    }
+    set.add(i);
+}
+```
+
+---
+
+<a name="q149"></a>
+### 149) Separate zeros from non-zeros?
+[Back to TOC](#149-toc)
+
+**Answer:**
+Iterate through the array and move all non-zero elements to the front, then fill the rest with zeros.
+
+---
+
+<a name="q150"></a>
+### 150) Find continuous sub array whose sum is equal to a number?
+[Back to TOC](#150-toc)
+
+**Answer:**
+Use the **Sliding Window** technique.
+
+---
+
+<a name="q151"></a>
+### 151) Drawbacks of arrays?
+[Back to TOC](#151-toc)
+
+**Answer:**
+1.  **Fixed Size.**
+2.  **Homogeneous:** Only stores one type of data.
+3.  **Memory:** Allocates contiguous memory, which can lead to allocation failures even if total free memory is enough.
+
+---
+
+<a name="q152"></a>
+### 152) Is String a keyword?
+[Back to TOC](#152-toc)
+
+**Answer:**
+**No.** It's a class in the `java.lang` package.
+
+---
+
+<a name="q153"></a>
+### 153) Is String primitive or derived?
+[Back to TOC](#153-toc)
+
+**Answer:**
+**Derived** (Object).
+
+---
+
+<a name="q154"></a>
+### 154) Ways to create String objects?
+[Back to TOC](#154-toc)
+
+**Answer:**
+1.  **Literal:** `String s = "Hello";` (Uses String Pool).
+2.  **`new` keyword:** `String s = new String("Hello");` (Always creates a new object in the heap).
+
+---
+
+<a name="q155"></a>
+### 155) What is String Constant Pool?
+[Back to TOC](#155-toc)
+
+**Answer:**
+A special memory area in the Heap where unique strings are stored. If you create a literal that already exists in the pool, Java just gives you the reference to the existing one.
+
+---
+
+<a name="q156"></a>
+### 156) What is special about String objects?
+[Back to TOC](#156-toc)
+
+**Answer:**
+**Immutability.** Once created, a String object cannot be changed. Any modification results in a *new* String object.
+
+---
+
+<a name="q157"></a>
+### 157) Mutable vs Immutable objects?
+[Back to TOC](#157-toc)
+
+**Answer:**
+- **Immutable:** State cannot be changed after creation (`String`, `Integer`, `LocalDate`).
+- **Mutable:** State can be changed (`StringBuilder`, `ArrayList`).
+
+---
+
+<a name="q158"></a>
+### 158) Which classes are final: String, StringBuffer, StringBuilder?
+[Back to TOC](#158-toc)
+
+**Answer:**
+**All three** are `final`.
+
+---
+
+<a name="q159"></a>
+### 159) Difference between String, StringBuffer, and StringBuilder?
+[Back to TOC](#159-toc)
+
+**Answer:**
+| Feature | String | StringBuffer | StringBuilder |
+| :--- | :--- | :--- | :--- |
+| **Mutability** | Immutable | Mutable | Mutable |
+| **Thread-Safe** | Yes | **Yes** (Synchronized) | **No** |
+| **Performance** | Slow (for updates) | Medium | **Fastest** |
+
+---
+
+<a name="q160"></a>
+### 160) Why StringBuffer/StringBuilder exist?
+[Back to TOC](#160-toc)
+
+**Answer:**
+Because concatenating Strings in a loop creates thousands of garbage objects. `StringBuilder` uses a single buffer, making it much more efficient for heavy string manipulation.
+
+---
+
+<a name="q161"></a>
+### 161) How many objects will be created? (String s1 = "abc"; String s2 = "abc";)
+[Back to TOC](#q161-toc)
+
+**Answer:**
+**Only one object.** Both `s1` and `s2` will point to the same "abc" object in the **String Constant Pool**.
+
+---
+
+<a name="q162"></a>
+### 162) How to create mutable string objects?
+[Back to TOC](#q162-toc)
+
+**Answer:**
+Use **`StringBuilder`** (preferred) or **`StringBuffer`** (if thread-safety is required).
+```java
+StringBuilder sb = new StringBuilder("Java");
+sb.append(" 21");
+System.out.println(sb.toString()); // Java 21
+```
+
+---
+
+<a name="q163"></a>
+### 163) "==" vs equals() for Strings?
+[Back to TOC](#q163-toc)
+
+**Answer:**
+- **`==`**: Compares the **reference** (memory address).
+- **`equals()`**: Compares the **content** (actual text).
+*Always use `equals()` for string comparison.*
+
+---
+
+<a name="q164"></a>
+### 164) Which class for mutable and thread-safe string objects?
+[Back to TOC](#q164-toc)
+
+**Answer:**
+**`StringBuffer`**. Its methods are synchronized, making it thread-safe.
+
+---
+
+<a name="q165"></a>
+### 165) Convert String to char array?
+[Back to TOC](#q165-toc)
+
+**Answer:**
+Use **`str.toCharArray()`**.
+
+---
+
+<a name="q166"></a>
+### 166) How many objects created? (String s1 = new String("abc"); String s2 = "abc";)
+[Back to TOC](#q166-toc)
+
+**Answer:**
+**Two objects.**
+1.  The string literal "abc" is created in the **String Pool**.
+2.  The `new String("abc")` creates a separate object in the **Heap**.
+*Note:* `s1 == s2` would be `false`.
+
+---
+
+<a name="q167"></a>
+### 167) Where is the String Constant Pool located?
+[Back to TOC](#q167-toc)
+
+**Answer:**
+Inside the **Heap** memory (since Java 7).
+
+---
+
+<a name="q168"></a>
+### 168) Best class for high-performance, thread-safe string manipulation?
+[Back to TOC](#q168-toc)
+
+**Answer:**
+**`StringBuffer`**. While `StringBuilder` is faster, it's not thread-safe. If you need thread-safety, `StringBuffer` is the standard choice.
+
+---
+
+<a name="q169"></a>
+### 169) What is String intern?
+[Back to TOC](#q169-toc)
+
+**Answer:**
+The **`intern()`** method checks the String Pool. If the string already exists, it returns the pooled reference. If not, it adds the string to the pool and returns that reference.
+```java
+String s1 = new String("abc").intern();
+String s2 = "abc";
+System.out.println(s1 == s2); // true!
+```
+
+---
+
+<a name="q170"></a>
+### 170) Java Strings vs C/C++ Strings?
+[Back to TOC](#q170-toc)
+
+**Answer:**
+- **Java:** Strings are **Objects**, not null-terminated, and are immutable.
+- **C/C++:** Strings are **Character Arrays** ending with a null character (`\0`).
+
+---
+
+<a name="q171"></a>
+### 171) How many objects created? (String s1 = new String("abc"); String s2 = new String("abc");)
+[Back to TOC](#q171-toc)
+
+**Answer:**
+**Three objects.** One in the Pool ("abc") and two separate objects in the Heap.
+
+---
+
+<a name="q172"></a>
+### 172) Can we call String methods on literals?
+[Back to TOC](#q172-toc)
+
+**Answer:**
+**Yes.** Literals are objects. E.g., `"hello".toUpperCase()`.
+
+---
+
+<a name="q173"></a>
+### 173) Why are Strings immutable in Java?
+[Back to TOC](#q173-toc)
+
+**Answer:**
+1.  **String Pool:** Makes memory optimization possible.
+2.  **Security:** Strings are used for passwords, network connections, etc. If they were mutable, they could be changed maliciously.
+3.  **Thread Safety:** Immutable objects are inherently thread-safe.
+4.  **Hashing:** Hashcode can be cached safely (critical for `HashMap` performance).
+
+---
+
+<a name="q174"></a>
+### 174) Why use a String Pool?
+[Back to TOC](#q174-toc)
+
+**Answer:**
+**Memory Efficiency.** Most programs use many duplicate strings. Storing them only once saves a significant amount of RAM.
+
+---
+
+<a name="q175"></a>
+### 175) Similarity and difference between String and StringBuffer?
+[Back to TOC](#q175-toc)
+
+**Answer:**
+- **Similarity:** Both represent character sequences and are final classes.
+- **Difference:** String is immutable; StringBuffer is mutable and thread-safe.
+
+---
+
+<a name="q176"></a>
+### 176) Similarity and difference between StringBuffer and StringBuilder?
+[Back to TOC](#q176-toc)
+
+**Answer:**
+- **Similarity:** Both are mutable and have the same API.
+- **Difference:** StringBuffer is synchronized (thread-safe); StringBuilder is not (faster).
+
+---
+
+<a name="q177"></a>
+### 177) How to count occurrences of each character in a string?
+[Back to TOC](#q177-toc)
+
+**Answer:**
+Use a **`HashMap<Character, Integer>`**.
+```java
+Map<Character, Integer> counts = new HashMap<>();
+for (char c : str.toCharArray()) {
+    counts.put(c, counts.getOrDefault(c, 0) + 1);
+}
+```
+
+---
+
+<a name="q178"></a>
+### 178) How to remove all white spaces?
+[Back to TOC](#q178-toc)
+
+**Answer:**
+Use **`str.replaceAll("\\s", "")`**.
+
+---
+
+<a name="q179"></a>
+### 179) Find duplicate characters?
+[Back to TOC](#q179-toc)
+
+**Answer:**
+Similar to counting occurrences, but only print characters with a count > 1.
+
+---
+
+<a name="q180"></a>
+### 180) Java program to reverse a string?
+[Back to TOC](#q180-toc)
+
+**Answer:**
+```java
+String reversed = new StringBuilder(str).reverse().toString();
+```
+
+---
+
+<a name="q181"></a>
+### 181) Check if two strings are anagrams?
+[Back to TOC](#q181-toc)
+
+**Answer:**
+Convert to `char[]`, sort them, and check `Arrays.equals()`.
+```java
+char[] a1 = s1.toCharArray();
+char[] a2 = s2.toCharArray();
+Arrays.sort(a1);
+Arrays.sort(a2);
+boolean isAnagram = Arrays.equals(a1, a2);
+```
+
+---
+
+<a name="q182"></a>
+### 182) Reverse string while preserving space positions?
+[Back to TOC](#q182-toc)
+
+**Answer:**
+1.  Mark space positions.
+2.  Reverse the rest of the characters.
+3.  Insert spaces back at original positions.
+
+---
+
+<a name="q183"></a>
+### 183) String to Integer and Integer to String?
+[Back to TOC](#q183-toc)
+
+**Answer:**
+- **String to Int:** `Integer.parseInt(str)`
+- **Int to String:** `String.valueOf(num)` or `Integer.toString(num)`
+
+---
+
+<a name="q184"></a>
+### 184) Prove that Strings are immutable?
+[Back to TOC](#q184-toc)
+
+**Answer:**
+```java
+String s1 = "Java";
+s1.concat(" 21");
+System.out.println(s1); // Still prints "Java"
+```
+
+---
+
+<a name="q185"></a>
+### 185) Check if one string is a rotation of another?
+[Back to TOC](#q185-toc)
+
+**Answer:**
+If lengths are equal, check if `(s1 + s1).contains(s2)`.
+```java
+String s1 = "ABCD";
+String s2 = "CDAB";
+boolean isRotation = (s1.length() == s2.length()) && (s1 + s1).contains(s2);
+```
+
+---
+
+<a name="q186"></a>
+### 186) Reverse each word of a string?
+[Back to TOC](#q186-toc)
+
+**Answer:**
+Split by spaces, reverse each word, and join them back.
+*Modern Context:* Use **`Collectors.joining(" ")`** with Streams.
+
+---
+
+<a name="q187"></a>
+### 187) Print all substrings?
+[Back to TOC](#q187-toc)
+
+**Answer:**
+Use nested loops: outer for start index, inner for end index.
+
+---
+
+<a name="q188"></a>
+### 188) Common characters in alphabetical order?
+[Back to TOC](#188-toc)
+
+**Answer:**
+Use two `Sets` of characters, find the intersection, and sort.
+
+---
+
+<a name="q189"></a>
+### 189) Maximum occurring character?
+[Back to TOC](#189-toc)
+
+**Answer:**
+Use a frequency map (HashMap) and find the entry with the max value.
+
+---
+
+<a name="q190"></a>
+### 190) StringJoiner vs String.join() vs Collectors.joining()?
+[Back to TOC](#190-toc)
+
+**Answer:**
+- **`StringJoiner`**: A low-level utility class for joining strings with delimiters.
+- **`String.join()`**: A static helper method for simple joining.
+- **`Collectors.joining()`**: The standard way to join elements in a **Stream**.
+
+---
+
+<a name="q191"></a>
+### 191) Reverse a sentence word by word?
+[Back to TOC](#191-toc)
+
+**Answer:**
+Split by space, reverse the array, and join back.
+
+---
+
+<a name="q192"></a>
+### 192) What is multithreaded programming?
+[Back to TOC](#192-toc)
+
+**Answer:**
+Running multiple parts of a program (threads) concurrently to maximize CPU usage.
+*Modern Context:* In **Java 21**, we can run millions of **Virtual Threads** on a single machine!
+```java
+try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+    executor.submit(() -> System.out.println("Modern Concurrency!"));
+}
+```
+
+---
+
+<a name="q193"></a>
+### 193) Ways to create threads in Java?
+[Back to TOC](#193-toc)
+
+**Answer:**
+1.  **Extend `Thread` class.**
+2.  **Implement `Runnable` interface.**
+3.  **Implement `Callable` interface** (for results).
+4.  **Use `Thread.ofVirtual()` (Java 21).**
+
+---
+
+<a name="q194"></a>
+### 194) User Threads vs Daemon Threads?
+[Back to TOC](#194-toc)
+
+**Answer:**
+- **User Threads:** JVM waits for them to finish before exiting.
+- **Daemon Threads:** Background tasks (e.g., GC). JVM exits even if they are still running.
+
+---
+
+<a name="q195"></a>
+### 195) Default daemon status?
+[Back to TOC](#195-toc)
+
+**Answer:**
+**False** (User thread).
+
+---
+
+<a name="q196"></a>
+### 196) Convert user thread to daemon?
+[Back to TOC](#196-toc)
+
+**Answer:**
+Use `t.setDaemon(true)` **before** calling `t.start()`.
+
+---
+
+<a name="q197"></a>
+### 197) Give name to a thread?
+[Back to TOC](#197-toc)
+
+**Answer:**
+Use `t.setName("MyThread")`. Default names are `Thread-0`, `Thread-1`, etc.
+
+---
+
+<a name="q198"></a>
+### 198) Change name of main thread?
+[Back to TOC](#198-toc)
+
+**Answer:**
+**Yes.** `Thread.currentThread().setName("NewName")`.
+
+---
+
+<a name="q199"></a>
+### 199) Can two threads have the same name?
+[Back to TOC](#199-toc)
+
+**Answer:**
+**Yes**, but it's not recommended as it makes debugging harder. Use **Thread ID** (`t.threadId()`) to identify them uniquely.
+
+---
+
+<a name="q200"></a>
+### 200) MIN_PRIORITY, NORM_PRIORITY, MAX_PRIORITY?
+[Back to TOC](#200-toc)
+
+**Answer:**
+- `MIN_PRIORITY`: 1
+- `NORM_PRIORITY`: 5 (Default)
+- `MAX_PRIORITY`: 10
+
+---
+
+<a name="q201"></a>
+### 201) What is the default priority of a thread?
+[Back to TOC](#q201-toc)
+
+**Answer:**
+**5** (`NORM_PRIORITY`).
+
+---
+
+<a name="q202"></a>
+### 202) Priority of main thread?
+[Back to TOC](#q202-toc)
+
+**Answer:**
+**5**. Yes, it can be changed.
+
+---
+
+<a name="q203"></a>
+### 203) Purpose of Thread.sleep()?
+[Back to TOC](#q203-toc)
+
+**Answer:**
+To pause the execution of the **current thread** for a specified amount of time. It does NOT release any locks.
+
+---
+
+<a name="q204"></a>
+### 204) Which thread sleeps? (myThread.sleep(5000))
+[Back to TOC](#q204-toc)
+
+**Answer:**
+The **current thread** (the one that executes the line), which is usually the `main` thread in simple programs. `sleep()` is a static method.
+
+---
+
+<a name="q205"></a>
+### 205) Does sleep() release locks?
+[Back to TOC](#q205-toc)
+
+**Answer:**
+**No.** The thread keeps all the locks it holds while sleeping.
+
+---
+
+<a name="q206"></a>
+### 206) Purpose of join()?
+[Back to TOC](#q206-toc)
+
+**Answer:**
+To make the current thread wait until the thread on which `join()` was called finishes its execution.
+```java
+Thread t1 = new Thread(() -> { /* task */ });
+t1.start();
+t1.join(); // Main thread waits for t1 to finish
+```
+
+---
+
+<a name="q207"></a>
+### 207) What is synchronization?
+[Back to TOC](#q207-toc)
+
+**Answer:**
+A mechanism to control access to shared resources by multiple threads, preventing **Race Conditions**.
+*Modern Context:* For complex coordination, consider **`java.util.concurrent.locks.ReentrantLock`** or **`java.util.concurrent.atomic`** classes.
+
+---
+
+<a name="q208"></a>
+### 208) What is an object lock (monitor)?
+[Back to TOC](#q208-toc)
+
+**Answer:**
+Every object in Java has an internal "Monitor". When a thread enters a `synchronized` block/method, it acquires this lock. No other thread can enter *any* synchronized part of that same object until the lock is released.
+
+---
+
+<a name="q209"></a>
+### 209) Synchronize only a part of a method?
+[Back to TOC](#q209-toc)
+
+**Answer:**
+Use a **Synchronized Block**.
+```java
+public void myMethod() {
+    // non-synchronized code
+    synchronized(this) {
+        // critical section
+    }
+}
+```
+
+---
+
+<a name="q210"></a>
+### 210) Use of synchronized blocks?
+[Back to TOC](#q210-toc)
+
+**Answer:**
+**Performance.** Synchronizing an entire method is expensive. Blocks allow you to lock only the specific lines that need thread-safety.
+
+---
+
+<a name="q211"></a>
+### 211) What is a mutex?
+[Back to TOC](#q211-toc)
+
+**Answer:**
+Short for "Mutual Exclusion". It's a lock that ensures only one thread can access a resource at a time. In Java, the object monitor acts as a mutex.
+
+---
+
+<a name="q212"></a>
+### 212) Synchronized constructors?
+[Back to TOC](#q212-toc)
+
+**Answer:**
+**No.** It's a compile-time error. Only the thread creating the object has access to it during construction anyway.
+
+---
+
+<a name="q213"></a>
+### 213) Synchronized variables?
+[Back to TOC](#q213-toc)
+
+**Answer:**
+**No.** Use the **`volatile`** keyword to ensure visibility of variable changes across threads, or use **`Atomic`** classes.
+
+---
+
+<a name="q214"></a>
+### 214) Static vs Non-static synchronized methods simultaneously?
+[Back to TOC](#q214-toc)
+
+**Answer:**
+**Yes.** They use different locks. Static methods lock on the **Class object**, while non-static methods lock on the **Instance (this)**.
+
+---
+
+<a name="q215"></a>
+### 215) Does a thread release the lock if an exception occurs?
+[Back to TOC](#q215-toc)
+
+**Answer:**
+**Yes.** Java automatically releases the lock if an exception is thrown within a synchronized block.
+
+---
+
+<a name="q216"></a>
+### 216) Synchronized methods or blocks?
+[Back to TOC](#q216-toc)
+
+**Answer:**
+**Blocks** are preferred because they are more granular and improve performance by reducing the locked time.
+
+---
+
+<a name="q217"></a>
+### 217) What is a Deadlock?
+[Back to TOC](#q217-toc)
+
+**Answer:**
+A situation where two threads are waiting for each other to release locks, and neither can proceed.
+*Example:* T1 holds Lock A and wants B; T2 holds Lock B and wants A.
+
+---
+
+<a name="q218"></a>
+### 218) Detect deadlocks programmatically?
+[Back to TOC](#q218-toc)
+
+**Answer:**
+Use **`ThreadMXBean`**.
+```java
+ThreadMXBean bean = ManagementFactory.getThreadMXBean();
+long[] deadlockedThreads = bean.findDeadlockedThreads();
+```
+
+---
+
+<a name="q219"></a>
+### 219) Lock ordering vs Lock timeout?
+[Back to TOC](#q219-toc)
+
+**Answer:**
+- **Lock Ordering:** Ensuring all threads acquire locks in the exact same sequence.
+- **Lock Timeout:** Using `tryLock(timeout, unit)` so a thread gives up after a while instead of waiting forever.
+
+---
+
+<a name="q220"></a>
+### 220) Tips to avoid deadlock?
+[Back to TOC](#q220-toc)
+
+**Answer:**
+1.  Avoid nested locks.
+2.  Use a fixed lock order.
+3.  Use **`tryLock`** with a timeout.
+
+---
+
+<a name="q221"></a>
+### 221) Inter-thread communication?
+[Back to TOC](#q221-toc)
+
+**Answer:**
+Using **`wait()`**, **`notify()`**, and **`notifyAll()`**.
+
+---
+
+<a name="q222"></a>
+### 222) wait() vs sleep()?
+[Back to TOC](#q222-toc)
+
+**Answer:**
+| Feature | wait() | sleep() |
+| :--- | :--- | :--- |
+| **Class** | Object | Thread |
+| **Lock** | **Releases lock** | **Keeps lock** |
+| **Synchronized** | Must be in sync block | Anywhere |
+
+---
+
+<a name="q223"></a>
+### 223) notify() vs notifyAll()?
+[Back to TOC](#q223-toc)
+
+**Answer:**
+- **`notify()`**: Wakes up ONE random waiting thread.
+- **`notifyAll()`**: Wakes up ALL waiting threads. (Safest choice).
+
+---
+
+<a name="q224"></a>
+### 224) Why wait/notify are in Object class?
+[Back to TOC](#q224-toc)
+
+**Answer:**
+Because the **Lock/Monitor** is associated with the **Object**, not the thread.
+
+---
+
+<a name="q225"></a>
+### 225) Purpose of interrupt()?
+[Back to TOC](#q225-toc)
+
+**Answer:**
+To signal a thread that it should stop what it's doing (e.g., wake it up from a `sleep` or `wait`).
+
+---
+
+<a name="q226"></a>
+### 226) Check if thread is interrupted?
+[Back to TOC](#q226-toc)
+
+**Answer:**
+1.  `t.isInterrupted()`: Checks the status.
+2.  `Thread.interrupted()`: Checks AND clears the status.
+
+---
+
+<a name="q227"></a>
+### 227) isInterrupted() vs interrupted()?
+[Back to TOC](#q227-toc)
+
+**Answer:**
+`isInterrupted()` is an instance method that only checks. `interrupted()` is a static method that checks and resets the flag to false.
+
+---
+
+<a name="q228"></a>
+### 228) Can a thread interrupt itself?
+[Back to TOC](#q228-toc)
+
+**Answer:**
+**Yes.**
+
+---
+
+<a name="q229"></a>
+### 229) Thread States (Life Cycle)?
+[Back to TOC](#q229-toc)
+
+**Answer:**
+1.  **NEW:** Created but not started.
+2.  **RUNNABLE:** Executing or waiting for CPU.
+3.  **BLOCKED:** Waiting for a lock.
+4.  **WAITING:** Waiting for another thread (wait/join).
+5.  **TIMED_WAITING:** Waiting with a timeout (sleep/wait).
+6.  **TERMINATED:** Finished execution.
+
+---
+
+<a name="q230"></a>
+### 230) State of deadlocked threads?
+[Back to TOC](#q230-toc)
+
+**Answer:**
+**BLOCKED** or **WAITING**.
+
+---
+
+<a name="q231"></a>
+### 231) BLOCKED vs WAITING?
+[Back to TOC](#q231-toc)
+
+**Answer:**
+- **BLOCKED:** Waiting for a `synchronized` lock.
+- **WAITING:** Waiting for a signal from another thread (`wait()`, `join()`).
+
+---
+
+<a name="q232"></a>
+### 232) WAITING vs TIMED_WAITING?
+[Back to TOC](#q232-toc)
+
+**Answer:**
+Indefinite wait vs. waiting for a specific period of time.
+
+---
+
+<a name="q233"></a>
+### 233) Call start() twice?
+[Back to TOC](#q233-toc)
+
+**Answer:**
+**No.** It throws `IllegalThreadStateException`.
+
+---
+
+<a name="q234"></a>
+### 234) start() vs run()?
+[Back to TOC](#q234-toc)
+
+**Answer:**
+- **`start()`**: Creates a new thread and then calls `run()`.
+- **`run()`**: Executes the code in the **current** thread (just a normal method call).
+
+---
+
+<a name="q235"></a>
+### 235) How to stop a thread?
+[Back to TOC](#q235-toc)
+
+**Answer:**
+Never use `stop()`. Use a **volatile boolean flag** or **Interrupts**.
+```java
+// Modern Way
+while (!Thread.currentThread().isInterrupted()) {
+    // task
+}
+```
+
+---
+
+<a name="q236"></a>
+### 236) If exception occurs in T1, does it affect T2?
+[Back to TOC](#q236-toc)
+
+**Answer:**
+**No.** Threads are independent. If T1 crashes, T2 continues normally.
+
+---
+
+<a name="q237"></a>
+### 237) Thread class vs Runnable interface?
+[Back to TOC](#q237-toc)
+
+**Answer:**
+**`Runnable`** is better because:
+1.  Java only supports single inheritance.
+2.  It separates the task from the runner (better design).
+
+---
+
+<a name="q238"></a>
+### 238) Program vs Process vs Thread?
+[Back to TOC](#q238-toc)
+
+**Answer:**
+- **Program:** Set of instructions on disk (Static).
+- **Process:** A program in execution (Dynamic).
+- **Thread:** A subset of a process (Lightweight).
+
+---
+
+<a name="q239"></a>
+### 239) User threads vs Daemon threads?
+[Back to TOC](#q239-toc)
+
+**Answer:**
+The JVM keeps running as long as there is at least one **User thread** alive. It terminates all **Daemon threads** immediately once all User threads finish.
+
+---
+
+<a name="q240"></a>
+### 240) Use of Thread Groups?
+[Back to TOC](#240-toc)
+
+**Answer:**
+To manage multiple threads as a single unit (e.g., interrupt all threads in a group).
+*Modern Context:* Mostly replaced by **`ExecutorService`**.
+
+---
+
+<a name="q241"></a>
+### 241) Thread group of main thread?
+[Back to TOC](#q241-toc)
+
+**Answer:**
+**"main"**.
+
+---
+
+<a name="q242"></a>
+### 242) activeCount() and activeGroupCount()?
+[Back to TOC](#q242-toc)
+
+**Answer:**
+- **`activeCount()`**: Returns an estimate of the number of active threads in the current thread's group and its subgroups.
+- **`activeGroupCount()`**: Returns an estimate of the number of active groups in the current thread's group and its subgroups.
+
+---
+
+<a name="q243"></a>
+### 243) Java 8-21: Object Oriented or Functional?
+[Back to TOC](#q243-toc)
+
+**Answer:**
+**Both.** Java remains a strongly typed, Object-Oriented language, but since Java 8, it has adopted **Functional Programming** features (Lambdas, Streams, Optional) to make code more concise and readable.
+*Modern Context:* In Java 21, features like **Record Patterns** and **Pattern Matching for Switch** further bridge the gap between OO and Functional styles.
+
+---
+
+<a name="q244"></a>
+### 244) Three main features of Functional Programming in Java?
+[Back to TOC](#q244-toc)
+
+**Answer:**
+1.  **Lambda Expressions.**
+2.  **Functional Interfaces.**
+3.  **Stream API.**
+
+---
+
+<a name="q245"></a>
+### 245) What are Lambda Expressions?
+[Back to TOC](#q245-toc)
+
+**Answer:**
+An anonymous function (a function without a name). It allows you to treat functionality as a method argument, or code as data.
+```java
+// Before Java 8
+Runnable r1 = new Runnable() {
+    @Override
+    public void run() { System.out.println("Hello"); }
+};
+
+// With Lambda
+Runnable r2 = () -> System.out.println("Hello");
+```
+
+---
+
+<a name="q246"></a>
+### 246) How is the signature of a Lambda determined?
+[Back to TOC](#q246-toc)
+
+**Answer:**
+By the **Target Type**. The compiler looks at the single abstract method of the Functional Interface that the Lambda is being assigned to.
+
+---
+
+<a name="q247"></a>
+### 247) How is the return type of a Lambda determined?
+[Back to TOC](#q247-toc)
+
+**Answer:**
+From the context and the body of the Lambda. If the body has a single expression, its return type is used. If it's a block, the `return` statement's type is used.
+
+---
+
+<a name="q248"></a>
+### 248) Use non-final local variables in a Lambda?
+[Back to TOC](#q248-toc)
+
+**Answer:**
+**No.** Local variables must be **final** or **effectively final**. This is because Lambdas "capture" variables, and allowing them to change would lead to thread-safety issues.
+
+---
+
+<a name="q249"></a>
+### 249) Advantages of Lambdas?
+[Back to TOC](#q249-toc)
+
+**Answer:**
+1.  Reduced boilerplate code.
+2.  Improved readability.
+3.  Enables parallel processing (via Streams).
+4.  Easier API usage (e.g., `forEach`, `removeIf`).
+
+---
+
+<a name="q250"></a>
+### 250) What are Functional Interfaces?
+[Back to TOC](#q250-toc)
+
+**Answer:**
+An interface with **exactly one abstract method**.
+*Examples:* `Runnable`, `Callable`, `Comparator`.
+*Modern Context:* Use the **`@FunctionalInterface`** annotation to let the compiler enforce this rule.
+
+---
+
+<a name="q251"></a>
+### 251) New Functional Interfaces in Java 8+?
+[Back to TOC](#q251-toc)
+
+**Answer:**
+Located in **`java.util.function`**:
+1.  **`Predicate<T>`**: Takes T, returns boolean (`test()`).
+2.  **`Function<T, R>`**: Takes T, returns R (`apply()`).
+3.  **`Consumer<T>`**: Takes T, returns nothing (`accept()`).
+4.  **`Supplier<T>`**: Takes nothing, returns T (`get()`).
+
+---
+
+<a name="q252"></a>
+### 252) Predicate vs BiPredicate?
+[Back to TOC](#q252-toc)
+
+**Answer:**
+- `Predicate<T>`: One argument.
+- `BiPredicate<T, U>`: Two arguments.
+
+---
+
+<a name="q253"></a>
+### 253) Function vs BiFunction?
+[Back to TOC](#q253-toc)
+
+**Answer:**
+- `Function<T, R>`: One input, one output.
+- `BiFunction<T, U, R>`: Two inputs, one output.
+
+---
+
+<a name="q254"></a>
+### 254) Interface for operation on object that returns nothing?
+[Back to TOC](#q254-toc)
+
+**Answer:**
+**`Consumer<T>`**.
+
+---
+
+<a name="q255"></a>
+### 255) Interface for creating new objects?
+[Back to TOC](#q255-toc)
+
+**Answer:**
+**`Supplier<T>`**.
+
+---
+
+<a name="q256"></a>
+### 256) UnaryOperator and BinaryOperator?
+[Back to TOC](#q256-toc)
+
+**Answer:**
+Special cases of Function where the input and output types are the **same**.
+- `UnaryOperator<T>`: One input T, returns T.
+- `BinaryOperator<T>`: Two inputs T, returns T.
+
+---
+
+<a name="q257"></a>
+### 257) Primitive Functional Interfaces?
+[Back to TOC](#q257-toc)
+
+**Answer:**
+Yes, like **`IntPredicate`**, **`LongConsumer`**, **`DoubleFunction`**. They exist to **avoid the performance cost of Auto-boxing/Unboxing**.
+
+---
+
+<a name="q258"></a>
+### 258) Lambdas and Functional Interfaces relationship?
+[Back to TOC](#q258-toc)
+
+**Answer:**
+A Lambda expression provides the **implementation** for the single abstract method of a Functional Interface.
+
+---
+
+<a name="q259"></a>
+### 259) What are Method References?
+[Back to TOC](#q259-toc)
+
+**Answer:**
+A shorthand for Lambdas that only call an existing method.
+```java
+// Lambda
+list.forEach(s -> System.out.println(s));
+
+// Method Reference
+list.forEach(System.out::println);
+```
+
+---
+
+<a name="q260"></a>
+### 260) Method Reference syntax types?
+[Back to TOC](#q260-toc)
+
+**Answer:**
+1.  `StaticMethod`: `ClassName::staticMethodName`
+2.  `InstanceMethod`: `instance::methodName`
+3.  `ArbitraryObject`: `ClassName::methodName`
+4.  `Constructor`: `ClassName::new`
+
+---
+
+<a name="q261"></a>
+### 261) Major changes to interfaces in Java 8+?
+[Back to TOC](#q261-toc)
+
+**Answer:**
+1.  **Default methods.**
+2.  **Static methods.**
+3.  **Private methods (Java 9+).**
+
+---
+
+<a name="q262"></a>
+### 262) What are Default Methods?
+[Back to TOC](#q262-toc)
+
+**Answer:**
+Methods in an interface that have a body. They allow you to add new functionality to interfaces without breaking existing implementations.
+
+---
+
+<a name="q263"></a>
+### 263) Solving the Diamond Problem with default methods?
+[Back to TOC](#q263-toc)
+
+**Answer:**
+If a class inherits two default methods with the same signature, the compiler forces you to **override** the method and manually specify which one to use.
+```java
+@Override
+public void myMethod() {
+    InterfaceA.super.myMethod();
+}
+```
+
+---
+
+<a name="q264"></a>
+### 264) Static methods in interfaces?
+[Back to TOC](#q264-toc)
+
+**Answer:**
+They are used for utility methods related to the interface. They are not inherited by implementing classes.
+
+---
+
+<a name="q265"></a>
+### 265) What are Streams?
+[Back to TOC](#q265-toc)
+
+**Answer:**
+A sequence of elements supporting functional-style operations. It is **not** a data structure; it processes data from a source (Collection, Array, I/O).
+```java
+// Modern Stream Example (Java 16+)
+List<String> result = list.stream()
+    .filter(s -> s.startsWith("A"))
+    .map(String::toUpperCase)
+    .toList(); // Shorthand for collect(Collectors.toList())
+```
+
+---
+
+<a name="q266"></a>
+### 266) Is Stream a data structure?
+[Back to TOC](#q266-toc)
+
+**Answer:**
+**No.** Streams do not store data. They only convey data from a source through a pipeline of computational steps.
+
+---
+
+<a name="q267"></a>
+### 267) Intermediate vs Terminal operations?
+[Back to TOC](#q267-toc)
+
+**Answer:**
+- **Intermediate:** Returns a new Stream (Lazy). E.g., `filter()`, `map()`, `sorted()`.
+- **Terminal:** Produces a result or side-effect. E.g., `collect()`, `forEach()`, `count()`.
+
+---
+
+<a name="q268"></a>
+### 268) What is a Pipeline of operations?
+[Back to TOC](#q268-toc)
+
+**Answer:**
+A sequence of one source, zero or more intermediate operations, and one terminal operation.
+
+---
+
+<a name="q269"></a>
+### 269) "Implicit iteration" in Streams?
+[Back to TOC](#q269-toc)
+
+**Answer:**
+In a `for` loop, you manage the iteration (External). In a Stream, the API manages the iteration for you (Internal), allowing for optimizations like parallel processing.
+
+---
+
+<a name="q270"></a>
+### 270) Lazy Loading in Streams?
+[Back to TOC](#q270-toc)
+
+**Answer:**
+Intermediate operations are not performed until the **terminal operation** is invoked. This allows for "short-circuiting" (e.g., finding the first element without checking the whole list).
+
+---
+
+<a name="q271"></a>
+### 271) Short-circuiting operations?
+[Back to TOC](#q271-toc)
+
+**Answer:**
+Operations that don't need to process the whole stream to produce a result.
+- **Intermediate:** `limit()`.
+- **Terminal:** `findFirst()`, `anyMatch()`.
+
+---
+
+<a name="q272"></a>
+### 272) Selection operations?
+[Back to TOC](#q272-toc)
+
+**Answer:**
+`filter()`, `distinct()`, `limit()`, `skip()`.
+
+---
+
+<a name="q273"></a>
+### 273) Sorting operations?
+[Back to TOC](#q273-toc)
+
+**Answer:**
+`sorted()` (natural order) or `sorted(Comparator)`.
+
+---
+
+<a name="q274"></a>
+### 274) Reducing operations?
+[Back to TOC](#q274-toc)
+
+**Answer:**
+Operations that combine elements into a single value.
+`reduce()`, `collect()`, `count()`, `sum()`, `max()`, `min()`.
+
+---
+
+<a name="q275"></a>
+### 275) Matching operations?
+[Back to TOC](#q275-toc)
+
+**Answer:**
+`anyMatch()`, `allMatch()`, `noneMatch()`.
+
+---
+
+<a name="q276"></a>
+### 276) Finding operations?
+[Back to TOC](#q276-toc)
+
+**Answer:**
+`findFirst()`, `findAny()`.
+
+---
+
+<a name="q277"></a>
+### 277) Mapping operations?
+[Back to TOC](#q277-toc)
+
+**Answer:**
+`map()`, `flatMap()`, `mapToInt()`, `mapToLong()`, `mapToDouble()`.
+
+---
+
+<a name="q278"></a>
+### 278) map() vs flatMap()?
+[Back to TOC](#q278-toc)
+
+**Answer:**
+- **`map()`**: Transforms one element into another (One-to-One).
+- **`flatMap()`**: Transforms one element into a stream and flattens it (One-to-Many). Used to handle "nested" collections.
+
+---
+
+<a name="q279"></a>
+### 279) limit() vs skip()?
+[Back to TOC](#q279-toc)
+
+**Answer:**
+- `limit(n)`: Takes the first `n` elements.
+- `skip(n)`: Discards the first `n` elements.
+
+---
+
+<a name="q280"></a>
+### 280) findFirst() vs findAny()?
+[Back to TOC](#280-toc)
+
+**Answer:**
+- `findFirst()`: Always returns the first element in the source order.
+- `findAny()`: Returns any element (more efficient in parallel streams).
+
+---
+
+<a name="q281"></a>
+### 281) Stream.collect(), Collector interface, and Collectors class?
+[Back to TOC](#q281-toc)
+
+**Answer:**
+- **`collect()`**: The terminal operation that triggers the reduction process.
+- **`Collector`**: The interface that defines the logic for how to accumulate elements into a result container.
+- **`Collectors`**: A utility class providing implementations for common collection tasks (like `toList`, `toSet`, `groupingBy`).
+
+---
+
+<a name="q282"></a>
+### 282) Five methods of Collectors class?
+[Back to TOC](#q282-toc)
+
+**Answer:**
+1.  **`toList()`**: Accumulates elements into a List.
+2.  **`toSet()`**: Accumulates into a Set.
+3.  **`joining()`**: Concatenates elements into a String.
+4.  **`groupingBy()`**: Groups elements based on a classifier function (similar to SQL `GROUP BY`).
+5.  **`partitioningBy()`**: Partitions elements into two groups based on a Predicate.
+
+---
+
+<a name="q283"></a>
+### 283) Collections vs Streams?
+[Back to TOC](#q283-toc)
+
+**Answer:**
+| Feature | Collections | Streams |
+| :--- | :--- | :--- |
+| **Data** | Stores data. | Processes data. |
+| **Iteration** | External (you control). | Internal (API controls). |
+| **Usage** | Reusable. | Consumable (one-time use). |
+| **Lazy** | Eagerly evaluated. | Lazily evaluated. |
+
+---
+
+<a name="q284"></a>
+### 284) Purpose of Optional class?
+[Back to TOC](#q284-toc)
+
+**Answer:**
+To provide a type-level solution for representing "no value" instead of using `null`. It helps **avoid NullPointerException**.
+```java
+// Modern usage
+Optional<String> name = Optional.ofNullable(getName());
+name.ifPresentOrElse(
+    System.out::println, 
+    () -> System.out.println("No name found")
+);
+```
+
+---
+
+<a name="q285"></a>
+### 285) Spliterator vs Iterator?
+[Back to TOC](#q285-toc)
+
+**Answer:**
+**`Spliterator`** ("Splitable Iterator") is designed for **parallel processing**. It can split a source into smaller parts that can be processed by different threads simultaneously.
+
+---
+
+<a name="q286"></a>
+### 286) StringJoiner vs String.join() vs Collectors.joining()?
+[Back to TOC](#q286-toc)
+
+**Answer:**
+- **`StringJoiner`**: A class for building a sequence of characters separated by a delimiter (and optional prefix/suffix).
+- **`String.join()`**: A static method for joining arrays or Iterables.
+- **`Collectors.joining()`**: Specifically for joining elements of a Stream.
+
+---
+
+<a name="q287"></a>
+### 287) Three important classes of Java 8+ Date and Time API?
+[Back to TOC](#q287-toc)
+
+**Answer:**
+Located in `java.time`:
+1.  **`LocalDate`**: Date only (no time).
+2.  **`LocalTime`**: Time only (no date).
+3.  **`LocalDateTime`**: Both date and time.
+*Note:* These are all **Immutable** and **Thread-safe**.
+
+---
+
+<a name="q288"></a>
+### 288) Current date and time in Java 21?
+[Back to TOC](#q288-toc)
+
+**Answer:**
+```java
+LocalDateTime now = LocalDateTime.now();
+System.out.println(now);
+```
+
+---
+
+<a name="q289"></a>
+### 289) Partition students based on percentage (> 60%)?
+[Back to TOC](#q289-toc)
+
+**Answer:**
+```java
+Map<Boolean, List<Student>> partitioned = students.stream()
+    .collect(Collectors.partitioningBy(s -> s.getPercentage() > 60));
+```
+
+---
+
+<a name="q290"></a>
+### 290) Get names of top 3 students?
+[Back to TOC](#q290-toc)
+
+**Answer:**
+```java
+List<String> top3 = students.stream()
+    .sorted(Comparator.comparingDouble(Student::getPercentage).reversed())
+    .limit(3)
+    .map(Student::getName)
+    .toList();
+```
+
+---
+
+<a name="q291"></a>
+### 291) Get name and percentage of each student?
+[Back to TOC](#q291-toc)
+
+**Answer:**
+```java
+students.stream()
+    .forEach(s -> System.out.println(s.getName() + ": " + s.getPercentage()));
+```
+
+---
+
+<a name="q292"></a>
+### 292) Get subjects offered in college?
+[Back to TOC](#q292-toc)
+
+**Answer:**
+```java
+Set<String> subjects = students.stream()
+    .map(Student::getSubject)
+    .collect(Collectors.toSet());
+```
+
+---
+
+<a name="q293"></a>
+### 293) Highest, lowest, and average percentage?
+[Back to TOC](#q293-toc)
+
+**Answer:**
+```java
+DoubleSummaryStatistics stats = students.stream()
+    .mapToDouble(Student::getPercentage)
+    .summaryStatistics();
+
+System.out.println("Max: " + stats.getMax());
+System.out.println("Min: " + stats.getMin());
+System.out.println("Avg: " + stats.getAverage());
+```
+
+---
+
+<a name="q294"></a>
+### 294) Total number of students?
+[Back to TOC](#q294-toc)
+
+**Answer:**
+```java
+long count = students.stream().count();
+```
+
+---
+
+<a name="q295"></a>
+### 295) Group students by subject?
+[Back to TOC](#q295-toc)
+
+**Answer:**
+```java
+Map<String, List<Student>> groupedBySubject = students.stream()
+    .collect(Collectors.groupingBy(Student::getSubject));
+```
+
+---
+
+<a name="q296"></a>
+### 296) Count employees in each department?
+[Back to TOC](#q296-toc)
+
+**Answer:**
+```java
+Map<String, Long> deptCount = employees.stream()
+    .collect(Collectors.groupingBy(Employee::getDepartment, Collectors.counting()));
+```
+
+---
+
+<a name="q297"></a>
+### 297) Average salary of male and female employees?
+[Back to TOC](#q297-toc)
+
+**Answer:**
+```java
+Map<String, Double> avgSalaryByGender = employees.stream()
+    .collect(Collectors.groupingBy(
+        Employee::getGender, 
+        Collectors.averagingDouble(Employee::getSalary)
+    ));
+```
+
+---
+
+<a name="q298"></a>
+### 298) Highest paid employee?
+[Back to TOC](#q298-toc)
+
+**Answer:**
+```java
+Optional<Employee> highestPaid = employees.stream()
+    .collect(Collectors.maxBy(Comparator.comparingDouble(Employee::getSalary)));
+```
+
+---
+
+<a name="q299"></a>
+### 299) Average age of each department?
+[Back to TOC](#q299-toc)
+
+**Answer:**
+```java
+Map<String, Double> avgAgeByDept = employees.stream()
+    .collect(Collectors.groupingBy(
+        Employee::getDepartment, 
+        Collectors.averagingInt(Employee::getAge)
+    ));
+```
+
+---
+
+<a name="q300"></a>
+### 300) Senior most employee?
+[Back to TOC](#q300-toc)
+
+**Answer:**
+```java
+Optional<Employee> seniorMost = employees.stream()
+    .min(Comparator.comparingInt(Employee::getYearOfJoining));
+```
+
+---
+
+<a name="q301"></a>
+### 301) Youngest employee in organization?
+[Back to TOC](#q301-toc)
+
+**Answer:**
+```java
+Optional<Employee> youngest = employees.stream()
+    .min(Comparator.comparingInt(Employee::getAge));
+```
+
+---
+
+<a name="q302"></a>
+### 302) Number of employees in each department?
+[Back to TOC](#q302-toc)
+
+**Answer:**
+```java
+Map<String, Long> count = employees.stream()
+    .collect(Collectors.groupingBy(Employee::getDepartment, Collectors.counting()));
+```
+
+---
+
+<a name="q303"></a>
+### 303) Male and female employees count?
+[Back to TOC](#q303-toc)
+
+**Answer:**
+```java
+Map<String, Long> genderCount = employees.stream()
+    .collect(Collectors.groupingBy(Employee::getGender, Collectors.counting()));
+```
+
+---
+
+<a name="q304"></a>
+### 304) What is an Exception?
+[Back to TOC](#q304-toc)
+
+**Answer:**
+An unwanted or unexpected event that occurs during the execution of a program (at runtime) that disrupts the normal flow of instructions.
+
+---
+
+<a name="q305"></a>
+### 305) Exception Handling Mechanism in Java?
+[Back to TOC](#q305-toc)
+
+**Answer:**
+Using five keywords:
+1.  **`try`**: Block where an exception might occur.
+2.  **`catch`**: Handles the exception.
+3.  **`finally`**: Code that always executes (cleanup).
+4.  **`throw`**: Used to manually throw an exception.
+5.  **`throws`**: Declares that a method might throw an exception.
+
+---
+
+<a name="q306"></a>
+### 306) Error vs Exception?
+[Back to TOC](#q306-toc)
+
+**Answer:**
+- **Error:** Indicates serious problems that a reasonable application should not try to catch (e.g., `OutOfMemoryError`, `StackOverflowError`).
+- **Exception:** Indicates conditions that a reasonable application might want to catch (e.g., `IOException`, `NullPointerException`).
+
+---
+
+<a name="q307"></a>
+### 307) Statements between try, catch, and finally?
+[Back to TOC](#q307-toc)
+
+**Answer:**
+**No.** They must form a contiguous block.
+
+---
+
+<a name="q308"></a>
+### 308) try block without catch or finally?
+[Back to TOC](#q308-toc)
+
+**Answer:**
+**No.** It must be followed by at least one `catch` block or a `finally` block. (Exception: **Try-with-resources** in Java 7+).
+
+---
+
+<a name="q309"></a>
+### 309) Exception in statement2: Does statement3 execute?
+[Back to TOC](#q309-toc)
+
+**Answer:**
+**No.** Once an exception is thrown, the rest of the `try` block is skipped and control transfers to the `catch` block.
+
+---
+
+<a name="q310"></a>
+### 310) Unreachable catch block error?
+[Back to TOC](#310-toc)
+
+**Answer:**
+Occurs if you put a parent exception class (like `Exception`) before a child exception class (like `IOException`) in multiple catch blocks. The parent will catch everything, making the child catch block "unreachable".
+
+---
+
+<a name="q311"></a>
+### 311) Exception Hierarchy?
+[Back to TOC](#311-toc)
+
+**Answer:**
+`Throwable` (Root)
+├── `Error`
+└── `Exception`
+    ├── `RuntimeException` (Unchecked)
+    └── Other Exceptions (Checked)
+
+---
+
+<a name="q312"></a>
+### 312) Runtime Exceptions examples?
+[Back to TOC](#312-toc)
+
+**Answer:**
+`NullPointerException`, `ArrayIndexOutOfBoundsException`, `ArithmeticException`, `NumberFormatException`. These are **Unchecked** exceptions.
+
+---
+
+<a name="q313"></a>
+### 313) What is OutOfMemoryError?
+[Back to TOC](#313-toc)
+
+**Answer:**
+Thrown when the JVM cannot allocate an object because it is out of memory, and no more memory could be made available by the garbage collector.
+
+---
+
+<a name="q314"></a>
+### 314) Checked vs Unchecked Exceptions?
+[Back to TOC](#314-toc)
+
+**Answer:**
+- **Checked:** Checked at compile-time. You must either handle them or declare them in `throws`. (E.g., `IOException`).
+- **Unchecked:** Occur at runtime. Compiler does not force you to handle them. (E.g., `NullPointerException`).
+
+---
+
+<a name="q315"></a>
+### 315) ClassNotFoundException vs NoClassDefFoundError?
+[Back to TOC](#315-toc)
+
+**Answer:**
+- **`ClassNotFoundException`**: Thrown when you try to load a class by its name using `Class.forName()` but the class is not on the classpath.
+- **`NoClassDefFoundError`**: The class was present at compile-time but is **missing at runtime**.
+
+---
+
+<a name="q316"></a>
+### 316) Statements after finally block if finally returns control?
+[Back to TOC](#316-toc)
+
+**Answer:**
+**No.** If the `finally` block has a `return` or `throw` statement, any code after it is unreachable.
+
+---
+
+<a name="q317"></a>
+### 317) Does finally execute if try/catch has a return?
+[Back to TOC](#317-toc)
+
+**Answer:**
+**Yes.** The `finally` block always executes even if there is a `return` statement in the `try` or `catch` blocks.
+
+---
+
+<a name="q318"></a>
+### 318) Throw exception manually?
+[Back to TOC](#318-toc)
+
+**Answer:**
+Yes, using the **`throw`** keyword.
+```java
+if (age < 18) {
+    throw new ArithmeticException("Not eligible to vote");
+}
+```
+
+---
+
+<a name="q319"></a>
+### 319) Re-throwing an exception?
+[Back to TOC](#319-toc)
+
+**Answer:**
+Catching an exception and then throwing it again (perhaps after logging it).
+
+---
+
+<a name="q320"></a>
+### 320) Use of throws keyword?
+[Back to TOC](#320-toc)
+
+**Answer:**
+To declare that a method might throw certain exceptions, delegating the responsibility of handling them to the caller.
+
+---
+
+<a name="q321"></a>
+### 321) Clean up operations in finally block?
+[Back to TOC](#q321-toc)
+
+**Answer:**
+Because the `finally` block is guaranteed to execute, it's the perfect place to close database connections, files, or network sockets to prevent resource leaks.
+*Modern Context:* Use **Try-with-resources** for classes that implement `AutoCloseable`.
+
+---
+
+<a name="q322"></a>
+### 322) final vs finally vs finalize?
+[Back to TOC](#q322-toc)
+
+**Answer:**
+- **`final`**: Modifier (constant variable, non-overridable method, non-inheritable class).
+- **`finally`**: Block in exception handling (guaranteed execution).
+- **`finalize()`**: Method called by Garbage Collector before destroying an object (Deprecated since Java 9, **Do not use!**).
+
+---
+
+<a name="q323"></a>
+### 323) Create customized exceptions?
+[Back to TOC](#q323-toc)
+
+**Answer:**
+Extend the `Exception` class (for checked) or `RuntimeException` class (for unchecked).
+```java
+public class MyException extends Exception {
+    public MyException(String message) { super(message); }
+}
+```
+
+---
+
+<a name="q324"></a>
+### 324) ClassCastException?
+[Back to TOC](#324-toc)
+
+**Answer:**
+Thrown when you try to cast an object to a subclass of which it is not an instance.
+
+---
+
+<a name="q325"></a>
+### 325) throw vs throws vs throwable?
+[Back to TOC](#325-toc)
+
+**Answer:**
+- **`throw`**: Keyword used to manually throw an exception.
+- **`throws`**: Keyword used in method signature to declare potential exceptions.
+- **`Throwable`**: The root class for all Errors and Exceptions.
+
+---
+
+<a name="q326"></a>
+### 326) StackOverflowError?
+[Back to TOC](#326-toc)
+
+**Answer:**
+Thrown when the stack memory is full, usually due to **infinite recursion**.
+
+---
+
+<a name="q327"></a>
+### 327) Override method with broader checked exception?
+[Back to TOC](#327-toc)
+
+**Answer:**
+**No.** Subclasses cannot throw broader checked exceptions than their parents.
+
+---
+
+<a name="q328"></a>
+### 328) Chained Exceptions?
+[Back to TOC](#328-toc)
+
+**Answer:**
+Relating one exception to another. E.g., catching a low-level exception and throwing a high-level one while preserving the original "cause".
+```java
+try {
+    // some code
+} catch (IOException e) {
+    throw new MyException("High level error", e); // 'e' is the cause
+}
+```
+
+---
+
+<a name="q329"></a>
+### 329) Superclass for all Errors and Exceptions?
+[Back to TOC](#329-toc)
+
+**Answer:**
+**`java.lang.Throwable`**.
+
+---
+
+<a name="q330"></a>
+### 330) Legal combinations of try-catch-finally?
+[Back to TOC](#330-toc)
+
+**Answer:**
+1.  `try-catch`
+2.  `try-catch-finally`
+3.  `try-finally`
+
+---
+
+<a name="q331"></a>
+### 331) Use of printStackTrace()?
+[Back to TOC](#331-toc)
+
+**Answer:**
+Prints the exception name, description, and the sequence of method calls (stack trace) that led to the exception. Extremely useful for debugging.
+
+---
+
+<a name="q332"></a>
+### 332) Checked Exceptions examples?
+[Back to TOC](#332-toc)
+
+**Answer:**
+`IOException`, `SQLException`, `ClassNotFoundException`, `FileNotFoundException`.
+
+---
+
+<a name="q333"></a>
+### 333) Unchecked Exceptions examples?
+[Back to TOC](#333-toc)
+
+**Answer:**
+`NullPointerException`, `ArithmeticException`, `NumberFormatException`, `ArrayIndexOutOfBoundsException`.
+
+---
+
+<a name="q334"></a>
+### 334) Try-with-resources?
+[Back to TOC](#334-toc)
+
+**Answer:**
+Introduced in Java 7, it's a `try` block that automatically closes resources at the end. The resources must implement **`AutoCloseable`**.
+```java
+try (BufferedReader br = new BufferedReader(new FileReader("file.txt"))) {
+    System.out.println(br.readLine());
+} catch (IOException e) {
+    e.printStackTrace();
+} // br is automatically closed here!
+```
+
+---
+
+<a name="q335"></a>
+### 335) Benefits of try-with-resources?
+[Back to TOC](#335-toc)
+
+**Answer:**
+1.  Cleaner code (no explicit `close()` in `finally`).
+2.  Prevents memory leaks.
+3.  Handles "suppressed" exceptions correctly.
+
+---
+
+<a name="q336"></a>
+### 336) Changes to exception handling in Java 7?
+[Back to TOC](#336-toc)
+
+**Answer:**
+1.  **Try-with-resources**.
+2.  **Multi-catch block** (`catch (IOException | SQLException e)`).
+
+---
+
+<a name="q337"></a>
+### 337) Java 9 improvements to try-with-resources?
+[Back to TOC](#337-toc)
+
+**Answer:**
+You can use **effectively final** variables in the try-with-resources statement without re-declaring them.
+```java
+BufferedReader br = new BufferedReader(...);
+try (br) { // Valid in Java 9+
+    // use br
+}
+```
+
+---
+
+<a name="q338"></a>
+### 338) Java Collection Framework?
+[Back to TOC](#338-toc)
+
+**Answer:**
+A set of classes and interfaces that implement commonly used data structures (Lists, Sets, Maps) to store and manipulate groups of objects efficiently.
+
+---
+
+<a name="q339"></a>
+### 339) Root interface of Collection Framework?
+[Back to TOC](#339-toc)
+
+**Answer:**
+**`java.util.Collection`**. (Note: `Iterable` is the super-interface of `Collection`).
+
+---
+
+<a name="q340"></a>
+### 340) Four main core interfaces of Collection Framework?
+[Back to TOC](#340-toc)
+
+**Answer:**
+1.  **List**
+2.  **Set**
+3.  **Queue**
+4.  **Map** (Map doesn't extend Collection, but is part of the framework).
+
+---
+
+<a name="q341"></a>
+### 341) Collection Framework Hierarchy?
+[Back to TOC](#341-toc)
+
+**Answer:**
+- `Collection`
+  - `List` (ArrayList, LinkedList, Vector, Stack)
+  - `Set` (HashSet, LinkedHashSet, TreeSet)
+  - `Queue` (PriorityQueue, Deque -> ArrayDeque)
+- `Map` (HashMap, LinkedHashMap, TreeMap, Hashtable)
+
+---
+
+<a name="q342"></a>
+### 342) Why Map doesn't extend Collection?
+[Back to TOC](#342-toc)
+
+**Answer:**
+Because they are fundamentally different. `Collection` stores single elements, while `Map` stores **Key-Value pairs**.
+
+---
+
+<a name="q343"></a>
+### 343) What is Iterable interface?
+[Back to TOC](#343-toc)
+
+**Answer:**
+The root interface of the whole hierarchy. Any class implementing `Iterable` can be used in an **enhanced for-loop**.
+
+---
+
+<a name="q344"></a>
+### 344) Characteristics of List?
+[Back to TOC](#344-toc)
+
+**Answer:**
+1.  **Ordered** (maintains insertion order).
+2.  **Allows Duplicates**.
+3.  **Index-based** access.
+
+---
+
+<a name="q345"></a>
+### 345) Major implementations of List?
+[Back to TOC](#345-toc)
+
+**Answer:**
+`ArrayList`, `LinkedList`, `Vector`.
+
+---
+
+<a name="q346"></a>
+### 346) Characteristics of ArrayList?
+[Back to TOC](#346-toc)
+
+**Answer:**
+1.  Resizable array.
+2.  Fast random access ($O(1)$).
+3.  Slow insertion/deletion in the middle ($O(n)$) because of element shifting.
+
+---
+
+<a name="q347"></a>
+### 347) Three marker interfaces in ArrayList?
+[Back to TOC](#347-toc)
+
+**Answer:**
+1.  `RandomAccess`
+2.  `Serializable`
+3.  `Cloneable`
+
+---
+
+<a name="q348"></a>
+### 348) Default initial capacity of ArrayList?
+[Back to TOC](#348-toc)
+
+**Answer:**
+**10**.
+
+---
+
+<a name="q349"></a>
+### 349) Main drawback of ArrayList?
+[Back to TOC](#349-toc)
+
+**Answer:**
+**Shifting.** Adding or removing an element from the middle requires shifting all subsequent elements, which is slow for large lists.
+
+---
+
+<a name="q350"></a>
+### 350) Array vs ArrayList?
+[Back to TOC](#350-toc)
+
+**Answer:**
+| Feature | Array | ArrayList |
+| :--- | :--- | :--- |
+| **Size** | Fixed | Dynamic |
+| **Type** | Primitive & Object | Object only |
+| **Methods** | `length` field | Rich API (`add`, `remove`, `sort`) |
+
+---
+
+<a name="q351"></a>
+### 351) Vector vs ArrayList?
+[Back to TOC](#351-toc)
+
+**Answer:**
+- **Vector:** Synchronized (Thread-safe, but slower).
+- **ArrayList:** Not synchronized (Faster).
+
+---
+
+<a name="q352"></a>
+### 352) Why avoid Vector?
+[Back to TOC](#352-toc)
+
+**Answer:**
+Because it synchronizes every operation even if only one thread is using it, leading to poor performance.
+
+---
+
+<a name="q353"></a>
+### 353) Growth of Vector vs ArrayList?
+[Back to TOC](#353-toc)
+
+**Answer:**
+- **Vector:** Doubles its size (100% growth).
+- **ArrayList:** Increases by 50%.
+
+---
+
+<a name="q354"></a>
+### 354) Characteristics of Queue?
+[Back to TOC](#354-toc)
+
+**Answer:**
+**FIFO** (First-In, First-Out). Elements are added at the tail and removed from the head.
+
+---
+
+<a name="q355"></a>
+### 355) Important methods of Queue?
+[Back to TOC](#355-toc)
+
+**Answer:**
+- **Insert:** `add()`, `offer()`
+- **Remove:** `remove()`, `poll()`
+- **Examine:** `element()`, `peek()`
+
+---
+
+<a name="q356"></a>
+### 356) Queue vs List?
+[Back to TOC](#356-toc)
+
+**Answer:**
+Lists allow random access. Queues typically only allow access to the head/tail elements.
+
+---
+
+<a name="q357"></a>
+### 357) Popular type implementing both List and Queue?
+[Back to TOC](#357-toc)
+
+**Answer:**
+**`LinkedList`**.
+
+---
+
+<a name="q358"></a>
+### 358) Characteristics of LinkedList?
+[Back to TOC](#358-toc)
+
+**Answer:**
+1.  Doubly-linked list.
+2.  Fast insertion/deletion ($O(1)$) as no shifting is needed.
+3.  Slow random access ($O(n)$) because you must traverse from the start/end.
+
+---
+
+<a name="q359"></a>
+### 359) ArrayList vs LinkedList?
+[Back to TOC](#359-toc)
+
+**Answer:**
+- **Search:** ArrayList is faster ($O(1)$ vs $O(n)$).
+- **Update/Delete:** LinkedList is faster ($O(1)$ vs $O(n)$) once the position is found.
+
+---
+
+<a name="q360"></a>
+### 360) What is PriorityQueue?
+[Back to TOC](#360-toc)
+
+**Answer:**
+A queue where elements are ordered by their **priority** (either natural order or a custom `Comparator`), not their insertion time.
+
+---
+
+<a name="q361"></a>
+### 361) What are Deque and ArrayDeque?
+[Back to TOC](#q361-toc)
+
+**Answer:**
+- **`Deque`** (Double-Ended Queue): Allows insertion/removal from both ends (Stack & Queue combined).
+- **`ArrayDeque`**: A resizable array implementation of `Deque`. It's faster than `Stack` (when used as a stack) and faster than `LinkedList` (when used as a queue).
+
+---
+
+<a name="q362"></a>
+### 362) Characteristics of Sets?
+[Back to TOC](#q362-toc)
+
+**Answer:**
+1.  **No Duplicates** allowed.
+2.  **Unordered** (usually).
+3.  Allows at most one `null` element (implementation-dependent).
+
+---
+
+<a name="q363"></a>
+### 363) Major implementations of Set?
+[Back to TOC](#q363-toc)
+
+**Answer:**
+`HashSet`, `LinkedHashSet`, `TreeSet`.
+
+---
+
+<a name="q364"></a>
+### 364) List vs Set?
+[Back to TOC](#q364-toc)
+
+**Answer:**
+| Feature | List | Set |
+| :--- | :--- | :--- |
+| **Duplicates** | Allowed. | Not allowed. |
+| **Order** | Ordered (insertion order). | Unordered (usually). |
+| **Indexing** | Index-based access. | No index-based access. |
+
+---
+
+<a name="q365"></a>
+### 365) Characteristics of HashSet?
+[Back to TOC](#q365-toc)
+
+**Answer:**
+1.  Backed by a **`HashMap`**.
+2.  Unordered.
+3.  Fastest Set implementation ($O(1)$ for add/contains).
+
+---
+
+<a name="q366"></a>
+### 366) How HashSet works internally?
+[Back to TOC](#q366-toc)
+
+**Answer:**
+It uses a `HashMap` where your elements are stored as **Keys**, and a constant dummy value (a private static `Object PRESENT`) is stored as the **Value**.
+
+---
+
+<a name="q367"></a>
+### 367) Characteristics of LinkedHashSet?
+[Back to TOC](#q367-toc)
+
+**Answer:**
+Maintains **Insertion Order** using a doubly-linked list running through the hash table.
+
+---
+
+<a name="q368"></a>
+### 368) When to prefer LinkedHashSet?
+[Back to TOC](#q368-toc)
+
+**Answer:**
+When you need unique elements but also need to preserve the order in which they were added.
+
+---
+
+<a name="q369"></a>
+### 369) How LinkedHashSet works internally?
+[Back to TOC](#q369-toc)
+
+**Answer:**
+It extends `HashSet` and uses a `LinkedHashMap` internally instead of a regular `HashMap`.
+
+---
+
+<a name="q370"></a>
+### 370) What is SortedSet?
+[Back to TOC](#q370-toc)
+
+**Answer:**
+A Set that maintains elements in sorted order (natural order or custom `Comparator`). Implementation: **`TreeSet`**.
+
+---
+
+<a name="q371"></a>
+### 371) What is NavigableSet?
+[Back to TOC](#q371-toc)
+
+**Answer:**
+An extension of `SortedSet` that provides navigation methods like `lower()`, `floor()`, `ceiling()`, and `higher()`. Implementation: **`TreeSet`**.
+
+---
+
+<a name="q372"></a>
+### 372) Characteristics of TreeSet?
+[Back to TOC](#372-toc)
+
+**Answer:**
+1.  Sorted order.
+2.  Backed by a **Red-Black Tree**.
+3.  Does not allow `null` (throws NPE).
+4.  $O(log n)$ time for operations.
+
+---
+
+<a name="q373"></a>
+### 373) HashSet vs LinkedHashSet vs TreeSet?
+[Back to TOC](#373-toc)
+
+**Answer:**
+- **`HashSet`**: Fastest, no order.
+- **`LinkedHashSet`**: Insertion order.
+- **`TreeSet`**: Sorted order.
+
+---
+
+<a name="q374"></a>
+### 374) Iterator vs ListIterator?
+[Back to TOC](#374-toc)
+
+**Answer:**
+- **`Iterator`**: Forward traversal only. Works on any Collection.
+- **`ListIterator`**: Bi-directional traversal. Works only on Lists. Allows modification during iteration.
+
+---
+
+<a name="q375"></a>
+### 375) Map interface vs others?
+[Back to TOC](#375-toc)
+
+**Answer:**
+Maps use **Key-Value pairs**. You access data via keys, not indexes. It does not extend the `Collection` interface.
+
+---
+
+<a name="q376"></a>
+### 376) Popular implementations of Map?
+[Back to TOC](#376-toc)
+
+**Answer:**
+`HashMap`, `LinkedHashMap`, `TreeMap`, `ConcurrentHashMap`, `Hashtable`.
+
+---
+
+<a name="q377"></a>
+### 377) Characteristics of HashMap?
+[Back to TOC](#377-toc)
+
+**Answer:**
+1.  Unordered.
+2.  Allows one `null` key and multiple `null` values.
+3.  Not synchronized (not thread-safe).
+4.  $O(1)$ average time complexity.
+
+---
+
+<a name="q378"></a>
+### 378) How HashMap works internally? (The "Million Dollar" Interview Question)
+[Back to TOC](#378-toc)
+
+**Answer:**
+1.  **Array of Buckets:** Stores `Node<K,V>` objects.
+2.  **`hashCode()`**: Finds the bucket index.
+3.  **Collision Handling:** Multiple keys in one bucket form a **LinkedList**.
+4.  **Treeification (Java 8+):** If a bucket exceeds 8 nodes, the LinkedList converts to a **Balanced Tree** (Red-Black Tree) for better performance ($O(log n)$ vs $O(n)$).
+5.  **`equals()`**: Used to find the exact key within a bucket.
+
+---
+
+<a name="q379"></a>
+### 379) What is Hashing?
+[Back to TOC](#379-toc)
+
+**Answer:**
+The process of converting an object into an integer representation (hash code) using a formula. It's used to quickly locate objects in a collection.
+
+---
+
+<a name="q380"></a>
+### 380) Initial capacity of HashMap?
+[Back to TOC](#380-toc)
+
+**Answer:**
+**16**.
+
+---
+
+<a name="q381"></a>
+### 381) Load factor of HashMap?
+[Back to TOC](#381-toc)
+
+**Answer:**
+**0.75**. It means the map will resize (double) once it is 75% full.
+
+---
+
+<a name="q382"></a>
+### 382) HashMap Threshold?
+[Back to TOC](#382-toc)
+
+**Answer:**
+`Threshold = Capacity * Load Factor`. (e.g., $16 * 0.75 = 12$).
+
+---
+
+<a name="q383"></a>
+### 383) What is rehashing?
+[Back to TOC](#383-toc)
+
+**Answer:**
+When the map's size exceeds the threshold, it doubles the internal array size and recalculates the bucket index for all existing entries to redistribute them.
+
+---
+
+<a name="q384"></a>
+### 384) Impact of capacity and load factor?
+[Back to TOC](#384-toc)
+
+**Answer:**
+- **High capacity:** Reduces rehashing but wastes memory.
+- **Low load factor:** Reduces collisions but increases rehashing.
+- **Default (16, 0.75)**: Optimal balance for most use cases.
+
+---
+
+<a name="q385"></a>
+### 385) HashSet vs HashMap?
+[Back to TOC](#385-toc)
+
+**Answer:**
+- `HashSet`: Implements `Set`. Stores objects.
+- `HashMap`: Implements `Map`. Stores Key-Value pairs. (HashSet uses HashMap internally).
+
+---
+
+<a name="q386"></a>
+### 386) HashMap vs Hashtable?
+[Back to TOC](#386-toc)
+
+**Answer:**
+| Feature | HashMap | Hashtable |
+| :--- | :--- | :--- |
+| **Sync** | Not synchronized. | Synchronized. |
+| **Nulls** | Allows 1 null key. | No nulls allowed. |
+| **Performance** | Faster. | Slower (legacy). |
+
+---
+
+<a name="q387"></a>
+### 387) Remove duplicates from ArrayList?
+[Back to TOC](#387-toc)
+
+**Answer:**
+Wrap it in a `LinkedHashSet` (to preserve order) and then back to a List.
+```java
+List<String> uniqueList = new ArrayList<>(new LinkedHashSet<>(originalList));
+```
+
+---
+
+<a name="q388"></a>
+### 388) Sorted collection with no duplicates?
+[Back to TOC](#388-toc)
+
+**Answer:**
+**`TreeSet`**.
+
+---
+
+<a name="q389"></a>
+### 389) Fail-fast vs Fail-safe Iterators?
+[Back to TOC](#389-toc)
+
+**Answer:**
+- **Fail-fast:** Throws `ConcurrentModificationException` if collection is modified during iteration (e.g., `ArrayList`).
+- **Fail-safe:** Operates on a **copy** of the collection, so modifications don't affect iteration (e.g., `CopyOnWriteArrayList`).
+
+---
+
+<a name="q390"></a>
+### 390) Array to ArrayList and vice versa?
+[Back to TOC](#390-toc)
+
+**Answer:**
+- **Array to List:** `Arrays.asList(arr)`
+- **List to Array:** `list.toArray(new String[0])`
+
+---
+
+<a name="q391"></a>
+### 391) Collection vs Collections?
+[Back to TOC](#391-toc)
+
+**Answer:**
+- **`Collection`**: The root **interface**.
+- **`Collections`**: A **utility class** with static methods (like `sort()`, `reverse()`).
+
+---
+
+<a name="q392"></a>
+### 392) Collections vs Streams? (Repeated)
+[Back to TOC](#392-toc)
+
+**Answer:**
+Storage vs. Processing. Collections are for managing data; Streams are for transforming data.
+
+---
+
+<a name="q393"></a>
+### 393) HashMap to ArrayList?
+[Back to TOC](#393-toc)
+
+**Answer:**
+```java
+List<String> keys = new ArrayList<>(map.keySet());
+List<String> values = new ArrayList<>(map.values());
+```
+
+---
+
+<a name="q394"></a>
+### 394) keySet(), values(), and entrySet()?
+[Back to TOC](#394-toc)
+
+**Answer:**
+- `keySet()`: Returns all keys.
+- `values()`: Returns all values.
+- `entrySet()`: Returns a Set of Key-Value pairs (`Map.Entry`).
+
+---
+
+<a name="q395"></a>
+### 395) Iterator vs Spliterator? (Repeated)
+[Back to TOC](#395-toc)
+
+**Answer:**
+Sequential traversal vs. Parallel traversal.
+
+---
+
+<a name="q396"></a>
+### 396) How to sort an ArrayList?
+[Back to TOC](#396-toc)
+
+**Answer:**
+`Collections.sort(list)` or `list.sort(Comparator.naturalOrder())`.
+
+---
+
+<a name="q397"></a>
+### 397) HashMap vs ConcurrentHashMap?
+[Back to TOC](#397-toc)
+
+**Answer:**
+`ConcurrentHashMap` is thread-safe and highly performant because it uses **segment-level locking** (or bucket-level locking in modern versions) instead of locking the whole map.
+
+---
+
+<a name="q398"></a>
+### 398) Make collections read-only?
+[Back to TOC](#398-toc)
+
+**Answer:**
+`Collections.unmodifiableList(list)` or **`List.of(...)`** (Java 9+ immutable collection).
+
+---
+
+<a name="q399"></a>
+### 399) Reverse an ArrayList?
+[Back to TOC](#399-toc)
+
+**Answer:**
+`Collections.reverse(list)`.
+
+---
+
+<a name="q400"></a>
+### 400) Synchronized HashMap vs Hashtable vs ConcurrentHashMap?
+[Back to TOC](#400-toc)
+
+**Answer:**
+- **Hashtable**: Legacy, slow, locks whole map.
+- **Sync Map**: Wrapper, slow, locks whole map.
+- **ConcurrentHashMap**: Modern, fast, locks only parts of the map.
+
+---
+
+<a name="q401"></a>
+### 401) Sort HashMap by keys?
+[Back to TOC](#401-toc)
+
+**Answer:**
+Wrap it in a **`TreeMap`**.
+`TreeMap<String, String> sortedMap = new TreeMap<>(unsortedMap);`
+
+---
+
+<a name="q402"></a>
+### 402) Sort HashMap by values?
+[Back to TOC](#402-toc)
+
+**Answer:**
+```java
+List<Map.Entry<K, V>> list = new ArrayList<>(map.entrySet());
+list.sort(Map.Entry.comparingByValue());
+```
+
+---
+
+<a name="q403"></a>
+### 403) Merge two maps?
+[Back to TOC](#403-toc)
+
+**Answer:**
+`map1.putAll(map2)` or use **`map1.merge(...)`** for fine-grained control over collisions.
+
+---
+
+<a name="q404"></a>
+### 404) Java 9 Immutable Collections?
+[Back to TOC](#404-toc)
+
+**Answer:**
+`List.of()`, `Set.of()`, `Map.of()`. They are truly immutable (cannot be changed after creation) and more space-efficient than unmodifiable wrappers.
+
+---
+
+<a name="q405"></a>
+### 405) Java 10 copyOf()?
+[Back to TOC](#405-toc)
+
+**Answer:**
+`List.copyOf()`, `Set.copyOf()`, `Map.copyOf()`. They return an unmodifiable collection containing the elements of the original collection.
+
+---
+
+<a name="q406"></a>
+### 406) Enumeration vs Iterator?
+[Back to TOC](#406-toc)
+
+**Answer:**
+- **Enumeration**: Legacy (since 1.0), read-only.
+- **Iterator**: Modern (since 1.2), allows element removal.
+
+---
+
+<a name="q407"></a>
+### 407) RandomAccess implementations?
+[Back to TOC](#407-toc)
+
+**Answer:**
+**`ArrayList`** and **`Vector`**. (LinkedList does NOT implement it).
+
+---
+
+<a name="q408"></a>
+### Bonus: Sequenced Collections (Java 21 Feature)
+[Back to TOC](#q1-toc)
+
+**Answer:**
+Java 21 finally added a common interface for collections with a defined order (List, Deque, SortedSet).
+```java
+var list = List.of("First", "Second", "Last");
+System.out.println(list.getFirst()); // "First"
+System.out.println(list.getLast());  // "Last"
+```
+
+---

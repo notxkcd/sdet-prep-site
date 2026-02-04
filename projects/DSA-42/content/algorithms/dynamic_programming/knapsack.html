@@ -1,0 +1,332 @@
+<div id="explanation-content">
+    <p>The <code>Knapsack Problem</code> is a classic optimization problem, particularly in the realm of <code>dynamic programming</code>. Given a set of <code>items</code>, each with a specific <code>weight</code> and <code>value</code>, and a <code>knapsack</code> with a maximum <code>weight capacity</code>, the goal is to choose a subset of <code>items</code> to put into the <code>knapsack</code> such that the total <code>value</code> is maximized, and the total <code>weight</code> does not exceed the <code>capacity</code>.</p>
+    <p>The "<code>0/1</code>" in <code>0/1 Knapsack</code> refers to the constraint that for each <code>item</code>, you must either take the whole <code>item</code> (1) or leave it entirely (0); you cannot take a fraction of an <code>item</code>.</p>
+</div>
+
+<div id="expanded-explanation-content">
+    <h3>How it Works (Expanded)</h3>
+    <p>The <code>0/1 Knapsack Problem</code> is typically solved using <code>dynamic programming</code> due to its optimal substructure and overlapping subproblems properties. We build a 2D <code>DP table</code> (matrix) where <code>dp[i][w]</code> represents the maximum <code>value</code> that can be obtained from the first <code>i</code> items with a <code>knapsack capacity</code> of <code>w</code>.</p>
+    <div class="explanation-fence">
+Example: Items = {(W=1, V=1), (W=3, V=4), (W=4, V=5), (W=5, V=7)}, Capacity = 7
+
+Initialize dp[i][w] table (items x capacity) with zeros.
+
+For each item <code>i</code> and each capacity <code>w</code>:
+- If current item's weight > <code>w</code>: dp[i][w] = dp[i-1][w] (cannot take item)
+- Else: dp[i][w] = max(dp[i-1][w], // Don't take item
+                      dp[i-1][w - current_item_weight] + current_item_value) // Take item
+
+The final dp[num_items][capacity] will be the max value.
+    </div>
+    <p><strong>Recurrence Relation:</strong></p>
+    <ul>
+        <li><code>dp[i][w]</code> = maximum <code>value</code> using first <code>i</code> items with capacity <code>w</code>.</li>
+        <li>Base cases: <code>dp[0][w] = 0</code> (no items, no value) and <code>dp[i][0] = 0</code> (no capacity, no value).</li>
+        <li>For <code>i > 0</code> and <code>w > 0</code>:
+            <ul>
+                <li>If <code>weights[i-1] > w</code> (current item is too heavy for current capacity <code>w</code>):
+                    <code>dp[i][w] = dp[i-1][w]</code> (don't include <code>item i</code>)</li>
+                <li>Else (current item can potentially be included):
+                    <code>dp[i][w] = max(dp[i-1][w],                                // Don't include item i</code>
+                                  <code>dp[i-1][w - weights[i-1]] + values[i-1])</code> // Include item i
+            </ul>
+        </li>
+    </ul>
+    <p><strong>Algorithm Steps:</strong></p>
+    <ol>
+        <li>Create a 2D <code>dp</code> table of size <code>(num_items+1) x (capacity+1)</code>. Initialize all cells to 0.</li>
+        <li>Fill the <code>dp</code> table iteratively:
+            <ul>
+                <li>For each <code>i</code> from 1 to <code>num_items</code>:</li>
+                <li>For each <code>w</code> from 1 to <code>capacity</code>:</li>
+                <li>Apply the recurrence relation.</li>
+            </ul>
+        </li>
+        <li>The maximum <code>value</code> will be <code>dp[num_items][capacity]</code>.</li>
+    </ol>
+    <p><strong>Time Complexity:</strong> <code>O(num_items <em> capacity)</code>. This is pseudo-polynomial time, meaning it's polynomial in the numerical value of the <code>capacity</code>, but exponential in the number of bits required to represent the <code>capacity</code>.</p>
+    <p><strong>Space Complexity:</strong> <code>O(num_items </em> capacity)</code> for the <code>dp</code> table. Can be optimized to <code>O(capacity)</code> by only keeping track of the previous row in the <code>dp</code> table.</p>
+</div>
+
+<div id="code-implementations">
+    <pre data-lang="python"><code class="language-python">def knapsack_01(weights, values, capacity):
+    num_items = len(weights)
+    
+    # dp[i][w] stores the maximum value for first i items with capacity w
+    dp = [[0 for _ in range(capacity + 1)] for _ in range(num_items + 1)]
+
+    # Fill dp table
+    for i in range(1, num_items + 1):
+        for w in range(1, capacity + 1):
+            current_item_weight = weights[i - 1]
+            current_item_value = values[i - 1]
+
+            if current_item_weight > w:
+                # Cannot include current item, take value from above
+                dp[i][w] = dp[i - 1][w]
+            else:
+                # Max of (don't include, include)
+                dp[i][w] = max(dp[i - 1][w],                          # Don't include item i
+                               dp[i - 1][w - current_item_weight] + current_item_value) # Include item i
+    
+    return dp[num_items][capacity]
+
+# Example
+# weights = [1, 3, 4, 5]
+# values = [1, 4, 5, 7]
+# capacity = 7
+# print(knapsack_01(weights, values, capacity)) # Expected: 9 (items with weights 3 and 4, values 4 and 5)
+</code></pre>
+
+    <pre data-lang="javascript"><code class="language-javascript">function knapsack01(weights, values, capacity) {
+    const numItems = weights.length;
+    
+    // dp[i][w] stores the maximum value for first i items with capacity w
+    const dp = Array(numItems + 1).fill(0).map(() => Array(capacity + 1).fill(0));
+
+    // Fill dp table
+    for (let i = 1; i <= numItems; i++) {
+        for (let w = 1; w <= capacity; w++) {
+            const currentItemWeight = weights[i - 1];
+            const currentItemValue = values[i - 1];
+
+            if (currentItemWeight > w) {
+                // Cannot include current item, take value from above
+                dp[i][w] = dp[i - 1][w];
+            } else {
+                // Max of (don't include, include)
+                dp[i][w] = Math.max(dp[i - 1][w],                          // Don't include item i
+                                    dp[i - 1][w - currentItemWeight] + currentItemValue); // Include item i
+            }
+        }
+    }
+    
+    return dp[numItems][capacity];
+}
+
+// const weights = [1, 3, 4, 5];
+// const values = [1, 4, 5, 7];
+// const capacity = 7;
+// console.log(knapsack01(weights, values, capacity)); // Expected: 9
+</code></pre>
+
+    <pre data-lang="typescript"><code class="language-typescript">function knapsack01TS(weights: number[], values: number[], capacity: number): number {
+    const numItems = weights.length;
+    
+    // dp[i][w] stores the maximum value for first i items with capacity w
+    const dp: number[][] = Array(numItems + 1).fill(0).map(() => Array(capacity + 1).fill(0));
+
+    // Fill dp table
+    for (let i = 1; i <= numItems; i++) {
+        for (let w = 1; w <= capacity; w++) {
+            const currentItemWeight = weights[i - 1];
+            const currentItemValue = values[i - 1];
+
+            if (currentItemWeight > w) {
+                // Cannot include current item, take value from above
+                dp[i][w] = dp[i - 1][w];
+            } else {
+                // Max of (don't include, include)
+                dp[i][w] = Math.max(dp[i - 1][w],                          // Don't include item i
+                                    dp[i - 1][w - currentItemWeight] + currentItemValue); // Include item i
+            }
+        }
+    }
+    
+    return dp[numItems][capacity];
+}
+
+// const weightsTS = [1, 3, 4, 5];
+// const valuesTS = [1, 4, 5, 7];
+// const capacityTS = 7;
+// console.log(knapsack01TS(weightsTS, valuesTS, capacityTS)); // Expected: 9
+</code></pre>
+    
+    <pre data-lang="cpp"><code class="language-cpp">#include &lt;vector&gt;
+#include &lt;iostream&gt;
+#include &lt;algorithm&gt; // For std::max
+
+int knapsack01(const std::vector&lt;int&gt;& weights, const std::vector&lt;int&gt;& values, int capacity) {
+    int num_items = weights.size();
+    
+    // dp[i][w] stores the maximum value for first i items with capacity w
+    std::vector&lt;std::vector&lt;int&gt;&gt; dp(num_items + 1, std::vector&lt;int&gt;(capacity + 1, 0));
+
+    // Fill dp table
+    for (int i = 1; i <= num_items; i++) {
+        for (int w = 1; w <= capacity; w++) {
+            int current_item_weight = weights[i - 1];
+            int current_item_value = values[i - 1];
+
+            if (current_item_weight > w) {
+                // Cannot include current item, take value from above
+                dp[i][w] = dp[i - 1][w];
+            } else {
+                // Max of (don't include, include)
+                dp[i][w] = std::max(dp[i - 1][w],                          // Don't include item i
+                                    dp[i - 1][w - current_item_weight] + current_item_value); // Include item i
+            }
+        }
+    }
+    
+    return dp[num_items][capacity];
+}
+
+// int main() {
+//     std::vector<int> weights = {1, 3, 4, 5};
+//     std::vector<int> values = {1, 4, 5, 7};
+//     int capacity = 7;
+//     std::cout << "Max value: " << knapsack01(weights, values, capacity) << std::endl; // 9
+//     return 0;
+// }
+</code></pre>
+
+    <pre data-lang="go"><code class="language-go">package main
+
+import "fmt"
+
+func knapsack01(weights, values []int, capacity int) int {
+    numItems := len(weights)
+    
+    // dp[i][w] stores the maximum value for first i items with capacity w
+    dp := make([][]int, numItems+1)
+    for i := range dp {
+        dp[i] = make([]int, capacity+1)
+    }
+
+    // Fill dp table
+    for i := 1; i <= numItems; i++ {
+        for w := 1; w <= capacity; w++ {
+            currentItemWeight := weights[i-1]
+            currentItemValue := values[i-1]
+
+            if currentItemWeight > w {
+                // Cannot include current item, take value from above
+                dp[i][w] = dp[i-1][w]
+            } else {
+                // Max of (don't include, include)
+                dp[i][w] = max(dp[i-1][w],                          // Don't include item i
+                               dp[i-1][w-currentItemWeight] + currentItemValue) // Include item i
+            }
+        }
+    }
+    
+    return dp[numItems][capacity]
+}
+
+func max(a, b int) int {
+    if a > b {
+        return a
+    }
+    return b
+}
+
+// func main() {
+//     weights := []int{1, 3, 4, 5}
+//     values := []int{1, 4, 5, 7}
+//     capacity := 7
+//     fmt.Println("Max value:", knapsack01(weights, values, capacity)) // 9
+// }
+</code></pre>
+    
+    <pre data-lang="d"><code class="language-d">import std.stdio;
+import std.array;
+import std.algorithm; // For std.algorithm.max
+
+int knapsack01(int[] weights, int[] values, int capacity) {
+    auto numItems = weights.length;
+    
+    // dp[i][w] stores the maximum value for first i items with capacity w
+    auto dp = new int[numItems + 1][capacity + 1];
+
+    // Fill dp table
+    foreach (i; 1 .. numItems + 1) {
+        foreach (w; 1 .. capacity + 1) {
+            auto currentItemWeight = weights[i - 1];
+            auto currentItemValue = values[i - 1];
+
+            if (currentItemWeight > w) {
+                // Cannot include current item, take value from above
+                dp[i][w] = dp[i - 1][w];
+            } else {
+                // Max of (don't include, include)
+                dp[i][w] = max(dp[i - 1][w],                          // Don't include item i
+                               dp[i - 1][w - currentItemWeight] + currentItemValue); // Include item i
+            }
+        }
+    }
+    
+    return dp[numItems][capacity];
+}
+
+// void main() {
+//     auto weights = [1, 3, 4, 5];
+//     auto values = [1, 4, 5, 7];
+//     int capacity = 7;
+//     writeln("Max value: ", knapsack01(weights, values, capacity)); // 9
+// }
+</code></pre>
+</div>
+
+<div id="code-explanation-content"><div class="markdown-content">
+    <h3>Code Walkthrough</h3>
+    <p>The <code>0/1 Knapsack Problem</code> is solved using a <code>dynamic programming</code> approach, building a 2D table to store optimal solutions for subproblems.</p>
+    <div class="explanation-fence">
+<strong>Initialization:</strong>
+<ul>
+    <li><code>num_items</code>: The total number of items available.</li>
+    <li><code>capacity</code>: The maximum weight the knapsack can hold.</li>
+    <li>A 2D <code>dp</code> table (<code>num_items+1</code> rows, <code>capacity+1</code> columns) is created and initialized with zeros.
+        <ul>
+            <li><code>dp[i][w]</code> will store the maximum <code>value</code> achievable using the first <code>i</code> items with a <code>knapsack capacity</code> of <code>w</code>.</li>
+            <li><code>dp[0][w]</code> and <code>dp[i][0]</code> are naturally 0 (no items or no capacity means no value).</li>
+        </ul>
+    </li>
+</ul>
+<br>
+<strong>Filling the DP Table:</strong>
+<ul>
+    <li>The <code>dp</code> table is filled iteratively, considering each <code>item</code> (<code>i</code>) and each possible <code>capacity</code> (<code>w</code>).</li>
+    <li>For each cell <code>dp[i][w]</code>:
+        <ul>
+            <li>Get the <code>weight</code> and <code>value</code> of the <code>current item</code> (which is <code>item i-1</code> in the 0-indexed <code>weights</code> and <code>values</code> arrays).</li>
+            <li><strong>Case 1: <code>current_item_weight > w</code></strong>
+                <ul>
+                    <li>If the <code>current item</code>'s <code>weight</code> exceeds the <code>current capacity w</code>, it cannot be included in the <code>knapsack</code>.</li>
+                    <li>Therefore, the maximum <code>value</code> <code>dp[i][w]</code> is the same as the maximum <code>value</code> without the <code>current item</code> (<code>dp[i-1][w]</code>).</li>
+                </ul>
+            </li>
+            <li><strong>Case 2: <code>current_item_weight <= w</code></strong>
+                <ul>
+                    <li>The <code>current item</code> can potentially be included. We need to decide whether including it or not yields a better total <code>value</code>.</li>
+                    <li><code>dp[i][w]</code> is the maximum of two options:
+                        <ul>
+                            <li><strong>Option A (Don't include <code>item i</code>):</strong> The <code>value</code> is <code>dp[i-1][w]</code> (the max value using the first <code>i-1</code> items with the same <code>capacity</code>).</li>
+                            <li><strong>Option B (Include <code>item i</code>):</strong> The <code>value</code> is <code>current_item_value</code> plus the maximum <code>value</code> obtained from the first <code>i-1</code> items with the <code>remaining capacity</code> (<code>w - current_item_weight</code>).</li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </li>
+</ul>
+<br>
+<strong>Result:</strong>
+<ul>
+    <li>The final answer, the maximum <code>value</code> that can be put into the <code>knapsack</code>, is found at <code>dp[num_items][capacity]</code>.</li>
+</ul>
+    </div></div>
+</div>
+
+<div id="application-content"><div class="markdown-content">
+    <h3>Application</h3>
+    <p>The <code>0/1 Knapsack Problem</code> is a foundational problem in combinatorial optimization with numerous real-world applications:</p>
+    <ul>
+        <li><strong>Resource Allocation:</strong> Deciding which projects or tasks to undertake given limited resources (e.g., budget, time, personnel), where each project has a cost (weight) and a benefit (value).</li>
+        <li><strong>Cargo Loading:</strong> Loading a ship or truck with items to maximize the total value of cargo without exceeding the weight limit.</li>
+        <li><strong>Investment Decisions:</strong> Selecting investments to maximize return while staying within a budget.</li>
+        <li><strong>Cuttin Stock:</strong> Optimizing the cutting of materials (e.g., wood, fabric) from larger pieces to minimize waste and maximize yield.</li>
+        <li><strong>Cryptography:</strong> Some cryptographic schemes (like the Merkle-Hellman knapsack cryptosystem, though broken) are based on variations of the knapsack problem.</li>
+    </ul>
+    </p>
+</div></div>

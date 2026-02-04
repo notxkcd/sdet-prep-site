@@ -1,0 +1,377 @@
+<!doctype html><html lang=en-us><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Job Sequencing Problem with Deadlines | SDET Interview Preparation Kit</title><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/css/style.css><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/css/terminal.css><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel=stylesheet><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/lib/katex/katex.min.css><script defer src=https://notxkcd.github.io/sdet-prep-site/lib/katex/katex.min.js></script><script defer src=https://notxkcd.github.io/sdet-prep-site/lib/katex/contrib/auto-render.min.js onload=renderMathInElement(document.body)></script><script>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1}]})})</script></head><body id=theme-body><button id=theme-toggle>Switch Theme</button><header><nav><ul><li><a href=https://notxkcd.github.io/sdet-prep-site/>Index</a></li></ul></nav><div class=site-breadcrumb><a href=https://notxkcd.github.io/sdet-prep-site/>Home</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/>SDET Interview Dashboard</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/>42 Algorithms & 42 Data Structures</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/algorithms/>Algorithms</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/algorithms/greedy/>Greedy</a>
+<span>/</span> Job Sequencing Problem with Deadlines</div></header><main><article><h1>Job Sequencing Problem with Deadlines</h1><div class=content-body style=margin-top:2rem><p>The <code>Job Sequencing Problem with Deadlines</code> is a classic optimization problem that can be solved using a <code>greedy approach</code>. Given a set of <code>jobs</code>, where each <code>job</code> has an associated <code>deadline</code> and <code>profit</code>, the goal is to select a subset of <code>jobs</code> to perform, such that each <code>job</code> is completed by its <code>deadline</code>, only one <code>job</code> can be processed at a time, and the total <code>profit</code> is maximized.</p><p>This problem assumes that each <code>job</code> takes a single unit of time to complete.</p><h2 id=how-it-works>How it Works</h2><h3 id=how-it-works-expanded>How it Works (Expanded)</h3><p>The <code>greedy choice</code> in the <code>Job Sequencing Problem</code> is to prioritize <code>jobs</code> with the highest <code>profit</code>. When considering <code>jobs</code> in decreasing order of <code>profit</code>, we try to schedule each <code>job</code> as late as possible (to keep earlier slots open for other high-profit jobs) but still by its <code>deadline</code>. This ensures that we maximize the chances of accommodating other profitable <code>jobs</code>.</p><hr><p>Example: Jobs = [(J1, D=2, P=100), (J2, D=1, P=19), (J3, D=2, P=27), (J4, D=1, P=25), (J5, D=3, P=15)]</p><ol><li><p>Sort jobs by profit (descending):
+[(J1, D=2, P=100), (J3, D=2, P=27), (J4, D=1, P=25), (J2, D=1, P=19), (J5, D=3, P=15)]</p></li><li><p>Max deadline = 3. Slots available: [_, _, _] for time 1, 2, 3.</p></li><li><p>Process sorted jobs:</p></li></ol><ul><li>J1 (D=2, P=100): Try slot 2 (deadline). Available. Schedule. Slots: [_, J1, _]. Max Profit = 100.</li><li>J3 (D=2, P=27): Try slot 2 (deadline). Occupied. Try slot 1. Available. Schedule. Slots: [J3, J1, _]. Max Profit = 100 + 27 = 127.</li><li>J4 (D=1, P=25): Try slot 1. Occupied. Cannot schedule.</li><li>J2 (D=1, P=19): Try slot 1. Occupied. Cannot schedule.</li><li>J5 (D=3, P=15): Try slot 3. Available. Schedule. Slots: [J3, J1, J5]. Max Profit = 127 + 15 = 142.</li></ul><p>Selected Jobs: J3, J1, J5. Max Profit = 142.</p><p><a href=#code-walkthrough>Jump to Code Walkthrough</a></p><h2 id=implementation>Implementation</h2><h3 id=python>Python</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#859900>def</span> <span style=color:#268bd2>job_sequencing</span>(<span style=color:#268bd2>jobs</span>):
+</span></span><span style=display:flex><span>    <span style=color:#2aa198>&#34;&#34;&#34;
+</span></span></span><span style=display:flex><span><span style=color:#2aa198>    Solves the Job Sequencing Problem with Deadlines.
+</span></span></span><span style=display:flex><span><span style=color:#2aa198>    &lt;code&gt;jobs&lt;/code&gt;: a list of tuples, where each tuple is (job_id, deadline, profit).
+</span></span></span><span style=display:flex><span><span style=color:#2aa198>    &#34;&#34;&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> <span style=color:#859900>not</span> <span style=color:#268bd2>jobs</span>:
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#2aa198;font-weight:700>0</span>, []
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic># 1. Sort jobs by profit in decreasing order</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>jobs</span>.<span style=color:#268bd2>sort</span>(<span style=color:#268bd2>key</span>=<span style=color:#859900>lambda</span> <span style=color:#268bd2>x</span>: <span style=color:#268bd2>x</span>[<span style=color:#2aa198;font-weight:700>2</span>], <span style=color:#268bd2>reverse</span>=<span style=color:#859900;font-weight:700>True</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic># Find maximum deadline to determine number of time slots</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>max_deadline</span> = <span style=color:#2aa198;font-weight:700>0</span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>for</span> <span style=color:#268bd2>job_id</span>, <span style=color:#268bd2>deadline</span>, <span style=color:#268bd2>profit</span> <span style=color:#859900>in</span> <span style=color:#268bd2>jobs</span>:
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>max_deadline</span> = <span style=color:#cb4b16>max</span>(<span style=color:#268bd2>max_deadline</span>, <span style=color:#268bd2>deadline</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic># time_slots array to keep track of occupied slots. 0 for empty, job_id for occupied.</span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic># We use 1-based indexing for slots for easier understanding (slot 1 to max_deadline)</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>time_slots</span> = [<span style=color:#2aa198;font-weight:700>0</span>] &lt;<span style=color:#268bd2>em</span>&gt; (<span style=color:#268bd2>max_deadline</span> + <span style=color:#2aa198;font-weight:700>1</span>)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>selected_jobs</span> = []
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>total_profit</span> = <span style=color:#2aa198;font-weight:700>0</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic># 2. Iterate through sorted jobs</span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>for</span> <span style=color:#268bd2>job_id</span>, <span style=color:#268bd2>deadline</span>, <span style=color:#268bd2>profit</span> <span style=color:#859900>in</span> <span style=color:#268bd2>jobs</span>:
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic># Try to schedule the job as late as possible, up to its deadline</span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>for</span> <span style=color:#268bd2>t</span> <span style=color:#859900>in</span> <span style=color:#cb4b16>range</span>(<span style=color:#268bd2>deadline</span>, <span style=color:#2aa198;font-weight:700>0</span>, -<span style=color:#2aa198;font-weight:700>1</span>):
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> <span style=color:#268bd2>time_slots</span>[<span style=color:#268bd2>t</span>] == <span style=color:#2aa198;font-weight:700>0</span>: <span style=color:#93a1a1;font-style:italic># If slot t is free</span>
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>time_slots</span>[<span style=color:#268bd2>t</span>] = <span style=color:#268bd2>job_id</span> <span style=color:#93a1a1;font-style:italic># Schedule job</span>
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>selected_jobs</span>.<span style=color:#268bd2>append</span>(<span style=color:#268bd2>job_id</span>)
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>total_profit</span> += <span style=color:#268bd2>profit</span>
+</span></span><span style=display:flex><span>                <span style=color:#859900>break</span> <span style=color:#93a1a1;font-style:italic># Job scheduled, move to next job</span>
+</span></span><span style=display:flex><span>                
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic># Sort selected jobs by their assigned slot (optional, for consistent output)</span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic># This requires knowing which slot each job took, which is in time_slots</span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic># For now, just return as is or sort by ID</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>selected_jobs</span>.<span style=color:#268bd2>sort</span>() <span style=color:#93a1a1;font-style:italic># Sort by ID for consistent output</span>
+</span></span><span style=display:flex><span>            
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>total_profit</span>, <span style=color:#268bd2>selected_jobs</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># Example</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># jobs = [(&#39;J1&#39;, 2, 100), (&#39;J2&#39;, 1, 19), (&#39;J3&#39;, 2, 27), (&#39;J4&#39;, 1, 25), (&#39;J5&#39;, 3, 15)]</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># # Expected: Total Profit: 142, Selected Jobs: [&#39;J1&#39;, &#39;J3&#39;, &#39;J5&#39;] (order might vary)</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># profit, selected = job_sequencing(jobs)</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># print(&#34;Total Profit:&#34;, profit)</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># print(&#34;Selected Jobs:&#34;, selected)</span>
+</span></span></code></pre></div><h3 id=javascript>Javascript</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=display:flex><span><span style=color:#859900>function</span> <span style=color:#268bd2>jobSequencing</span>(<span style=color:#268bd2>jobs</span>) {
+</span></span><span style=display:flex><span>    /&lt;/em&gt;&lt;em&gt;
+</span></span><span style=display:flex><span>     &lt;/em&gt; Solves the Job Sequencing Problem with Deadlines.
+</span></span><span style=display:flex><span>     &lt;<span style=color:#268bd2>em</span>&gt; &lt;<span style=color:#268bd2>code</span>&gt;<span style=color:#268bd2>jobs</span>&lt;/code&gt;: an array of objects, where each object is { id: string, deadline: number, profit: number }.
+</span></span><span style=display:flex><span>     &lt;<span style=color:#2aa198>/em&gt;/</span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> (<span style=color:#268bd2>jobs</span>.<span style=color:#268bd2>length</span> === <span style=color:#2aa198;font-weight:700>0</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> { <span style=color:#268bd2>totalProfit</span>: <span style=color:#2aa198;font-weight:700>0</span>, <span style=color:#268bd2>selectedJobs</span>: [] };
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// 1. Sort jobs by profit in decreasing order
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#268bd2>jobs</span>.<span style=color:#268bd2>sort</span>((<span style=color:#268bd2>a</span>, <span style=color:#268bd2>b</span>) =&gt; <span style=color:#268bd2>b</span>.<span style=color:#268bd2>profit</span> - <span style=color:#268bd2>a</span>.<span style=color:#268bd2>profit</span>);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// Find maximum deadline to determine number of time slots
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900>let</span> <span style=color:#268bd2>maxDeadline</span> = <span style=color:#2aa198;font-weight:700>0</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900>for</span> (<span style=color:#859900>const</span> <span style=color:#268bd2>job</span> <span style=color:#859900>of</span> <span style=color:#268bd2>jobs</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>job</span>.<span style=color:#268bd2>deadline</span> &gt; <span style=color:#268bd2>maxDeadline</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>maxDeadline</span> = <span style=color:#268bd2>job</span>.<span style=color:#268bd2>deadline</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// timeSlots array to keep track of occupied slots. 0 for empty, job_id for occupied.
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#93a1a1;font-style:italic>// We use 1-based indexing for slots (slot 1 to maxDeadline)
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900>const</span> <span style=color:#268bd2>timeSlots</span> = <span style=color:#859900>new</span> <span style=color:#cb4b16>Array</span>(<span style=color:#268bd2>maxDeadline</span> + <span style=color:#2aa198;font-weight:700>1</span>).<span style=color:#268bd2>fill</span>(<span style=color:#2aa198;font-weight:700>0</span>);
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#859900>const</span> <span style=color:#268bd2>selectedJobs</span> = [];
+</span></span><span style=display:flex><span>    <span style=color:#859900>let</span> <span style=color:#268bd2>totalProfit</span> = <span style=color:#2aa198;font-weight:700>0</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// 2. Iterate through sorted jobs
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900>for</span> (<span style=color:#859900>const</span> <span style=color:#268bd2>job</span> <span style=color:#859900>of</span> <span style=color:#268bd2>jobs</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic>// Try to schedule the job as late as possible, up to its deadline
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        <span style=color:#859900>for</span> (<span style=color:#859900>let</span> <span style=color:#268bd2>t</span> = <span style=color:#268bd2>job</span>.<span style=color:#268bd2>deadline</span>; <span style=color:#268bd2>t</span> &gt; <span style=color:#2aa198;font-weight:700>0</span>; <span style=color:#268bd2>t</span>--) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> (<span style=color:#268bd2>timeSlots</span>[<span style=color:#268bd2>t</span>] === <span style=color:#2aa198;font-weight:700>0</span>) { <span style=color:#93a1a1;font-style:italic>// If slot t is free
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>                <span style=color:#268bd2>timeSlots</span>[<span style=color:#268bd2>t</span>] = <span style=color:#268bd2>job</span>.<span style=color:#268bd2>id</span>; <span style=color:#93a1a1;font-style:italic>// Schedule job
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>                <span style=color:#268bd2>selectedJobs</span>.<span style=color:#268bd2>push</span>(<span style=color:#268bd2>job</span>.<span style=color:#268bd2>id</span>);
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>totalProfit</span> += <span style=color:#268bd2>job</span>.<span style=color:#268bd2>profit</span>;
+</span></span><span style=display:flex><span>                <span style=color:#859900>break</span>; <span style=color:#93a1a1;font-style:italic>// Job scheduled, move to next job
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>            
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// Sort selected jobs by their ID for consistent output (optional)
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#268bd2>selectedJobs</span>.<span style=color:#268bd2>sort</span>();
+</span></span><span style=display:flex><span>            
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> { <span style=color:#268bd2>totalProfit</span>, <span style=color:#268bd2>selectedJobs</span> };
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const jobs = [
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     { id: &#39;J1&#39;, deadline: 2, profit: 100 },
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     { id: &#39;J2&#39;, deadline: 1, profit: 19 },
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     { id: &#39;J3&#39;, deadline: 2, profit: 27 },
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     { id: &#39;J4&#39;, deadline: 1, profit: 25 },
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     { id: &#39;J5&#39;, deadline: 3, profit: 15 }
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// ];
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const { totalProfit, selectedJobs } = jobSequencing(jobs);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// console.log(&#34;Total Profit:&#34;, totalProfit); // 142
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// console.log(&#34;Selected Jobs:&#34;, selectedJobs); // [&#39;J1&#39;, &#39;J3&#39;, &#39;J5&#39;] (sorted)
+</span></span></span></code></pre></div><h3 id=typescript>Typescript</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-typescript data-lang=typescript><span style=display:flex><span><span style=color:#859900>interface</span> <span style=color:#268bd2>Job</span> {
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>id</span>: <span style=color:#859900;font-weight:700>string</span>;
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>deadline</span>: <span style=color:#859900;font-weight:700>number</span>;
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>profit</span>: <span style=color:#859900;font-weight:700>number</span>;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>function</span> <span style=color:#268bd2>jobSequencingTS</span>(<span style=color:#268bd2>jobs</span>: <span style=color:#859900;font-weight:700>Job</span>[]): { <span style=color:#268bd2>totalProfit</span>: <span style=color:#859900;font-weight:700>number</span>; <span style=color:#268bd2>selectedJobs</span>: <span style=color:#859900;font-weight:700>string</span>[] } {
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> (<span style=color:#268bd2>jobs</span>.<span style=color:#268bd2>length</span> === <span style=color:#2aa198;font-weight:700>0</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> { <span style=color:#268bd2>totalProfit</span>: <span style=color:#859900;font-weight:700>0</span>, <span style=color:#268bd2>selectedJobs</span>: [] };
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// 1. Sort jobs by profit in decreasing order
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#268bd2>jobs</span>.<span style=color:#268bd2>sort</span>((<span style=color:#268bd2>a</span>, <span style=color:#268bd2>b</span>) =&gt; <span style=color:#268bd2>b</span>.<span style=color:#268bd2>profit</span> - <span style=color:#268bd2>a</span>.<span style=color:#268bd2>profit</span>);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// Find maximum deadline to determine number of time slots
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900>let</span> <span style=color:#268bd2>maxDeadline</span> = <span style=color:#2aa198;font-weight:700>0</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900>for</span> (<span style=color:#859900>const</span> <span style=color:#268bd2>job</span> <span style=color:#859900>of</span> <span style=color:#268bd2>jobs</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>job</span>.<span style=color:#268bd2>deadline</span> &gt; <span style=color:#268bd2>maxDeadline</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>maxDeadline</span> = <span style=color:#268bd2>job</span>.<span style=color:#268bd2>deadline</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// timeSlots array to keep track of occupied slots. 0 for empty, job_id for occupied.
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#93a1a1;font-style:italic>// We use 1-based indexing for slots (slot 1 to maxDeadline)
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900>const</span> <span style=color:#268bd2>timeSlots</span>: (<span style=color:#859900;font-weight:700>string</span> | <span style=color:#859900;font-weight:700>number</span>)[] = <span style=color:#859900>new</span> <span style=color:#cb4b16>Array</span>(<span style=color:#268bd2>maxDeadline</span> + <span style=color:#2aa198;font-weight:700>1</span>).<span style=color:#268bd2>fill</span>(<span style=color:#2aa198;font-weight:700>0</span>); <span style=color:#93a1a1;font-style:italic>// 0 means empty
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    
+</span></span><span style=display:flex><span>    <span style=color:#859900>const</span> <span style=color:#268bd2>selectedJobs</span>: <span style=color:#859900;font-weight:700>string</span>[] = [];
+</span></span><span style=display:flex><span>    <span style=color:#859900>let</span> <span style=color:#268bd2>totalProfit</span> = <span style=color:#2aa198;font-weight:700>0</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// 2. Iterate through sorted jobs
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900>for</span> (<span style=color:#859900>const</span> <span style=color:#268bd2>job</span> <span style=color:#859900>of</span> <span style=color:#268bd2>jobs</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic>// Try to schedule the job as late as possible, up to its deadline
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        <span style=color:#859900>for</span> (<span style=color:#859900>let</span> <span style=color:#268bd2>t</span> = <span style=color:#268bd2>job</span>.<span style=color:#268bd2>deadline</span>; <span style=color:#268bd2>t</span> &gt; <span style=color:#2aa198;font-weight:700>0</span>; <span style=color:#268bd2>t</span>--) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> (<span style=color:#268bd2>timeSlots</span>[<span style=color:#268bd2>t</span>] === <span style=color:#2aa198;font-weight:700>0</span>) { <span style=color:#93a1a1;font-style:italic>// If slot t is free
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>                <span style=color:#268bd2>timeSlots</span>[<span style=color:#268bd2>t</span>] = <span style=color:#268bd2>job</span>.<span style=color:#268bd2>id</span>; <span style=color:#93a1a1;font-style:italic>// Schedule job
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>                <span style=color:#268bd2>selectedJobs</span>.<span style=color:#268bd2>push</span>(<span style=color:#268bd2>job</span>.<span style=color:#268bd2>id</span>);
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>totalProfit</span> += <span style=color:#268bd2>job</span>.<span style=color:#268bd2>profit</span>;
+</span></span><span style=display:flex><span>                <span style=color:#859900>break</span>; <span style=color:#93a1a1;font-style:italic>// Job scheduled, move to next job
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>            
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// Sort selected jobs by their ID for consistent output (optional)
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#268bd2>selectedJobs</span>.<span style=color:#268bd2>sort</span>();
+</span></span><span style=display:flex><span>            
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> { <span style=color:#268bd2>totalProfit</span>, <span style=color:#268bd2>selectedJobs</span> };
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const jobsTS: Job[] = [
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     { id: &#39;J1&#39;, deadline: 2, profit: 100 },
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     { id: &#39;J2&#39;, deadline: 1, profit: 19 },
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     { id: &#39;J3&#39;, deadline: 2, profit: 27 },
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     { id: &#39;J4&#39;, deadline: 1, profit: 25 },
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     { id: &#39;J5&#39;, deadline: 3, profit: 15 }
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// ];
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const resultTS = jobSequencingTS(jobsTS);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// console.log(&#34;Total Profit:&#34;, resultTS.totalProfit); // 142
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// console.log(&#34;Selected Jobs:&#34;, resultTS.selectedJobs); // [&#39;J1&#39;, &#39;J3&#39;, &#39;J5&#39;] (sorted)
+</span></span></span></code></pre></div><h3 id=cpp>Cpp</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-cpp data-lang=cpp><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;vector&gt;</span><span style=color:#93a1a1;font-style:italic>
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;iostream&gt;</span><span style=color:#93a1a1;font-style:italic>
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;algorithm&gt;</span><span style=color:#93a1a1;font-style:italic> </span><span style=color:#93a1a1;font-style:italic>// For std::sort, std::max
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;string&gt;</span><span style=color:#93a1a1;font-style:italic>
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;numeric&gt;</span><span style=color:#93a1a1;font-style:italic> </span><span style=color:#93a1a1;font-style:italic>// For std::iota
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// Struct to represent a job
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span><span style=color:#859900>struct</span> <span style=color:#cb4b16>Job</span> {
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>char</span> <span style=color:#268bd2>id</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>deadline</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>profit</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// Custom comparator for sorting by profit in descending order
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900;font-weight:700>bool</span> <span style=color:#859900>operator</span>&lt;(<span style=color:#859900>const</span> <span style=color:#268bd2>Job</span>&amp; <span style=color:#268bd2>other</span>) <span style=color:#859900>const</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>profit</span> &gt; <span style=color:#268bd2>other</span>.<span style=color:#268bd2>profit</span>; <span style=color:#93a1a1;font-style:italic>// Sort in decreasing order of profit
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    }
+</span></span><span style=display:flex><span>};
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#268bd2>std</span>::<span style=color:#268bd2>pair</span>&lt;<span style=color:#859900;font-weight:700>int</span>, <span style=color:#268bd2>std</span>::<span style=color:#268bd2>vector</span>&lt;<span style=color:#859900;font-weight:700>char</span>&gt;&gt; <span style=color:#268bd2>jobSequencing</span>(<span style=color:#268bd2>std</span>::<span style=color:#268bd2>vector</span>&lt;<span style=color:#268bd2>Job</span>&gt; <span style=color:#268bd2>jobs</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> (<span style=color:#268bd2>jobs</span>.<span style=color:#268bd2>empty</span>()) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> {<span style=color:#2aa198;font-weight:700>0</span>, {}};
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// 1. Sort jobs by profit in decreasing order
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#268bd2>std</span>::<span style=color:#268bd2>sort</span>(<span style=color:#268bd2>jobs</span>.<span style=color:#268bd2>begin</span>(), <span style=color:#268bd2>jobs</span>.<span style=color:#268bd2>end</span>());
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// Find maximum deadline to determine number of time slots
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>max_deadline</span> = <span style=color:#2aa198;font-weight:700>0</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900>for</span> (<span style=color:#859900>const</span> <span style=color:#859900>auto</span>&amp; <span style=color:#268bd2>job</span> : <span style=color:#268bd2>jobs</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>max_deadline</span> = <span style=color:#268bd2>std</span>::<span style=color:#268bd2>max</span>(<span style=color:#268bd2>max_deadline</span>, <span style=color:#268bd2>job</span>.<span style=color:#268bd2>deadline</span>);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// time_slots array to keep track of occupied slots. &#39;\0&#39; for empty, job_id for occupied.
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#93a1a1;font-style:italic>// We use 1-based indexing for slots (slot 1 to max_deadline)
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#268bd2>std</span>::<span style=color:#268bd2>vector</span>&lt;<span style=color:#859900;font-weight:700>char</span>&gt; <span style=color:#268bd2>time_slots</span>(<span style=color:#268bd2>max_deadline</span> + <span style=color:#2aa198;font-weight:700>1</span>, <span style=color:#2aa198>&#39;\0&#39;</span>); <span style=color:#93a1a1;font-style:italic>// &#39;\0&#39; means empty
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>std</span>::<span style=color:#268bd2>vector</span>&lt;<span style=color:#859900;font-weight:700>char</span>&gt; <span style=color:#268bd2>selected_jobs</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>total_profit</span> = <span style=color:#2aa198;font-weight:700>0</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// 2. Iterate through sorted jobs
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900>for</span> (<span style=color:#859900>const</span> <span style=color:#859900>auto</span>&amp; <span style=color:#268bd2>job</span> : <span style=color:#268bd2>jobs</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic>// Try to schedule the job as late as possible, up to its deadline
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        <span style=color:#859900>for</span> (<span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>t</span> = <span style=color:#268bd2>job</span>.<span style=color:#268bd2>deadline</span>; <span style=color:#268bd2>t</span> &gt; <span style=color:#2aa198;font-weight:700>0</span>; <span style=color:#268bd2>t</span>--) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> (<span style=color:#268bd2>time_slots</span>[<span style=color:#268bd2>t</span>] == <span style=color:#2aa198>&#39;\0&#39;</span>) { <span style=color:#93a1a1;font-style:italic>// If slot t is free
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>                <span style=color:#268bd2>time_slots</span>[<span style=color:#268bd2>t</span>] = <span style=color:#268bd2>job</span>.<span style=color:#268bd2>id</span>; <span style=color:#93a1a1;font-style:italic>// Schedule job
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>                <span style=color:#268bd2>selected_jobs</span>.<span style=color:#268bd2>push_back</span>(<span style=color:#268bd2>job</span>.<span style=color:#268bd2>id</span>);
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>total_profit</span> += <span style=color:#268bd2>job</span>.<span style=color:#268bd2>profit</span>;
+</span></span><span style=display:flex><span>                <span style=color:#859900>break</span>; <span style=color:#93a1a1;font-style:italic>// Job scheduled, move to next job
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>            
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// Sort selected jobs by their ID for consistent output (optional)
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#268bd2>std</span>::<span style=color:#268bd2>sort</span>(<span style=color:#268bd2>selected_jobs</span>.<span style=color:#268bd2>begin</span>(), <span style=color:#268bd2>selected_jobs</span>.<span style=color:#268bd2>end</span>());
+</span></span><span style=display:flex><span>            
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> {<span style=color:#268bd2>total_profit</span>, <span style=color:#268bd2>selected_jobs</span>};
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// int main() {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     std::vector&lt;Job&gt; jobs = {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         {&#39;J1&#39;, 2, 100}, {&#39;J2&#39;, 1, 19}, {&#39;J3&#39;, 2, 27}, {&#39;J4&#39;, 1, 25}, {&#39;J5&#39;, 3, 15}
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     };
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     auto result = jobSequencing(jobs);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     std::cout &lt;&lt; &#34;Total Profit: &#34; &lt;&lt; result.first &lt;&lt; std::endl; // 142
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     std::cout &lt;&lt; &#34;Selected Jobs: &#34;;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     for (char id : result.second) {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         std::cout &lt;&lt; id &lt;&lt; &#34; &#34;; // J1 J3 J5
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     }
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     std::cout &lt;&lt; std::endl;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     return 0;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// }
+</span></span></span></code></pre></div><h3 id=go>Go</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#dc322f;font-weight:700>package</span> <span style=color:#268bd2>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> (
+</span></span><span style=display:flex><span>    <span style=color:#2aa198>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#2aa198>&#34;sort&#34;</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>type</span> <span style=color:#268bd2>Job</span> <span style=color:#859900>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>ID</span>       <span style=color:#859900;font-weight:700>string</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>Deadline</span> <span style=color:#859900;font-weight:700>int</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>Profit</span>   <span style=color:#859900;font-weight:700>int</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// Implement sort.Interface for []Job</span>
+</span></span><span style=display:flex><span><span style=color:#859900>type</span> <span style=color:#268bd2>ByProfit</span> []<span style=color:#268bd2>Job</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>func</span> (<span style=color:#268bd2>a</span> <span style=color:#268bd2>ByProfit</span>) <span style=color:#268bd2>Len</span>() <span style=color:#859900;font-weight:700>int</span>           { <span style=color:#859900>return</span> <span style=color:#cb4b16>len</span>(<span style=color:#268bd2>a</span>) }
+</span></span><span style=display:flex><span><span style=color:#859900>func</span> (<span style=color:#268bd2>a</span> <span style=color:#268bd2>ByProfit</span>) <span style=color:#268bd2>Swap</span>(<span style=color:#268bd2>i</span>, <span style=color:#268bd2>j</span> <span style=color:#859900;font-weight:700>int</span>)      { <span style=color:#268bd2>a</span>[<span style=color:#268bd2>i</span>], <span style=color:#268bd2>a</span>[<span style=color:#268bd2>j</span>] = <span style=color:#268bd2>a</span>[<span style=color:#268bd2>j</span>], <span style=color:#268bd2>a</span>[<span style=color:#268bd2>i</span>] }
+</span></span><span style=display:flex><span><span style=color:#859900>func</span> (<span style=color:#268bd2>a</span> <span style=color:#268bd2>ByProfit</span>) <span style=color:#268bd2>Less</span>(<span style=color:#268bd2>i</span>, <span style=color:#268bd2>j</span> <span style=color:#859900;font-weight:700>int</span>) <span style=color:#859900;font-weight:700>bool</span> { <span style=color:#859900>return</span> <span style=color:#268bd2>a</span>[<span style=color:#268bd2>i</span>].<span style=color:#268bd2>Profit</span> &gt; <span style=color:#268bd2>a</span>[<span style=color:#268bd2>j</span>].<span style=color:#268bd2>Profit</span> } <span style=color:#93a1a1;font-style:italic>// Descending order</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>func</span> <span style=color:#268bd2>jobSequencing</span>(<span style=color:#268bd2>jobs</span> []<span style=color:#268bd2>Job</span>) (<span style=color:#859900;font-weight:700>int</span>, []<span style=color:#859900;font-weight:700>string</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> <span style=color:#cb4b16>len</span>(<span style=color:#268bd2>jobs</span>) == <span style=color:#2aa198;font-weight:700>0</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#2aa198;font-weight:700>0</span>, []<span style=color:#859900;font-weight:700>string</span>{}
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// 1. Sort jobs by profit in decreasing order</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>sort</span>.<span style=color:#268bd2>Sort</span>(<span style=color:#268bd2>ByProfit</span>(<span style=color:#268bd2>jobs</span>))
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// Find maximum deadline to determine number of time slots</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>maxDeadline</span> := <span style=color:#2aa198;font-weight:700>0</span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>for</span> <span style=color:#268bd2>_</span>, <span style=color:#268bd2>job</span> := <span style=color:#859900>range</span> <span style=color:#268bd2>jobs</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> <span style=color:#268bd2>job</span>.<span style=color:#268bd2>Deadline</span> &gt; <span style=color:#268bd2>maxDeadline</span> {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>maxDeadline</span> = <span style=color:#268bd2>job</span>.<span style=color:#268bd2>Deadline</span>
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// timeSlots array to keep track of occupied slots. &#34;&#34; for empty, job_id for occupied.</span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// We use 1-based indexing for slots (slot 1 to maxDeadline)</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>timeSlots</span> := <span style=color:#cb4b16>make</span>([]<span style=color:#859900;font-weight:700>string</span>, <span style=color:#268bd2>maxDeadline</span>+<span style=color:#2aa198;font-weight:700>1</span>) <span style=color:#93a1a1;font-style:italic>// Initialized with empty strings (&#34;&#34;)</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>selectedJobs</span> := []<span style=color:#859900;font-weight:700>string</span>{}
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>totalProfit</span> := <span style=color:#2aa198;font-weight:700>0</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// 2. Iterate through sorted jobs</span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>for</span> <span style=color:#268bd2>_</span>, <span style=color:#268bd2>job</span> := <span style=color:#859900>range</span> <span style=color:#268bd2>jobs</span> {
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic>// Try to schedule the job as late as possible, up to its deadline</span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>for</span> <span style=color:#268bd2>t</span> := <span style=color:#268bd2>job</span>.<span style=color:#268bd2>Deadline</span>; <span style=color:#268bd2>t</span> &gt; <span style=color:#2aa198;font-weight:700>0</span>; <span style=color:#268bd2>t</span>-- {
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> <span style=color:#268bd2>timeSlots</span>[<span style=color:#268bd2>t</span>] == <span style=color:#2aa198>&#34;&#34;</span> { <span style=color:#93a1a1;font-style:italic>// If slot t is free</span>
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>timeSlots</span>[<span style=color:#268bd2>t</span>] = <span style=color:#268bd2>job</span>.<span style=color:#268bd2>ID</span> <span style=color:#93a1a1;font-style:italic>// Schedule job</span>
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>selectedJobs</span> = <span style=color:#cb4b16>append</span>(<span style=color:#268bd2>selectedJobs</span>, <span style=color:#268bd2>job</span>.<span style=color:#268bd2>ID</span>)
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>totalProfit</span> += <span style=color:#268bd2>job</span>.<span style=color:#268bd2>Profit</span>
+</span></span><span style=display:flex><span>                <span style=color:#859900>break</span> <span style=color:#93a1a1;font-style:italic>// Job scheduled, move to next job</span>
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>            
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// Sort selected jobs by their ID for consistent output (optional)</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>sort</span>.<span style=color:#268bd2>Strings</span>(<span style=color:#268bd2>selectedJobs</span>)
+</span></span><span style=display:flex><span>            
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>totalProfit</span>, <span style=color:#268bd2>selectedJobs</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// func main() {</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     jobs := []Job{</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         {&#34;J1&#34;, 2, 100}, {&#34;J2&#34;, 1, 19}, {&#34;J3&#34;, 2, 27}, {&#34;J4&#34;, 1, 25}, {&#34;J5&#34;, 3, 15},</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     }</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     profit, selected := jobSequencing(jobs)</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     fmt.Println(&#34;Total Profit:&#34;, profit)     // 142</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     fmt.Println(&#34;Selected Jobs:&#34;, selected) // [J1 J3 J5] (sorted)</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// }</span>
+</span></span></code></pre></div><h3 id=d>D</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-d data-lang=d><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>std.stdio</span>;
+</span></span><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>std.array</span>;
+</span></span><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>std.algorithm</span>; <span style=color:#93a1a1;font-style:italic>// For std.algorithm.sort, std.algorithm.max
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>std.string</span>; <span style=color:#93a1a1;font-style:italic>// For std.string.joiner
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// Struct to represent a job
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span><span style=color:#859900>struct</span> <span style=color:#cb4b16>Job</span> {
+</span></span><span style=display:flex><span>    <span style=color:#cb4b16>string</span> <span style=color:#268bd2>id</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>deadline</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>profit</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// Custom comparator for sorting by profit in descending order
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>opCmp</span>(<span style=color:#859900>const</span> <span style=color:#268bd2>Job</span> <span style=color:#268bd2>other</span>) <span style=color:#859900>const</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>other</span>.<span style=color:#268bd2>profit</span>.<span style=color:#268bd2>cmp</span>(<span style=color:#859900>this</span>.<span style=color:#268bd2>profit</span>); <span style=color:#93a1a1;font-style:italic>// Sort in decreasing order of profit
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#268bd2>Tuple</span>!(<span style=color:#859900;font-weight:700>int</span>, <span style=color:#cb4b16>string</span>[]) <span style=color:#268bd2>jobSequencing</span>(<span style=color:#268bd2>Job</span>[] <span style=color:#268bd2>jobs</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> (<span style=color:#268bd2>jobs</span>.<span style=color:#268bd2>empty</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#859900>typeof</span>(<span style=color:#859900>return</span>)(<span style=color:#2aa198;font-weight:700>0</span>, []);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// 1. Sort jobs by profit in decreasing order
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#268bd2>jobs</span>.<span style=color:#268bd2>sort</span>!((<span style=color:#268bd2>a</span>, <span style=color:#268bd2>b</span>) =&gt; <span style=color:#268bd2>a</span>.<span style=color:#268bd2>profit</span> &gt; <span style=color:#268bd2>b</span>.<span style=color:#268bd2>profit</span>);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// Find maximum deadline to determine number of time slots
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>maxDeadline</span> = <span style=color:#2aa198;font-weight:700>0</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900>foreach</span> (<span style=color:#268bd2>job</span>; <span style=color:#268bd2>jobs</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>maxDeadline</span> = <span style=color:#268bd2>max</span>(<span style=color:#268bd2>maxDeadline</span>, <span style=color:#268bd2>job</span>.<span style=color:#268bd2>deadline</span>);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// timeSlots array to keep track of occupied slots. &#34;&#34; for empty, job_id for occupied.
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#93a1a1;font-style:italic>// We use 1-based indexing for slots (slot 1 to maxDeadline)
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#cb4b16>string</span>[] <span style=color:#268bd2>timeSlots</span> = <span style=color:#859900>new</span> <span style=color:#cb4b16>string</span>[<span style=color:#268bd2>maxDeadline</span> + <span style=color:#2aa198;font-weight:700>1</span>].<span style=color:#268bd2>replicate</span>(<span style=color:#2aa198>&#34;&#34;</span>).<span style=color:#268bd2>array</span>; <span style=color:#93a1a1;font-style:italic>// Initialize with empty strings
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    
+</span></span><span style=display:flex><span>    <span style=color:#cb4b16>string</span>[] <span style=color:#268bd2>selectedJobs</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>totalProfit</span> = <span style=color:#2aa198;font-weight:700>0</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// 2. Iterate through sorted jobs
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900>foreach</span> (<span style=color:#268bd2>job</span>; <span style=color:#268bd2>jobs</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic>// Try to schedule the job as late as possible, up to its deadline
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        <span style=color:#859900>for</span> (<span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>t</span> = <span style=color:#268bd2>job</span>.<span style=color:#268bd2>deadline</span>; <span style=color:#268bd2>t</span> &gt; <span style=color:#2aa198;font-weight:700>0</span>; <span style=color:#268bd2>t</span>--) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> (<span style=color:#268bd2>timeSlots</span>[<span style=color:#268bd2>t</span>] == <span style=color:#2aa198>&#34;&#34;</span>) { <span style=color:#93a1a1;font-style:italic>// If slot t is free
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>                <span style=color:#268bd2>timeSlots</span>[<span style=color:#268bd2>t</span>] = <span style=color:#268bd2>job</span>.<span style=color:#268bd2>id</span>; <span style=color:#93a1a1;font-style:italic>// Schedule job
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>                <span style=color:#268bd2>selectedJobs</span> ~= <span style=color:#268bd2>job</span>.<span style=color:#268bd2>id</span>;
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>totalProfit</span> += <span style=color:#268bd2>job</span>.<span style=color:#268bd2>profit</span>;
+</span></span><span style=display:flex><span>                <span style=color:#859900>break</span>; <span style=color:#93a1a1;font-style:italic>// Job scheduled, move to next job
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>            
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// Sort selected jobs by their ID for consistent output (optional)
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#268bd2>selectedJobs</span>.<span style=color:#268bd2>sort</span>();
+</span></span><span style=display:flex><span>            
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#859900>typeof</span>(<span style=color:#859900>return</span>)(<span style=color:#268bd2>totalProfit</span>, <span style=color:#268bd2>selectedJobs</span>);
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// void main() {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     Job[] jobs = [
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         Job(&#34;J1&#34;, 2, 100), Job(&#34;J2&#34;, 1, 19), Job(&#34;J3&#34;, 2, 27),
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         Job(&#34;J4&#34;, 1, 25), Job(&#34;J5&#34;, 3, 15)
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     ];
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     auto result = jobSequencing(jobs);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     writeln(&#34;Total Profit: &#34;, result.totalProfit); // 142
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     writeln(&#34;Selected Jobs: &#34;, result.selectedJobs); // [J1, J3, J5] (sorted)
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// }
+</span></span></span></code></pre></div><h2 id=code-walkthrough>Code Walkthrough</h2><p><a href=#implementation>Back to Implementation</a></p><h3 id=code-walkthrough-1>Code Walkthrough</h3><p>The <code>Job Sequencing Problem with Deadlines</code> is solved using a <code>greedy strategy</code> combined with careful scheduling of <code>jobs</code>.</p><hr><p><strong><code>Job</code> Structure:</strong></p><ul><li>Each <code>job</code> is represented by an <code>id</code>, a <code>deadline</code>, and a <code>profit</code>.</li></ul><p><strong><code>job_sequencing(jobs)</code> Function:</strong></p><ul><li><code>jobs</code>: A list of <code>job</code> objects/tuples.</li></ul><p><strong>Algorithm Steps:</strong></p><ul><li><p><strong>Sort by Profit:</strong> The <code>jobs</code> are sorted in decreasing order of their <code>profit</code>. This is the crucial greedy choice: always consider the most profitable <code>job</code> first.</p></li><li><p><strong>Determine <code>max_deadline</code>:</strong> Find the maximum <code>deadline</code> among all <code>jobs</code>. This helps in determining the size of the <code>time_slots</code> array.</p></li><li><p><strong>Initialize <code>time_slots</code>:</strong> A <code>time_slots</code> array (1-indexed for convenience) of size <code>max_deadline + 1</code> is created. Each element is initialized to indicate an empty slot (e.g., 0 or an empty string).</p></li><li><p><strong>Initialize Results:</strong></p></li><li><p><code>selected_jobs</code>: An empty list to store the IDs of the selected <code>jobs</code>.</p></li><li><p><code>total_profit</code>: Initialized to 0.</p></li></li><li><p><strong>Schedule Jobs Greedily:</strong> Iterate through the <code>jobs</code> in their profit-sorted order:</p></li><li><p>For each <code>job</code>:</p></li><li><p>The algorithm attempts to schedule this <code>job</code> as late as possible but before or on its <code>deadline</code>. It iterates backward from the <code>job's deadline</code> down to 1.</p></li><li><p>If a <code>time_slot t</code> is found to be empty (<code>time_slots[t] == 0</code>), the <code>job</code> is scheduled in that <code>slot</code>. Its <code>profit</code> is added to <code>total_profit</code>, and its <code>id</code> is added to <code>selected_jobs</code>. The inner loop breaks, and the algorithm moves to the next profitable <code>job</code>.</p></li><li><p>If no free slot is found up to <code>deadline 1</code>, the <code>job</code> cannot be scheduled.</p><pre><code>      &lt;/li&gt;
+</code></pre></li></li></ul><p><strong>Result:</strong></p><ul><li>The function returns the <code>total_profit</code> and the list of <code>selected_jobs</code> (sorted by ID for consistent output).</li></ul><p><a href=#implementation>Back to Implementation</a></p><h2 id=applications>Applications</h2><h3 id=application>Application</h3><p>The <code>Job Sequencing Problem with Deadlines</code> is a classic model for scheduling problems that occur in various real-world scenarios:</p><ul><li><strong>Task Scheduling in Operating Systems:</strong> Optimizing the execution of tasks on a single processor, where tasks have different priorities (profits) and completion deadlines.</li><li><strong>Project Management:</strong> Selecting a subset of tasks within a project to maximize overall benefit, given limited time and resources.</li><li><strong>Manufacturing and Production:</strong> Scheduling production orders on a single machine to maximize profit while respecting delivery deadlines.</li><li><strong>Resource Allocation:</strong> Deciding which short-duration projects or activities to undertake when a resource has a limited availability window for each project.</li><li><strong>Airline Scheduling:</strong> Optimizing the assignment of aircraft to flights or crew to duties, where each assignment has a profit and a time constraint.</li></ul></div></article><div class=navigation style="margin-top:5rem;display:flex;justify-content:space-between;border-top:1px solid var(--border);padding-top:2rem"><a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/algorithms/greedy/min_platforms/ class=nav-btn>← Previous</a>
+<a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/algorithms/greedy/ class=nav-btn>Up</a>
+<a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/algorithms/greedy/huffman_coding/ class=nav-btn>Next →</a></div></main><footer class=footer><p>Built with Hugo. No scripts. No tracking. Just the truth.</p></footer><script>document.addEventListener("DOMContentLoaded",function(){const n=document.body,s=document.createTreeWalker(n,NodeFilter.SHOW_TEXT,null,!1);let e;const t=[];for(;e=s.nextNode();)e.nodeValue.includes("[-]")&&t.push(e);t.forEach(e=>{const t=document.createElement("span");t.innerHTML=e.nodeValue.replace(/\[-\]/g,'<span class="started-icon" title="Started"></span>'),e.parentNode.replaceChild(t,e)})})</script><script>const body=document.getElementById("theme-body"),btn=document.getElementById("theme-toggle"),currentTheme=localStorage.getItem("theme");function updateButtonText(){body.classList.contains("theme-terminal")?btn.textContent="Light Mode":btn.textContent="Dark Mode"}currentTheme==="terminal"&&body.classList.add("theme-terminal"),updateButtonText(),btn.addEventListener("click",()=>{body.classList.toggle("theme-terminal"),updateButtonText();let e="natural";body.classList.contains("theme-terminal")&&(e="terminal"),localStorage.setItem("theme",e)})</script></body></html>

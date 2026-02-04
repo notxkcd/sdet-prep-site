@@ -1,0 +1,204 @@
+<div id="explanation-content">
+    <p><code>Selection Sort</code> is an in-place comparison sorting algorithm. It has an <code>O(N^2)</code> time complexity, which makes it inefficient on large lists, and generally performs worse than the similar <code>Insertion Sort</code>. <code>Selection Sort</code> is noted for its simplicity and has performance advantages over more complicated algorithms in certain situations, particularly where auxiliary memory is limited.</p>
+    <p>The algorithm divides the input list into two parts: a sorted sublist of items which is built up from left to right at the front (left) of the list and a sublist of the remaining unsorted items that occupy the rest of the list.</p>
+</div>
+
+<div id="expanded-explanation-content">
+    <h3>How it Works (Expanded)</h3>
+    <p>The algorithm proceeds by finding the smallest (or largest, depending on sorting order) element in the unsorted sublist, swapping it with the leftmost unsorted element, and moving the sublist boundaries one element to the right.</p>
+    <div class="explanation-fence">
+Example: Sort [64, 25, 12, 22, 11]
+
+Pass 1:
+- Find the minimum element in [64, 25, 12, 22, 11]. The minimum is 11 at index 4.
+- Swap arr[0] with arr[4]: (11, 25, 12, 22, 64)
+- Sorted sublist: [11] | Unsorted sublist: [25, 12, 22, 64]
+
+Pass 2:
+- Find the minimum element in [25, 12, 22, 64]. The minimum is 12 at index 2.
+- Swap arr[1] with arr[2]: (11, 12, 25, 22, 64)
+- Sorted sublist: [11, 12] | Unsorted sublist: [25, 22, 64]
+
+Pass 3:
+- Find the minimum element in [25, 22, 64]. The minimum is 22 at index 3.
+- Swap arr[2] with arr[3]: (11, 12, 22, 25, 64)
+- Sorted sublist: [11, 12, 22] | Unsorted sublist: [25, 64]
+
+...and so on, until the entire array is sorted.
+    </div>
+    <p>A key property of <code>Selection Sort</code> is that it makes the minimum possible number of swaps, exactly <code>N-1</code> in the worst case. This can be useful if writing to memory is a very expensive operation.</p>
+    <p><strong>Time Complexity:</strong> <code>O(N^2)</code> in all cases (best, average, and worst). The algorithm must always scan the remaining unsorted portion to find the minimum element, which requires a nested loop structure.</p>
+    <p><strong>Space Complexity:</strong> <code>O(1)</code>, as it is an in-place sorting algorithm.</p>
+</div>
+
+<div id="code-implementations">
+    <pre data-lang="python"><code class="language-python">def selection_sort(arr):
+    n = len(arr)
+    # Traverse through all array elements
+    for i in range(n):
+        # Find the minimum element in the remaining unsorted array
+        min_idx = i
+        for j in range(i + 1, n):
+            if arr[j] < arr[min_idx]:
+                min_idx = j
+        
+        # Swap the found minimum element with the first element
+        arr[i], arr[min_idx] = arr[min_idx], arr[i]
+    return arr
+
+# Example
+# my_arr = [64, 25, 12, 22, 11]
+# print(selection_sort(my_arr)) # [11, 12, 22, 25, 64]
+</code></pre>
+
+    <pre data-lang="javascript"><code class="language-javascript">function selectionSort(arr) {
+    const n = arr.length;
+    for (let i = 0; i < n; i++) {
+        // Find the minimum element in the remaining unsorted array
+        let minIdx = i;
+        for (let j = i + 1; j < n; j++) {
+            if (arr[j] < arr[minIdx]) {
+                minIdx = j;
+            }
+        }
+        
+        // Swap the found minimum element with the first element
+        if (minIdx !== i) {
+            [arr[i], arr[minIdx]] = [arr[minIdx], arr[i]];
+        }
+    }
+    return arr;
+}
+
+// const myArr = [64, 25, 12, 22, 11];
+// console.log(selectionSort(myArr)); // [11, 12, 22, 25, 64]
+</code></pre>
+
+    <pre data-lang="typescript"><code class="language-typescript">function selectionSortTS(arr: number[]): number[] {
+    const n = arr.length;
+    for (let i = 0; i < n; i++) {
+        // Find the minimum element in the remaining unsorted array
+        let minIdx = i;
+        for (let j = i + 1; j < n; j++) {
+            if (arr[j] < arr[minIdx]) {
+                minIdx = j;
+            }
+        }
+        
+        // Swap the found minimum element with the first element
+        if (minIdx !== i) {
+            [arr[i], arr[minIdx]] = [arr[minIdx], arr[i]];
+        }
+    }
+    return arr;
+}
+
+// const myArrTS: number[] = [64, 25, 12, 22, 11];
+// console.log(selectionSortTS(myArrTS)); // [11, 12, 22, 25, 64]
+</code></pre>
+    
+    <pre data-lang="cpp"><code class="language-cpp">#include &lt;vector&gt;
+#include &lt;utility&gt; // For std::swap
+
+void selectionSort(std::vector&lt;int&gt;& arr) {
+    int n = arr.size();
+    for (int i = 0; i < n - 1; ++i) {
+        // Find the minimum element in the remaining unsorted array
+        int min_idx = i;
+        for (int j = i + 1; j < n; ++j) {
+            if (arr[j] < arr[min_idx]) {
+                min_idx = j;
+            }
+        }
+        
+        // Swap the found minimum element with the first element
+        if (min_idx != i) {
+            std::swap(arr[i], arr[min_idx]);
+        }
+    }
+}
+
+// #include &lt;iostream&gt;
+// int main() {
+//     std::vector<int> myArr = {64, 25, 12, 22, 11};
+//     selectionSort(myArr);
+//     for(int val : myArr) {
+//         std::cout << val << " "; // 11 12 22 25 64
+//     }
+//     std::cout << std::endl;
+// }
+</code></pre>
+
+    <pre data-lang="go"><code class="language-go">package main
+
+func selectionSort(arr []int) []int {
+    n := len(arr)
+    for i := 0; i < n; i++ {
+        // Find the minimum element in the remaining unsorted array
+        minIdx := i
+        for j := i + 1; j < n; j++ {
+            if arr[j] < arr[minIdx] {
+                minIdx = j
+            }
+        }
+        
+        // Swap the found minimum element with the first element
+        arr[i], arr[minIdx] = arr[minIdx], arr[i]
+    }
+    return arr
+}
+
+// import "fmt"
+// func main() {
+//     myArr := []int{64, 25, 12, 22, 11}
+//     fmt.Println(selectionSort(myArr)) // [11 12 22 25 64]
+// }
+</code></pre>
+    
+    <pre data-lang="d"><code class="language-d">import std.algorithm;
+
+void selectionSort(int[] arr) {
+    auto n = arr.length;
+    for (int i = 0; i < n; i++) {
+        // Find the minimum element in the remaining unsorted array
+        int minIdx = i;
+        for (int j = i + 1; j < n; j++) {
+            if (arr[j] < arr[minIdx]) {
+                minIdx = j;
+            }
+        }
+        
+        // Swap the found minimum element with the first element
+        if (minIdx != i) {
+            swap(arr[i], arr[minIdx]);
+        }
+    }
+}
+
+// import std.stdio;
+// void main() {
+//     auto myArr = [64, 25, 12, 22, 11];
+//     selectionSort(myArr);
+//     writeln(myArr); // [11, 12, 22, 25, 64]
+// }
+</code></pre>
+</div>
+
+<div id="code-explanation-content"><div class="markdown-content">
+    <h3>Code Walkthrough</h3>
+    <p><code>Selection Sort</code>'s logic is based on dividing the array into sorted and unsorted portions and progressively expanding the sorted part.</p>
+    <div class="explanation-fence">
+<strong>Outer Loop (<code>i</code>):</strong> This loop iterates from the start of the array to the end. The index <code>i</code> represents the boundary between the sorted sub-array (from 0 to <code>i-1</code>) and the unsorted sub-array (from <code>i</code> to <code>n-1</code>).
+<br><br>
+<strong>Finding the Minimum:</strong> Inside the outer loop, we assume the first element of the unsorted portion (<code>arr[i]</code>) is the minimum. The inner loop (<code>j</code>) then iterates through the rest of the unsorted portion (<code>i+1</code> to <code>n-1</code>) to find the actual minimum element. The index of this minimum element is stored in <code>min_idx</code>.
+<br><br>
+<strong>Swapping:</strong> After the inner loop completes, <code>min_idx</code> holds the index of the smallest element in the unsorted part of the array. This element is then swapped with the element at the current boundary position, <code>arr[i]</code>. This effectively moves the smallest unsorted element into its final sorted position.
+<br><br>
+<strong>Progression:</strong> The outer loop index <code>i</code> is incremented, and the process repeats, with the sorted portion of the array growing by one element in each pass.
+    </div></div>
+</div>
+
+<div id="application-content"><div class="markdown-content">
+    <h3>Application</h3>
+    <p>Like <code>Bubble Sort</code>, <code>Selection Sort</code> is primarily used for educational purposes due to its inefficiency on large datasets. However, its property of minimizing the number of swaps (at most <code>N-1</code>) can be useful in very specific scenarios where the cost of writing to memory is extremely high, such as with certain types of flash memory.</p>
+</div></div>

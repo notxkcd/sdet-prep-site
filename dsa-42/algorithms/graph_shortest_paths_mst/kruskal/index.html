@@ -1,0 +1,563 @@
+<!doctype html><html lang=en-us><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Kruskal | SDET Interview Preparation Kit</title><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/css/style.css><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/css/terminal.css><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel=stylesheet><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/lib/katex/katex.min.css><script defer src=https://notxkcd.github.io/sdet-prep-site/lib/katex/katex.min.js></script><script defer src=https://notxkcd.github.io/sdet-prep-site/lib/katex/contrib/auto-render.min.js onload=renderMathInElement(document.body)></script><script>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1}]})})</script></head><body id=theme-body><button id=theme-toggle>Switch Theme</button><header><nav><ul><li><a href=https://notxkcd.github.io/sdet-prep-site/>Index</a></li></ul></nav><div class=site-breadcrumb><a href=https://notxkcd.github.io/sdet-prep-site/>Home</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/>SDET Interview Dashboard</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/>42 Algorithms & 42 Data Structures</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/algorithms/>Algorithms</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/algorithms/graph_shortest_paths_mst/>Graph Shortest Paths Mst</a>
+<span>/</span> Kruskal</div></header><main><article><h1>Kruskal</h1><div class=content-body style=margin-top:2rem><p><code>Kruskal's Algorithm</code> is a greedy algorithm that finds a <code>minimum spanning tree (MST)</code> for a connected, undirected, weighted graph. Similar to <code>Prim's Algorithm</code>, an <code>MST</code> is a subset of the <code>edges</code> that connects all the <code>vertices</code> together, without any <code>cycles</code> and with the minimum possible total <code>edge weight</code>.</p><p>Unlike Prim&rsquo;s, which grows the <code>MST</code> from a starting <code>vertex</code>, Kruskal&rsquo;s algorithm considers <code>edges</code> in increasing order of their <code>weights</code> and adds them to the <code>MST</code> if they do not form a <code>cycle</code>. It uses a <code>Disjoint Set Union (DSU)</code> data structure to efficiently detect cycles.</p><h2 id=how-it-works>How it Works</h2><h3 id=how-it-works-expanded>How it Works (Expanded)</h3><p><code>Kruskal's Algorithm</code> operates on the entire graph at once, focusing on individual <code>edges</code>. The crucial part is checking for <code>cycles</code>, which is where the <code>DSU</code> data structure comes in handy. A <code>DSU</code> can tell us if two <code>vertices</code> are already connected (i.e., part of the same component) in near-constant time on average.</p><hr><p>Example: Finding MST using Kruskal&rsquo;s
+Graph Edges: (A,B,4), (A,C,2), (B,C,1), (B,D,5), (C,D,8)</p><ol><li><p>Sort edges by weight: (B,C,1), (A,C,2), (A,B,4), (B,D,5), (C,D,8)</p></li><li><p>Process sorted edges:</p></li></ol><ul><li>(B,C,1): B and C not connected. Add to MST. DSU: {A},{B,C},{D}. MST: {(B,C,1)}.</li><li>(A,C,2): A and C not connected. Add to MST. DSU: {A,B,C},{D}. MST: {(B,C,1), (A,C,2)}.</li><li>(A,B,4): A and B ARE connected (in {A,B,C}). Skip (would form a cycle).</li><li>(B,D,5): B and D not connected. Add to MST. DSU: {A,B,C,D}. MST: {(B,C,1), (A,C,2), (B,D,5)}.</li><li>(C,D,8): C and D ARE connected (in {A,B,C,D}). Skip.</li></ul><p>All vertices connected. MST formed. Total weight = 1+2+5=8.</p><h2 id=implementation>Implementation</h2><h3 id=python>Python</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># Disjoint Set Union (DSU) helper class</span>
+</span></span><span style=display:flex><span><span style=color:#859900>class</span> <span style=color:#cb4b16>DSU</span>:
+</span></span><span style=display:flex><span>    <span style=color:#859900>def</span> <span style=color:#268bd2>__init__</span>(<span style=color:#cb4b16>self</span>, <span style=color:#268bd2>n_nodes</span>):
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>parent</span> = <span style=color:#cb4b16>list</span>(<span style=color:#cb4b16>range</span>(<span style=color:#268bd2>n_nodes</span>))
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>rank</span> = [<span style=color:#2aa198;font-weight:700>0</span>] &lt;<span style=color:#268bd2>em</span>&gt; <span style=color:#268bd2>n_nodes</span> <span style=color:#93a1a1;font-style:italic># Used for union by rank optimization</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>def</span> <span style=color:#268bd2>find</span>(<span style=color:#cb4b16>self</span>, <span style=color:#268bd2>i</span>):
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>parent</span>[<span style=color:#268bd2>i</span>] == <span style=color:#268bd2>i</span>:
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span> <span style=color:#268bd2>i</span>
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>parent</span>[<span style=color:#268bd2>i</span>] = <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>find</span>(<span style=color:#cb4b16>self</span>.<span style=color:#268bd2>parent</span>[<span style=color:#268bd2>i</span>]) <span style=color:#93a1a1;font-style:italic># Path compression</span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>parent</span>[<span style=color:#268bd2>i</span>]
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>def</span> <span style=color:#268bd2>union</span>(<span style=color:#cb4b16>self</span>, <span style=color:#268bd2>i</span>, <span style=color:#268bd2>j</span>):
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>root_i</span> = <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>find</span>(<span style=color:#268bd2>i</span>)
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>root_j</span> = <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>find</span>(<span style=color:#268bd2>j</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> <span style=color:#268bd2>root_i</span> != <span style=color:#268bd2>root_j</span>:
+</span></span><span style=display:flex><span>            <span style=color:#93a1a1;font-style:italic># Union by rank</span>
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>rank</span>[<span style=color:#268bd2>root_i</span>] &lt; <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>rank</span>[<span style=color:#268bd2>root_j</span>]:
+</span></span><span style=display:flex><span>                <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>parent</span>[<span style=color:#268bd2>root_i</span>] = <span style=color:#268bd2>root_j</span>
+</span></span><span style=display:flex><span>            <span style=color:#859900>elif</span> <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>rank</span>[<span style=color:#268bd2>root_i</span>] &gt; <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>rank</span>[<span style=color:#268bd2>root_j</span>]:
+</span></span><span style=display:flex><span>                <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>parent</span>[<span style=color:#268bd2>root_j</span>] = <span style=color:#268bd2>root_i</span>
+</span></span><span style=display:flex><span>            <span style=color:#859900>else</span>:
+</span></span><span style=display:flex><span>                <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>parent</span>[<span style=color:#268bd2>root_j</span>] = <span style=color:#268bd2>root_i</span>
+</span></span><span style=display:flex><span>                <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>rank</span>[<span style=color:#268bd2>root_i</span>] += <span style=color:#2aa198;font-weight:700>1</span>
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span> <span style=color:#859900;font-weight:700>True</span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#859900;font-weight:700>False</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>def</span> <span style=color:#268bd2>kruskal_algorithm</span>(<span style=color:#268bd2>num_vertices</span>, <span style=color:#268bd2>edges</span>):
+</span></span><span style=display:flex><span>    <span style=color:#2aa198>&#34;&#34;&#34;
+</span></span></span><span style=display:flex><span><span style=color:#2aa198>    Finds the Minimum Spanning Tree (MST) of a connected, undirected graph
+</span></span></span><span style=display:flex><span><span style=color:#2aa198>    using Kruskal&#39;s algorithm.
+</span></span></span><span style=display:flex><span><span style=color:#2aa198>    &lt;code&gt;num_vertices&lt;/code&gt;: total number of vertices (e.g., 4 for A, B, C, D)
+</span></span></span><span style=display:flex><span><span style=color:#2aa198>    &lt;code&gt;edges&lt;/code&gt;: list of (weight, u, v) tuples
+</span></span></span><span style=display:flex><span><span style=color:#2aa198>    &#34;&#34;&#34;</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic># 1. Sort all edges by their weights</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>edges</span>.<span style=color:#268bd2>sort</span>()
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>dsu</span> = <span style=color:#268bd2>DSU</span>(<span style=color:#268bd2>num_vertices</span>)
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>mst_edges</span> = []
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>min_cost</span> = <span style=color:#2aa198;font-weight:700>0</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>num_edges_in_mst</span> = <span style=color:#2aa198;font-weight:700>0</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic># 2. Iterate through sorted edges</span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>for</span> <span style=color:#268bd2>weight</span>, <span style=color:#268bd2>u</span>, <span style=color:#268bd2>v</span> <span style=color:#859900>in</span> <span style=color:#268bd2>edges</span>:
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> <span style=color:#268bd2>dsu</span>.<span style=color:#268bd2>union</span>(<span style=color:#268bd2>u</span>, <span style=color:#268bd2>v</span>): <span style=color:#93a1a1;font-style:italic># If adding this edge does not form a cycle</span>
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>mst_edges</span>.<span style=color:#268bd2>append</span>((<span style=color:#268bd2>u</span>, <span style=color:#268bd2>v</span>, <span style=color:#268bd2>weight</span>))
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>min_cost</span> += <span style=color:#268bd2>weight</span>
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>num_edges_in_mst</span> += <span style=color:#2aa198;font-weight:700>1</span>
+</span></span><span style=display:flex><span>            
+</span></span><span style=display:flex><span>            <span style=color:#93a1a1;font-style:italic># Optimization: If MST has V-1 edges, it&#39;s complete</span>
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> <span style=color:#268bd2>num_edges_in_mst</span> == <span style=color:#268bd2>num_vertices</span> - <span style=color:#2aa198;font-weight:700>1</span>:
+</span></span><span style=display:flex><span>                <span style=color:#859900>break</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic># Check if all vertices were connected</span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> <span style=color:#268bd2>num_edges_in_mst</span> != <span style=color:#268bd2>num_vertices</span> - <span style=color:#2aa198;font-weight:700>1</span>:
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#2aa198>&#34;Graph is not connected, MST not possible&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>mst_edges</span>, <span style=color:#268bd2>min_cost</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># Example</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># num_vertices = 4 (for A, B, C, D, mapped to 0, 1, 2, 3)</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># edges = [</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#     (1, 1, 2), # B-C, weight 1</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#     (2, 0, 2), # A-C, weight 2</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#     (4, 0, 1), # A-B, weight 4</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#     (5, 1, 3), # B-D, weight 5</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#     (8, 2, 3)  # C-D, weight 8</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># ]</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># # Expected MST edges: [(1, 1, 2), (2, 0, 2), (5, 1, 3)] (total weight 8)</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># mst, cost = kruskal_algorithm(num_vertices, edges)</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># print(&#34;MST Edges:&#34;, mst)</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># print(&#34;Minimum Cost:&#34;, cost)</span>
+</span></span></code></pre></div><h3 id=javascript>Javascript</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// Disjoint Set Union (DSU) helper class
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span><span style=color:#859900>class</span> <span style=color:#268bd2>DSU</span> {
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>constructor</span>(<span style=color:#268bd2>nNodes</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>parent</span> = <span style=color:#cb4b16>Array</span>.<span style=color:#268bd2>from</span>({ <span style=color:#268bd2>length</span>: <span style=color:#268bd2>nNodes</span> }, (<span style=color:#268bd2>_</span>, <span style=color:#268bd2>i</span>) =&gt; <span style=color:#268bd2>i</span>);
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>rank</span> = <span style=color:#859900>new</span> <span style=color:#cb4b16>Array</span>(<span style=color:#268bd2>nNodes</span>).<span style=color:#268bd2>fill</span>(<span style=color:#2aa198;font-weight:700>0</span>);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>find</span>(<span style=color:#268bd2>i</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#859900>this</span>.<span style=color:#268bd2>parent</span>[<span style=color:#268bd2>i</span>] === <span style=color:#268bd2>i</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span> <span style=color:#268bd2>i</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>parent</span>[<span style=color:#268bd2>i</span>] = <span style=color:#859900>this</span>.<span style=color:#268bd2>find</span>(<span style=color:#859900>this</span>.<span style=color:#268bd2>parent</span>[<span style=color:#268bd2>i</span>]); <span style=color:#93a1a1;font-style:italic>// Path compression
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        <span style=color:#859900>return</span> <span style=color:#859900>this</span>.<span style=color:#268bd2>parent</span>[<span style=color:#268bd2>i</span>];
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>union</span>(<span style=color:#268bd2>i</span>, <span style=color:#268bd2>j</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>const</span> <span style=color:#268bd2>rootI</span> = <span style=color:#859900>this</span>.<span style=color:#268bd2>find</span>(<span style=color:#268bd2>i</span>);
+</span></span><span style=display:flex><span>        <span style=color:#859900>const</span> <span style=color:#268bd2>rootJ</span> = <span style=color:#859900>this</span>.<span style=color:#268bd2>find</span>(<span style=color:#268bd2>j</span>);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>rootI</span> !== <span style=color:#268bd2>rootJ</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#93a1a1;font-style:italic>// Union by rank
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#859900>if</span> (<span style=color:#859900>this</span>.<span style=color:#268bd2>rank</span>[<span style=color:#268bd2>rootI</span>] &lt; <span style=color:#859900>this</span>.<span style=color:#268bd2>rank</span>[<span style=color:#268bd2>rootJ</span>]) {
+</span></span><span style=display:flex><span>                <span style=color:#859900>this</span>.<span style=color:#268bd2>parent</span>[<span style=color:#268bd2>rootI</span>] = <span style=color:#268bd2>rootJ</span>;
+</span></span><span style=display:flex><span>            } <span style=color:#859900>else</span> <span style=color:#859900>if</span> (<span style=color:#859900>this</span>.<span style=color:#268bd2>rank</span>[<span style=color:#268bd2>rootI</span>] &gt; <span style=color:#859900>this</span>.<span style=color:#268bd2>rank</span>[<span style=color:#268bd2>rootJ</span>]) {
+</span></span><span style=display:flex><span>                <span style=color:#859900>this</span>.<span style=color:#268bd2>parent</span>[<span style=color:#268bd2>rootJ</span>] = <span style=color:#268bd2>rootI</span>;
+</span></span><span style=display:flex><span>            } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>                <span style=color:#859900>this</span>.<span style=color:#268bd2>parent</span>[<span style=color:#268bd2>rootJ</span>] = <span style=color:#268bd2>rootI</span>;
+</span></span><span style=display:flex><span>                <span style=color:#859900>this</span>.<span style=color:#268bd2>rank</span>[<span style=color:#268bd2>rootI</span>]++;
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span> <span style=color:#859900;font-weight:700>true</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#859900;font-weight:700>false</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>function</span> <span style=color:#268bd2>kruskalAlgorithm</span>(<span style=color:#268bd2>numVertices</span>, <span style=color:#268bd2>edges</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// 1. Sort all edges by their weights
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#268bd2>edges</span>.<span style=color:#268bd2>sort</span>((<span style=color:#268bd2>a</span>, <span style=color:#268bd2>b</span>) =&gt; <span style=color:#268bd2>a</span>[<span style=color:#2aa198;font-weight:700>0</span>] - <span style=color:#268bd2>b</span>[<span style=color:#2aa198;font-weight:700>0</span>]); <span style=color:#93a1a1;font-style:italic>// Edges format: [weight, u, v]
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    
+</span></span><span style=display:flex><span>    <span style=color:#859900>const</span> <span style=color:#268bd2>dsu</span> = <span style=color:#859900>new</span> <span style=color:#268bd2>DSU</span>(<span style=color:#268bd2>numVertices</span>);
+</span></span><span style=display:flex><span>    <span style=color:#859900>const</span> <span style=color:#268bd2>mstEdges</span> = [];
+</span></span><span style=display:flex><span>    <span style=color:#859900>let</span> <span style=color:#268bd2>minCost</span> = <span style=color:#2aa198;font-weight:700>0</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900>let</span> <span style=color:#268bd2>numEdgesInMst</span> = <span style=color:#2aa198;font-weight:700>0</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// 2. Iterate through sorted edges
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900>for</span> (<span style=color:#859900>const</span> [<span style=color:#268bd2>weight</span>, <span style=color:#268bd2>u</span>, <span style=color:#268bd2>v</span>] <span style=color:#859900>of</span> <span style=color:#268bd2>edges</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>dsu</span>.<span style=color:#268bd2>union</span>(<span style=color:#268bd2>u</span>, <span style=color:#268bd2>v</span>)) { <span style=color:#93a1a1;font-style:italic>// If adding this edge does not form a cycle
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#268bd2>mstEdges</span>.<span style=color:#268bd2>push</span>([<span style=color:#268bd2>u</span>, <span style=color:#268bd2>v</span>, <span style=color:#268bd2>weight</span>]);
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>minCost</span> += <span style=color:#268bd2>weight</span>;
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>numEdgesInMst</span>++;
+</span></span><span style=display:flex><span>            
+</span></span><span style=display:flex><span>            <span style=color:#93a1a1;font-style:italic>// Optimization: If MST has V-1 edges, it&#39;s complete
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#859900>if</span> (<span style=color:#268bd2>numEdgesInMst</span> === <span style=color:#268bd2>numVertices</span> - <span style=color:#2aa198;font-weight:700>1</span>) {
+</span></span><span style=display:flex><span>                <span style=color:#859900>break</span>;
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// Check if all vertices were connected
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900>if</span> (<span style=color:#268bd2>numEdgesInMst</span> !== <span style=color:#268bd2>numVertices</span> - <span style=color:#2aa198;font-weight:700>1</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#2aa198>&#34;Graph is not connected, MST not possible&#34;</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> { <span style=color:#268bd2>mstEdges</span>, <span style=color:#268bd2>minCost</span> };
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const numVertices = 4; // for A, B, C, D (mapped to 0, 1, 2, 3)
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const edges = [
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     [1, 1, 2], // B-C, weight 1
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     [2, 0, 2], // A-C, weight 2
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     [4, 0, 1], // A-B, weight 4
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     [5, 1, 3], // B-D, weight 5
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     [8, 2, 3]  // C-D, weight 8
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// ];
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const { mstEdges, minCost } = kruskalAlgorithm(numVertices, edges);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// console.log(&#34;MST Edges:&#34;, mstEdges);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// console.log(&#34;Minimum Cost:&#34;, minCost); // Expected: 8
+</span></span></span></code></pre></div><h3 id=typescript>Typescript</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-typescript data-lang=typescript><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// Disjoint Set Union (DSU) helper class
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span><span style=color:#859900>class</span> <span style=color:#268bd2>DSU</span> {
+</span></span><span style=display:flex><span>    <span style=color:#859900>public</span> <span style=color:#268bd2>parent</span>: <span style=color:#859900;font-weight:700>number</span>[];
+</span></span><span style=display:flex><span>    <span style=color:#859900>public</span> <span style=color:#268bd2>rank</span>: <span style=color:#859900;font-weight:700>number</span>[];
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>constructor</span>(<span style=color:#268bd2>nNodes</span>: <span style=color:#859900;font-weight:700>number</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>parent</span> = <span style=color:#cb4b16>Array</span>.<span style=color:#859900>from</span>({ <span style=color:#268bd2>length</span>: <span style=color:#859900;font-weight:700>nNodes</span> }, (<span style=color:#268bd2>_</span>, <span style=color:#268bd2>i</span>) =&gt; <span style=color:#268bd2>i</span>);
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>rank</span> = <span style=color:#859900>new</span> <span style=color:#cb4b16>Array</span>(<span style=color:#268bd2>nNodes</span>).<span style=color:#268bd2>fill</span>(<span style=color:#2aa198;font-weight:700>0</span>);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>find</span>(<span style=color:#268bd2>i</span>: <span style=color:#859900;font-weight:700>number</span>): <span style=color:#859900;font-weight:700>number</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#859900>this</span>.<span style=color:#268bd2>parent</span>[<span style=color:#268bd2>i</span>] === <span style=color:#268bd2>i</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span> <span style=color:#268bd2>i</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>parent</span>[<span style=color:#268bd2>i</span>] = <span style=color:#859900>this</span>.<span style=color:#268bd2>find</span>(<span style=color:#859900>this</span>.<span style=color:#268bd2>parent</span>[<span style=color:#268bd2>i</span>]); <span style=color:#93a1a1;font-style:italic>// Path compression
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        <span style=color:#859900>return</span> <span style=color:#859900>this</span>.<span style=color:#268bd2>parent</span>[<span style=color:#268bd2>i</span>];
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>union</span>(<span style=color:#268bd2>i</span>: <span style=color:#859900;font-weight:700>number</span>, <span style=color:#268bd2>j</span>: <span style=color:#859900;font-weight:700>number</span>): <span style=color:#859900>boolean</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>const</span> <span style=color:#268bd2>rootI</span> = <span style=color:#859900>this</span>.<span style=color:#268bd2>find</span>(<span style=color:#268bd2>i</span>);
+</span></span><span style=display:flex><span>        <span style=color:#859900>const</span> <span style=color:#268bd2>rootJ</span> = <span style=color:#859900>this</span>.<span style=color:#268bd2>find</span>(<span style=color:#268bd2>j</span>);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>rootI</span> !== <span style=color:#268bd2>rootJ</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#93a1a1;font-style:italic>// Union by rank
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#859900>if</span> (<span style=color:#859900>this</span>.<span style=color:#268bd2>rank</span>[<span style=color:#268bd2>rootI</span>] &lt; <span style=color:#859900>this</span>.<span style=color:#268bd2>rank</span>[<span style=color:#268bd2>rootJ</span>]) {
+</span></span><span style=display:flex><span>                <span style=color:#859900>this</span>.<span style=color:#268bd2>parent</span>[<span style=color:#268bd2>rootI</span>] = <span style=color:#268bd2>rootJ</span>;
+</span></span><span style=display:flex><span>            } <span style=color:#859900>else</span> <span style=color:#859900>if</span> (<span style=color:#859900>this</span>.<span style=color:#268bd2>rank</span>[<span style=color:#268bd2>rootI</span>] &gt; <span style=color:#859900>this</span>.<span style=color:#268bd2>rank</span>[<span style=color:#268bd2>rootJ</span>]) {
+</span></span><span style=display:flex><span>                <span style=color:#859900>this</span>.<span style=color:#268bd2>parent</span>[<span style=color:#268bd2>rootJ</span>] = <span style=color:#268bd2>rootI</span>;
+</span></span><span style=display:flex><span>            } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>                <span style=color:#859900>this</span>.<span style=color:#268bd2>parent</span>[<span style=color:#268bd2>rootJ</span>] = <span style=color:#268bd2>rootI</span>;
+</span></span><span style=display:flex><span>                <span style=color:#859900>this</span>.<span style=color:#268bd2>rank</span>[<span style=color:#268bd2>rootI</span>]++;
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span> <span style=color:#859900;font-weight:700>true</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#859900;font-weight:700>false</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>type</span> <span style=color:#268bd2>Edge</span> = [<span style=color:#859900;font-weight:700>number</span>, <span style=color:#859900;font-weight:700>number</span>, <span style=color:#859900;font-weight:700>number</span>]; <span style=color:#93a1a1;font-style:italic>// [weight, u, v]
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#859900>function</span> <span style=color:#268bd2>kruskalAlgorithmTS</span>(<span style=color:#268bd2>numVertices</span>: <span style=color:#859900;font-weight:700>number</span>, <span style=color:#268bd2>edges</span>: <span style=color:#859900;font-weight:700>Edge</span>[]): { <span style=color:#268bd2>mstEdges</span>: <span style=color:#859900;font-weight:700>Edge</span>[]; <span style=color:#268bd2>minCost</span>: <span style=color:#859900;font-weight:700>number</span> } | <span style=color:#859900;font-weight:700>string</span> {
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// 1. Sort all edges by their weights
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#268bd2>edges</span>.<span style=color:#268bd2>sort</span>((<span style=color:#268bd2>a</span>, <span style=color:#268bd2>b</span>) =&gt; <span style=color:#268bd2>a</span>[<span style=color:#2aa198;font-weight:700>0</span>] - <span style=color:#268bd2>b</span>[<span style=color:#2aa198;font-weight:700>0</span>]);
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#859900>const</span> <span style=color:#268bd2>dsu</span> = <span style=color:#859900>new</span> <span style=color:#268bd2>DSU</span>(<span style=color:#268bd2>numVertices</span>);
+</span></span><span style=display:flex><span>    <span style=color:#859900>const</span> <span style=color:#268bd2>mstEdges</span>: <span style=color:#859900;font-weight:700>Edge</span>[] = [];
+</span></span><span style=display:flex><span>    <span style=color:#859900>let</span> <span style=color:#268bd2>minCost</span> = <span style=color:#2aa198;font-weight:700>0</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900>let</span> <span style=color:#268bd2>numEdgesInMst</span> = <span style=color:#2aa198;font-weight:700>0</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// 2. Iterate through sorted edges
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900>for</span> (<span style=color:#859900>const</span> [<span style=color:#268bd2>weight</span>, <span style=color:#268bd2>u</span>, <span style=color:#268bd2>v</span>] <span style=color:#859900>of</span> <span style=color:#268bd2>edges</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>dsu</span>.<span style=color:#268bd2>union</span>(<span style=color:#268bd2>u</span>, <span style=color:#268bd2>v</span>)) { <span style=color:#93a1a1;font-style:italic>// If adding this edge does not form a cycle
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#268bd2>mstEdges</span>.<span style=color:#268bd2>push</span>([<span style=color:#268bd2>u</span>, <span style=color:#268bd2>v</span>, <span style=color:#268bd2>weight</span>]);
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>minCost</span> += <span style=color:#268bd2>weight</span>;
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>numEdgesInMst</span>++;
+</span></span><span style=display:flex><span>            
+</span></span><span style=display:flex><span>            <span style=color:#93a1a1;font-style:italic>// Optimization: If MST has V-1 edges, it&#39;s complete
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#859900>if</span> (<span style=color:#268bd2>numEdgesInMst</span> === <span style=color:#268bd2>numVertices</span> - <span style=color:#2aa198;font-weight:700>1</span>) {
+</span></span><span style=display:flex><span>                <span style=color:#859900>break</span>;
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// Check if all vertices were connected
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900>if</span> (<span style=color:#268bd2>numEdgesInMst</span> !== <span style=color:#268bd2>numVertices</span> - <span style=color:#2aa198;font-weight:700>1</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#2aa198>&#34;Graph is not connected, MST not possible&#34;</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> { <span style=color:#268bd2>mstEdges</span>, <span style=color:#268bd2>minCost</span> };
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const numVerticesTS = 4; // for A, B, C, D (mapped to 0, 1, 2, 3)
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const edgesTS: Edge[] = [
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     [1, 1, 2], // B-C, weight 1
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     [2, 0, 2], // A-C, weight 2
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     [4, 0, 1], // A-B, weight 4
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     [5, 1, 3], // B-D, weight 5
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     [8, 2, 3]  // C-D, weight 8
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// ];
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const resultTS = kruskalAlgorithmTS(numVerticesTS, edgesTS);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// if (typeof resultTS !== &#39;string&#39;) {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     console.log(&#34;MST Edges:&#34;, resultTS.mstEdges);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     console.log(&#34;Minimum Cost:&#34;, resultTS.minCost); // Expected: 8
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// } else {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     console.log(resultTS);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// }
+</span></span></span></code></pre></div><h3 id=cpp>Cpp</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-cpp data-lang=cpp><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;vector&gt;</span><span style=color:#93a1a1;font-style:italic>
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;iostream&gt;</span><span style=color:#93a1a1;font-style:italic>
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;algorithm&gt;</span><span style=color:#93a1a1;font-style:italic> </span><span style=color:#93a1a1;font-style:italic>// For std::sort
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// Edge structure
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span><span style=color:#859900>struct</span> <span style=color:#cb4b16>Edge</span> {
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>weight</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>u</span>, <span style=color:#268bd2>v</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>bool</span> <span style=color:#859900>operator</span>&lt;(<span style=color:#859900>const</span> <span style=color:#268bd2>Edge</span>&amp; <span style=color:#268bd2>other</span>) <span style=color:#859900>const</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>weight</span> &lt; <span style=color:#268bd2>other</span>.<span style=color:#268bd2>weight</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>};
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// Disjoint Set Union (DSU) helper class
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span><span style=color:#859900>class</span> <span style=color:#cb4b16>DSU</span> {
+</span></span><span style=display:flex><span><span style=color:#859900>public</span>:
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>std</span>::<span style=color:#268bd2>vector</span>&lt;<span style=color:#859900;font-weight:700>int</span>&gt; <span style=color:#268bd2>parent</span>;
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>std</span>::<span style=color:#268bd2>vector</span>&lt;<span style=color:#859900;font-weight:700>int</span>&gt; <span style=color:#268bd2>rank</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>DSU</span>(<span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>n_nodes</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>parent</span>.<span style=color:#268bd2>resize</span>(<span style=color:#268bd2>n_nodes</span>);
+</span></span><span style=display:flex><span>        <span style=color:#859900>for</span> (<span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>i</span> = <span style=color:#2aa198;font-weight:700>0</span>; <span style=color:#268bd2>i</span> &lt; <span style=color:#268bd2>n_nodes</span>; ++<span style=color:#268bd2>i</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>parent</span>[<span style=color:#268bd2>i</span>] = <span style=color:#268bd2>i</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>rank</span>.<span style=color:#268bd2>assign</span>(<span style=color:#268bd2>n_nodes</span>, <span style=color:#2aa198;font-weight:700>0</span>);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>find</span>(<span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>i</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>parent</span>[<span style=color:#268bd2>i</span>] == <span style=color:#268bd2>i</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span> <span style=color:#268bd2>i</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>parent</span>[<span style=color:#268bd2>i</span>] = <span style=color:#268bd2>find</span>(<span style=color:#268bd2>parent</span>[<span style=color:#268bd2>i</span>]); <span style=color:#93a1a1;font-style:italic>// Path compression
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>bool</span> <span style=color:#268bd2>unite</span>(<span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>i</span>, <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>j</span>) { <span style=color:#93a1a1;font-style:italic>// Changed name from union to unite to avoid keyword conflict
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>root_i</span> = <span style=color:#268bd2>find</span>(<span style=color:#268bd2>i</span>);
+</span></span><span style=display:flex><span>        <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>root_j</span> = <span style=color:#268bd2>find</span>(<span style=color:#268bd2>j</span>);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>root_i</span> != <span style=color:#268bd2>root_j</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#93a1a1;font-style:italic>// Union by rank
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#859900>if</span> (<span style=color:#268bd2>rank</span>[<span style=color:#268bd2>root_i</span>] &lt; <span style=color:#268bd2>rank</span>[<span style=color:#268bd2>root_j</span>]) {
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>parent</span>[<span style=color:#268bd2>root_i</span>] = <span style=color:#268bd2>root_j</span>;
+</span></span><span style=display:flex><span>            } <span style=color:#859900>else</span> <span style=color:#859900>if</span> (<span style=color:#268bd2>rank</span>[<span style=color:#268bd2>root_i</span>] &gt; <span style=color:#268bd2>rank</span>[<span style=color:#268bd2>root_j</span>]) {
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>parent</span>[<span style=color:#268bd2>root_j</span>] = <span style=color:#268bd2>root_i</span>;
+</span></span><span style=display:flex><span>            } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>parent</span>[<span style=color:#268bd2>root_j</span>] = <span style=color:#268bd2>root_i</span>;
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>rank</span>[<span style=color:#268bd2>root_i</span>]++;
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span> <span style=color:#cb4b16>true</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#cb4b16>false</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>};
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#268bd2>std</span>::<span style=color:#268bd2>pair</span>&lt;<span style=color:#268bd2>std</span>::<span style=color:#268bd2>vector</span>&lt;<span style=color:#268bd2>Edge</span>&gt;, <span style=color:#859900;font-weight:700>int</span>&gt; <span style=color:#268bd2>kruskalAlgorithm</span>(<span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>num_vertices</span>, <span style=color:#268bd2>std</span>::<span style=color:#268bd2>vector</span>&lt;<span style=color:#268bd2>Edge</span>&gt; <span style=color:#268bd2>edges</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// 1. Sort all edges by their weights
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#268bd2>std</span>::<span style=color:#268bd2>sort</span>(<span style=color:#268bd2>edges</span>.<span style=color:#268bd2>begin</span>(), <span style=color:#268bd2>edges</span>.<span style=color:#268bd2>end</span>());
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>DSU</span> <span style=color:#268bd2>dsu</span>(<span style=color:#268bd2>num_vertices</span>);
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>std</span>::<span style=color:#268bd2>vector</span>&lt;<span style=color:#268bd2>Edge</span>&gt; <span style=color:#268bd2>mst_edges</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>min_cost</span> = <span style=color:#2aa198;font-weight:700>0</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>num_edges_in_mst</span> = <span style=color:#2aa198;font-weight:700>0</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// 2. Iterate through sorted edges
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900>for</span> (<span style=color:#859900>const</span> <span style=color:#859900>auto</span>&amp; <span style=color:#268bd2>edge</span> : <span style=color:#268bd2>edges</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>dsu</span>.<span style=color:#268bd2>unite</span>(<span style=color:#268bd2>edge</span>.<span style=color:#268bd2>u</span>, <span style=color:#268bd2>edge</span>.<span style=color:#268bd2>v</span>)) { <span style=color:#93a1a1;font-style:italic>// If adding this edge does not form a cycle
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#268bd2>mst_edges</span>.<span style=color:#268bd2>push_back</span>(<span style=color:#268bd2>edge</span>);
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>min_cost</span> += <span style=color:#268bd2>edge</span>.<span style=color:#268bd2>weight</span>;
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>num_edges_in_mst</span>++;
+</span></span><span style=display:flex><span>            
+</span></span><span style=display:flex><span>            <span style=color:#93a1a1;font-style:italic>// Optimization: If MST has V-1 edges, it&#39;s complete
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#859900>if</span> (<span style=color:#268bd2>num_edges_in_mst</span> == <span style=color:#268bd2>num_vertices</span> - <span style=color:#2aa198;font-weight:700>1</span>) {
+</span></span><span style=display:flex><span>                <span style=color:#859900>break</span>;
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// Check if all vertices were connected
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900>if</span> (<span style=color:#268bd2>num_edges_in_mst</span> != <span style=color:#268bd2>num_vertices</span> - <span style=color:#2aa198;font-weight:700>1</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic>// Return an empty MST and 0 cost, or throw an exception
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        <span style=color:#859900>return</span> {{}, -<span style=color:#2aa198;font-weight:700>1</span>}; 
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> {<span style=color:#268bd2>mst_edges</span>, <span style=color:#268bd2>min_cost</span>};
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// int main() {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     int num_vertices = 4; // for A, B, C, D (mapped to 0, 1, 2, 3)
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     std::vector&lt;Edge&gt; edges = {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         {1, 1, 2}, // B-C, weight 1
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         {2, 0, 2}, // A-C, weight 2
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         {4, 0, 1}, // A-B, weight 4
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         {5, 1, 3}, // B-D, weight 5
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         {8, 2, 3}  // C-D, weight 8
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     };
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     auto result = kruskalAlgorithm(num_vertices, edges);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     std::cout &lt;&lt; &#34;Minimum Cost: &#34; &lt;&lt; result.second &lt;&lt; std::endl; // 8
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     for(const auto&amp; edge : result.first) {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         std::cout &lt;&lt; edge.u &lt;&lt; &#34;-&#34; &lt;&lt; edge.v &lt;&lt; &#34; (&#34; &lt;&lt; edge.weight &lt;&lt; &#34;)&#34; &lt;&lt; std::endl;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     }
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     return 0;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// }
+</span></span></span></code></pre></div><h3 id=go>Go</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#dc322f;font-weight:700>package</span> <span style=color:#268bd2>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#2aa198>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// DSU (Disjoint Set Union) helper struct</span>
+</span></span><span style=display:flex><span><span style=color:#859900>type</span> <span style=color:#268bd2>DSU</span> <span style=color:#859900>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>parent</span> []<span style=color:#859900;font-weight:700>int</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>rank</span>   []<span style=color:#859900;font-weight:700>int</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>func</span> <span style=color:#268bd2>NewDSU</span>(<span style=color:#268bd2>nNodes</span> <span style=color:#859900;font-weight:700>int</span>) &lt;/<span style=color:#268bd2>em</span>&gt;<span style=color:#268bd2>DSU</span> {
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>parent</span> := <span style=color:#cb4b16>make</span>([]<span style=color:#859900;font-weight:700>int</span>, <span style=color:#268bd2>nNodes</span>)
+</span></span><span style=display:flex><span>    <span style=color:#859900>for</span> <span style=color:#268bd2>i</span> := <span style=color:#859900>range</span> <span style=color:#268bd2>parent</span> {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>parent</span>[<span style=color:#268bd2>i</span>] = <span style=color:#268bd2>i</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> &amp;<span style=color:#268bd2>DSU</span>{
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>parent</span>: <span style=color:#268bd2>parent</span>,
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>rank</span>:   <span style=color:#cb4b16>make</span>([]<span style=color:#859900;font-weight:700>int</span>, <span style=color:#268bd2>nNodes</span>),
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>func</span> (<span style=color:#268bd2>d</span> &lt;<span style=color:#268bd2>em</span>&gt;<span style=color:#268bd2>DSU</span>) <span style=color:#268bd2>Find</span>(<span style=color:#268bd2>i</span> <span style=color:#859900;font-weight:700>int</span>) <span style=color:#859900;font-weight:700>int</span> {
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> <span style=color:#268bd2>d</span>.<span style=color:#268bd2>parent</span>[<span style=color:#268bd2>i</span>] == <span style=color:#268bd2>i</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>i</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>d</span>.<span style=color:#268bd2>parent</span>[<span style=color:#268bd2>i</span>] = <span style=color:#268bd2>d</span>.<span style=color:#268bd2>Find</span>(<span style=color:#268bd2>d</span>.<span style=color:#268bd2>parent</span>[<span style=color:#268bd2>i</span>]) <span style=color:#93a1a1;font-style:italic>// Path compression</span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>d</span>.<span style=color:#268bd2>parent</span>[<span style=color:#268bd2>i</span>]
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>func</span> (<span style=color:#268bd2>d</span> &lt;/<span style=color:#268bd2>em</span>&gt;<span style=color:#268bd2>DSU</span>) <span style=color:#268bd2>Union</span>(<span style=color:#268bd2>i</span>, <span style=color:#268bd2>j</span> <span style=color:#859900;font-weight:700>int</span>) <span style=color:#859900;font-weight:700>bool</span> {
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>rootI</span> := <span style=color:#268bd2>d</span>.<span style=color:#268bd2>Find</span>(<span style=color:#268bd2>i</span>)
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>rootJ</span> := <span style=color:#268bd2>d</span>.<span style=color:#268bd2>Find</span>(<span style=color:#268bd2>j</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> <span style=color:#268bd2>rootI</span> != <span style=color:#268bd2>rootJ</span> {
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic>// Union by rank</span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> <span style=color:#268bd2>d</span>.<span style=color:#268bd2>rank</span>[<span style=color:#268bd2>rootI</span>] &lt; <span style=color:#268bd2>d</span>.<span style=color:#268bd2>rank</span>[<span style=color:#268bd2>rootJ</span>] {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>d</span>.<span style=color:#268bd2>parent</span>[<span style=color:#268bd2>rootI</span>] = <span style=color:#268bd2>rootJ</span>
+</span></span><span style=display:flex><span>        } <span style=color:#859900>else</span> <span style=color:#859900>if</span> <span style=color:#268bd2>d</span>.<span style=color:#268bd2>rank</span>[<span style=color:#268bd2>rootI</span>] &gt; <span style=color:#268bd2>d</span>.<span style=color:#268bd2>rank</span>[<span style=color:#268bd2>rootJ</span>] {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>d</span>.<span style=color:#268bd2>parent</span>[<span style=color:#268bd2>rootJ</span>] = <span style=color:#268bd2>rootI</span>
+</span></span><span style=display:flex><span>        } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>d</span>.<span style=color:#268bd2>parent</span>[<span style=color:#268bd2>rootJ</span>] = <span style=color:#268bd2>rootI</span>
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>d</span>.<span style=color:#268bd2>rank</span>[<span style=color:#268bd2>rootI</span>]++
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#859900;font-weight:700>true</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#859900;font-weight:700>false</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// Edge structure</span>
+</span></span><span style=display:flex><span><span style=color:#859900>type</span> <span style=color:#268bd2>KruskalEdge</span> <span style=color:#859900>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>Weight</span> <span style=color:#859900;font-weight:700>int</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>U</span>, <span style=color:#268bd2>V</span>   <span style=color:#859900;font-weight:700>int</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// Custom sort for Kruskal&#39;s edges</span>
+</span></span><span style=display:flex><span><span style=color:#859900>type</span> <span style=color:#268bd2>ByWeight</span> []<span style=color:#268bd2>KruskalEdge</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>func</span> (<span style=color:#268bd2>a</span> <span style=color:#268bd2>ByWeight</span>) <span style=color:#268bd2>Len</span>() <span style=color:#859900;font-weight:700>int</span>           { <span style=color:#859900>return</span> <span style=color:#cb4b16>len</span>(<span style=color:#268bd2>a</span>) }
+</span></span><span style=display:flex><span><span style=color:#859900>func</span> (<span style=color:#268bd2>a</span> <span style=color:#268bd2>ByWeight</span>) <span style=color:#268bd2>Swap</span>(<span style=color:#268bd2>i</span>, <span style=color:#268bd2>j</span> <span style=color:#859900;font-weight:700>int</span>)      { <span style=color:#268bd2>a</span>[<span style=color:#268bd2>i</span>], <span style=color:#268bd2>a</span>[<span style=color:#268bd2>j</span>] = <span style=color:#268bd2>a</span>[<span style=color:#268bd2>j</span>], <span style=color:#268bd2>a</span>[<span style=color:#268bd2>i</span>] }
+</span></span><span style=display:flex><span><span style=color:#859900>func</span> (<span style=color:#268bd2>a</span> <span style=color:#268bd2>ByWeight</span>) <span style=color:#268bd2>Less</span>(<span style=color:#268bd2>i</span>, <span style=color:#268bd2>j</span> <span style=color:#859900;font-weight:700>int</span>) <span style=color:#859900;font-weight:700>bool</span> { <span style=color:#859900>return</span> <span style=color:#268bd2>a</span>[<span style=color:#268bd2>i</span>].<span style=color:#268bd2>Weight</span> &lt; <span style=color:#268bd2>a</span>[<span style=color:#268bd2>j</span>].<span style=color:#268bd2>Weight</span> }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>func</span> <span style=color:#268bd2>kruskalAlgorithm</span>(<span style=color:#268bd2>numVertices</span> <span style=color:#859900;font-weight:700>int</span>, <span style=color:#268bd2>edges</span> []<span style=color:#268bd2>KruskalEdge</span>) ([]<span style=color:#268bd2>KruskalEdge</span>, <span style=color:#859900;font-weight:700>int</span>, <span style=color:#859900;font-weight:700>error</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// 1. Sort all edges by their weights</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>sort</span>.<span style=color:#268bd2>Sort</span>(<span style=color:#268bd2>ByWeight</span>(<span style=color:#268bd2>edges</span>))
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>dsu</span> := <span style=color:#268bd2>NewDSU</span>(<span style=color:#268bd2>numVertices</span>)
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>mstEdges</span> := []<span style=color:#268bd2>KruskalEdge</span>{}
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>minCost</span> := <span style=color:#2aa198;font-weight:700>0</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>numEdgesInMst</span> := <span style=color:#2aa198;font-weight:700>0</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// 2. Iterate through sorted edges</span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>for</span> <span style=color:#268bd2>_</span>, <span style=color:#268bd2>edge</span> := <span style=color:#859900>range</span> <span style=color:#268bd2>edges</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> <span style=color:#268bd2>dsu</span>.<span style=color:#268bd2>Union</span>(<span style=color:#268bd2>edge</span>.<span style=color:#268bd2>U</span>, <span style=color:#268bd2>edge</span>.<span style=color:#268bd2>V</span>) { <span style=color:#93a1a1;font-style:italic>// If adding this edge does not form a cycle</span>
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>mstEdges</span> = <span style=color:#cb4b16>append</span>(<span style=color:#268bd2>mstEdges</span>, <span style=color:#268bd2>edge</span>)
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>minCost</span> += <span style=color:#268bd2>edge</span>.<span style=color:#268bd2>Weight</span>
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>numEdgesInMst</span>++
+</span></span><span style=display:flex><span>            
+</span></span><span style=display:flex><span>            <span style=color:#93a1a1;font-style:italic>// Optimization: If MST has V-1 edges, it&#39;s complete</span>
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> <span style=color:#268bd2>numEdgesInMst</span> == <span style=color:#268bd2>numVertices</span> - <span style=color:#2aa198;font-weight:700>1</span> {
+</span></span><span style=display:flex><span>                <span style=color:#859900>break</span>
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// Check if all vertices were connected</span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> <span style=color:#268bd2>numEdgesInMst</span> != <span style=color:#268bd2>numVertices</span> - <span style=color:#2aa198;font-weight:700>1</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#859900;font-weight:700>nil</span>, <span style=color:#2aa198;font-weight:700>0</span>, <span style=color:#268bd2>fmt</span>.<span style=color:#268bd2>Errorf</span>(<span style=color:#2aa198>&#34;Graph is not connected, MST not possible&#34;</span>)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>mstEdges</span>, <span style=color:#268bd2>minCost</span>, <span style=color:#859900;font-weight:700>nil</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// func main() {</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     numVertices := 4 // for A, B, C, D (mapped to 0, 1, 2, 3)</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     edges := []KruskalEdge{</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         {Weight: 1, U: 1, V: 2}, // B-C</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         {Weight: 2, U: 0, V: 2}, // A-C</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         {Weight: 4, U: 0, V: 1}, // A-B</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         {Weight: 5, U: 1, V: 3}, // B-D</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         {Weight: 8, U: 2, V: 3}, // C-D</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     }</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     mst, cost, err := kruskalAlgorithm(numVertices, edges)</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     if err != nil {</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         fmt.Println(err)</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     } else {</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         fmt.Println(&#34;Minimum Cost:&#34;, cost) // 8</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         for _, edge := range mst {</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//             fmt.Printf(&#34;%d-%d (%d)\n&#34;, edge.U, edge.V, edge.Weight)</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         }</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     }</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// }</span>
+</span></span></code></pre></div><h3 id=d>D</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-d data-lang=d><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>std.stdio</span>;
+</span></span><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>std.array</span>;
+</span></span><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>std.algorithm</span>; <span style=color:#93a1a1;font-style:italic>// For std.algorithm.sort
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>std.range</span>; <span style=color:#93a1a1;font-style:italic>// For std.range.iota
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// DSU (Disjoint Set Union) helper class
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span><span style=color:#859900>class</span> <span style=color:#cb4b16>DSU</span> {
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span>[] <span style=color:#268bd2>parent</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span>[] <span style=color:#268bd2>rank</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>this</span>(<span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>nNodes</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>parent</span> = <span style=color:#268bd2>iota</span>(<span style=color:#2aa198;font-weight:700>0</span>, <span style=color:#268bd2>nNodes</span>).<span style=color:#268bd2>array</span>;
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>rank</span> = <span style=color:#859900>new</span> <span style=color:#859900;font-weight:700>int</span>[<span style=color:#268bd2>nNodes</span>].<span style=color:#268bd2>replicate</span>(<span style=color:#2aa198;font-weight:700>0</span>).<span style=color:#268bd2>array</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>find</span>(<span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>i</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>parent</span>[<span style=color:#268bd2>i</span>] == <span style=color:#268bd2>i</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span> <span style=color:#268bd2>i</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>parent</span>[<span style=color:#268bd2>i</span>] = <span style=color:#268bd2>find</span>(<span style=color:#268bd2>parent</span>[<span style=color:#268bd2>i</span>]); <span style=color:#93a1a1;font-style:italic>// Path compression
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        <span style=color:#859900>return</span> <span style=color:#268bd2>parent</span>[<span style=color:#268bd2>i</span>];
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>bool</span> <span style=color:#268bd2>unionSets</span>(<span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>i</span>, <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>j</span>) { <span style=color:#93a1a1;font-style:italic>// Changed name from union to unionSets to avoid keyword conflict
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>rootI</span> = <span style=color:#268bd2>find</span>(<span style=color:#268bd2>i</span>);
+</span></span><span style=display:flex><span>        <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>rootJ</span> = <span style=color:#268bd2>find</span>(<span style=color:#268bd2>j</span>);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>rootI</span> != <span style=color:#268bd2>rootJ</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#93a1a1;font-style:italic>// Union by rank
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#859900>if</span> (<span style=color:#268bd2>rank</span>[<span style=color:#268bd2>rootI</span>] &lt; <span style=color:#268bd2>rank</span>[<span style=color:#268bd2>rootJ</span>]) {
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>parent</span>[<span style=color:#268bd2>rootI</span>] = <span style=color:#268bd2>rootJ</span>;
+</span></span><span style=display:flex><span>            } <span style=color:#859900>else</span> <span style=color:#859900>if</span> (<span style=color:#268bd2>rank</span>[<span style=color:#268bd2>rootI</span>] &gt; <span style=color:#268bd2>rank</span>[<span style=color:#268bd2>rootJ</span>]) {
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>parent</span>[<span style=color:#268bd2>rootJ</span>] = <span style=color:#268bd2>rootI</span>;
+</span></span><span style=display:flex><span>            } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>parent</span>[<span style=color:#268bd2>rootJ</span>] = <span style=color:#268bd2>rootI</span>;
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>rank</span>[<span style=color:#268bd2>rootI</span>]++;
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span> <span style=color:#859900;font-weight:700>true</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#859900;font-weight:700>false</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// Edge structure
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span><span style=color:#859900>struct</span> <span style=color:#cb4b16>KruskalEdge</span> {
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>weight</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>u</span>, <span style=color:#268bd2>v</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>opCmp</span>(<span style=color:#859900>const</span> <span style=color:#268bd2>KruskalEdge</span> <span style=color:#268bd2>other</span>) <span style=color:#859900>const</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#859900>this</span>.<span style=color:#268bd2>weight</span>.<span style=color:#268bd2>cmp</span>(<span style=color:#268bd2>other</span>.<span style=color:#268bd2>weight</span>);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#268bd2>Tuple</span>!(<span style=color:#268bd2>KruskalEdge</span>[], <span style=color:#859900;font-weight:700>int</span>, <span style=color:#cb4b16>string</span>) <span style=color:#268bd2>kruskalAlgorithm</span>(<span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>numVertices</span>, <span style=color:#268bd2>KruskalEdge</span>[] <span style=color:#268bd2>edges</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// 1. Sort all edges by their weights
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#268bd2>edges</span>.<span style=color:#268bd2>sort</span>!((<span style=color:#268bd2>a</span>, <span style=color:#268bd2>b</span>) =&gt; <span style=color:#268bd2>a</span>.<span style=color:#268bd2>weight</span> &lt; <span style=color:#268bd2>b</span>.<span style=color:#268bd2>weight</span>);
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#859900>auto</span> <span style=color:#268bd2>dsu</span> = <span style=color:#859900>new</span> <span style=color:#268bd2>DSU</span>(<span style=color:#268bd2>numVertices</span>);
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>KruskalEdge</span>[] <span style=color:#268bd2>mstEdges</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>minCost</span> = <span style=color:#2aa198;font-weight:700>0</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>numEdgesInMst</span> = <span style=color:#2aa198;font-weight:700>0</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// 2. Iterate through sorted edges
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900>foreach</span> (<span style=color:#268bd2>edge</span>; <span style=color:#268bd2>edges</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>dsu</span>.<span style=color:#268bd2>unionSets</span>(<span style=color:#268bd2>edge</span>.<span style=color:#268bd2>u</span>, <span style=color:#268bd2>edge</span>.<span style=color:#268bd2>v</span>)) { <span style=color:#93a1a1;font-style:italic>// If adding this edge does not form a cycle
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#268bd2>mstEdges</span> ~= <span style=color:#268bd2>edge</span>;
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>minCost</span> += <span style=color:#268bd2>edge</span>.<span style=color:#268bd2>weight</span>;
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>numEdgesInMst</span>++;
+</span></span><span style=display:flex><span>            
+</span></span><span style=display:flex><span>            <span style=color:#93a1a1;font-style:italic>// Optimization: If MST has V-1 edges, it&#39;s complete
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#859900>if</span> (<span style=color:#268bd2>numEdgesInMst</span> == <span style=color:#268bd2>numVertices</span> - <span style=color:#2aa198;font-weight:700>1</span>) {
+</span></span><span style=display:flex><span>                <span style=color:#859900>break</span>;
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// Check if all vertices were connected
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900>if</span> (<span style=color:#268bd2>numEdgesInMst</span> != <span style=color:#268bd2>numVertices</span> - <span style=color:#2aa198;font-weight:700>1</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#859900>typeof</span>(<span style=color:#859900>return</span>)(<span style=color:#859900;font-weight:700>null</span>, <span style=color:#2aa198;font-weight:700>0</span>, <span style=color:#2aa198>&#34;Graph is not connected, MST not possible&#34;</span>);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#859900>typeof</span>(<span style=color:#859900>return</span>)(<span style=color:#268bd2>mstEdges</span>, <span style=color:#268bd2>minCost</span>, <span style=color:#2aa198>&#34;&#34;</span>);
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// void main() {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     int numVertices = 4; // for A, B, C, D (mapped to 0, 1, 2, 3)
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     KruskalEdge[] edges = [
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         KruskalEdge(1, 1, 2), // B-C
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         KruskalEdge(2, 0, 2), // A-C
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         KruskalEdge(4, 0, 1), // A-B
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         KruskalEdge(5, 1, 3), // B-D
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         KruskalEdge(8, 2, 3)  // C-D
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     ];
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     auto result = kruskalAlgorithm(numVertices, edges);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     if (result.error.length &gt; 0) {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         writeln(result.error);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     } else {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         writeln(&#34;Minimum Cost: &#34;, result.minCost); // 8
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         foreach (edge; result.mstEdges) {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//             writefln(&#34;%s-%s (%s)&#34;, edge.u, edge.v, edge.weight);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         }
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     }
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// }
+</span></span></span></code></pre></div><h2 id=applications>Applications</h2><h3 id=application>Application</h3><p><code>Kruskal's Algorithm</code> is widely used for finding Minimum Spanning Trees in various applications, especially when the graph is sparse (has relatively few edges) or when a simple, globally optimal approach is preferred.</p><ul><li><strong>Network Design:</strong> Laying out telecommunication or power grids with minimum cable/wire length.</li><li><strong>Clustering:</strong> In machine learning and data analysis, for grouping data points into clusters by building a graph where nodes are data points and edge weights are dissimilarity measures.</li><li><strong>Circuit Design:</strong> Optimizing connections on printed circuit boards to minimize wire usage.</li><li><strong>Image Processing:</strong> Image segmentation where pixels are nodes and edge weights represent dissimilarity between adjacent pixels.</li><li><strong>Approximation Algorithms:</strong> Used as a subroutine in some approximation algorithms for NP-hard problems, such as the Traveling Salesperson Problem.</li></ul></div></article><div class=navigation style="margin-top:5rem;display:flex;justify-content:space-between;border-top:1px solid var(--border);padding-top:2rem"><a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/algorithms/graph_shortest_paths_mst/prim/ class=nav-btn>← Previous</a>
+<a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/algorithms/graph_shortest_paths_mst/ class=nav-btn>Up</a>
+<a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/algorithms/graph_shortest_paths_mst/floyd_warshall/ class=nav-btn>Next →</a></div></main><footer class=footer><p>Built with Hugo. No scripts. No tracking. Just the truth.</p></footer><script>document.addEventListener("DOMContentLoaded",function(){const n=document.body,s=document.createTreeWalker(n,NodeFilter.SHOW_TEXT,null,!1);let e;const t=[];for(;e=s.nextNode();)e.nodeValue.includes("[-]")&&t.push(e);t.forEach(e=>{const t=document.createElement("span");t.innerHTML=e.nodeValue.replace(/\[-\]/g,'<span class="started-icon" title="Started"></span>'),e.parentNode.replaceChild(t,e)})})</script><script>const body=document.getElementById("theme-body"),btn=document.getElementById("theme-toggle"),currentTheme=localStorage.getItem("theme");function updateButtonText(){body.classList.contains("theme-terminal")?btn.textContent="Light Mode":btn.textContent="Dark Mode"}currentTheme==="terminal"&&body.classList.add("theme-terminal"),updateButtonText(),btn.addEventListener("click",()=>{body.classList.toggle("theme-terminal"),updateButtonText();let e="natural";body.classList.contains("theme-terminal")&&(e="terminal"),localStorage.setItem("theme",e)})</script></body></html>

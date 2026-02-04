@@ -1,0 +1,768 @@
+<!doctype html><html lang=en-us><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Pairing Heap | SDET Interview Preparation Kit</title><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/css/style.css><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/css/terminal.css><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel=stylesheet><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/lib/katex/katex.min.css><script defer src=https://notxkcd.github.io/sdet-prep-site/lib/katex/katex.min.js></script><script defer src=https://notxkcd.github.io/sdet-prep-site/lib/katex/contrib/auto-render.min.js onload=renderMathInElement(document.body)></script><script>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1}]})})</script></head><body id=theme-body><button id=theme-toggle>Switch Theme</button><header><nav><ul><li><a href=https://notxkcd.github.io/sdet-prep-site/>Index</a></li></ul></nav><div class=site-breadcrumb><a href=https://notxkcd.github.io/sdet-prep-site/>Home</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/>SDET Interview Dashboard</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/>42 Algorithms & 42 Data Structures</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/data_structures/>Data Structures</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/data_structures/specialized/>Specialized</a>
+<span>/</span> Pairing Heap</div></header><main><article><h1>Pairing Heap</h1><div class=content-body style=margin-top:2rem><p>A <code>Pairing Heap</code> is a simple, efficient, and highly practical type of <code>mergeable heap</code> data structure. It supports operations like <code>insert</code>, <code>extract-min</code>, <code>decrease-key</code>, and <code>merge</code> with excellent amortized time complexities, often outperforming <code>Fibonacci Heaps</code> in practice despite having worse theoretical worst-case bounds for some operations.</p><p>Its &ldquo;<code>pairing</code>&rdquo; property comes from how it combines sub-heaps during its <code>merge</code> operation, resulting in a relatively flat tree structure that is easy to implement.</p><h2 id=how-it-works>How it Works</h2><h3 id=how-it-works-expanded>How it Works (Expanded)</h3><p>A <code>Pairing Heap</code> is a <code>min-heap</code> (or <code>max-heap</code>) ordered <code>multi-way tree</code>. Each <code>node</code> contains a <code>key</code> and a <code>list</code> of its children. There are no explicit <code>rank</code> or <code>npl (null path length)</code> values. Its efficiency comes from a specific <code>merge</code> operation that is used as a building block for most other operations.</p><hr><p>Conceptual Pairing Heap Node:</p><pre><code>  (Key=10)
+ / | \
+</code></pre><p>(20)(30)(40) (Children list)</p><h2 id=implementation>Implementation</h2><h3 id=python>Python</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#859900>class</span> <span style=color:#cb4b16>PairingNode</span>:
+</span></span><span style=display:flex><span>    <span style=color:#859900>def</span> <span style=color:#268bd2>__init__</span>(<span style=color:#cb4b16>self</span>, <span style=color:#268bd2>key</span>):
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>key</span> = <span style=color:#268bd2>key</span>
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>child</span> = <span style=color:#859900;font-weight:700>None</span>    <span style=color:#93a1a1;font-style:italic># Pointer to first child</span>
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>sibling</span> = <span style=color:#859900;font-weight:700>None</span>  <span style=color:#93a1a1;font-style:italic># Pointer to next sibling (in child list)</span>
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>prev</span> = <span style=color:#859900;font-weight:700>None</span>     <span style=color:#93a1a1;font-style:italic># Pointer to previous sibling/parent (for decrease-key)</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>class</span> <span style=color:#cb4b16>PairingHeap</span>:
+</span></span><span style=display:flex><span>    <span style=color:#859900>def</span> <span style=color:#268bd2>__init__</span>(<span style=color:#cb4b16>self</span>):
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>root</span> = <span style=color:#859900;font-weight:700>None</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>def</span> <span style=color:#268bd2>_merge_recursive</span>(<span style=color:#cb4b16>self</span>, <span style=color:#268bd2>h1</span>, <span style=color:#268bd2>h2</span>):
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> <span style=color:#859900>not</span> <span style=color:#268bd2>h1</span>:
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span> <span style=color:#268bd2>h2</span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> <span style=color:#859900>not</span> <span style=color:#268bd2>h2</span>:
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span> <span style=color:#268bd2>h1</span>
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic># Ensure h1.key &lt;= h2.key (min-heap property)</span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> <span style=color:#268bd2>h1</span>.<span style=color:#268bd2>key</span> &gt; <span style=color:#268bd2>h2</span>.<span style=color:#268bd2>key</span>:
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>h1</span>, <span style=color:#268bd2>h2</span> = <span style=color:#268bd2>h2</span>, <span style=color:#268bd2>h1</span>
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic># Make h2 a child of h1</span>
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>h2</span>.<span style=color:#268bd2>prev</span> = <span style=color:#268bd2>h1</span>
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>h2</span>.<span style=color:#268bd2>sibling</span> = <span style=color:#268bd2>h1</span>.<span style=color:#268bd2>child</span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> <span style=color:#268bd2>h1</span>.<span style=color:#268bd2>child</span>:
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>h1</span>.<span style=color:#268bd2>child</span>.<span style=color:#268bd2>prev</span> = <span style=color:#268bd2>h2</span>
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>h1</span>.<span style=color:#268bd2>child</span> = <span style=color:#268bd2>h2</span>
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>h1</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>def</span> <span style=color:#268bd2>insert</span>(<span style=color:#cb4b16>self</span>, <span style=color:#268bd2>key</span>):
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>new_node</span> = <span style=color:#268bd2>PairingNode</span>(<span style=color:#268bd2>key</span>)
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>root</span> = <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>_merge_recursive</span>(<span style=color:#cb4b16>self</span>.<span style=color:#268bd2>root</span>, <span style=color:#268bd2>new_node</span>)
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>new_node</span> <span style=color:#93a1a1;font-style:italic># Return new_node for decrease_key reference</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>def</span> <span style=color:#268bd2>extract_min</span>(<span style=color:#cb4b16>self</span>):
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> <span style=color:#859900>not</span> <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>root</span>:
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span> <span style=color:#859900;font-weight:700>None</span>
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>min_key</span> = <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>root</span>.<span style=color:#268bd2>key</span>
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic># Merge children of the root</span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>root</span>.<span style=color:#268bd2>child</span>:
+</span></span><span style=display:flex><span>            <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>_merge_pairs</span>(<span style=color:#cb4b16>self</span>.<span style=color:#268bd2>root</span>.<span style=color:#268bd2>child</span>)
+</span></span><span style=display:flex><span>        <span style=color:#859900>else</span>:
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>new_root</span> = <span style=color:#859900;font-weight:700>None</span>
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic># Clear old root (in Python, GC handles it)</span>
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic># self.root = None # For explicit deletion</span>
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>root</span> = <span style=color:#268bd2>new_root</span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>min_key</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>def</span> <span style=color:#268bd2>_merge_pairs</span>(<span style=color:#cb4b16>self</span>, <span style=color:#268bd2>child_list_head</span>):
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> <span style=color:#859900>not</span> <span style=color:#268bd2>child_list_head</span> <span style=color:#859900>or</span> <span style=color:#859900>not</span> <span style=color:#268bd2>child_list_head</span>.<span style=color:#268bd2>sibling</span>:
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span> <span style=color:#268bd2>child_list_head</span>
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic># First pass: merge children in pairs</span>
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>h1</span> = <span style=color:#268bd2>child_list_head</span>
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>h2</span> = <span style=color:#268bd2>child_list_head</span>.<span style=color:#268bd2>sibling</span>
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>h3</span> = <span style=color:#268bd2>h2</span>.<span style=color:#268bd2>sibling</span> <span style=color:#93a1a1;font-style:italic># Remaining list</span>
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>h1</span>.<span style=color:#268bd2>prev</span> = <span style=color:#859900;font-weight:700>None</span>
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>h2</span>.<span style=color:#268bd2>prev</span> = <span style=color:#859900;font-weight:700>None</span>
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>h1</span>.<span style=color:#268bd2>sibling</span> = <span style=color:#859900;font-weight:700>None</span> <span style=color:#93a1a1;font-style:italic># Detach h1 from h2</span>
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>h2</span>.<span style=color:#268bd2>sibling</span> = <span style=color:#859900;font-weight:700>None</span> <span style=color:#93a1a1;font-style:italic># Detach h2 from h3 (if h3 exists) </span>
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>_merge_recursive</span>(<span style=color:#cb4b16>self</span>.<span style=color:#268bd2>_merge_recursive</span>(<span style=color:#268bd2>h1</span>, <span style=color:#268bd2>h2</span>), <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>_merge_pairs</span>(<span style=color:#268bd2>h3</span>))
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>def</span> <span style=color:#268bd2>decrease_key</span>(<span style=color:#cb4b16>self</span>, <span style=color:#268bd2>node</span>, <span style=color:#268bd2>new_key</span>):
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> <span style=color:#859900>not</span> <span style=color:#268bd2>node</span> <span style=color:#859900>or</span> <span style=color:#268bd2>new_key</span> &gt; <span style=color:#268bd2>node</span>.<span style=color:#268bd2>key</span>:
+</span></span><span style=display:flex><span>            <span style=color:#859900>raise</span> <span style=color:#268bd2>ValueError</span>(<span style=color:#2aa198>&#34;New key is greater than current key or node is invalid.&#34;</span>)
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>node</span>.<span style=color:#268bd2>key</span> = <span style=color:#268bd2>new_key</span>
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic># If node is not the root and its key is smaller than its parent&#39;s key</span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> <span style=color:#268bd2>node</span>.<span style=color:#268bd2>prev</span>: <span style=color:#93a1a1;font-style:italic># node.prev could be parent or sibling</span>
+</span></span><span style=display:flex><span>            <span style=color:#93a1a1;font-style:italic># Cut node from its parent/sibling list</span>
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> <span style=color:#268bd2>node</span>.<span style=color:#268bd2>prev</span>.<span style=color:#268bd2>child</span> == <span style=color:#268bd2>node</span>: <span style=color:#93a1a1;font-style:italic># node is first child</span>
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>node</span>.<span style=color:#268bd2>prev</span>.<span style=color:#268bd2>child</span> = <span style=color:#268bd2>node</span>.<span style=color:#268bd2>sibling</span>
+</span></span><span style=display:flex><span>            <span style=color:#859900>else</span>: <span style=color:#93a1a1;font-style:italic># node is a sibling</span>
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>node</span>.<span style=color:#268bd2>prev</span>.<span style=color:#268bd2>sibling</span> = <span style=color:#268bd2>node</span>.<span style=color:#268bd2>sibling</span>
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> <span style=color:#268bd2>node</span>.<span style=color:#268bd2>sibling</span>:
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>node</span>.<span style=color:#268bd2>sibling</span>.<span style=color:#268bd2>prev</span> = <span style=color:#268bd2>node</span>.<span style=color:#268bd2>prev</span>
+</span></span><span style=display:flex><span>            
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>node</span>.<span style=color:#268bd2>prev</span> = <span style=color:#859900;font-weight:700>None</span>
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>node</span>.<span style=color:#268bd2>sibling</span> = <span style=color:#859900;font-weight:700>None</span>
+</span></span><span style=display:flex><span>            
+</span></span><span style=display:flex><span>            <span style=color:#93a1a1;font-style:italic># Merge the cut node with the main heap</span>
+</span></span><span style=display:flex><span>            <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>root</span> = <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>_merge_recursive</span>(<span style=color:#cb4b16>self</span>.<span style=color:#268bd2>root</span>, <span style=color:#268bd2>node</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>def</span> <span style=color:#268bd2>find_min</span>(<span style=color:#cb4b16>self</span>):
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>root</span>.<span style=color:#268bd2>key</span> <span style=color:#859900>if</span> <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>root</span> <span style=color:#859900>else</span> <span style=color:#859900;font-weight:700>None</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>def</span> <span style=color:#268bd2>merge</span>(<span style=color:#cb4b16>self</span>, <span style=color:#268bd2>other_heap</span>):
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>root</span> = <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>_merge_recursive</span>(<span style=color:#cb4b16>self</span>.<span style=color:#268bd2>root</span>, <span style=color:#268bd2>other_heap</span>.<span style=color:#268bd2>root</span>)
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>other_heap</span>.<span style=color:#268bd2>root</span> = <span style=color:#859900;font-weight:700>None</span> <span style=color:#93a1a1;font-style:italic># Other heap is now empty</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># Example Usage:</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># ph = PairingHeap()</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># node1 = ph.insert(10)</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># node2 = ph.insert(30)</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># node3 = ph.insert(5) # min</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># node4 = ph.insert(20)</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># print(&#34;Min:&#34;, ph.find_min()) # 5</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># ph.decrease_key(node2, 2) # Change 30 to 2</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># print(&#34;Min after decrease_key (30-&gt;2):&#34;, ph.find_min()) # 2</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># extracted = ph.extract_min() # Extract 2</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># print(&#34;Extracted:&#34;, extracted) # 2</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># print(&#34;Min after extract:&#34;, ph.find_min()) # 5</span>
+</span></span></code></pre></div><h3 id=javascript>Javascript</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=display:flex><span><span style=color:#859900>class</span> <span style=color:#268bd2>PairingNode</span> {
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>constructor</span>(<span style=color:#268bd2>key</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>key</span> = <span style=color:#268bd2>key</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>child</span> = <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>sibling</span> = <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>prev</span> = <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>class</span> <span style=color:#268bd2>PairingHeap</span> {
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>constructor</span>() {
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>root</span> = <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>_mergeRecursive</span>(<span style=color:#268bd2>h1</span>, <span style=color:#268bd2>h2</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (!<span style=color:#268bd2>h1</span>) <span style=color:#859900>return</span> <span style=color:#268bd2>h2</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (!<span style=color:#268bd2>h2</span>) <span style=color:#859900>return</span> <span style=color:#268bd2>h1</span>;
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>h1</span>.<span style=color:#268bd2>key</span> &gt; <span style=color:#268bd2>h2</span>.<span style=color:#268bd2>key</span>) {
+</span></span><span style=display:flex><span>            [<span style=color:#268bd2>h1</span>, <span style=color:#268bd2>h2</span>] = [<span style=color:#268bd2>h2</span>, <span style=color:#268bd2>h1</span>];
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>h2</span>.<span style=color:#268bd2>prev</span> = <span style=color:#268bd2>h1</span>;
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>h2</span>.<span style=color:#268bd2>sibling</span> = <span style=color:#268bd2>h1</span>.<span style=color:#268bd2>child</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>h1</span>.<span style=color:#268bd2>child</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>h1</span>.<span style=color:#268bd2>child</span>.<span style=color:#268bd2>prev</span> = <span style=color:#268bd2>h2</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>h1</span>.<span style=color:#268bd2>child</span> = <span style=color:#268bd2>h2</span>;
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>h1</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>insert</span>(<span style=color:#268bd2>key</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>const</span> <span style=color:#268bd2>newNode</span> = <span style=color:#859900>new</span> <span style=color:#268bd2>PairingNode</span>(<span style=color:#268bd2>key</span>);
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>root</span> = <span style=color:#859900>this</span>.<span style=color:#268bd2>_mergeRecursive</span>(<span style=color:#859900>this</span>.<span style=color:#268bd2>root</span>, <span style=color:#268bd2>newNode</span>);
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>newNode</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>extractMin</span>() {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (!<span style=color:#859900>this</span>.<span style=color:#268bd2>root</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span> <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>const</span> <span style=color:#268bd2>minKey</span> = <span style=color:#859900>this</span>.<span style=color:#268bd2>root</span>.<span style=color:#268bd2>key</span>;
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#859900>this</span>.<span style=color:#268bd2>root</span>.<span style=color:#268bd2>child</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>this</span>.<span style=color:#268bd2>root</span>.<span style=color:#268bd2>child</span>.<span style=color:#268bd2>prev</span> = <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>            <span style=color:#859900>this</span>.<span style=color:#268bd2>root</span> = <span style=color:#859900>this</span>.<span style=color:#268bd2>_mergePairs</span>(<span style=color:#859900>this</span>.<span style=color:#268bd2>root</span>.<span style=color:#268bd2>child</span>);
+</span></span><span style=display:flex><span>        } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>            <span style=color:#859900>this</span>.<span style=color:#268bd2>root</span> = <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>minKey</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>_mergePairs</span>(<span style=color:#268bd2>childListHead</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (!<span style=color:#268bd2>childListHead</span> || !<span style=color:#268bd2>childListHead</span>.<span style=color:#268bd2>sibling</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span> <span style=color:#268bd2>childListHead</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>const</span> <span style=color:#268bd2>h1</span> = <span style=color:#268bd2>childListHead</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900>const</span> <span style=color:#268bd2>h2</span> = <span style=color:#268bd2>childListHead</span>.<span style=color:#268bd2>sibling</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900>const</span> <span style=color:#268bd2>h3</span> = <span style=color:#268bd2>h2</span>.<span style=color:#268bd2>sibling</span>;
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>h1</span>.<span style=color:#268bd2>prev</span> = <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>h2</span>.<span style=color:#268bd2>prev</span> = <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>h1</span>.<span style=color:#268bd2>sibling</span> = <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>h2</span>.<span style=color:#268bd2>sibling</span> = <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#859900>this</span>.<span style=color:#268bd2>_mergeRecursive</span>(<span style=color:#859900>this</span>.<span style=color:#268bd2>_mergeRecursive</span>(<span style=color:#268bd2>h1</span>, <span style=color:#268bd2>h2</span>), <span style=color:#859900>this</span>.<span style=color:#268bd2>_mergePairs</span>(<span style=color:#268bd2>h3</span>));
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>decreaseKey</span>(<span style=color:#268bd2>node</span>, <span style=color:#268bd2>newKey</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (!<span style=color:#268bd2>node</span> || <span style=color:#268bd2>newKey</span> &gt; <span style=color:#268bd2>node</span>.<span style=color:#268bd2>key</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>throw</span> <span style=color:#859900>new</span> <span style=color:#cb4b16>Error</span>(<span style=color:#2aa198>&#34;New key is greater than current key or node is invalid.&#34;</span>);
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>node</span>.<span style=color:#268bd2>key</span> = <span style=color:#268bd2>newKey</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>node</span>.<span style=color:#268bd2>prev</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> (<span style=color:#268bd2>node</span>.<span style=color:#268bd2>prev</span>.<span style=color:#268bd2>child</span> === <span style=color:#268bd2>node</span>) {
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>node</span>.<span style=color:#268bd2>prev</span>.<span style=color:#268bd2>child</span> = <span style=color:#268bd2>node</span>.<span style=color:#268bd2>sibling</span>;
+</span></span><span style=display:flex><span>            } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>node</span>.<span style=color:#268bd2>prev</span>.<span style=color:#268bd2>sibling</span> = <span style=color:#268bd2>node</span>.<span style=color:#268bd2>sibling</span>;
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> (<span style=color:#268bd2>node</span>.<span style=color:#268bd2>sibling</span>) {
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>node</span>.<span style=color:#268bd2>sibling</span>.<span style=color:#268bd2>prev</span> = <span style=color:#268bd2>node</span>.<span style=color:#268bd2>prev</span>;
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>            
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>node</span>.<span style=color:#268bd2>prev</span> = <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>node</span>.<span style=color:#268bd2>sibling</span> = <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>            
+</span></span><span style=display:flex><span>            <span style=color:#859900>this</span>.<span style=color:#268bd2>root</span> = <span style=color:#859900>this</span>.<span style=color:#268bd2>_mergeRecursive</span>(<span style=color:#859900>this</span>.<span style=color:#268bd2>root</span>, <span style=color:#268bd2>node</span>);
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>findMin</span>() {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#859900>this</span>.<span style=color:#268bd2>root</span> ? <span style=color:#859900>this</span>.<span style=color:#268bd2>root</span>.<span style=color:#268bd2>key</span> : <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>merge</span>(<span style=color:#268bd2>otherHeap</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>root</span> = <span style=color:#859900>this</span>.<span style=color:#268bd2>_mergeRecursive</span>(<span style=color:#859900>this</span>.<span style=color:#268bd2>root</span>, <span style=color:#268bd2>otherHeap</span>.<span style=color:#268bd2>root</span>);
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>otherHeap</span>.<span style=color:#268bd2>root</span> = <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const ph = new PairingHeap();
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const node1 = ph.insert(10);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const node2 = ph.insert(30);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const node3 = ph.insert(5); // min
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const node4 = ph.insert(20);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// console.log(&#34;Min:&#34;, ph.findMin()); // 5
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// ph.decreaseKey(node2, 2); // Change 30 to 2
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// console.log(&#34;Min after decrease_key (30-&gt;2):&#34;, ph.findMin()); // 2
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const extracted = ph.extractMin(); // Extract 2
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// console.log(&#34;Extracted:&#34;, extracted); // 2
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// console.log(&#34;Min after extract:&#34;, ph.findMin()); // 5
+</span></span></span></code></pre></div><h3 id=typescript>Typescript</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-typescript data-lang=typescript><span style=display:flex><span><span style=color:#859900>class</span> <span style=color:#268bd2>PairingNodeTS</span> {
+</span></span><span style=display:flex><span>    <span style=color:#859900>public</span> <span style=color:#268bd2>key</span>: <span style=color:#859900;font-weight:700>number</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900>public</span> <span style=color:#268bd2>child</span>: <span style=color:#859900;font-weight:700>PairingNodeTS</span> | <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900>public</span> <span style=color:#268bd2>sibling</span>: <span style=color:#859900;font-weight:700>PairingNodeTS</span> | <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900>public</span> <span style=color:#268bd2>prev</span>: <span style=color:#859900;font-weight:700>PairingNodeTS</span> | <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>constructor</span>(<span style=color:#268bd2>key</span>: <span style=color:#859900;font-weight:700>number</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>key</span> = <span style=color:#268bd2>key</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>child</span> = <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>sibling</span> = <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>prev</span> = <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>class</span> <span style=color:#268bd2>PairingHeapTS</span> {
+</span></span><span style=display:flex><span>    <span style=color:#859900>public</span> <span style=color:#268bd2>root</span>: <span style=color:#859900;font-weight:700>PairingNodeTS</span> | <span style=color:#859900;font-weight:700>null</span> = <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>private</span> <span style=color:#268bd2>_mergeRecursive</span>(<span style=color:#268bd2>h1</span>: <span style=color:#859900;font-weight:700>PairingNodeTS</span> | <span style=color:#859900;font-weight:700>null</span>, <span style=color:#268bd2>h2</span>: <span style=color:#859900;font-weight:700>PairingNodeTS</span> | <span style=color:#859900;font-weight:700>null</span>): <span style=color:#268bd2>PairingNodeTS</span> | <span style=color:#859900;font-weight:700>null</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (!<span style=color:#268bd2>h1</span>) <span style=color:#859900>return</span> <span style=color:#268bd2>h2</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (!<span style=color:#268bd2>h2</span>) <span style=color:#859900>return</span> <span style=color:#268bd2>h1</span>;
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>h1</span>.<span style=color:#268bd2>key</span> &gt; <span style=color:#268bd2>h2</span>.<span style=color:#268bd2>key</span>) {
+</span></span><span style=display:flex><span>            [<span style=color:#268bd2>h1</span>, <span style=color:#268bd2>h2</span>] = [<span style=color:#268bd2>h2</span>, <span style=color:#268bd2>h1</span>];
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>h2</span>.<span style=color:#268bd2>prev</span> = <span style=color:#268bd2>h1</span>;
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>h2</span>.<span style=color:#268bd2>sibling</span> = <span style=color:#268bd2>h1</span>.<span style=color:#268bd2>child</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>h1</span>.<span style=color:#268bd2>child</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>h1</span>.<span style=color:#268bd2>child</span>.<span style=color:#268bd2>prev</span> = <span style=color:#268bd2>h2</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>h1</span>.<span style=color:#268bd2>child</span> = <span style=color:#268bd2>h2</span>;
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>h1</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>public</span> <span style=color:#268bd2>insert</span>(<span style=color:#268bd2>key</span>: <span style=color:#859900;font-weight:700>number</span>): <span style=color:#268bd2>PairingNodeTS</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>const</span> <span style=color:#268bd2>newNode</span> = <span style=color:#859900>new</span> <span style=color:#268bd2>PairingNodeTS</span>(<span style=color:#268bd2>key</span>);
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>root</span> = <span style=color:#859900>this</span>.<span style=color:#268bd2>_mergeRecursive</span>(<span style=color:#859900>this</span>.<span style=color:#268bd2>root</span>, <span style=color:#268bd2>newNode</span>);
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>newNode</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>public</span> <span style=color:#268bd2>extractMin</span>(): <span style=color:#859900;font-weight:700>number</span> | <span style=color:#859900;font-weight:700>null</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (!<span style=color:#859900>this</span>.<span style=color:#268bd2>root</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span> <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>const</span> <span style=color:#268bd2>minKey</span> = <span style=color:#859900>this</span>.<span style=color:#268bd2>root</span>.<span style=color:#268bd2>key</span>;
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#859900>this</span>.<span style=color:#268bd2>root</span>.<span style=color:#268bd2>child</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>this</span>.<span style=color:#268bd2>root</span>.<span style=color:#268bd2>child</span>.<span style=color:#268bd2>prev</span> = <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>            <span style=color:#859900>this</span>.<span style=color:#268bd2>root</span> = <span style=color:#859900>this</span>.<span style=color:#268bd2>_mergePairs</span>(<span style=color:#859900>this</span>.<span style=color:#268bd2>root</span>.<span style=color:#268bd2>child</span>);
+</span></span><span style=display:flex><span>        } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>            <span style=color:#859900>this</span>.<span style=color:#268bd2>root</span> = <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>minKey</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>private</span> <span style=color:#268bd2>_mergePairs</span>(<span style=color:#268bd2>childListHead</span>: <span style=color:#859900;font-weight:700>PairingNodeTS</span> | <span style=color:#859900;font-weight:700>null</span>): <span style=color:#268bd2>PairingNodeTS</span> | <span style=color:#859900;font-weight:700>null</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (!<span style=color:#268bd2>childListHead</span> || !<span style=color:#268bd2>childListHead</span>.<span style=color:#268bd2>sibling</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span> <span style=color:#268bd2>childListHead</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>const</span> <span style=color:#268bd2>h1</span> = <span style=color:#268bd2>childListHead</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900>const</span> <span style=color:#268bd2>h2</span> = <span style=color:#268bd2>childListHead</span>.<span style=color:#268bd2>sibling</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900>const</span> <span style=color:#268bd2>h3</span> = <span style=color:#268bd2>h2</span>.<span style=color:#268bd2>sibling</span>;
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>h1</span>.<span style=color:#268bd2>prev</span> = <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>h2</span>.<span style=color:#268bd2>prev</span> = <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>h1</span>.<span style=color:#268bd2>sibling</span> = <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>h2</span>.<span style=color:#268bd2>sibling</span> = <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#859900>this</span>.<span style=color:#268bd2>_mergeRecursive</span>(<span style=color:#859900>this</span>.<span style=color:#268bd2>_mergeRecursive</span>(<span style=color:#268bd2>h1</span>, <span style=color:#268bd2>h2</span>), <span style=color:#859900>this</span>.<span style=color:#268bd2>_mergePairs</span>(<span style=color:#268bd2>h3</span>));
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>public</span> <span style=color:#268bd2>decreaseKey</span>(<span style=color:#268bd2>node</span>: <span style=color:#859900;font-weight:700>PairingNodeTS</span>, <span style=color:#268bd2>newKey</span>: <span style=color:#859900;font-weight:700>number</span>): <span style=color:#859900>void</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (!<span style=color:#268bd2>node</span> || <span style=color:#268bd2>newKey</span> &gt; <span style=color:#268bd2>node</span>.<span style=color:#268bd2>key</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>throw</span> <span style=color:#859900>new</span> <span style=color:#cb4b16>Error</span>(<span style=color:#2aa198>&#34;New key is greater than current key or node is invalid.&#34;</span>);
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>node</span>.<span style=color:#268bd2>key</span> = <span style=color:#268bd2>newKey</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>node</span>.<span style=color:#268bd2>prev</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> (<span style=color:#268bd2>node</span>.<span style=color:#268bd2>prev</span>.<span style=color:#268bd2>child</span> === <span style=color:#268bd2>node</span>) {
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>node</span>.<span style=color:#268bd2>prev</span>.<span style=color:#268bd2>child</span> = <span style=color:#268bd2>node</span>.<span style=color:#268bd2>sibling</span>;
+</span></span><span style=display:flex><span>            } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>node</span>.<span style=color:#268bd2>prev</span>.<span style=color:#268bd2>sibling</span> = <span style=color:#268bd2>node</span>.<span style=color:#268bd2>sibling</span>;
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> (<span style=color:#268bd2>node</span>.<span style=color:#268bd2>sibling</span>) {
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>node</span>.<span style=color:#268bd2>sibling</span>.<span style=color:#268bd2>prev</span> = <span style=color:#268bd2>node</span>.<span style=color:#268bd2>prev</span>;
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>            
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>node</span>.<span style=color:#268bd2>prev</span> = <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>node</span>.<span style=color:#268bd2>sibling</span> = <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>            
+</span></span><span style=display:flex><span>            <span style=color:#859900>this</span>.<span style=color:#268bd2>root</span> = <span style=color:#859900>this</span>.<span style=color:#268bd2>_mergeRecursive</span>(<span style=color:#859900>this</span>.<span style=color:#268bd2>root</span>, <span style=color:#268bd2>node</span>);
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>public</span> <span style=color:#268bd2>findMin</span>(): <span style=color:#859900;font-weight:700>number</span> | <span style=color:#859900;font-weight:700>null</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#859900>this</span>.<span style=color:#268bd2>root</span> ? <span style=color:#859900>this</span>.<span style=color:#268bd2>root.key</span> : <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>public</span> <span style=color:#268bd2>merge</span>(<span style=color:#268bd2>otherHeap</span>: <span style=color:#859900;font-weight:700>PairingHeapTS</span>): <span style=color:#859900>void</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>root</span> = <span style=color:#859900>this</span>.<span style=color:#268bd2>_mergeRecursive</span>(<span style=color:#859900>this</span>.<span style=color:#268bd2>root</span>, <span style=color:#268bd2>otherHeap</span>.<span style=color:#268bd2>root</span>);
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>otherHeap</span>.<span style=color:#268bd2>root</span> = <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const phTS = new PairingHeapTS();
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const node1TS = phTS.insert(10);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const node2TS = phTS.insert(30);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const node3TS = phTS.insert(5);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const node4TS = phTS.insert(20);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// console.log(&#34;Min:&#34;, phTS.findMin()); // 5
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// phTS.decreaseKey(node2TS, 2); // Change 30 to 2
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// console.log(&#34;Min after decrease_key (30-&gt;2):&#34;, phTS.findMin()); // 2
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const extractedTS = phTS.extractMin(); // Extract 2
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// console.log(&#34;Extracted:&#34;, extractedTS); // 2
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// console.log(&#34;Min after extract:&#34;, phTS.findMin()); // 5
+</span></span></span></code></pre></div><h3 id=cpp>Cpp</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-cpp data-lang=cpp><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;iostream&gt;</span><span style=color:#93a1a1;font-style:italic>
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;vector&gt;</span><span style=color:#93a1a1;font-style:italic>
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;algorithm&gt;</span><span style=color:#93a1a1;font-style:italic>
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;stdexcept&gt;</span><span style=color:#93a1a1;font-style:italic>
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#859900>class</span> <span style=color:#cb4b16>PairingNode</span> {
+</span></span><span style=display:flex><span><span style=color:#859900>public</span>:
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>key</span>;
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>PairingNode</span> &lt;<span style=color:#268bd2>em</span>&gt;<span style=color:#268bd2>child</span>;
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>PairingNode</span> &lt;/<span style=color:#268bd2>em</span>&gt;<span style=color:#268bd2>sibling</span>;
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>PairingNode</span> &lt;<span style=color:#268bd2>em</span>&gt;<span style=color:#268bd2>prev</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>PairingNode</span>(<span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>k</span>) : <span style=color:#268bd2>key</span>(<span style=color:#268bd2>k</span>), <span style=color:#268bd2>child</span>(<span style=color:#859900>nullptr</span>), <span style=color:#268bd2>sibling</span>(<span style=color:#859900>nullptr</span>), <span style=color:#268bd2>prev</span>(<span style=color:#859900>nullptr</span>) {}
+</span></span><span style=display:flex><span>};
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>class</span> <span style=color:#cb4b16>PairingHeap</span> {
+</span></span><span style=display:flex><span><span style=color:#859900>public</span>:
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>PairingNode</span>&lt;/<span style=color:#268bd2>em</span>&gt; <span style=color:#268bd2>root</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>PairingHeap</span>() : <span style=color:#268bd2>root</span>(<span style=color:#859900>nullptr</span>) {}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>PairingNode</span>&lt;<span style=color:#268bd2>em</span>&gt; <span style=color:#268bd2>mergeRecursive</span>(<span style=color:#268bd2>PairingNode</span>&lt;/<span style=color:#268bd2>em</span>&gt; <span style=color:#268bd2>h1</span>, <span style=color:#268bd2>PairingNode</span>&lt;<span style=color:#268bd2>em</span>&gt; <span style=color:#268bd2>h2</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (!<span style=color:#268bd2>h1</span>) <span style=color:#859900>return</span> <span style=color:#268bd2>h2</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (!<span style=color:#268bd2>h2</span>) <span style=color:#859900>return</span> <span style=color:#268bd2>h1</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>h1</span>-&gt;<span style=color:#268bd2>key</span> &gt; <span style=color:#268bd2>h2</span>-&gt;<span style=color:#268bd2>key</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>std</span>::<span style=color:#268bd2>swap</span>(<span style=color:#268bd2>h1</span>, <span style=color:#268bd2>h2</span>);
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>h2</span>-&gt;<span style=color:#268bd2>prev</span> = <span style=color:#268bd2>h1</span>;
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>h2</span>-&gt;<span style=color:#268bd2>sibling</span> = <span style=color:#268bd2>h1</span>-&gt;<span style=color:#268bd2>child</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>h1</span>-&gt;<span style=color:#268bd2>child</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>h1</span>-&gt;<span style=color:#268bd2>child</span>-&gt;<span style=color:#268bd2>prev</span> = <span style=color:#268bd2>h2</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>h1</span>-&gt;<span style=color:#268bd2>child</span> = <span style=color:#268bd2>h2</span>;
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>h1</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>PairingNode</span>&lt;/<span style=color:#268bd2>em</span>&gt; <span style=color:#268bd2>mergePairs</span>(<span style=color:#268bd2>PairingNode</span>&lt;<span style=color:#268bd2>em</span>&gt; <span style=color:#268bd2>child_list_head</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (!<span style=color:#268bd2>child_list_head</span> || !<span style=color:#268bd2>child_list_head</span>-&gt;<span style=color:#268bd2>sibling</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span> <span style=color:#268bd2>child_list_head</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>PairingNode</span>&lt;/<span style=color:#268bd2>em</span>&gt; <span style=color:#268bd2>h1</span> = <span style=color:#268bd2>child_list_head</span>;
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>PairingNode</span>&lt;<span style=color:#268bd2>em</span>&gt; <span style=color:#268bd2>h2</span> = <span style=color:#268bd2>child_list_head</span>-&gt;<span style=color:#268bd2>sibling</span>;
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>PairingNode</span>&lt;/<span style=color:#268bd2>em</span>&gt; <span style=color:#268bd2>h3</span> = <span style=color:#268bd2>h2</span>-&gt;<span style=color:#268bd2>sibling</span>;
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>h1</span>-&gt;<span style=color:#268bd2>prev</span> = <span style=color:#859900>nullptr</span>;
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>h2</span>-&gt;<span style=color:#268bd2>prev</span> = <span style=color:#859900>nullptr</span>;
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>h1</span>-&gt;<span style=color:#268bd2>sibling</span> = <span style=color:#859900>nullptr</span>;
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>h2</span>-&gt;<span style=color:#268bd2>sibling</span> = <span style=color:#859900>nullptr</span>;
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>mergeRecursive</span>(<span style=color:#268bd2>mergeRecursive</span>(<span style=color:#268bd2>h1</span>, <span style=color:#268bd2>h2</span>), <span style=color:#268bd2>mergePairs</span>(<span style=color:#268bd2>h3</span>));
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>PairingNode</span>&lt;<span style=color:#268bd2>em</span>&gt; <span style=color:#268bd2>insert</span>(<span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>key</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>PairingNode</span>&lt;/<span style=color:#268bd2>em</span>&gt; <span style=color:#268bd2>newNode</span> = <span style=color:#859900>new</span> <span style=color:#268bd2>PairingNode</span>(<span style=color:#268bd2>key</span>);
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>root</span> = <span style=color:#268bd2>mergeRecursive</span>(<span style=color:#268bd2>root</span>, <span style=color:#268bd2>newNode</span>);
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>newNode</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>extractMin</span>() {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (!<span style=color:#268bd2>root</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>throw</span> <span style=color:#268bd2>std</span>::<span style=color:#268bd2>runtime_error</span>(<span style=color:#2aa198>&#34;Heap is empty&#34;</span>);
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>minKey</span> = <span style=color:#268bd2>root</span>-&gt;<span style=color:#268bd2>key</span>;
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>PairingNode</span>&lt;<span style=color:#268bd2>em</span>&gt; <span style=color:#268bd2>oldRoot</span> = <span style=color:#268bd2>root</span>;
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>root</span>-&gt;<span style=color:#268bd2>child</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>root</span>-&gt;<span style=color:#268bd2>child</span>-&gt;<span style=color:#268bd2>prev</span> = <span style=color:#859900>nullptr</span>;
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>root</span> = <span style=color:#268bd2>mergePairs</span>(<span style=color:#268bd2>root</span>-&gt;<span style=color:#268bd2>child</span>);
+</span></span><span style=display:flex><span>        } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>root</span> = <span style=color:#859900>nullptr</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>delete</span> <span style=color:#268bd2>oldRoot</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>minKey</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>void</span> <span style=color:#268bd2>decreaseKey</span>(<span style=color:#268bd2>PairingNode</span>&lt;/<span style=color:#268bd2>em</span>&gt; <span style=color:#268bd2>node</span>, <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>newKey</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (!<span style=color:#268bd2>node</span> || <span style=color:#268bd2>newKey</span> &gt; <span style=color:#268bd2>node</span>-&gt;<span style=color:#268bd2>key</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>throw</span> <span style=color:#268bd2>std</span>::<span style=color:#268bd2>runtime_error</span>(<span style=color:#2aa198>&#34;New key is greater than current key or node is invalid.&#34;</span>);
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>node</span>-&gt;<span style=color:#268bd2>key</span> = <span style=color:#268bd2>newKey</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>node</span>-&gt;<span style=color:#268bd2>prev</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> (<span style=color:#268bd2>node</span>-&gt;<span style=color:#268bd2>prev</span>-&gt;<span style=color:#268bd2>child</span> == <span style=color:#268bd2>node</span>) {
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>node</span>-&gt;<span style=color:#268bd2>prev</span>-&gt;<span style=color:#268bd2>child</span> = <span style=color:#268bd2>node</span>-&gt;<span style=color:#268bd2>sibling</span>;
+</span></span><span style=display:flex><span>            } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>node</span>-&gt;<span style=color:#268bd2>prev</span>-&gt;<span style=color:#268bd2>sibling</span> = <span style=color:#268bd2>node</span>-&gt;<span style=color:#268bd2>sibling</span>;
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> (<span style=color:#268bd2>node</span>-&gt;<span style=color:#268bd2>sibling</span>) {
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>node</span>-&gt;<span style=color:#268bd2>sibling</span>-&gt;<span style=color:#268bd2>prev</span> = <span style=color:#268bd2>node</span>-&gt;<span style=color:#268bd2>prev</span>;
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>            
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>node</span>-&gt;<span style=color:#268bd2>prev</span> = <span style=color:#859900>nullptr</span>;
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>node</span>-&gt;<span style=color:#268bd2>sibling</span> = <span style=color:#859900>nullptr</span>;
+</span></span><span style=display:flex><span>            
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>root</span> = <span style=color:#268bd2>mergeRecursive</span>(<span style=color:#268bd2>root</span>, <span style=color:#268bd2>node</span>);
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>findMin</span>() {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (!<span style=color:#268bd2>root</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>throw</span> <span style=color:#268bd2>std</span>::<span style=color:#268bd2>runtime_error</span>(<span style=color:#2aa198>&#34;Heap is empty&#34;</span>);
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>root</span>-&gt;<span style=color:#268bd2>key</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>void</span> <span style=color:#268bd2>merge</span>(<span style=color:#268bd2>PairingHeap</span>&amp; <span style=color:#268bd2>other_heap</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>root</span> = <span style=color:#268bd2>mergeRecursive</span>(<span style=color:#268bd2>root</span>, <span style=color:#268bd2>other_heap</span>.<span style=color:#268bd2>root</span>);
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>other_heap</span>.<span style=color:#268bd2>root</span> = <span style=color:#859900>nullptr</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>};
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// int main() {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     PairingHeap ph;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     PairingNode&lt;em&gt; node1 = ph.insert(10);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     PairingNode&lt;/em&gt; node2 = ph.insert(30);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     PairingNode&lt;em&gt; node3 = ph.insert(5); // min
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     PairingNode&lt;/em&gt; node4 = ph.insert(20);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     std::cout &lt;&lt; &#34;Min: &#34; &lt;&lt; ph.findMin() &lt;&lt; std::endl; // 5
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     ph.decreaseKey(node2, 2); // Change 30 to 2
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     std::cout &lt;&lt; &#34;Min after decrease_key (30-&gt;2): &#34; &lt;&lt; ph.findMin() &lt;&lt; std::endl; // 2
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     int extracted = ph.extractMin(); // Extract 2
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     std::cout &lt;&lt; &#34;Extracted: &#34; &lt;&lt; extracted &lt;&lt; std::endl; // 2
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     std::cout &lt;&lt; &#34;Min after extract: &#34; &lt;&lt; ph.findMin() &lt;&lt; std::endl; // 5
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     return 0;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// }
+</span></span></span></code></pre></div><h3 id=go>Go</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#dc322f;font-weight:700>package</span> <span style=color:#268bd2>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> (
+</span></span><span style=display:flex><span>    <span style=color:#2aa198>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>type</span> <span style=color:#268bd2>PairingNode</span> <span style=color:#859900>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>Key</span>     <span style=color:#859900;font-weight:700>int</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>Child</span>   &lt;<span style=color:#268bd2>em</span>&gt;<span style=color:#268bd2>PairingNode</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>Sibling</span> &lt;/<span style=color:#268bd2>em</span>&gt;<span style=color:#268bd2>PairingNode</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>Prev</span>    &lt;<span style=color:#268bd2>em</span>&gt;<span style=color:#268bd2>PairingNode</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>func</span> <span style=color:#268bd2>NewPairingNode</span>(<span style=color:#268bd2>key</span> <span style=color:#859900;font-weight:700>int</span>) &lt;/<span style=color:#268bd2>em</span>&gt;<span style=color:#268bd2>PairingNode</span> {
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> &amp;<span style=color:#268bd2>PairingNode</span>{<span style=color:#268bd2>Key</span>: <span style=color:#268bd2>key</span>}
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>type</span> <span style=color:#268bd2>PairingHeap</span> <span style=color:#859900>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>Root</span> &lt;<span style=color:#268bd2>em</span>&gt;<span style=color:#268bd2>PairingNode</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>func</span> (<span style=color:#268bd2>ph</span> &lt;/<span style=color:#268bd2>em</span>&gt;<span style=color:#268bd2>PairingHeap</span>) <span style=color:#268bd2>mergeRecursive</span>(<span style=color:#268bd2>h1</span>, <span style=color:#268bd2>h2</span> &lt;<span style=color:#268bd2>em</span>&gt;<span style=color:#268bd2>PairingNode</span>) &lt;/<span style=color:#268bd2>em</span>&gt;<span style=color:#268bd2>PairingNode</span> {
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> <span style=color:#268bd2>h1</span> == <span style=color:#859900;font-weight:700>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>h2</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> <span style=color:#268bd2>h2</span> == <span style=color:#859900;font-weight:700>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>h1</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> <span style=color:#268bd2>h1</span>.<span style=color:#268bd2>Key</span> &gt; <span style=color:#268bd2>h2</span>.<span style=color:#268bd2>Key</span> {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>h1</span>, <span style=color:#268bd2>h2</span> = <span style=color:#268bd2>h2</span>, <span style=color:#268bd2>h1</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>h2</span>.<span style=color:#268bd2>Prev</span> = <span style=color:#268bd2>h1</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>h2</span>.<span style=color:#268bd2>Sibling</span> = <span style=color:#268bd2>h1</span>.<span style=color:#268bd2>Child</span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> <span style=color:#268bd2>h1</span>.<span style=color:#268bd2>Child</span> != <span style=color:#859900;font-weight:700>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>h1</span>.<span style=color:#268bd2>Child</span>.<span style=color:#268bd2>Prev</span> = <span style=color:#268bd2>h2</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>h1</span>.<span style=color:#268bd2>Child</span> = <span style=color:#268bd2>h2</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>h1</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>func</span> (<span style=color:#268bd2>ph</span> &lt;<span style=color:#268bd2>em</span>&gt;<span style=color:#268bd2>PairingHeap</span>) <span style=color:#268bd2>Insert</span>(<span style=color:#268bd2>key</span> <span style=color:#859900;font-weight:700>int</span>) &lt;/<span style=color:#268bd2>em</span>&gt;<span style=color:#268bd2>PairingNode</span> {
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>newNode</span> := <span style=color:#268bd2>NewPairingNode</span>(<span style=color:#268bd2>key</span>)
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>ph</span>.<span style=color:#268bd2>Root</span> = <span style=color:#268bd2>ph</span>.<span style=color:#268bd2>mergeRecursive</span>(<span style=color:#268bd2>ph</span>.<span style=color:#268bd2>Root</span>, <span style=color:#268bd2>newNode</span>)
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>newNode</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>func</span> (<span style=color:#268bd2>ph</span> &lt;<span style=color:#268bd2>em</span>&gt;<span style=color:#268bd2>PairingHeap</span>) <span style=color:#268bd2>ExtractMin</span>() (<span style=color:#859900;font-weight:700>int</span>, <span style=color:#859900;font-weight:700>error</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> <span style=color:#268bd2>ph</span>.<span style=color:#268bd2>Root</span> == <span style=color:#859900;font-weight:700>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#2aa198;font-weight:700>0</span>, <span style=color:#268bd2>fmt</span>.<span style=color:#268bd2>Errorf</span>(<span style=color:#2aa198>&#34;heap is empty&#34;</span>)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>minKey</span> := <span style=color:#268bd2>ph</span>.<span style=color:#268bd2>Root</span>.<span style=color:#268bd2>Key</span>
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> <span style=color:#268bd2>ph</span>.<span style=color:#268bd2>Root</span>.<span style=color:#268bd2>Child</span> != <span style=color:#859900;font-weight:700>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>ph</span>.<span style=color:#268bd2>Root</span>.<span style=color:#268bd2>Child</span>.<span style=color:#268bd2>Prev</span> = <span style=color:#859900;font-weight:700>nil</span>
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>ph</span>.<span style=color:#268bd2>Root</span> = <span style=color:#268bd2>ph</span>.<span style=color:#268bd2>mergePairs</span>(<span style=color:#268bd2>ph</span>.<span style=color:#268bd2>Root</span>.<span style=color:#268bd2>Child</span>)
+</span></span><span style=display:flex><span>    } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>ph</span>.<span style=color:#268bd2>Root</span> = <span style=color:#859900;font-weight:700>nil</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>minKey</span>, <span style=color:#859900;font-weight:700>nil</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>func</span> (<span style=color:#268bd2>ph</span> &lt;/<span style=color:#268bd2>em</span>&gt;<span style=color:#268bd2>PairingHeap</span>) <span style=color:#268bd2>mergePairs</span>(<span style=color:#268bd2>childListHead</span> &lt;<span style=color:#268bd2>em</span>&gt;<span style=color:#268bd2>PairingNode</span>) &lt;/<span style=color:#268bd2>em</span>&gt;<span style=color:#268bd2>PairingNode</span> {
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> <span style=color:#268bd2>childListHead</span> == <span style=color:#859900;font-weight:700>nil</span> || <span style=color:#268bd2>childListHead</span>.<span style=color:#268bd2>Sibling</span> == <span style=color:#859900;font-weight:700>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>childListHead</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>h1</span> := <span style=color:#268bd2>childListHead</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>h2</span> := <span style=color:#268bd2>childListHead</span>.<span style=color:#268bd2>Sibling</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>h3</span> := <span style=color:#268bd2>h2</span>.<span style=color:#268bd2>Sibling</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>h1</span>.<span style=color:#268bd2>Prev</span> = <span style=color:#859900;font-weight:700>nil</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>h2</span>.<span style=color:#268bd2>Prev</span> = <span style=color:#859900;font-weight:700>nil</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>h1</span>.<span style=color:#268bd2>Sibling</span> = <span style=color:#859900;font-weight:700>nil</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>h2</span>.<span style=color:#268bd2>Sibling</span> = <span style=color:#859900;font-weight:700>nil</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>ph</span>.<span style=color:#268bd2>mergeRecursive</span>(<span style=color:#268bd2>ph</span>.<span style=color:#268bd2>mergeRecursive</span>(<span style=color:#268bd2>h1</span>, <span style=color:#268bd2>h2</span>), <span style=color:#268bd2>ph</span>.<span style=color:#268bd2>mergePairs</span>(<span style=color:#268bd2>h3</span>))
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>func</span> (<span style=color:#268bd2>ph</span> &lt;<span style=color:#268bd2>em</span>&gt;<span style=color:#268bd2>PairingHeap</span>) <span style=color:#268bd2>DecreaseKey</span>(<span style=color:#268bd2>node</span> &lt;/<span style=color:#268bd2>em</span>&gt;<span style=color:#268bd2>PairingNode</span>, <span style=color:#268bd2>newKey</span> <span style=color:#859900;font-weight:700>int</span>) <span style=color:#859900;font-weight:700>error</span> {
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> <span style=color:#268bd2>node</span> == <span style=color:#859900;font-weight:700>nil</span> || <span style=color:#268bd2>newKey</span> &gt; <span style=color:#268bd2>node</span>.<span style=color:#268bd2>Key</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>fmt</span>.<span style=color:#268bd2>Errorf</span>(<span style=color:#2aa198>&#34;new key is greater than current key or node is invalid&#34;</span>)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>node</span>.<span style=color:#268bd2>Key</span> = <span style=color:#268bd2>newKey</span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> <span style=color:#268bd2>node</span>.<span style=color:#268bd2>Prev</span> != <span style=color:#859900;font-weight:700>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> <span style=color:#268bd2>node</span>.<span style=color:#268bd2>Prev</span>.<span style=color:#268bd2>Child</span> == <span style=color:#268bd2>node</span> {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>node</span>.<span style=color:#268bd2>Prev</span>.<span style=color:#268bd2>Child</span> = <span style=color:#268bd2>node</span>.<span style=color:#268bd2>Sibling</span>
+</span></span><span style=display:flex><span>        } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>node</span>.<span style=color:#268bd2>Prev</span>.<span style=color:#268bd2>Sibling</span> = <span style=color:#268bd2>node</span>.<span style=color:#268bd2>Sibling</span>
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> <span style=color:#268bd2>node</span>.<span style=color:#268bd2>Sibling</span> != <span style=color:#859900;font-weight:700>nil</span> {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>node</span>.<span style=color:#268bd2>Sibling</span>.<span style=color:#268bd2>Prev</span> = <span style=color:#268bd2>node</span>.<span style=color:#268bd2>Prev</span>
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>node</span>.<span style=color:#268bd2>Prev</span> = <span style=color:#859900;font-weight:700>nil</span>
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>node</span>.<span style=color:#268bd2>Sibling</span> = <span style=color:#859900;font-weight:700>nil</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>ph</span>.<span style=color:#268bd2>Root</span> = <span style=color:#268bd2>ph</span>.<span style=color:#268bd2>mergeRecursive</span>(<span style=color:#268bd2>ph</span>.<span style=color:#268bd2>Root</span>, <span style=color:#268bd2>node</span>)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#859900;font-weight:700>nil</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>func</span> (<span style=color:#268bd2>ph</span> &lt;<span style=color:#268bd2>em</span>&gt;<span style=color:#268bd2>PairingHeap</span>) <span style=color:#268bd2>FindMin</span>() (<span style=color:#859900;font-weight:700>int</span>, <span style=color:#859900;font-weight:700>error</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> <span style=color:#268bd2>ph</span>.<span style=color:#268bd2>Root</span> == <span style=color:#859900;font-weight:700>nil</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#2aa198;font-weight:700>0</span>, <span style=color:#268bd2>fmt</span>.<span style=color:#268bd2>Errorf</span>(<span style=color:#2aa198>&#34;heap is empty&#34;</span>)
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>ph</span>.<span style=color:#268bd2>Root</span>.<span style=color:#268bd2>Key</span>, <span style=color:#859900;font-weight:700>nil</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>func</span> (<span style=color:#268bd2>ph</span> &lt;/<span style=color:#268bd2>em</span>&gt;<span style=color:#268bd2>PairingHeap</span>) <span style=color:#268bd2>Merge</span>(<span style=color:#268bd2>otherHeap</span> *<span style=color:#268bd2>PairingHeap</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>ph</span>.<span style=color:#268bd2>Root</span> = <span style=color:#268bd2>ph</span>.<span style=color:#268bd2>mergeRecursive</span>(<span style=color:#268bd2>ph</span>.<span style=color:#268bd2>Root</span>, <span style=color:#268bd2>otherHeap</span>.<span style=color:#268bd2>Root</span>)
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>otherHeap</span>.<span style=color:#268bd2>Root</span> = <span style=color:#859900;font-weight:700>nil</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// func main() {</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     ph := &amp;PairingHeap{}</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     node1 := ph.Insert(10)</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     node2 := ph.Insert(30)</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     node3 := ph.Insert(5) // min</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     node4 := ph.Insert(20)</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     minVal, _ := ph.FindMin()</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     fmt.Println(&#34;Min:&#34;, minVal) // 5</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     ph.DecreaseKey(node2, 2) // Change 30 to 2</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     minVal, _ = ph.FindMin()</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     fmt.Println(&#34;Min after DecreaseKey (30-&gt;2):&#34;, minVal) // 2</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     extracted, _ := ph.ExtractMin() // Extract 2</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     fmt.Println(&#34;Extracted:&#34;, extracted) // 2</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     minVal, _ = ph.FindMin()</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     fmt.Println(&#34;Min after extract:&#34;, minVal) // 5</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// }</span>
+</span></span></code></pre></div><h3 id=d>D</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-d data-lang=d><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>std.stdio</span>;
+</span></span><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>std.algorithm</span>;
+</span></span><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>std.conv</span>;
+</span></span><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>std.string</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>class</span> <span style=color:#cb4b16>PairingNode</span> {
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>key</span>;
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>PairingNode</span> <span style=color:#268bd2>child</span>;
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>PairingNode</span> <span style=color:#268bd2>sibling</span>;
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>PairingNode</span> <span style=color:#268bd2>prev</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>this</span>(<span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>k</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>key</span> = <span style=color:#268bd2>k</span>;
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>child</span> = <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>sibling</span> = <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>prev</span> = <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>class</span> <span style=color:#cb4b16>PairingHeap</span> {
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>PairingNode</span> <span style=color:#268bd2>root</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>this</span>() {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>root</span> = <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span><span style=color:#268bd2>
+</span></span></span><span style=display:flex><span><span style=color:#268bd2>private:</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>PairingNode</span> <span style=color:#268bd2>mergeRecursive</span>(<span style=color:#268bd2>PairingNode</span> <span style=color:#268bd2>h1</span>, <span style=color:#268bd2>PairingNode</span> <span style=color:#268bd2>h2</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>h1</span> <span style=color:#859900>is</span> <span style=color:#859900;font-weight:700>null</span>) <span style=color:#859900>return</span> <span style=color:#268bd2>h2</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>h2</span> <span style=color:#859900>is</span> <span style=color:#859900;font-weight:700>null</span>) <span style=color:#859900>return</span> <span style=color:#268bd2>h1</span>;
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>h1</span>.<span style=color:#268bd2>key</span> &gt; <span style=color:#268bd2>h2</span>.<span style=color:#268bd2>key</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>swap</span>(<span style=color:#268bd2>h1</span>, <span style=color:#268bd2>h2</span>);
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>h2</span>.<span style=color:#268bd2>prev</span> = <span style=color:#268bd2>h1</span>;
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>h2</span>.<span style=color:#268bd2>sibling</span> = <span style=color:#268bd2>h1</span>.<span style=color:#268bd2>child</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>h1</span>.<span style=color:#268bd2>child</span> !<span style=color:#859900>is</span> <span style=color:#859900;font-weight:700>null</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>h1</span>.<span style=color:#268bd2>child</span>.<span style=color:#268bd2>prev</span> = <span style=color:#268bd2>h2</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>h1</span>.<span style=color:#268bd2>child</span> = <span style=color:#268bd2>h2</span>;
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>h1</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>PairingNode</span> <span style=color:#268bd2>mergePairs</span>(<span style=color:#268bd2>PairingNode</span> <span style=color:#268bd2>child_list_head</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>child_list_head</span> <span style=color:#859900>is</span> <span style=color:#859900;font-weight:700>null</span> || <span style=color:#268bd2>child_list_head</span>.<span style=color:#268bd2>sibling</span> <span style=color:#859900>is</span> <span style=color:#859900;font-weight:700>null</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span> <span style=color:#268bd2>child_list_head</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>PairingNode</span> <span style=color:#268bd2>h1</span> = <span style=color:#268bd2>child_list_head</span>;
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>PairingNode</span> <span style=color:#268bd2>h2</span> = <span style=color:#268bd2>child_list_head</span>.<span style=color:#268bd2>sibling</span>;
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>PairingNode</span> <span style=color:#268bd2>h3</span> = <span style=color:#268bd2>h2</span>.<span style=color:#268bd2>sibling</span>;
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>h1</span>.<span style=color:#268bd2>prev</span> = <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>h2</span>.<span style=color:#268bd2>prev</span> = <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>h1</span>.<span style=color:#268bd2>sibling</span> = <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>h2</span>.<span style=color:#268bd2>sibling</span> = <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>mergeRecursive</span>(<span style=color:#268bd2>mergeRecursive</span>(<span style=color:#268bd2>h1</span>, <span style=color:#268bd2>h2</span>), <span style=color:#268bd2>mergePairs</span>(<span style=color:#268bd2>h3</span>));
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span><span style=color:#268bd2>
+</span></span></span><span style=display:flex><span><span style=color:#268bd2>public:</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>PairingNode</span> <span style=color:#268bd2>insert</span>(<span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>key</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>PairingNode</span> <span style=color:#268bd2>new_node</span> = <span style=color:#859900>new</span> <span style=color:#268bd2>PairingNode</span>(<span style=color:#268bd2>key</span>);
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>root</span> = <span style=color:#268bd2>mergeRecursive</span>(<span style=color:#268bd2>root</span>, <span style=color:#268bd2>new_node</span>);
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>new_node</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>extractMin</span>() {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>root</span> <span style=color:#859900>is</span> <span style=color:#859900;font-weight:700>null</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>throw</span> <span style=color:#859900>new</span> <span style=color:#cb4b16>Exception</span>(<span style=color:#2aa198>&#34;Heap is empty&#34;</span>);
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>min_key</span> = <span style=color:#268bd2>root</span>.<span style=color:#268bd2>key</span>;
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>PairingNode</span> <span style=color:#268bd2>old_root</span> = <span style=color:#268bd2>root</span>;
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>root</span>.<span style=color:#268bd2>child</span> !<span style=color:#859900>is</span> <span style=color:#859900;font-weight:700>null</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>root</span>.<span style=color:#268bd2>child</span>.<span style=color:#268bd2>prev</span> = <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>root</span> = <span style=color:#268bd2>mergePairs</span>(<span style=color:#268bd2>root</span>.<span style=color:#268bd2>child</span>);
+</span></span><span style=display:flex><span>        } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>root</span> = <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>min_key</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>void</span> <span style=color:#268bd2>decreaseKey</span>(<span style=color:#268bd2>PairingNode</span> <span style=color:#268bd2>node</span>, <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>new_key</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>node</span> <span style=color:#859900>is</span> <span style=color:#859900;font-weight:700>null</span> || <span style=color:#268bd2>new_key</span> &gt; <span style=color:#268bd2>node</span>.<span style=color:#268bd2>key</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>throw</span> <span style=color:#859900>new</span> <span style=color:#cb4b16>Exception</span>(<span style=color:#2aa198>&#34;New key is greater than current key or node is invalid.&#34;</span>);
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>node</span>.<span style=color:#268bd2>key</span> = <span style=color:#268bd2>new_key</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>node</span>.<span style=color:#268bd2>prev</span> !<span style=color:#859900>is</span> <span style=color:#859900;font-weight:700>null</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> (<span style=color:#268bd2>node</span>.<span style=color:#268bd2>prev</span>.<span style=color:#268bd2>child</span> <span style=color:#859900>is</span> <span style=color:#268bd2>node</span>) {
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>node</span>.<span style=color:#268bd2>prev</span>.<span style=color:#268bd2>child</span> = <span style=color:#268bd2>node</span>.<span style=color:#268bd2>sibling</span>;
+</span></span><span style=display:flex><span>            } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>node</span>.<span style=color:#268bd2>prev</span>.<span style=color:#268bd2>sibling</span> = <span style=color:#268bd2>node</span>.<span style=color:#268bd2>sibling</span>;
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> (<span style=color:#268bd2>node</span>.<span style=color:#268bd2>sibling</span> !<span style=color:#859900>is</span> <span style=color:#859900;font-weight:700>null</span>) {
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>node</span>.<span style=color:#268bd2>sibling</span>.<span style=color:#268bd2>prev</span> = <span style=color:#268bd2>node</span>.<span style=color:#268bd2>prev</span>;
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>            
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>node</span>.<span style=color:#268bd2>prev</span> = <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>node</span>.<span style=color:#268bd2>sibling</span> = <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>            
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>root</span> = <span style=color:#268bd2>mergeRecursive</span>(<span style=color:#268bd2>root</span>, <span style=color:#268bd2>node</span>);
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>findMin</span>() {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>root</span> <span style=color:#859900>is</span> <span style=color:#859900;font-weight:700>null</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>throw</span> <span style=color:#859900>new</span> <span style=color:#cb4b16>Exception</span>(<span style=color:#2aa198>&#34;Heap is empty&#34;</span>);
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>root</span>.<span style=color:#268bd2>key</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>void</span> <span style=color:#268bd2>merge</span>(<span style=color:#268bd2>PairingHeap</span> <span style=color:#268bd2>other_heap</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>root</span> = <span style=color:#268bd2>mergeRecursive</span>(<span style=color:#268bd2>root</span>, <span style=color:#268bd2>other_heap</span>.<span style=color:#268bd2>root</span>);
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>other_heap</span>.<span style=color:#268bd2>root</span> = <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// void main() {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     auto ph = new PairingHeap();
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     auto node1 = ph.insert(10);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     auto node2 = ph.insert(30);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     auto node3 = ph.insert(5); // min
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     auto node4 = ph.insert(20);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     writefln(&#34;Min: %s&#34;, ph.findMin()); // 5
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     ph.decreaseKey(node2, 2); // Change 30 to 2
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     writefln(&#34;Min after decrease_key (30-&gt;2): %s&#34;, ph.findMin()); // 2
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     auto extracted = ph.extractMin(); // Extract 2
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     writefln(&#34;Extracted: %s&#34;, extracted); // 2
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     writefln(&#34;Min after extract: %s&#34;, ph.findMin()); // 5
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// }
+</span></span></span></code></pre></div><h2 id=applications>Applications</h2><h3 id=application>Application</h3><p>Pairing Heaps are excellent general-purpose mergeable heaps, offering a good balance of theoretical efficiency and practical performance. They are particularly suited for applications requiring frequent <code>decrease-key</code> and <code>merge</code> operations.</p><ul><li><strong>Graph Algorithms:</strong> Used in efficient implementations of <code>Dijkstra's shortest path algorithm</code> (especially with dense graphs) and <code>Prim's minimum spanning tree algorithm</code>, where <code>decrease-key</code> is a bottleneck for <code>binary heaps</code>.</li><li><strong>Event-Driven Simulations:</strong> Managing events with varying priorities, where events might be dynamically re-prioritized or event queues merged.</li><li><strong>Network Routing Protocols:</strong> Optimizing routing tables that involve dynamically changing costs and merging routing information.</li><li><strong>Anywhere efficient mergeable <code>priority queues</code> are needed:</strong> Providing a strong alternative to <code>Fibonacci Heaps</code> when practical speed matters more than the absolute theoretical worst-case guarantee.</li></ul></div></article><div class=navigation style="margin-top:5rem;display:flex;justify-content:space-between;border-top:1px solid var(--border);padding-top:2rem"><a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/data_structures/specialized/quadtree/ class=nav-btn>← Previous</a>
+<a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/data_structures/specialized/ class=nav-btn>Up</a>
+<a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/data_structures/specialized/octree/ class=nav-btn>Next →</a></div></main><footer class=footer><p>Built with Hugo. No scripts. No tracking. Just the truth.</p></footer><script>document.addEventListener("DOMContentLoaded",function(){const n=document.body,s=document.createTreeWalker(n,NodeFilter.SHOW_TEXT,null,!1);let e;const t=[];for(;e=s.nextNode();)e.nodeValue.includes("[-]")&&t.push(e);t.forEach(e=>{const t=document.createElement("span");t.innerHTML=e.nodeValue.replace(/\[-\]/g,'<span class="started-icon" title="Started"></span>'),e.parentNode.replaceChild(t,e)})})</script><script>const body=document.getElementById("theme-body"),btn=document.getElementById("theme-toggle"),currentTheme=localStorage.getItem("theme");function updateButtonText(){body.classList.contains("theme-terminal")?btn.textContent="Light Mode":btn.textContent="Dark Mode"}currentTheme==="terminal"&&body.classList.add("theme-terminal"),updateButtonText(),btn.addEventListener("click",()=>{body.classList.toggle("theme-terminal"),updateButtonText();let e="natural";body.classList.contains("theme-terminal")&&(e="terminal"),localStorage.setItem("theme",e)})</script></body></html>

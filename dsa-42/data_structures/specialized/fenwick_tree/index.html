@@ -1,0 +1,330 @@
+<!doctype html><html lang=en-us><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Fenwick Tree | SDET Interview Preparation Kit</title><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/css/style.css><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/css/terminal.css><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel=stylesheet><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/lib/katex/katex.min.css><script defer src=https://notxkcd.github.io/sdet-prep-site/lib/katex/katex.min.js></script><script defer src=https://notxkcd.github.io/sdet-prep-site/lib/katex/contrib/auto-render.min.js onload=renderMathInElement(document.body)></script><script>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1}]})})</script></head><body id=theme-body><button id=theme-toggle>Switch Theme</button><header><nav><ul><li><a href=https://notxkcd.github.io/sdet-prep-site/>Index</a></li></ul></nav><div class=site-breadcrumb><a href=https://notxkcd.github.io/sdet-prep-site/>Home</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/>SDET Interview Dashboard</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/>42 Algorithms & 42 Data Structures</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/data_structures/>Data Structures</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/data_structures/specialized/>Specialized</a>
+<span>/</span> Fenwick Tree</div></header><main><article><h1>Fenwick Tree</h1><div class=content-body style=margin-top:2rem><p>A <code>Fenwick Tree</code>, also known as a <code>Binary Indexed Tree (BIT)</code>, is a data structure that can efficiently update <code>elements</code> and calculate <code>prefix sums</code> (the sum of <code>elements</code> from the beginning of an <code>array</code> up to a given <code>index</code>) in a <code>table</code> of numbers.</p><p>It achieves <code>O(log N)</code> time complexity for both <code>updates</code> and <code>prefix sum queries</code>, making it much faster than a naive approach (<code>O(N)</code> for each <code>query</code> or <code>update</code>) and competitive with <code>Segment Trees</code> for these specific operations, often with less memory and simpler implementation.</p><h2 id=how-it-works>How it Works</h2><h3 id=how-it-works-expanded>How it Works (Expanded)</h3><p>The core idea of a <code>Fenwick Tree</code> is to represent an <code>array</code> as a <code>tree</code>-like structure where each <code>node</code> stores the sum of a certain range of <code>elements</code>. The magic lies in how these ranges are determined. Each <code>node</code> at <code>index i</code> in the <code>Fenwick Tree</code> stores the sum of <code>elements</code> from <code>index (i - (i & -i) + 1)</code> to <code>index i</code>.</p><hr><p>Example: Array A = [1, 2, 3, 4, 5, 6, 7, 8]
+Fenwick Tree (BIT) for Prefix Sums:</p><p>Indices: 1 2 3 4 5 6 7 8 (1-indexed for BIT)
+Elements: A1 A2 A3 A4 A5 A6 A7 A8</p><p>BIT[1] stores A1
+BIT[2] stores A1 + A2
+BIT[3] stores A3
+BIT[4] stores A1 + A2 + A3 + A4
+BIT[5] stores A5
+BIT[6] stores A5 + A6
+BIT[7] stores A7
+BIT[8] stores A1 + A2 + A3 + A4 + A5 + A6 + A7 + A8</p><p>The key insight is <code>i & -i</code>, which isolates the rightmost set bit in the binary representation of <code>i</code>.
+This value represents the size of the range covered by <code>BIT[i]</code>.</p><p><a href=#code-walkthrough>Jump to Code Walkthrough</a></p><h2 id=implementation>Implementation</h2><h3 id=python>Python</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#859900>class</span> <span style=color:#cb4b16>FenwickTree</span>:
+</span></span><span style=display:flex><span>    <span style=color:#859900>def</span> <span style=color:#268bd2>__init__</span>(<span style=color:#cb4b16>self</span>, <span style=color:#268bd2>size</span>):
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>bit</span> = [<span style=color:#2aa198;font-weight:700>0</span>] &lt;<span style=color:#268bd2>em</span>&gt; (<span style=color:#268bd2>size</span> + <span style=color:#2aa198;font-weight:700>1</span>) <span style=color:#93a1a1;font-style:italic># Fenwick Tree is 1-indexed</span>
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>size</span> = <span style=color:#268bd2>size</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>def</span> <span style=color:#268bd2>update</span>(<span style=color:#cb4b16>self</span>, <span style=color:#268bd2>index</span>, <span style=color:#268bd2>delta</span>):
+</span></span><span style=display:flex><span>        <span style=color:#2aa198>&#34;&#34;&#34;Adds delta to element at index.&#34;&#34;&#34;</span>
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic># Fenwick Tree is 1-indexed, so adjust index</span>
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>index</span> += <span style=color:#2aa198;font-weight:700>1</span> 
+</span></span><span style=display:flex><span>        <span style=color:#859900>while</span> <span style=color:#268bd2>index</span> &lt;= <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>size</span>:
+</span></span><span style=display:flex><span>            <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>bit</span>[<span style=color:#268bd2>index</span>] += <span style=color:#268bd2>delta</span>
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>index</span> += <span style=color:#268bd2>index</span> &amp; (-<span style=color:#268bd2>index</span>) <span style=color:#93a1a1;font-style:italic># Move to parent</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>def</span> <span style=color:#268bd2>query</span>(<span style=color:#cb4b16>self</span>, <span style=color:#268bd2>index</span>):
+</span></span><span style=display:flex><span>        <span style=color:#2aa198>&#34;&#34;&#34;Returns the sum of elements from index 0 up to index (inclusive).&#34;&#34;&#34;</span>
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic># Fenwick Tree is 1-indexed, so adjust index</span>
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>index</span> += <span style=color:#2aa198;font-weight:700>1</span>
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>total_sum</span> = <span style=color:#2aa198;font-weight:700>0</span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>while</span> <span style=color:#268bd2>index</span> &gt; <span style=color:#2aa198;font-weight:700>0</span>:
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>total_sum</span> += <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>bit</span>[<span style=color:#268bd2>index</span>]
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>index</span> -= <span style=color:#268bd2>index</span> &amp; (-<span style=color:#268bd2>index</span>) <span style=color:#93a1a1;font-style:italic># Move to parent</span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>total_sum</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>def</span> <span style=color:#268bd2>range_query</span>(<span style=color:#cb4b16>self</span>, <span style=color:#268bd2>left</span>, <span style=color:#268bd2>right</span>):
+</span></span><span style=display:flex><span>        <span style=color:#2aa198>&#34;&#34;&#34;Returns sum of elements from index left to right (inclusive).&#34;&#34;&#34;</span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>query</span>(<span style=color:#268bd2>right</span>) - <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>query</span>(<span style=color:#268bd2>left</span> - <span style=color:#2aa198;font-weight:700>1</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># Example Usage:</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># arr = [1, 2, 3, 4, 5]</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># ft = FenwickTree(len(arr))</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># # Initialize Fenwick Tree with array elements</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># for i, val in enumerate(arr):</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#     ft.update(i, val)</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># print(&#34;Prefix sum up to index 2 (0-indexed) [1,2,3]:&#34;, ft.query(2)) # Expected: 6</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># print(&#34;Value at index 3 (0-indexed) [4]:&#34;, ft.range_query(3, 3)) # Expected: 4</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># ft.update(0, 5) # arr becomes [6, 2, 3, 4, 5] (add 5 to arr[0])</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># print(&#34;Prefix sum up to index 2 after update [6,2,3]:&#34;, ft.query(2)) # Expected: 11</span>
+</span></span></code></pre></div><h3 id=javascript>Javascript</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=display:flex><span><span style=color:#859900>class</span> <span style=color:#268bd2>FenwickTree</span> {
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>constructor</span>(<span style=color:#268bd2>size</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>bit</span> = <span style=color:#859900>new</span> <span style=color:#cb4b16>Array</span>(<span style=color:#268bd2>size</span> + <span style=color:#2aa198;font-weight:700>1</span>).<span style=color:#268bd2>fill</span>(<span style=color:#2aa198;font-weight:700>0</span>); <span style=color:#93a1a1;font-style:italic>// Fenwick Tree is 1-indexed
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>size</span> = <span style=color:#268bd2>size</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>update</span>(<span style=color:#268bd2>index</span>, <span style=color:#268bd2>delta</span>) {
+</span></span><span style=display:flex><span>        /&lt;/em&gt;&lt;em&gt; Adds delta to element at index. &lt;/em&gt;/
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic>// Fenwick Tree is 1-indexed, so adjust index
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        <span style=color:#268bd2>index</span> += <span style=color:#2aa198;font-weight:700>1</span>; 
+</span></span><span style=display:flex><span>        <span style=color:#859900>while</span> (<span style=color:#268bd2>index</span> &lt;= <span style=color:#859900>this</span>.<span style=color:#268bd2>size</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>this</span>.<span style=color:#268bd2>bit</span>[<span style=color:#268bd2>index</span>] += <span style=color:#268bd2>delta</span>;
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>index</span> += <span style=color:#268bd2>index</span> &amp; (-<span style=color:#268bd2>index</span>); <span style=color:#93a1a1;font-style:italic>// Move to parent
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>query</span>(<span style=color:#268bd2>index</span>) {
+</span></span><span style=display:flex><span>        /*&lt;em&gt; Returns the sum of elements from index 0 up to index (inclusive). &lt;/em&gt;/
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic>// Fenwick Tree is 1-indexed, so adjust index
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        <span style=color:#268bd2>index</span> += <span style=color:#2aa198;font-weight:700>1</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900>let</span> <span style=color:#268bd2>totalSum</span> = <span style=color:#2aa198;font-weight:700>0</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900>while</span> (<span style=color:#268bd2>index</span> &gt; <span style=color:#2aa198;font-weight:700>0</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>totalSum</span> += <span style=color:#859900>this</span>.<span style=color:#268bd2>bit</span>[<span style=color:#268bd2>index</span>];
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>index</span> -= <span style=color:#268bd2>index</span> &amp; (-<span style=color:#268bd2>index</span>); <span style=color:#93a1a1;font-style:italic>// Move to parent
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        }
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>totalSum</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>rangeQuery</span>(<span style=color:#268bd2>left</span>, <span style=color:#268bd2>right</span>) {
+</span></span><span style=display:flex><span>        /*&lt;em&gt; Returns sum of elements from index left to right (inclusive). &lt;/em&gt;/
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#859900>this</span>.<span style=color:#268bd2>query</span>(<span style=color:#268bd2>right</span>) - <span style=color:#859900>this</span>.<span style=color:#268bd2>query</span>(<span style=color:#268bd2>left</span> - <span style=color:#2aa198;font-weight:700>1</span>);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// Example Usage:
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const arr = [1, 2, 3, 4, 5];
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const ft = new FenwickTree(arr.length);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// // Initialize Fenwick Tree with array elements
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// for (let i = 0; i &lt; arr.length; i++) {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     ft.update(i, arr[i]);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// }
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// console.log(&#34;Prefix sum up to index 2 (0-indexed) [1,2,3]:&#34;, ft.query(2)); // Expected: 6
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// console.log(&#34;Value at index 3 (0-indexed) [4]:&#34;, ft.rangeQuery(3, 3)); // Expected: 4
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// ft.update(0, 5); // arr becomes [6, 2, 3, 4, 5] (add 5 to arr[0])
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// console.log(&#34;Prefix sum up to index 2 after update [6,2,3]:&#34;, ft.query(2)); // Expected: 11
+</span></span></span></code></pre></div><h3 id=typescript>Typescript</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-typescript data-lang=typescript><span style=display:flex><span><span style=color:#859900>class</span> <span style=color:#268bd2>FenwickTreeTS</span> {
+</span></span><span style=display:flex><span>    <span style=color:#859900>private</span> <span style=color:#268bd2>bit</span>: <span style=color:#859900;font-weight:700>number</span>[];
+</span></span><span style=display:flex><span>    <span style=color:#859900>private</span> <span style=color:#268bd2>size</span>: <span style=color:#859900;font-weight:700>number</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>constructor</span>(<span style=color:#268bd2>size</span>: <span style=color:#859900;font-weight:700>number</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>bit</span> = <span style=color:#859900>new</span> <span style=color:#cb4b16>Array</span>(<span style=color:#268bd2>size</span> + <span style=color:#2aa198;font-weight:700>1</span>).<span style=color:#268bd2>fill</span>(<span style=color:#2aa198;font-weight:700>0</span>); <span style=color:#93a1a1;font-style:italic>// Fenwick Tree is 1-indexed
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>size</span> = <span style=color:#268bd2>size</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>update</span>(<span style=color:#268bd2>index</span>: <span style=color:#859900;font-weight:700>number</span>, <span style=color:#268bd2>delta</span>: <span style=color:#859900;font-weight:700>number</span>): <span style=color:#859900>void</span> {
+</span></span><span style=display:flex><span>        /*&lt;em&gt; Adds delta to element at index. &lt;/em&gt;/
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic>// Fenwick Tree is 1-indexed, so adjust index
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        <span style=color:#268bd2>index</span> += <span style=color:#2aa198;font-weight:700>1</span>; 
+</span></span><span style=display:flex><span>        <span style=color:#859900>while</span> (<span style=color:#268bd2>index</span> &lt;= <span style=color:#859900>this</span>.<span style=color:#268bd2>size</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>this</span>.<span style=color:#268bd2>bit</span>[<span style=color:#268bd2>index</span>] += <span style=color:#268bd2>delta</span>;
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>index</span> += <span style=color:#268bd2>index</span> &amp; (-<span style=color:#268bd2>index</span>); <span style=color:#93a1a1;font-style:italic>// Move to parent
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>query</span>(<span style=color:#268bd2>index</span>: <span style=color:#859900;font-weight:700>number</span>): <span style=color:#859900;font-weight:700>number</span> {
+</span></span><span style=display:flex><span>        /*&lt;em&gt; Returns the sum of elements from index 0 up to index (inclusive). &lt;/em&gt;/
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic>// Fenwick Tree is 1-indexed, so adjust index
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        <span style=color:#268bd2>index</span> += <span style=color:#2aa198;font-weight:700>1</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900>let</span> <span style=color:#268bd2>totalSum</span> = <span style=color:#2aa198;font-weight:700>0</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900>while</span> (<span style=color:#268bd2>index</span> &gt; <span style=color:#2aa198;font-weight:700>0</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>totalSum</span> += <span style=color:#859900>this</span>.<span style=color:#268bd2>bit</span>[<span style=color:#268bd2>index</span>];
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>index</span> -= <span style=color:#268bd2>index</span> &amp; (-<span style=color:#268bd2>index</span>); <span style=color:#93a1a1;font-style:italic>// Move to parent
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        }
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>totalSum</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>rangeQuery</span>(<span style=color:#268bd2>left</span>: <span style=color:#859900;font-weight:700>number</span>, <span style=color:#268bd2>right</span>: <span style=color:#859900;font-weight:700>number</span>): <span style=color:#859900;font-weight:700>number</span> {
+</span></span><span style=display:flex><span>        /*&lt;em&gt; Returns sum of elements from index left to right (inclusive). &lt;/em&gt;/
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#859900>this</span>.<span style=color:#268bd2>query</span>(<span style=color:#268bd2>right</span>) - <span style=color:#859900>this</span>.<span style=color:#268bd2>query</span>(<span style=color:#268bd2>left</span> - <span style=color:#2aa198;font-weight:700>1</span>);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// Example Usage:
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const arrTS = [1, 2, 3, 4, 5];
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const ftTS = new FenwickTreeTS(arrTS.length);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// // Initialize Fenwick Tree with array elements
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// for (let i = 0; i &lt; arrTS.length; i++) {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     ftTS.update(i, arrTS[i]);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// }
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// console.log(&#34;Prefix sum up to index 2 (0-indexed) [1,2,3]:&#34;, ftTS.query(2)); // Expected: 6
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// console.log(&#34;Value at index 3 (0-indexed) [4]:&#34;, ftTS.rangeQuery(3, 3)); // Expected: 4
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// ftTS.update(0, 5); // arr becomes [6, 2, 3, 4, 5] (add 5 to arr[0])
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// console.log(&#34;Prefix sum up to index 2 after update [6,2,3]:&#34;, ftTS.query(2)); // Expected: 11
+</span></span></span></code></pre></div><h3 id=cpp>Cpp</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-cpp data-lang=cpp><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;vector&gt;</span><span style=color:#93a1a1;font-style:italic>
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;numeric&gt;</span><span style=color:#93a1a1;font-style:italic> </span><span style=color:#93a1a1;font-style:italic>// For std::accumulate (if needed for initial array sum)
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;iostream&gt;</span><span style=color:#93a1a1;font-style:italic>
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#859900>class</span> <span style=color:#cb4b16>FenwickTree</span> {
+</span></span><span style=display:flex><span><span style=color:#859900>private</span>:
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>std</span>::<span style=color:#268bd2>vector</span>&lt;<span style=color:#859900;font-weight:700>int</span>&gt; <span style=color:#268bd2>bit</span>; <span style=color:#93a1a1;font-style:italic>// Fenwick Tree is 1-indexed
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>size</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>public</span>:
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>FenwickTree</span>(<span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>s</span>) : <span style=color:#268bd2>size</span>(<span style=color:#268bd2>s</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>bit</span>.<span style=color:#268bd2>resize</span>(<span style=color:#268bd2>size</span> + <span style=color:#2aa198;font-weight:700>1</span>, <span style=color:#2aa198;font-weight:700>0</span>);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>void</span> <span style=color:#268bd2>update</span>(<span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>index</span>, <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>delta</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic>/*&lt;em&gt; Adds delta to element at index. &lt;/em&gt;/
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>        // Fenwick Tree is 1-indexed, so adjust index
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>        index += 1; 
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>        while (index &lt;= size) {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>            bit[index] += delta;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>            index += index &amp; (-index); // Move to parent
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>        }
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>    }
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>    int query(int index) {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>        /*&lt;em&gt; Returns the sum of elements from index 0 up to index (inclusive). &lt;/em&gt;/
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>        // Fenwick Tree is 1-indexed, so adjust index
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>        index += 1;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>        int total_sum = 0;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>        while (index &gt; 0) {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>            total_sum += bit[index];
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>            index -= index &amp; (-index); // Move to parent
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>        }
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>        return total_sum;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>    }
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>    int range_query(int left, int right) {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>        /*&lt;em&gt; Returns sum of elements from index left to right (inclusive). &lt;/em&gt;/
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>        return query(right) - query(left - 1);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>    }
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>};
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// Example Usage:
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// int main() {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     std::vector&lt;int&gt; arr = {1, 2, 3, 4, 5};
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     FenwickTree ft(arr.size());
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     // Initialize Fenwick Tree with array elements
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     for (int i = 0; i &lt; arr.size(); ++i) {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         ft.update(i, arr[i]);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     }
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     std::cout &lt;&lt; &#34;Prefix sum up to index 2 (0-indexed) [1,2,3]: &#34; &lt;&lt; ft.query(2) &lt;&lt; std::endl; // Expected: 6
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     std::cout &lt;&lt; &#34;Value at index 3 (0-indexed) [4]: &#34; &lt;&lt; ft.range_query(3, 3) &lt;&lt; std::endl; // Expected: 4
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     ft.update(0, 5); // arr becomes conceptually [6, 2, 3, 4, 5] (add 5 to arr[0])
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     std::cout &lt;&lt; &#34;Prefix sum up to index 2 after update [6,2,3]: &#34; &lt;&lt; ft.query(2) &lt;&lt; std::endl; // Expected: 11
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     return 0;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// }
+</span></span></span></code></pre></div><h3 id=go>Go</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#dc322f;font-weight:700>package</span> <span style=color:#268bd2>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#2aa198>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>type</span> <span style=color:#268bd2>FenwickTree</span> <span style=color:#859900>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>bit</span>  []<span style=color:#859900;font-weight:700>int</span> <span style=color:#93a1a1;font-style:italic>// Fenwick Tree is 1-indexed</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>size</span> <span style=color:#859900;font-weight:700>int</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>func</span> <span style=color:#268bd2>NewFenwickTree</span>(<span style=color:#268bd2>size</span> <span style=color:#859900;font-weight:700>int</span>) &lt;<span style=color:#268bd2>em</span>&gt;<span style=color:#268bd2>FenwickTree</span> {
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> &amp;<span style=color:#268bd2>FenwickTree</span>{
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>bit</span>:  <span style=color:#cb4b16>make</span>([]<span style=color:#859900;font-weight:700>int</span>, <span style=color:#268bd2>size</span>+<span style=color:#2aa198;font-weight:700>1</span>),
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>size</span>: <span style=color:#268bd2>size</span>,
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>func</span> (<span style=color:#268bd2>ft</span> &lt;/<span style=color:#268bd2>em</span>&gt;<span style=color:#268bd2>FenwickTree</span>) <span style=color:#268bd2>Update</span>(<span style=color:#268bd2>index</span>, <span style=color:#268bd2>delta</span> <span style=color:#859900;font-weight:700>int</span>) {
+</span></span><span style=display:flex><span>    /*&lt;<span style=color:#268bd2>em</span>&gt; <span style=color:#268bd2>Adds</span> <span style=color:#268bd2>delta</span> <span style=color:#268bd2>to</span> <span style=color:#268bd2>element</span> <span style=color:#268bd2>at</span> <span style=color:#268bd2>index</span>. &lt;/<span style=color:#268bd2>em</span>&gt;/
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// Fenwick Tree is 1-indexed, so adjust index</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>index</span> += <span style=color:#2aa198;font-weight:700>1</span> 
+</span></span><span style=display:flex><span>    <span style=color:#859900>for</span> <span style=color:#268bd2>index</span> &lt;= <span style=color:#268bd2>ft</span>.<span style=color:#268bd2>size</span> {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>ft</span>.<span style=color:#268bd2>bit</span>[<span style=color:#268bd2>index</span>] += <span style=color:#268bd2>delta</span>
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>index</span> += <span style=color:#268bd2>index</span> &amp; (-<span style=color:#268bd2>index</span>) <span style=color:#93a1a1;font-style:italic>// Move to parent</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>func</span> (<span style=color:#268bd2>ft</span> &lt;<span style=color:#268bd2>em</span>&gt;<span style=color:#268bd2>FenwickTree</span>) <span style=color:#268bd2>Query</span>(<span style=color:#268bd2>index</span> <span style=color:#859900;font-weight:700>int</span>) <span style=color:#859900;font-weight:700>int</span> {
+</span></span><span style=display:flex><span>    /&lt;/<span style=color:#268bd2>em</span>&gt;&lt;<span style=color:#268bd2>em</span>&gt; <span style=color:#268bd2>Returns</span> <span style=color:#268bd2>the</span> <span style=color:#268bd2>sum</span> <span style=color:#268bd2>of</span> <span style=color:#268bd2>elements</span> <span style=color:#268bd2>from</span> <span style=color:#268bd2>index</span> <span style=color:#2aa198;font-weight:700>0</span> <span style=color:#268bd2>up</span> <span style=color:#268bd2>to</span> <span style=color:#268bd2>index</span> (<span style=color:#268bd2>inclusive</span>). &lt;/<span style=color:#268bd2>em</span>&gt;/
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// Fenwick Tree is 1-indexed, so adjust index</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>index</span> += <span style=color:#2aa198;font-weight:700>1</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>totalSum</span> := <span style=color:#2aa198;font-weight:700>0</span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>for</span> <span style=color:#268bd2>index</span> &gt; <span style=color:#2aa198;font-weight:700>0</span> {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>totalSum</span> += <span style=color:#268bd2>ft</span>.<span style=color:#268bd2>bit</span>[<span style=color:#268bd2>index</span>]
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>index</span> -= <span style=color:#268bd2>index</span> &amp; (-<span style=color:#268bd2>index</span>) <span style=color:#93a1a1;font-style:italic>// Move to parent</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>totalSum</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>func</span> (<span style=color:#268bd2>ft</span> &lt;<span style=color:#268bd2>em</span>&gt;<span style=color:#268bd2>FenwickTree</span>) <span style=color:#268bd2>RangeQuery</span>(<span style=color:#268bd2>left</span>, <span style=color:#268bd2>right</span> <span style=color:#859900;font-weight:700>int</span>) <span style=color:#859900;font-weight:700>int</span> {
+</span></span><span style=display:flex><span>    /&lt;/<span style=color:#268bd2>em</span>&gt;&lt;<span style=color:#268bd2>em</span>&gt; <span style=color:#268bd2>Returns</span> <span style=color:#268bd2>sum</span> <span style=color:#268bd2>of</span> <span style=color:#268bd2>elements</span> <span style=color:#268bd2>from</span> <span style=color:#268bd2>index</span> <span style=color:#268bd2>left</span> <span style=color:#268bd2>to</span> <span style=color:#268bd2>right</span> (<span style=color:#268bd2>inclusive</span>). &lt;/<span style=color:#268bd2>em</span>&gt;/
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>ft</span>.<span style=color:#268bd2>Query</span>(<span style=color:#268bd2>right</span>) - <span style=color:#268bd2>ft</span>.<span style=color:#268bd2>Query</span>(<span style=color:#268bd2>left</span>-<span style=color:#2aa198;font-weight:700>1</span>)
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// func main() {</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     arr := []int{1, 2, 3, 4, 5}</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     ft := NewFenwickTree(len(arr))</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     // Initialize Fenwick Tree with array elements</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     for i, val := range arr {</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         ft.Update(i, val)</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     }</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     fmt.Println(&#34;Prefix sum up to index 2 (0-indexed) [1,2,3]:&#34;, ft.Query(2)) // Expected: 6</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     fmt.Println(&#34;Value at index 3 (0-indexed) [4]:&#34;, ft.RangeQuery(3, 3))    // Expected: 4</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     ft.Update(0, 5) // arr becomes conceptually [6, 2, 3, 4, 5] (add 5 to arr[0])</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     fmt.Println(&#34;Prefix sum up to index 2 after update [6,2,3]:&#34;, ft.Query(2)) // Expected: 11</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// }</span>
+</span></span></code></pre></div><h3 id=d>D</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-d data-lang=d><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>std.stdio</span>;
+</span></span><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>std.array</span>;
+</span></span><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>std.sum</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>class</span> <span style=color:#cb4b16>FenwickTree</span> {
+</span></span><span style=display:flex><span>    <span style=color:#859900>private</span> <span style=color:#859900;font-weight:700>int</span>[] <span style=color:#268bd2>bit</span>; <span style=color:#93a1a1;font-style:italic>// Fenwick Tree is 1-indexed
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900>private</span> <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>_size</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>this</span>(<span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>size</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>_size</span> = <span style=color:#268bd2>size</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>bit</span> = <span style=color:#859900>new</span> <span style=color:#859900;font-weight:700>int</span>[<span style=color:#268bd2>size</span> + <span style=color:#2aa198;font-weight:700>1</span>]; <span style=color:#93a1a1;font-style:italic>// Initialize with zeros
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>void</span> <span style=color:#268bd2>update</span>(<span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>index</span>, <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>delta</span>) {
+</span></span><span style=display:flex><span>        /*&lt;<span style=color:#268bd2>em</span>&gt; <span style=color:#268bd2>Adds</span> <span style=color:#268bd2>delta</span> <span style=color:#268bd2>to</span> <span style=color:#268bd2>element</span> <span style=color:#268bd2>at</span> <span style=color:#268bd2>index</span>. &lt;/<span style=color:#268bd2>em</span>&gt;/
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic>// Fenwick Tree is 1-indexed, so adjust index
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        <span style=color:#268bd2>index</span> += <span style=color:#2aa198;font-weight:700>1</span>; 
+</span></span><span style=display:flex><span>        <span style=color:#859900>while</span> (<span style=color:#268bd2>index</span> &lt;= <span style=color:#268bd2>_size</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>this</span>.<span style=color:#268bd2>bit</span>[<span style=color:#268bd2>index</span>] += <span style=color:#268bd2>delta</span>;
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>index</span> += <span style=color:#268bd2>index</span> &amp; (-<span style=color:#268bd2>index</span>); <span style=color:#93a1a1;font-style:italic>// Move to parent
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>query</span>(<span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>index</span>) {
+</span></span><span style=display:flex><span>        /*&lt;<span style=color:#268bd2>em</span>&gt; <span style=color:#268bd2>Returns</span> <span style=color:#268bd2>the</span> <span style=color:#268bd2>sum</span> <span style=color:#268bd2>of</span> <span style=color:#268bd2>elements</span> <span style=color:#268bd2>from</span> <span style=color:#268bd2>index</span> <span style=color:#2aa198;font-weight:700>0</span> <span style=color:#268bd2>up</span> <span style=color:#268bd2>to</span> <span style=color:#268bd2>index</span> (<span style=color:#268bd2>inclusive</span>). &lt;/<span style=color:#268bd2>em</span>&gt;/
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic>// Fenwick Tree is 1-indexed, so adjust index
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        <span style=color:#268bd2>index</span> += <span style=color:#2aa198;font-weight:700>1</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>totalSum</span> = <span style=color:#2aa198;font-weight:700>0</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900>while</span> (<span style=color:#268bd2>index</span> &gt; <span style=color:#2aa198;font-weight:700>0</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>totalSum</span> += <span style=color:#859900>this</span>.<span style=color:#268bd2>bit</span>[<span style=color:#268bd2>index</span>];
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>index</span> -= <span style=color:#268bd2>index</span> &amp; (-<span style=color:#268bd2>index</span>); <span style=color:#93a1a1;font-style:italic>// Move to parent
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        }
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>totalSum</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>rangeQuery</span>(<span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>left</span>, <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>right</span>) {
+</span></span><span style=display:flex><span>        /*&lt;<span style=color:#268bd2>em</span>&gt; <span style=color:#268bd2>Returns</span> <span style=color:#268bd2>sum</span> <span style=color:#268bd2>of</span> <span style=color:#268bd2>elements</span> <span style=color:#268bd2>from</span> <span style=color:#268bd2>index</span> <span style=color:#268bd2>left</span> <span style=color:#268bd2>to</span> <span style=color:#268bd2>right</span> (<span style=color:#268bd2>inclusive</span>). &lt;/<span style=color:#268bd2>em</span>&gt;/
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#859900>this</span>.<span style=color:#268bd2>query</span>(<span style=color:#268bd2>right</span>) - <span style=color:#859900>this</span>.<span style=color:#268bd2>query</span>(<span style=color:#268bd2>left</span> - <span style=color:#2aa198;font-weight:700>1</span>);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// void main() {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     int[] arr = [1, 2, 3, 4, 5];
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     auto ft = new FenwickTree(arr.length);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     // Initialize Fenwick Tree with array elements
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     foreach (i, val; arr) {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         ft.update(cast(int)i, val);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     }
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     writefln(&#34;Prefix sum up to index 2 (0-indexed) [1,2,3]: %s&#34;, ft.query(2)); // Expected: 6
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     writefln(&#34;Value at index 3 (0-indexed) [4]: %s&#34;, ft.rangeQuery(3, 3));    // Expected: 4
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     ft.update(0, 5); // arr becomes conceptually [6, 2, 3, 4, 5] (add 5 to arr[0])
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     writefln(&#34;Prefix sum up to index 2 after update [6,2,3]: %s&#34;, ft.query(2)); // Expected: 11
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// }
+</span></span></span></code></pre></div><h2 id=code-walkthrough>Code Walkthrough</h2><p><a href=#implementation>Back to Implementation</a></p><h3 id=code-walkthrough-1>Code Walkthrough</h3><p>A <code>Fenwick Tree</code> is implemented as an <code>array</code>, but with an unconventional way of storing sums that allows for efficient <code>updates</code> and <code>queries</code>. It often uses 1-based indexing internally for simpler bitwise operations.</p><hr><p><strong><code>FenwickTree</code> Class:</strong></p><ul><li><p><code>bit</code>: The underlying <code>array</code> that stores the computed sums. Its size is <code>N+1</code> for 1-based indexing.</p></li><li><p><code>size</code>: The size of the original <code>array</code> that the <code>Fenwick Tree</code> represents.</p></li><li><p><strong><code>update(index, delta)</code>:</strong></p></li><li><p>Takes a 0-indexed <code>index</code> and a <code>delta</code> value to add to the <code>element</code> at that <code>index</code>.</p></li><li><p>Converts the <code>index</code> to 1-based.</p></li><li><p>It then iterates, adding <code>delta</code> to <code>bit[index]</code>, and moves to the next <code>node</code> to update by adding <code>index & (-index)</code> to the current <code>index</code>. This effectively propagates the <code>delta</code> up the implicit <code>tree</code>.</p></li></li><li><p><strong><code>query(index)</code>:</strong></p></li><li><p>Takes a 0-indexed <code>index</code>.</p></li><li><p>Converts the <code>index</code> to 1-based.</p></li><li><p>It iterates, adding <code>bit[index]</code> to a <code>total sum</code>, and moves to the next <code>node</code> to query by subtracting <code>index & (-index)</code> from the current <code>index</code>. This effectively sums up the relevant ranges down the implicit <code>tree</code>.</p></li></li><li><p><strong><code>range_query(left, right)</code>:</strong> Uses the <code>prefix sum</code> property to find the sum of <code>elements</code> within a given <code>range [left, right]</code> by calculating <code>query(right) - query(left - 1)</code>.</p></li></ul><p><a href=#implementation>Back to Implementation</a></p><h2 id=applications>Applications</h2><h3 id=application>Application</h3><p>Fenwick Trees are a versatile tool in competitive programming and any application requiring efficient <strong>dynamic prefix sums</strong> and single-element updates. They are used in:</p><ul><li><strong>Data Analysis:</strong> For quickly calculating running totals or sums of intervals in data streams that are frequently updated.</li><li><strong>Financial Applications:</strong> For tracking cumulative values over time or across various segments, where both updates and sum queries need to be fast.</li><li><strong>Image Processing:</strong> For certain operations involving summing pixel values in rectangular regions.</li><li><strong>Online Gaming Leaderboards:</strong> If players&rsquo; scores are constantly updating and you need to query rank ranges efficiently.</li></ul></div></article><div class=navigation style="margin-top:5rem;display:flex;justify-content:space-between;border-top:1px solid var(--border);padding-top:2rem"><a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/data_structures/specialized/fibonacci_heap/ class=nav-btn>← Previous</a>
+<a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/data_structures/specialized/ class=nav-btn>Up</a>
+<a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/data_structures/specialized/disjoint_set_union/ class=nav-btn>Next →</a></div></main><footer class=footer><p>Built with Hugo. No scripts. No tracking. Just the truth.</p></footer><script>document.addEventListener("DOMContentLoaded",function(){const n=document.body,s=document.createTreeWalker(n,NodeFilter.SHOW_TEXT,null,!1);let e;const t=[];for(;e=s.nextNode();)e.nodeValue.includes("[-]")&&t.push(e);t.forEach(e=>{const t=document.createElement("span");t.innerHTML=e.nodeValue.replace(/\[-\]/g,'<span class="started-icon" title="Started"></span>'),e.parentNode.replaceChild(t,e)})})</script><script>const body=document.getElementById("theme-body"),btn=document.getElementById("theme-toggle"),currentTheme=localStorage.getItem("theme");function updateButtonText(){body.classList.contains("theme-terminal")?btn.textContent="Light Mode":btn.textContent="Dark Mode"}currentTheme==="terminal"&&body.classList.add("theme-terminal"),updateButtonText(),btn.addEventListener("click",()=>{body.classList.toggle("theme-terminal"),updateButtonText();let e="natural";body.classList.contains("theme-terminal")&&(e="terminal"),localStorage.setItem("theme",e)})</script></body></html>

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Qapitol Qa Interview Questions on SDET Interview Preparation Kit</title><link>https://notxkcd.github.io/sdet-prep-site/12_company_based_questions/qapitol-qa/</link><description>Recent content in Qapitol Qa Interview Questions on SDET Interview Preparation Kit</description><generator>Hugo</generator><language>en-us</language><lastBuildDate>Fri, 30 Jan 2026 00:00:00 +0000</lastBuildDate><atom:link href="https://notxkcd.github.io/sdet-prep-site/12_company_based_questions/qapitol-qa/index.xml" rel="self" type="application/rss+xml"/><item><title>Qapitol Qa Interview Questions</title><link>https://notxkcd.github.io/sdet-prep-site/12_company_based_questions/qapitol-qa/main/</link><pubDate>Fri, 30 Jan 2026 00:00:00 +0000</pubDate><guid>https://notxkcd.github.io/sdet-prep-site/12_company_based_questions/qapitol-qa/main/</guid><description>&lt;p&gt;import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;&lt;/p&gt;
+&lt;p&gt;public class PalindromeAnalyzer {&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;// Helper to check if a string is a palindrome (ignoring case and non-alphanumeric)
+private static boolean isPalindrome(String s) {
+ String cleaned = s.replaceAll(&amp;quot;[^a-zA-Z0-9]&amp;quot;, &amp;quot;&amp;quot;).toLowerCase();
+ if (cleaned.isEmpty()) return false; // An empty string is not a palindrome for this context
+ return cleaned.equals(new StringBuilder(cleaned).reverse().toString());
+}
+
+// Main method to find palindromes and analyze
+public static void analyzePalindromes(String text) {
+ if (text == null || text.isEmpty()) {
+ System.out.println(&amp;quot;Input string is empty.&amp;quot;);
+ return;
+ }
+
+ // Pattern to find words. \b matches word boundaries, \w+ matches one or more word characters.
+ Pattern pattern = Pattern.compile(&amp;quot;\\b\\w+\\b&amp;quot;); 
+ Matcher matcher = pattern.matcher(text); // Use original text for word finding
+
+ int palindromeCount = 0;
+ String longestPalindromeWord = &amp;quot;&amp;quot;;
+ 
+ while (matcher.find()) {
+ String word = matcher.group();
+ if (isPalindrome(word)) {
+ palindromeCount++;
+ if (word.length() &amp;gt; longestPalindromeWord.length()) {
+ longestPalindromeWord = word;
+ }
+ }
+ }
+
+ System.out.println(&amp;quot;Total palindrome words found: &amp;quot; + palindromeCount);
+ System.out.println(&amp;quot;Highest length palindrome word: &amp;quot; + longestPalindromeWord);
+
+ if (!longestPalindromeWord.isEmpty()) {
+ System.out.println(&amp;quot;Occurrence of each character in longest palindrome ('&amp;quot; + longestPalindromeWord + &amp;quot;'):&amp;quot;);
+ Map&amp;lt;Character, Integer&amp;gt; charCounts = new HashMap&amp;lt;&amp;gt;();
+ String cleanedLongest = longestPalindromeWord.replaceAll(&amp;quot;[^a-zA-Z0-9]&amp;quot;, &amp;quot;&amp;quot;).toLowerCase();
+ for (char c : cleanedLongest.toCharArray()) {
+ charCounts.put(c, charCounts.getOrDefault(c, 0) + 1);
+ }
+ charCounts.forEach((c, count) -&amp;gt; System.out.println(&amp;quot;'&amp;quot; + c + &amp;quot;': &amp;quot; + count));
+ }
+}
+
+public static void main(String[] args) {
+ String input = &amp;quot;Madam is a civic engineer. Racecar is another example. A man, a plan, a canal: Panama.&amp;quot;;
+ analyzePalindromes(input);
+ /* Expected output for input &amp;quot;Madam is a civic engineer. Racecar is another example. A man, a plan, a canal: Panama.&amp;quot;:
+ Total palindrome words found: 4 (Madam, a, civic, Racecar)
+ Highest length palindrome word: Racecar
+ Occurrence of each character in longest palindrome ('racecar'):
+ 'r': 2
+ 'a': 2
+ 'c': 2
+ 'e': 1
+ */
+ 
+ // Example for a phrase as a palindrome:
+ String input2 = &amp;quot;A man, a plan, a canal: Panama&amp;quot;;
+ // To count this as one palindrome, you would process the entire cleaned string:
+ if (isPalindrome(input2)) {
+ System.out.println(&amp;quot;\nFull phrase is a palindrome: &amp;quot; + input2);
+ Map&amp;lt;Character, Integer&amp;gt; charCounts = new HashMap&amp;lt;&amp;gt;();
+ String cleanedPhrase = input2.replaceAll(&amp;quot;[^a-zA-Z0-9]&amp;quot;, &amp;quot;&amp;quot;).toLowerCase();
+ for (char c : cleanedPhrase.toCharArray()) {
+ charCounts.put(c, charCounts.getOrDefault(c, 0) + 1);
+ }
+ System.out.println(&amp;quot;Char counts in phrase: &amp;quot; + charCounts);
+ }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;}&lt;/p&gt;</description></item><item><title>Qapitol_QA-2</title><link>https://notxkcd.github.io/sdet-prep-site/12_company_based_questions/qapitol-qa/round-2/</link><pubDate>Fri, 30 Jan 2026 00:00:00 +0000</pubDate><guid>https://notxkcd.github.io/sdet-prep-site/12_company_based_questions/qapitol-qa/round-2/</guid><description>&lt;hr&gt;
+&lt;h2 id="original-questions"&gt;Original Questions&lt;/h2&gt;
+&lt;h2 id="qapitol-qa-interview-questions"&gt;Qapitol QA Interview Questions:&lt;/h2&gt;
+&lt;p&gt;What is chaining in API Testing ?
+Can we create an Object for an abstract class?
+What is the interface?
+What is the path and query param?
+Write a program the find count of palindrome strings in the given string and print the highest length palindrome.And also occurrence of each character count in that palindrome strings.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id="answers"&gt;Answers&lt;/h2&gt;
+&lt;h3 id="what-is-chaining-in-api-testing-"&gt;What is chaining in API Testing ?&lt;/h3&gt;
+&lt;p&gt;API chaining refers to the process where the output (response) of one API request is used as the input (request) for a subsequent API request. This allows you to test complex workflows or business processes that involve multiple API calls.&lt;/p&gt;</description></item></channel></rss>

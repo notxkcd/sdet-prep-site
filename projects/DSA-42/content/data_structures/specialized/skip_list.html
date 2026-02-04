@@ -1,0 +1,477 @@
+<div id="explanation-content">
+    <p>A <code>Skip List</code> is a probabilistic data structure that allows <code>O(log n)</code> average time complexity for <code>search</code>, <code>insertion</code>, and <code>deletion</code> operations, similar to a balanced <code>binary search tree</code>. However, it is much simpler to implement than balanced <code>BSTs</code> like <code>AVL trees</code> or <code>Red-Black trees</code>.</p>
+    <p>It consists of multiple layers of sorted <code>linked lists</code>. Each layer acts as an "express lane" for the layer below it, allowing for quicker traversal. <code>Skip Lists</code> are often used in concurrent data structures and databases where their simplicity and good performance characteristics are advantageous.</p>
+</div>
+
+<div id="expanded-explanation-content">
+    <h3>How it Works (Expanded)</h3>
+    <p>A <code>Skip List</code> is built upon a base sorted <code>linked list</code> (Level 0). Higher levels contain "express lanes" by having a subset of the <code>nodes</code> from the level below. When a <code>node</code> is inserted, its <code>height</code> (number of layers it participates in) is chosen randomly, typically using a coin flip.</p>
+    <div class="explanation-fence">
+Example Skip List:
+
+Level 2: HEAD --- 30 ------------------------------- TAIL
+                 / \
+Level 1: HEAD -- 10 -- 20 -- 30 ----------- 50 ----- TAIL
+                 / \   / \   / \          / \
+Level 0: HEAD -- 10 -- 20 -- 30 -- 40 -- 50 -- 60 --- TAIL
+
+Searching for 40:
+- Start at HEAD of Level 2. Next is 30. (30 < 40) -> Move right to 30.
+- At 30, Level 2. Next is TAIL. (TAIL > 40) -> Drop down to Level 1.
+- At 30, Level 1. Next is 50. (50 > 40) -> Drop down to Level 0.
+- At 30, Level 0. Next is 40. (40 == 40) -> Found!
+    </div>
+    <p><strong>Key Properties:</strong></p>
+    <ul>
+        <li><code>Elements</code> are stored in sorted order in the base <code>linked list</code> (Level 0).</li>
+        <li>Each <code>node</code> has a randomly chosen <code>level</code> (or <code>height</code>), defining how many <code>linked lists</code> it is part of.</li>
+        <li><code>Nodes</code> at higher <code>levels</code> skip over more <code>elements</code>, acting as shortcuts.</li>
+        <li>A special <code>head node</code> and <code>tail node</code> (often representing <code>-infinity</code> and <code>+infinity</code>) are typically present at all <code>levels</code>.</li>
+    </ul>
+    <p><strong>Operations:</strong></p>
+    <ul>
+        <li><strong><code>Search</code>:</strong> Start from the highest <code>level</code> at the <code>head node</code>. Traverse right as long as the next <code>node</code>'s <code>key</code> is less than the target <code>key</code>. If the next <code>node</code>'s <code>key</code> is greater, or there is no next <code>node</code>, drop down to the next lower <code>level</code> and continue. Repeat until the lowest <code>level</code> is reached.</li>
+        <li><strong><code>Insert</code>:</strong> First, perform a <code>search</code> to find the correct insertion point at each <code>level</code>. Then, create a new <code>node</code> and randomly assign it a <code>level</code> (<code>height</code>). Insert the new <code>node</code> into all <code>linked lists</code> up to its assigned <code>level</code>.</li>
+        <li><strong><code>Deletion</code>:</strong> Perform a <code>search</code> to find the <code>node</code> to be deleted. Once found, remove it from all <code>linked lists</code> it participates in. If a <code>level</code> becomes empty (only <code>head</code> and <code>tail</code> remain), that <code>level</code> can be removed.</li>
+    </ul>
+    <p><strong>Time Complexity:</strong> Average <code>O(log N)</code> for <code>search</code>, <code>insertion</code>, and <code>deletion</code>. Worst-case can be <code>O(N)</code>, but this is rare due to the probabilistic nature of <code>level assignment</code>.</p>
+    <p><strong>Space Complexity:</strong> Average <code>O(N)</code>, as each <code>element</code> is typically stored in a constant number of <code>levels</code> on average.</p>
+</div>
+
+<div id="code-implementations">
+    <pre data-lang="python"><code class="language-python">import random
+
+MAX_LEVEL = 16 # A reasonable maximum level for a skip list
+
+class SkipListNode:
+    def __init__(self, key, level):
+        self.key = key
+        self.forward = [None] <em> (level + 1) # Pointers to next node at each level
+
+class SkipList:
+    def __init__(self):
+        self.level = 0 # Current maximum level of the skip list
+        self.head = SkipListNode(-float('inf'), MAX_LEVEL) # Head node with -infinity key
+
+    def _random_level(self):
+        # Randomly choose a level for a new node
+        lvl = 0
+        while random.random() < 0.5 and lvl < MAX_LEVEL:
+            lvl += 1
+        return lvl
+
+    def search(self, key):
+        current = self.head
+        for i in range(self.level, -1, -1): # Start from highest level down
+            while current.forward[i] and current.forward[i].key < key:
+                current = current.forward[i]
+        
+        # After traversing, current.forward[0] is the node at level 0 immediately
+        # after current. Check if this is the key we're looking for.
+        current = current.forward[0]
+        if current and current.key == key:
+            return current
+        return None
+
+    def insert(self, key):
+        update = [None] </em> (MAX_LEVEL + 1) # To store pointers to update
+        current = self.head
+
+        for i in range(self.level, -1, -1):
+            while current.forward[i] and current.forward[i].key < key:
+                current = current.forward[i]
+            update[i] = current
+        
+        # Current is now the node just before the insertion point at level 0
+        current = current.forward[0]
+
+        if current and current.key == key: # Key already exists
+            return
+
+        # Generate a random level for the new node
+        new_level = self._random_level()
+
+        # If new_level is greater than current skip list level, update head
+        if new_level > self.level:
+            for i in range(self.level + 1, new_level + 1):
+                update[i] = self.head
+            self.level = new_level
+        
+        # Create new node
+        new_node = SkipListNode(key, new_level)
+
+        # Insert new node into list
+        for i in range(new_level + 1):
+            new_node.forward[i] = update[i].forward[i]
+            update[i].forward[i] = new_node
+
+    def delete(self, key):
+        update = [None] <em> (MAX_LEVEL + 1)
+        current = self.head
+
+        for i in range(self.level, -1, -1):
+            while current.forward[i] and current.forward[i].key < key:
+                current = current.forward[i]
+            update[i] = current
+        
+        current = current.forward[0]
+
+        if current and current.key == key: # Key found, proceed with deletion
+            for i in range(self.level + 1):
+                if update[i].forward[i] != current: # If current node is not in this level, break
+                    break
+                update[i].forward[i] = current.forward[i]
+            
+            # Remove levels that no longer have elements
+            while self.level > 0 and self.head.forward[self.level] is None:
+                self.level -= 1
+            return True
+        return False # Key not found
+
+# Example Usage:
+# skip_list = SkipList()
+# elements = [30, 10, 50, 20, 40, 60]
+# for e in elements:
+#     skip_list.insert(e)
+
+# print("Search 40:", skip_list.search(40).key if skip_list.search(40) else None) # Expected: 40
+# print("Search 70:", skip_list.search(70)) # Expected: None
+
+# skip_list.delete(40)
+# print("Search 40 after deletion:", skip_list.search(40)) # Expected: None
+</code></pre>
+
+    <pre data-lang="javascript"><code class="language-javascript">const MAX_LEVEL = 16; // A reasonable maximum level for a skip list
+
+class SkipListNode {
+    constructor(key, level) {
+        this.key = key;
+        this.forward = new Array(level + 1).fill(null); // Pointers to next node at each level
+    }
+}
+
+class SkipList {
+    constructor() {
+        this.level = 0; // Current maximum level of the skip list
+        this.head = new SkipListNode(-Infinity, MAX_LEVEL); // Head node with -infinity key
+    }
+
+    _randomLevel() {
+        // Randomly choose a level for a new node
+        let lvl = 0;
+        while (Math.random() < 0.5 && lvl < MAX_LEVEL) {
+            lvl++;
+        }
+        return lvl;
+    }
+
+    search(key) {
+        let current = this.head;
+        for (let i = this.level; i >= 0; i--) { // Start from highest level down
+            while (current.forward[i] && current.forward[i].key < key) {
+                current = current.forward[i];
+            }
+        }
+        
+        // After traversing, current.forward[0] is the node at level 0 immediately
+        // after current. Check if this is the key we're looking for.
+        current = current.forward[0];
+        if (current && current.key === key) {
+            return current;
+        }
+        return null;
+    }
+
+    insert(key) {
+        const update = new Array(MAX_LEVEL + 1).fill(null); // To store pointers to update
+        let current = this.head;
+
+        for (let i = this.level; i >= 0; i--) {
+            while (current.forward[i] && current.forward[i].key < key) {
+                current = current.forward[i];
+            }
+            update[i] = current;
+        }
+        
+        // Current is now the node just before the insertion point at level 0
+        current = current.forward[0];
+
+        if (current && current.key === key) { // Key already exists
+            return;
+        }
+
+        // Generate a random level for the new node
+        const newLevel = this._randomLevel();
+
+        // If newLevel is greater than current skip list level, update head
+        if (newLevel > this.level) {
+            for (let i = this.level + 1; i <= newLevel; i++) {
+                update[i] = this.head;
+            }
+            this.level = newLevel;
+        }
+        
+        // Create new node
+        const newNode = new SkipListNode(key, newLevel);
+
+        // Insert new node into list
+        for (let i = 0; i <= newLevel; i++) {
+            newNode.forward[i] = update[i].forward[i];
+            update[i].forward[i] = newNode;
+        }
+    }
+
+    delete(key) {
+        const update = new Array(MAX_LEVEL + 1).fill(null);
+        let current = this.head;
+
+        for (let i = this.level; i >= 0; i--) {
+            while (current.forward[i] && current.forward[i].key < key) {
+                current = current.forward[i];
+            }
+            update[i] = current;
+        }
+        
+        current = current.forward[0];
+
+        if (current && current.key === key) { // Key found, proceed with deletion
+            for (let i = 0; i <= this.level; i++) {
+                if (update[i].forward[i] !== current) { // If current node is not in this level, break
+                    break;
+                }
+                update[i].forward[i] = current.forward[i];
+            }
+            
+            // Remove levels that no longer have elements
+            while (this.level > 0 && this.head.forward[this.level] === null) {
+                this.level--;
+            }
+            return true;
+        }
+        return false; // Key not found
+    }
+}
+
+// Example Usage:
+// const skipList = new SkipList();
+// const elements = [30, 10, 50, 20, 40, 60];
+// for (const e of elements) {
+//     skipList.insert(e);
+// }
+
+// console.log("Search 40:", skipList.search(40)?.key); // Expected: 40
+// console.log("Search 70:", skipList.search(70)); // Expected: null
+
+// skipList.delete(40);
+// console.log("Search 40 after deletion:", skipList.search(40)); // Expected: null
+</code></pre>
+
+    <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;random&gt;   // For std::mt19937, std::uniform_real_distribution
+#include &lt;limits&gt;   // For std::numeric_limits
+
+const int MAX_LEVEL = 16; // A reasonable maximum level for a skip list
+
+// Forward declaration
+class SkipListNode;
+
+class SkipList {
+private:
+    std::mt19937 gen; // Random number generator
+    std::uniform_real_distribution&lt;double&gt;& dis; // For coin flip
+
+    int level; // Current maximum level of the skip list
+    SkipListNode</em> head; // Head node of the skip list
+
+    int _randomLevel() {
+        int lvl = 0;
+        while (dis(gen) < 0.5 && lvl < MAX_LEVEL) { // Coin flip for level
+            lvl++;
+        }
+        return lvl;
+    }
+
+public:
+    SkipList();
+    ~SkipList();
+
+    SkipListNode<em> search(int key);
+    void insert(int key);
+    void remove(int key); // Renamed to remove to avoid conflict with C++ keyword
+    void display();
+};
+
+class SkipListNode {
+public:
+    int key;
+    std::vector&lt;SkipListNode</em>&gt; forward; // Pointers to next node at each level
+
+    SkipListNode(int k, int lvl) : key(k), forward(lvl + 1, nullptr) {}
+    
+    // Destructor to prevent memory leaks in a chain
+    ~SkipListNode() {
+        // This destructor is tricky in a SkipList due to shared pointers.
+        // A proper destructor would need to handle deletion carefully
+        // to avoid double-freeing or missing nodes.
+        // For this conceptual example, we'll rely on the main SkipList
+        // destructor (if implemented fully) or manual management.
+    }
+};
+
+SkipList::SkipList() : level(0), gen(std::random_device{}()), dis(0.0, 1.0) {
+    head = new SkipListNode(std::numeric_limits&lt;int&gt;::min(), MAX_LEVEL); // Head node with -infinity key
+}
+
+SkipList::~SkipList() {
+    SkipListNode<em> current = head->forward[0];
+    while (current != nullptr) {
+        SkipListNode</em> next = current->forward[0];
+        delete current;
+        current = next;
+    }
+    delete head;
+}
+
+SkipListNode<em> SkipList::search(int key) {
+    SkipListNode</em> current = head;
+    for (int i = level; i >= 0; i--) {
+        while (current->forward[i] != nullptr && current->forward[i]->key < key) {
+            current = current->forward[i];
+        }
+    }
+    
+    current = current->forward[0]; // Move to level 0 and check the next node
+    if (current != nullptr && current->key == key) {
+        return current;
+    }
+    return nullptr; // Key not found
+}
+
+void SkipList::insert(int key) {
+    std::vector&lt;SkipListNode<em>&gt; update(MAX_LEVEL + 1); // To store pointers to update
+    SkipListNode</em> current = head;
+
+    for (int i = level; i >= 0; i--) {
+        while (current->forward[i] != nullptr && current->forward[i]->key < key) {
+            current = current->forward[i];
+        }
+        update[i] = current;
+    }
+    
+    current = current->forward[0]; // Move to level 0, check for existing key
+    if (current != nullptr && current->key == key) { // Key already exists
+        return;
+    }
+
+    int new_level = _randomLevel(); // Generate a random level for the new node
+
+    if (new_level > level) { // If new level is greater than current skip list level
+        for (int i = level + 1; i <= new_level; i++) {
+            update[i] = head; // Update pointers for new levels starting from head
+        }
+        level = new_level; // Update overall skip list level
+    }
+    
+    SkipListNode<em> new_node = new SkipListNode(key, new_level); // Create new node
+
+    // Insert new node into list
+    for (int i = 0; i <= new_level; i++) {
+        new_node->forward[i] = update[i]->forward[i];
+        update[i]->forward[i] = new_node;
+    }
+}
+
+void SkipList::remove(int key) {
+    std::vector&lt;SkipListNode</em>&gt; update(MAX_LEVEL + 1);
+    SkipListNode* current = head;
+
+    for (int i = level; i >= 0; i--) {
+        while (current->forward[i] != nullptr && current->forward[i]->key < key) {
+            current = current->forward[i];
+        }
+        update[i] = current;
+    }
+    
+    current = current->forward[0]; // Move to level 0 and check the node
+
+    if (current != nullptr && current->key == key) { // Key found, proceed with deletion
+        for (int i = 0; i <= level; i++) {
+            if (update[i]->forward[i] != current) { // If current node is not in this level, break
+                break;
+            }
+            update[i]->forward[i] = current->forward[i];
+        }
+        
+        delete current; // Free the memory for the deleted node
+
+        // Remove levels that no longer have elements
+        while (level > 0 && head->forward[level] == nullptr) {
+            level--;
+        }
+    }
+}
+
+// Example Usage:
+// int main() {
+//     SkipList skip_list;
+//     std::vector&lt;int&gt; elements = {30, 10, 50, 20, 40, 60};
+//     for (int e : elements) {
+//         skip_list.insert(e);
+//     }
+
+//     std::cout << "Search 40: " << (skip_list.search(40) ? std::to_string(skip_list.search(40)->key) : "None") << std::endl; // Expected: 40
+//     std::cout << "Search 70: " << (skip_list.search(70) ? std::to_string(skip_list.search(70)->key) : "None") << std::endl; // Expected: None
+
+//     skip_list.remove(40);
+//     std::cout << "Search 40 after deletion: " << (skip_list.search(40) ? std::to_string(skip_list.search(40)->key) : "None") << std::endl; // Expected: None
+//     return 0;
+// }
+</code></pre>
+
+    <div id="code-explanation-content"><div class="markdown-content">
+        <h3>Code Walkthrough</h3>
+        <p>A <code>Skip List</code> implementation requires managing <code>nodes</code> with multiple <code>forward</code> pointers and a probabilistic approach to <code>level</code> assignment.</p>
+        <div class="explanation-fence">
+<strong><code>SkipListNode</code> Class:</strong> Represents a <code>node</code> in the <code>Skip List</code>.
+<ul>
+    <li><code>key</code>: The value stored in the <code>node</code>.</li>
+    <li><code>forward</code>: A <code>list</code>/<code>vector</code> of pointers, where <code>forward[i]</code> points to the next <code>node</code> in <code>level i</code>.</li>
+</ul>
+<br>
+<strong><code>SkipList</code> Class:</strong> Manages the overall <code>Skip List</code> structure.
+<ul>
+    <li><code>level</code>: The current maximum <code>level</code> of any <code>node</code> in the <code>Skip List</code>.</li>
+    <li><code>head</code>: A special <code>head node</code> (often with a <code>key</code> of <code>-infinity</code>) that has <code>forward</code> pointers for all possible <code>levels</code>.</li>
+    <li><code>_randomLevel()</code>: A private helper function that probabilistically determines the <code>level</code> (<code>height</code>) of a new <code>node</code>. Typically, a coin flip is used: if heads, increase <code>level</code>; repeat until tails or <code>MAX_LEVEL</code> is reached.</li>
+    <li><strong><code>search(key)</code>:</strong>
+        <ol>
+            <li>Starts from the <code>head node</code> at the highest current <code>level</code>.</li>
+            <li>Traverses right as long as the next <code>node</code> exists and its <code>key</code> is less than the target <code>key</code>.</li>
+            <li>If the next <code>node</code>'s <code>key</code> is greater or it's <code>None</code>/<code>nullptr</code>, it drops down to the next lower <code>level</code> and continues.</li>
+            <li>Once <code>level 0</code> is reached, it checks if the <code>node</code> directly to its right is the target <code>key</code>.</li>
+        </ol>
+    </li>
+    <li><strong><code>insert(key)</code>:</strong>
+        <ol>
+            <li>Performs a <code>search</code>-like traversal, but instead of stopping, it stores the last visited <code>node</code> at each <code>level</code> in an <code>update array</code>. These are the <code>nodes</code> whose <code>forward</code> pointers will need to be updated.</li>
+            <li>Generates a <code>random level</code> for the new <code>node</code>.</li>
+            <li>If the <code>new node</code>'s <code>level</code> is higher than the current <code>Skip List</code>'s maximum <code>level</code>, the <code>head</code>'s <code>forward</code> pointers for those new <code>levels</code> are updated.</li>
+            <li>Creates the new <code>SkipListNode</code> and inserts it into all relevant <code>linked lists</code> using the stored <code>update pointers</code>.</li>
+        </ol>
+    </li>
+    <li><strong><code>delete(key)</code>:</strong>
+        <ol>
+            <li>Similar to <code>insert</code>, it performs a <code>search</code> traversal and stores <code>update pointers</code>.</li>
+            <li>If the <code>node</code> with the target <code>key</code> is found, it updates the <code>forward</code> pointers of the <code>nodes</code> in the <code>update array</code> to bypass the deleted <code>node</code>.</li>
+            <li>Finally, it checks if any <code>levels</code> have become empty (only <code>head</code> and <code>tail</code> remain) and removes them.</li>
+        </ol>
+    </li>
+</ul>
+    </div></div>
+    <p><code>Skip Lists</code> achieve probabilistic balance with much simpler <code>insertion</code> and <code>deletion</code> algorithms compared to other balanced <code>trees</code>, making them an attractive alternative in many scenarios.</p>
+</div>
+<div id="application-content"><div class="markdown-content">
+    <h3>Application</h3>
+    <p>Skip Lists are a powerful alternative to balanced trees, offering similar performance with a simpler implementation. They are famously used in <strong>Redis</strong> to implement sorted sets. In concurrent programming, their structure allows for the creation of <strong>lock-free data structures</strong>, which are highly efficient in multi-threaded environments. They are also used in databases and network applications where data needs to be sorted and quickly accessible, but the complexity of a balanced tree is undesirable.</p>
+</div></div>

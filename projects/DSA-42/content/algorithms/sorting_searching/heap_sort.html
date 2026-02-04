@@ -1,0 +1,362 @@
+<div id="explanation-content">
+    <p><code>Heap Sort</code> is a comparison-based sorting algorithm that uses a <code>binary heap</code> data structure. It can be thought of as an improved version of <code>selection sort</code>, where instead of linearly scanning the unsorted part to find the maximum element, it uses a <code>heap</code> to find the maximum in <code>O(log N)</code> time.</p>
+    <p>It has an <code>O(N log N)</code> time complexity in all cases (best, average, and worst) and is an in-place sorting algorithm, meaning it requires only a constant amount of extra memory space.</p>
+</div>
+
+<div id="expanded-explanation-content">
+    <h3>How it Works (Expanded)</h3>
+    <p>The <code>Heap Sort</code> algorithm works in two main phases:</p>
+    <ol>
+        <li><strong>Build a Max-Heap:</strong> The first step is to build a <code>max-heap</code> from the input array. A <code>max-heap</code> is a <code>binary tree</code> where the value of each <code>parent node</code> is greater than or equal to the value of its children. This ensures that the root of the <code>heap</code> is always the largest element in the array.</li>
+        <li><strong>Repeatedly Extract Maximum:</strong> The algorithm then repeatedly extracts the maximum element from the <code>heap</code> (which is always at the root) and moves it to the end of the array. The heap is then rebuilt with the remaining elements, and the process is repeated until the entire array is sorted.</li>
+    </ol>
+    <div class="explanation-fence">
+Example: Sort [4, 10, 3, 5, 1]
+
+1. Build Max-Heap:
+   - Rearrange array into a max-heap: [10, 5, 3, 4, 1]
+
+2. Extract-Max Phase:
+   - Swap root (10) with last element (1): [1, 5, 3, 4, 10]
+   - Heapify the reduced heap [1, 5, 3, 4]. New heap: [5, 4, 3, 1]. Array: [5, 4, 3, 1, 10]
+   - Swap root (5) with last element (1): [1, 4, 3, 5, 10]
+   - Heapify the reduced heap [1, 4, 3]. New heap: [4, 1, 3]. Array: [4, 1, 3, 5, 10]
+   ...and so on, until the array is fully sorted.
+    </div>
+    <p>The "<code>heapify</code>" operation is crucial. It's a process that maintains the <code>heap property</code> by "sinking" an element down the <code>heap</code> until it is in its correct place.</p>
+    <p><strong>Time Complexity:</strong> <code>O(N log N)</code>. Building the initial <code>heap</code> takes <code>O(N)</code> time. Then, there are <code>N-1</code> <code>extract-max</code> operations, each of which takes <code>O(log N)</code> time for the <code>heapify</code> step.</p>
+    <p><strong>Space Complexity:</strong> <code>O(1)</code>, as it sorts the array in-place.</p>
+</div>
+
+<div id="code-implementations">
+    <pre data-lang="python"><code class="language-python">def heapify(arr, n, i):
+    largest = i  # Initialize largest as root
+    left = 2 <em> i + 1
+    right = 2 </em> i + 2
+
+    # See if left child of root exists and is greater than root
+    if left < n and arr[i] < arr[left]:
+        largest = left
+
+    # See if right child of root exists and is greater than root
+    if right < n and arr[largest] < arr[right]:
+        largest = right
+
+    # Change root, if needed
+    if largest != i:
+        arr[i], arr[largest] = arr[largest], arr[i]  # swap
+        # Heapify the root.
+        heapify(arr, n, largest)
+
+def heap_sort(arr):
+    n = len(arr)
+
+    # Build a max-heap.
+    # Since last parent will be at ((n//2)-1) we can start at that location.
+    for i in range(n // 2 - 1, -1, -1):
+        heapify(arr, n, i)
+
+    # One by one extract elements
+    for i in range(n - 1, 0, -1):
+        arr[i], arr[0] = arr[0], arr[i]  # swap
+        heapify(arr, i, 0)
+    return arr
+
+# Example
+# my_arr = [38, 27, 43, 3, 9, 82, 10]
+# print(heap_sort(my_arr)) # [3, 9, 10, 27, 38, 43, 82]
+</code></pre>
+
+    <pre data-lang="javascript"><code class="language-javascript">function heapSort(arr) {
+    let n = arr.length;
+
+    // Build a max-heap (rearrange array)
+    for (let i = Math.floor(n / 2) - 1; i >= 0; i--) {
+        heapify(arr, n, i);
+    }
+
+    // One by one extract an element from heap
+    for (let i = n - 1; i > 0; i--) {
+        // Move current root to end
+        [arr[0], arr[i]] = [arr[i], arr[0]];
+
+        // call max heapify on the reduced heap
+        heapify(arr, i, 0);
+    }
+    return arr;
+}
+
+function heapify(arr, n, i) {
+    let largest = i; // Initialize largest as root
+    let left = 2 <em> i + 1;
+    let right = 2 </em> i + 2;
+
+    // If left child is larger than root
+    if (left < n && arr[left] > arr[largest]) {
+        largest = left;
+    }
+
+    // If right child is larger than largest so far
+    if (right < n && arr[right] > arr[largest]) {
+        largest = right;
+    }
+
+    // If largest is not root
+    if (largest !== i) {
+        [arr[i], arr[largest]] = [arr[largest], arr[i]]; // swap
+
+        // Recursively heapify the affected sub-tree
+        heapify(arr, n, largest);
+    }
+}
+
+// const myArr = [38, 27, 43, 3, 9, 82, 10];
+// console.log(heapSort(myArr)); // [3, 9, 10, 27, 38, 43, 82]
+</code></pre>
+
+    <pre data-lang="typescript"><code class="language-typescript">function heapSortTS(arr: number[]): number[] {
+    let n = arr.length;
+
+    // Build a max-heap (rearrange array)
+    for (let i = Math.floor(n / 2) - 1; i >= 0; i--) {
+        heapifyTS(arr, n, i);
+    }
+
+    // One by one extract an element from heap
+    for (let i = n - 1; i > 0; i--) {
+        // Move current root to end
+        [arr[0], arr[i]] = [arr[i], arr[0]];
+
+        // call max heapify on the reduced heap
+        heapifyTS(arr, i, 0);
+    }
+    return arr;
+}
+
+function heapifyTS(arr: number[], n: number, i: number): void {
+    let largest = i; // Initialize largest as root
+    let left = 2 <em> i + 1;
+    let right = 2 </em> i + 2;
+
+    // If left child is larger than root
+    if (left < n && arr[left] > arr[largest]) {
+        largest = left;
+    }
+
+    // If right child is larger than largest so far
+    if (right < n && arr[right] > arr[largest]) {
+        largest = right;
+    }
+
+    // If largest is not root
+    if (largest !== i) {
+        [arr[i], arr[largest]] = [arr[largest], arr[i]]; // swap
+
+        // Recursively heapify the affected sub-tree
+        heapifyTS(arr, n, largest);
+    }
+}
+
+// const myArrTS: number[] = [38, 27, 43, 3, 9, 82, 10];
+// console.log(heapSortTS(myArrTS)); // [3, 9, 10, 27, 38, 43, 82]
+</code></pre>
+    
+    <pre data-lang="cpp"><code class="language-cpp">#include &lt;vector&gt;
+#include &lt;utility&gt; // For std::swap
+#include &lt;iostream&gt;
+
+void heapify(std::vector&lt;int&gt;& arr, int n, int i) {
+    int largest = i; // Initialize largest as root
+    int left = 2 <em> i + 1;
+    int right = 2 </em> i + 2;
+
+    // If left child is larger than root
+    if (left < n && arr[left] > arr[largest]) {
+        largest = left;
+    }
+
+    // If right child is larger than largest so far
+    if (right < n && arr[right] > arr[largest]) {
+        largest = right;
+    }
+
+    // If largest is not root
+    if (largest != i) {
+        std::swap(arr[i], arr[largest]);
+        
+        // Recursively heapify the affected sub-tree
+        heapify(arr, n, largest);
+    }
+}
+
+void heapSort(std::vector&lt;int&gt;& arr) {
+    int n = arr.size();
+
+    // Build a max-heap (rearrange array)
+    for (int i = n / 2 - 1; i >= 0; i--) {
+        heapify(arr, n, i);
+    }
+
+    // One by one extract an element from heap
+    for (int i = n - 1; i > 0; i--) {
+        // Move current root to end
+        std::swap(arr[0], arr[i]);
+
+        // call max heapify on the reduced heap
+        heapify(arr, i, 0);
+    }
+}
+
+// int main() {
+//     std::vector<int> myArr = {38, 27, 43, 3, 9, 82, 10};
+//     heapSort(myArr);
+//     for(int val : myArr) {
+//         std::cout << val << " "; // 3 9 10 27 38 43 82
+//     }
+//     std::cout << std::endl;
+// }
+</code></pre>
+
+    <pre data-lang="go"><code class="language-go">package main
+
+import "fmt"
+
+func heapify(arr []int, n, i int) {
+    largest := i // Initialize largest as root
+    left := 2<em>i + 1
+    right := 2</em>i + 2
+
+    // If left child is larger than root
+    if left < n && arr[left] > arr[largest] {
+        largest = left
+    }
+
+    // If right child is larger than largest so far
+    if right < n && arr[right] > arr[largest] {
+        largest = right
+    }
+
+    // If largest is not root
+    if largest != i {
+        arr[i], arr[largest] = arr[largest], arr[i] // swap
+
+        // Recursively heapify the affected sub-tree
+        heapify(arr, n, largest)
+    }
+}
+
+func heapSort(arr []int) []int {
+    n := len(arr)
+
+    // Build a max-heap (rearrange array)
+    for i := n/2 - 1; i >= 0; i-- {
+        heapify(arr, n, i)
+    }
+
+    // One by one extract an element from heap
+    for i := n - 1; i > 0; i-- {
+        // Move current root to end
+        arr[0], arr[i] = arr[i], arr[0]
+
+        // call max heapify on the reduced heap
+        heapify(arr, i, 0)
+    }
+    return arr
+}
+
+// func main() {
+//     myArr := []int{38, 27, 43, 3, 9, 82, 10}
+//     fmt.Println(heapSort(myArr)) // [3 9 10 27 38 43 82]
+// }
+</code></pre>
+    
+    <pre data-lang="d"><code class="language-d">import std.algorithm;
+import std.stdio;
+
+void heapify(int[] arr, int n, int i) {
+    int largest = i; // Initialize largest as root
+    int left = 2 <em> i + 1;
+    int right = 2 </em> i + 2;
+
+    // If left child is larger than root
+    if (left < n && arr[left] > arr[largest]) {
+        largest = left;
+    }
+
+    // If right child is larger than largest so far
+    if (right < n && arr[right] > arr[largest]) {
+        largest = right;
+    }
+
+    // If largest is not root
+    if (largest != i) {
+        swap(arr[i], arr[largest]);
+        
+        // Recursively heapify the affected sub-tree
+        heapify(arr, n, largest);
+    }
+}
+
+void heapSort(int[] arr) {
+    int n = cast(int)arr.length;
+
+    // Build a max-heap (rearrange array)
+    for (int i = n / 2 - 1; i >= 0; i--) {
+        heapify(arr, n, i);
+    }
+
+    // One by one extract an element from heap
+    for (int i = n - 1; i > 0; i--) {
+        // Move current root to end
+        swap(arr[0], arr[i]);
+
+        // call max heapify on the reduced heap
+        heapify(arr, i, 0);
+    }
+}
+
+// void main() {
+//     auto myArr = [38, 27, 43, 3, 9, 82, 10];
+//     heapSort(myArr);
+//     writeln(myArr); // [3, 9, 10, 27, 38, 43, 82]
+// }
+</code></pre>
+</div>
+
+<div id="code-explanation-content"><div class="markdown-content">
+    <h3>Code Walkthrough</h3>
+    <p><code>Heap Sort</code> uses a helper function, <code>heapify</code>, to maintain the <code>heap property</code> within a subtree of the <code>array</code>. The main function orchestrates the two main phases: building the <code>heap</code> and extracting <code>elements</code>.</p>
+    <div class="explanation-fence">
+<strong><code>heapify(arr, n, i)</code> Function:</strong>
+<ol>
+    <li>Assumes the subtrees rooted at the children of <code>index i</code> are already valid <code>max-heaps</code>.</li>
+    <li>Compares <code>arr[i]</code> with its <code>left</code> and <code>right children</code> to find the largest of the three.</li>
+    <li>If the <code>largest</code> element is not the current <code>root</code> <code>i</code>, it swaps them.</li>
+    <li>After the swap, the <code>heap property</code> might be violated in the subtree where the swap occurred. Therefore, it makes a recursive call to <code>heapify</code> on that subtree to fix it.</li>
+</ol>
+<br>
+<strong><code>heapSort(arr)</code> Function:</strong>
+<ol>
+    <li><strong>Build Max-Heap:</strong> It iterates backwards from the last non-leaf <code>node</code> (<code>n/2 - 1</code>) to the <code>root</code> (0), calling <code>heapify</code> on each one. This ensures that the entire <code>array</code> is structured as a <code>max-heap</code>.</li>
+    <li><strong>Extract Elements:</strong> It then iterates backwards from the end of the <code>array</code> to the beginning.
+        <ul>
+            <li>In each iteration, it swaps the current <code>root</code> (<code>arr[0]</code>, which is the largest remaining <code>element</code>) with the element at the end of the unsorted portion (<code>arr[i]</code>).</li>
+            <li>This moves the largest <code>element</code> into its final sorted position.</li>
+            <li>It then calls <code>heapify</code> on the reduced <code>heap</code> (of size <code>i</code>) to restore the <code>max-heap property</code> for the remaining <code>elements</code>.</li>
+        </ul>
+    </li>
+</ol>
+    </div></div>
+</div>
+
+<div id="application-content"><div class="markdown-content">
+    <h3>Application</h3>
+    <p><code>Heap Sort</code> is a reliable, in-place sorting algorithm with guaranteed <code>O(N log N)</code> performance.
+    <ul>
+        <li><strong>Priority Queues:</strong> It is the algorithm used to implement <code>Heaps</code>, which are themselves used to implement <code>Priority Queues</code>.</li>
+        <li><strong>Selection Algorithms:</strong> It is efficient for finding the "k-th" smallest or largest element in an array, as you only need to <code>extract</code> from the <code>heap</code> <code>k</code> times.</li>
+        <li><strong>Embedded Systems:</strong> Its <code>O(1)</code> space complexity makes it suitable for memory-constrained environments where out-of-place algorithms like <code>Merge Sort</code> might not be feasible.</li>
+        <li><strong>Robust Sorting:</strong> When a guaranteed worst-case <code>O(N log N)</code> performance is needed (unlike <code>Quick Sort</code>, which can degrade to <code>O(N^2)</code>), <code>Heap Sort</code> is a good choice.</li>
+    </ul>
+    </p>
+</div></div>

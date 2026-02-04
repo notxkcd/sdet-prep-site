@@ -1,0 +1,635 @@
+<div id="explanation-content">
+    <p>The <code>Sudoku Solver</code> is a classic problem that can be efficiently solved using a <code>backtracking algorithm</code>. The goal is to fill a 9x9 grid with <code>digits</code> from 1 to 9 such that each <code>column</code>, each <code>row</code>, and each of the nine 3x3 <code>subgrids</code> (also called "boxes" or "blocks") contains all of the <code>digits</code> from 1 to 9.</p>
+    <p>Given a partially filled <code>Sudoku grid</code>, the solver finds a valid solution by systematically trying to place numbers and backtracking when a conflict arises.</p>
+</div>
+
+<div id="expanded-explanation-content">
+    <h3>How it Works (Expanded)</h3>
+    <p>A <code>Sudoku Solver</code> uses a <code>backtracking algorithm</code> that tries to place a number in an empty cell. If the number is valid according to Sudoku rules, it proceeds to the next empty cell. If it reaches a point where no valid number can be placed, it backtracks to the previous decision and tries a different number.</p>
+    <div class="explanation-fence">
+Example: Solve a 9x9 Sudoku (simplified fragment)
+
+Given Board:
+5 3 . | . 7 . | . . .
+6 . . | 1 9 5 | . . .
+. 9 8 | . . . | . 6 .
+---------------------
+8 . . | . 6 . | . . 3
+4 . . | 8 . 3 | . . 1
+7 . . | . 2 . | . . 6
+---------------------
+. 6 . | . . . | 2 8 .
+. . . | 4 1 9 | . . 5
+. . . | . 8 . | . 7 9
+
+1. Find the first empty cell (0,2).
+2. Try numbers 1-9 for (0,2):
+   - Is 1 safe? Yes. Place 1. Recurse for next empty cell.
+   - If that fails, remove 1. Try 2. Is 2 safe? ...
+3. If no number is safe for (0,2), backtrack to previous cell.
+    </div>
+    <p><strong>Algorithm Steps:</strong></p>
+    <ol>
+        <li>Define a function <code>find_empty(board)</code> that scans the <code>board</code> for the next empty cell (represented by 0 or '.'). If no empty cells are found, the <code>board</code> is solved.</li>
+        <li>Define a function <code>is_valid(board, num, pos)</code> that checks if placing <code>num</code> at <code>pos (row, col)</code> is valid according to Sudoku rules:
+            <ul>
+                <li>Check the <code>row</code>: Is <code>num</code> already in <code>board[pos.row]</code>?</li>
+                <li>Check the <code>column</code>: Is <code>num</code> already in <code>board[pos.col]</code>?</li>
+                <li>Check the 3x3 <code>subgrid</code>: Is <code>num</code> already in the <code>subgrid</code> that <code>pos</code> belongs to?</li>
+            </ul>
+        </li>
+        <li>Define a recursive <code>solve(board)</code> function:
+            <ul>
+                <li><strong>Base Case:</strong> If <code>find_empty(board)</code> returns <code>None</code> (no empty cells), return <code>true</code> (board is solved).</li>
+                <li>Get the <code>row</code> and <code>col</code> of the next empty cell <code>pos</code>.</li>
+                <li>Iterate <code>num</code> from 1 to 9:
+                    <ul>
+                        <li>If <code>is_valid(board, num, pos)</code> returns <code>true</code>:
+                            <ul>
+                                <li>Place <code>num</code> at <code>board[pos.row][pos.col]</code>.</li>
+                                <li>Recursively call <code>solve(board)</code>.</li>
+                                <li>If <code>solve(board)</code> returns <code>true</code>, it means a solution was found, so return <code>true</code>.</li>
+                                <li><strong>Backtrack:</strong> If the recursive call returns <code>false</code> (this <code>num</code> didn't lead to a solution), remove <code>num</code> from <code>board[pos.row][pos.col]</code> (reset to 0 or '.') and try the next <code>num</code>.</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li>If the loop finishes without finding a valid <code>num</code> for <code>pos</code> (or all <code>nums</code> led to dead ends), return <code>false</code> (this path doesn't lead to a solution).</li>
+            </ul>
+        </li>
+    </ol>
+    <p><strong>Time Complexity:</strong> The exact time complexity is hard to determine precisely but is exponential in the worst case, as it explores many possibilities. For a given <code>N</code>x<code>N</code> grid (or a 9x9 grid), it is bounded by <code>O((N^2)^N^2)</code>. However, <code>backtracking</code> with good pruning (the <code>is_valid</code> checks) makes it highly efficient in practice for typical Sudoku puzzles.</p>
+    <p><strong>Space Complexity:</strong> <code>O(N^2)</code> for storing the <code>board</code> and <code>O(N^2)</code> for the recursion stack depth in the worst case.</p>
+</div>
+
+<div id="code-implementations">
+    <pre data-lang="python"><code class="language-python">def is_valid_placement(board, num, row, col):
+    # Check row
+    for x in range(9):
+        if board[row][x] == num:
+            return False
+
+    # Check column
+    for x in range(9):
+        if board[x][col] == num:
+            return False
+
+    # Check 3x3 box
+    start_row = row - row % 3
+    start_col = col - col % 3
+    for i in range(3):
+        for j in range(3):
+            if board[i + start_row][j + start_col] == num:
+                return False
+    return True
+
+def find_empty_location(board):
+    for r in range(9):
+        for c in range(9):
+            if board[r][c] == 0: # 0 represents empty cell
+                return r, c
+    return -1, -1 # No empty cell found
+
+def solve_sudoku(board):
+    row, col = find_empty_location(board)
+
+    # Base case: If no empty location, puzzle solved
+    if row == -1:
+        return True
+    
+    # Try numbers 1 to 9
+    for num in range(1, 10):
+        if is_valid_placement(board, num, row, col):
+            board[row][col] = num # Place number
+            if solve_sudoku(board): # Recur for next empty cell
+                return True
+            board[row][col] = 0 # Backtrack: remove number
+            
+    return False # No number found for this cell
+
+# Example Sudoku (0 for empty cells)
+# board = [
+#     [5, 3, 0, 0, 7, 0, 0, 0, 0],
+#     [6, 0, 0, 1, 9, 5, 0, 0, 0],
+#     [0, 9, 8, 0, 0, 0, 0, 6, 0],
+#     [8, 0, 0, 0, 6, 0, 0, 0, 3],
+#     [4, 0, 0, 8, 0, 3, 0, 0, 1],
+#     [7, 0, 0, 0, 2, 0, 0, 0, 6],
+#     [0, 6, 0, 0, 0, 0, 2, 8, 0],
+#     [0, 0, 0, 4, 1, 9, 0, 0, 5],
+#     [0, 0, 0, 0, 8, 0, 0, 7, 9]
+# ]
+# if solve_sudoku(board):
+#     for r in board:
+#         print(r)
+# else:
+#     print("No solution exists")
+</code></pre>
+
+    <pre data-lang="javascript"><code class="language-javascript">function isValidPlacement(board, num, row, col) {
+    // Check row
+    for (let x = 0; x < 9; x++) {
+        if (board[row][x] === num) {
+            return false;
+        }
+    }
+
+    // Check column
+    for (let x = 0; x < 9; x++) {
+        if (board[x][col] === num) {
+            return false;
+        }
+    }
+
+    // Check 3x3 box
+    const startRow = row - (row % 3);
+    const startCol = col - (col % 3);
+    for (let i = 0; i < 3; i++) {
+        for (let j = 0; j < 3; j++) {
+            if (board[i + startRow][j + startCol] === num) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+function findEmptyLocation(board) {
+    for (let r = 0; r < 9; r++) {
+        for (let c = 0; c < 9; c++) {
+            if (board[r][c] === 0) { // 0 represents empty cell
+                return { row: r, col: c };
+            }
+        }
+    }
+    return null; // No empty cell found
+}
+
+function solveSudoku(board) {
+    const emptyLoc = findEmptyLocation(board);
+
+    // Base case: If no empty location, puzzle solved
+    if (emptyLoc === null) {
+        return true;
+    }
+    
+    const { row, col } = emptyLoc;
+
+    // Try numbers 1 to 9
+    for (let num = 1; num <= 9; num++) {
+        if (isValidPlacement(board, num, row, col)) {
+            board[row][col] = num; // Place number
+            if (solveSudoku(board)) { // Recur for next empty cell
+                return true;
+            }
+            board[row][col] = 0; // Backtrack: remove number
+        }
+    }
+            
+    return false; // No number found for this cell
+}
+
+// const board = [
+//     [5, 3, 0, 0, 7, 0, 0, 0, 0],
+//     [6, 0, 0, 1, 9, 5, 0, 0, 0],
+//     [0, 9, 8, 0, 0, 0, 0, 6, 0],
+//     [8, 0, 0, 0, 6, 0, 0, 0, 3],
+//     [4, 0, 0, 8, 0, 3, 0, 0, 1],
+//     [7, 0, 0, 0, 2, 0, 0, 0, 6],
+//     [0, 6, 0, 0, 0, 0, 2, 8, 0],
+//     [0, 0, 0, 4, 1, 9, 0, 0, 5],
+//     [0, 0, 0, 0, 8, 0, 0, 7, 9]
+// ];
+// if (solveSudoku(board)) {
+//     board.forEach(row => console.log(row));
+// } else {
+//     console.log("No solution exists");
+// }
+</code></pre>
+
+    <pre data-lang="typescript"><code class="language-typescript">function isValidPlacementTS(board: number[][], num: number, row: number, col: number): boolean {
+    // Check row
+    for (let x = 0; x < 9; x++) {
+        if (board[row][x] === num) {
+            return false;
+        }
+    }
+
+    // Check column
+    for (let x = 0; x < 9; x++) {
+        if (board[x][col] === num) {
+            return false;
+        }
+    }
+
+    // Check 3x3 box
+    const startRow = row - (row % 3);
+    const startCol = col - (col % 3);
+    for (let i = 0; i < 3; i++) {
+        for (let j = 0; j < 3; j++) {
+            if (board[i + startRow][j + startCol] === num) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+interface EmptyLocation {
+    row: number;
+    col: number;
+}
+
+function findEmptyLocationTS(board: number[][]): EmptyLocation | null {
+    for (let r = 0; r < 9; r++) {
+        for (let c = 0; c < 9; c++) {
+            if (board[r][c] === 0) { // 0 represents empty cell
+                return { row: r, col: c };
+            }
+        }
+    }
+    return null; // No empty cell found
+}
+
+function solveSudokuTS(board: number[][]): boolean {
+    const emptyLoc = findEmptyLocationTS(board);
+
+    // Base case: If no empty location, puzzle solved
+    if (emptyLoc === null) {
+        return true;
+    }
+    
+    const { row, col } = emptyLoc;
+
+    // Try numbers 1 to 9
+    for (let num = 1; num <= 9; num++) {
+        if (isValidPlacementTS(board, num, row, col)) {
+            board[row][col] = num; // Place number
+            if (solveSudokuTS(board)) { // Recur for next empty cell
+                return true;
+            }
+            board[row][col] = 0; // Backtrack: remove number
+        }
+    }
+            
+    return false; // No number found for this cell
+}
+
+// const boardTS = [
+//     [5, 3, 0, 0, 7, 0, 0, 0, 0],
+//     [6, 0, 0, 1, 9, 5, 0, 0, 0],
+//     [0, 9, 8, 0, 0, 0, 0, 6, 0],
+//     [8, 0, 0, 0, 6, 0, 0, 0, 3],
+//     [4, 0, 0, 8, 0, 3, 0, 0, 1],
+//     [7, 0, 0, 0, 2, 0, 0, 0, 6],
+//     [0, 6, 0, 0, 0, 0, 2, 8, 0],
+//     [0, 0, 0, 4, 1, 9, 0, 0, 5],
+//     [0, 0, 0, 0, 8, 0, 0, 7, 9]
+// ];
+// if (solveSudokuTS(boardTS)) {
+//     boardTS.forEach(row => console.log(row));
+// } else {
+//     console.log("No solution exists");
+// }
+</code></pre>
+    
+    <pre data-lang="cpp"><code class="language-cpp">#include &lt;vector&gt;
+#include &lt;iostream&gt;
+#include &lt;numeric&gt; // For std::iota
+
+bool isValidPlacement(const std::vector&lt;std::vector&lt;int&gt;&gt;& board, int num, int row, int col) {
+    // Check row
+    for (int x = 0; x < 9; x++) {
+        if (board[row][x] == num) {
+            return false;
+        }
+    }
+
+    // Check column
+    for (int x = 0; x < 9; x++) {
+        if (board[x][col] == num) {
+            return false;
+        }
+    }
+
+    // Check 3x3 box
+    int start_row = row - row % 3;
+    int start_col = col - col % 3;
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            if (board[i + start_row][j + start_col] == num) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+std::pair&lt;int, int&gt; findEmptyLocation(const std::vector&lt;std::vector&lt;int&gt;&gt;& board) {
+    for (int r = 0; r < 9; r++) {
+        for (int c = 0; c < 9; c++) {
+            if (board[r][c] == 0) { // 0 represents empty cell
+                return {r, c};
+            }
+        }
+    }
+    return {-1, -1}; // No empty cell found
+}
+
+bool solveSudoku(std::vector&lt;std::vector&lt;int&gt;&gt;& board) {
+    std::pair&lt;int, int&gt; empty_loc = findEmptyLocation(board);
+    int row = empty_loc.first;
+    int col = empty_loc.second;
+
+    // Base case: If no empty location, puzzle solved
+    if (row == -1) {
+        return true;
+    }
+    
+    // Try numbers 1 to 9
+    for (int num = 1; num <= 9; num++) {
+        if (isValidPlacement(board, num, row, col)) {
+            board[row][col] = num; // Place number
+            if (solveSudoku(board)) { // Recur for next empty cell
+                return true;
+            }
+            board[row][col] = 0; // Backtrack: remove number
+        }
+    }
+            
+    return false; // No number found for this cell
+}
+
+// int main() {
+//     std::vector<std::vector<int>> board = {
+//         {5, 3, 0, 0, 7, 0, 0, 0, 0},
+//         {6, 0, 0, 1, 9, 5, 0, 0, 0},
+//         {0, 9, 8, 0, 0, 0, 0, 6, 0},
+//         {8, 0, 0, 0, 6, 0, 0, 0, 3},
+//         {4, 0, 0, 8, 0, 3, 0, 0, 1},
+//         {7, 0, 0, 0, 2, 0, 0, 0, 6},
+//         {0, 6, 0, 0, 0, 0, 2, 8, 0},
+//         {0, 0, 0, 4, 1, 9, 0, 0, 5},
+//         {0, 0, 0, 0, 8, 0, 0, 7, 9}
+//     };
+//     if (solveSudoku(board)) {
+//         for (const auto& row : board) {
+//             for (int val : row) {
+//                 std::cout << val << " ";
+//             }
+//             std::cout << std::endl;
+//         }
+//     } else {
+//         std::cout << "No solution exists" << std::endl;
+//     }
+//     return 0;
+// }
+</code></pre>
+
+    <pre data-lang="go"><code class="language-go">package main
+
+import "fmt"
+
+func isValidPlacement(board [][]int, num, row, col int) bool {
+    // Check row
+    for x := 0; x < 9; x++ {
+        if board[row][x] == num {
+            return false
+        }
+    }
+
+    // Check column
+    for x := 0; x < 9; x++ {
+        if board[x][col] == num {
+            return false
+        }
+    }
+
+    // Check 3x3 box
+    startRow := row - row%3
+    startCol := col - col%3
+    for i := 0; i < 3; i++ {
+        for j := 0; j < 3; j++ {
+            if board[i+startRow][j+startCol] == num {
+                return false
+            }
+        }
+    }
+    return true
+}
+
+func findEmptyLocation(board [][]int) (int, int) {
+    for r := 0; r < 9; r++ {
+        for c := 0; c < 9; c++ {
+            if board[r][c] == 0 { // 0 represents empty cell
+                return r, c
+            }
+        }
+    }
+    return -1, -1 // No empty cell found
+}
+
+func solveSudoku(board [][]int) bool {
+    row, col := findEmptyLocation(board)
+
+    // Base case: If no empty location, puzzle solved
+    if row == -1 {
+        return true
+    }
+    
+    // Try numbers 1 to 9
+    for num := 1; num <= 9; num++ {
+        if isValidPlacement(board, num, row, col) {
+            board[row][col] = num // Place number
+            if solveSudoku(board) { // Recur for next empty cell
+                return true
+            }
+            board[row][col] = 0 // Backtrack: remove number
+        }
+    }
+            
+    return false // No number found for this cell
+}
+
+// func main() {
+//     board := [][]int{
+//         {5, 3, 0, 0, 7, 0, 0, 0, 0},
+//         {6, 0, 0, 1, 9, 5, 0, 0, 0},
+//         {0, 9, 8, 0, 0, 0, 0, 6, 0},
+//         {8, 0, 0, 0, 6, 0, 0, 0, 3},
+//         {4, 0, 0, 8, 0, 3, 0, 0, 1},
+//         {7, 0, 0, 0, 2, 0, 0, 0, 6},
+//         {0, 6, 0, 0, 0, 0, 2, 8, 0},
+//         {0, 0, 0, 4, 1, 9, 0, 0, 5},
+//         {0, 0, 0, 0, 8, 0, 0, 7, 9},
+//     }
+//     if solveSudoku(board) {
+//         for r := 0; r < 9; r++ {
+//             for c := 0; c < 9; c++ {
+//                 fmt.Printf("%d ", board[r][c])
+//             }
+//             fmt.Println()
+//         }
+//     } else {
+//         fmt.Println("No solution exists")
+//     }
+// }
+</code></pre>
+    
+    <pre data-lang="d"><code class="language-d">import std.stdio;
+import std.array;
+import std.algorithm;
+
+bool isValidPlacement(int[][] board, int num, int row, int col) {
+    // Check row
+    foreach (x; 0 .. 9) {
+        if (board[row][x] == num) {
+            return false;
+        }
+    }
+
+    // Check column
+    foreach (x; 0 .. 9) {
+        if (board[x][col] == num) {
+            return false;
+        }
+    }
+
+    // Check 3x3 box
+    int startRow = row - row % 3;
+    int startCol = col - col % 3;
+    foreach (i; 0 .. 3) {
+        foreach (j; 0 .. 3) {
+            if (board[i + startRow][j + startCol] == num) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+Tuple!(int, "row", int, "col") findEmptyLocation(int[][] board) {
+    foreach (r; 0 .. 9) {
+        foreach (c; 0 .. 9) {
+            if (board[r][c] == 0) { // 0 represents empty cell
+                return typeof(return)(r, c);
+            }
+        }
+    }
+    return typeof(return)(-1, -1); // No empty cell found
+}
+
+bool solveSudoku(int[][] board) {
+    auto emptyLoc = findEmptyLocation(board);
+    int row = emptyLoc.row;
+    int col = emptyLoc.col;
+
+    // Base case: If no empty location, puzzle solved
+    if (row == -1) {
+        return true;
+    }
+    
+    // Try numbers 1 to 9
+    foreach (num; 1 .. 10) {
+        if (isValidPlacement(board, num, row, col)) {
+            board[row][col] = num; // Place number
+            if (solveSudoku(board)) { // Recur for next empty cell
+                return true;
+            }
+            board[row][col] = 0; // Backtrack: remove number
+        }
+    }
+            
+    return false; // No number found for this cell
+}
+
+// void main() {
+//     int[][] board = [
+//         [5, 3, 0, 0, 7, 0, 0, 0, 0],
+//         [6, 0, 0, 1, 9, 5, 0, 0, 0],
+//         [0, 9, 8, 0, 0, 0, 0, 6, 0],
+//         [8, 0, 0, 0, 6, 0, 0, 0, 3],
+//         [4, 0, 0, 8, 0, 3, 0, 0, 1],
+//         [7, 0, 0, 0, 2, 0, 0, 0, 6],
+//         [0, 6, 0, 0, 0, 0, 2, 8, 0],
+//         [0, 0, 0, 4, 1, 9, 0, 0, 5],
+//         [0, 0, 0, 0, 8, 0, 0, 7, 9]
+//     ];
+//     if (solveSudoku(board)) {
+//         foreach (row; board) {
+//             foreach (val; row) {
+//                 writef("%d ", val);
+//             }
+//             writeln();
+//         }
+//     } else {
+//         writeln("No solution exists");
+//     }
+// }
+</code></pre>
+</div>
+
+<div id="code-explanation-content"><div class="markdown-content">
+    <h3>Code Walkthrough</h3>
+    <p>The <code>Sudoku Solver</code> is a classic application of <code>backtracking</code>, where the algorithm tries to place a number in an empty cell and explores further. If a path leads to a dead end, it backtracks.</p>
+    <div class="explanation-fence">
+<strong><code>is_valid_placement(board, num, row, col)</code> Function:</strong>
+<ul>
+    <li>This helper function checks if placing <code>num</code> at <code>(row, col)</code> is valid according to Sudoku rules.</li>
+    <li><strong>Checks:</strong>
+        <ul>
+            <li><code>Row</code>: Ensures <code>num</code> is not already present in the given <code>row</code>.</li>
+            <li><code>Column</code>: Ensures <code>num</code> is not already present in the given <code>col</code>.</li>
+            <li><code>3x3 Box</code>: Determines which 3x3 <code>subgrid</code> <code>(row, col)</code> belongs to and checks if <code>num</code> is already present in that <code>subgrid</code>.</li>
+        </ul>
+    </li>
+    <li>Returns <code>True</code> if placement is valid, <code>False</code> otherwise.</li>
+</ul>
+<br>
+<strong><code>find_empty_location(board)</code> Function:</strong>
+<ul>
+    <li>Scans the <code>board</code> from <code>(0,0)</code> to <code>(8,8)</code> to find the next empty cell (represented by 0).</li>
+    <li>Returns the <code>(row, col)</code> of the empty cell, or <code>(-1, -1)</code> if no empty cells are found.</li>
+</ul>
+<br>
+<strong><code>solve_sudoku(board)</code> Function (Main Backtracking Logic):</strong>
+<ul>
+    <li><code>board</code>: The 9x9 Sudoku grid, with 0s representing empty cells.</li>
+</ul>
+<br>
+<strong>Algorithm Steps:</strong>
+<ol>
+    <li><strong>Base Case:</strong> Calls <code>find_empty_location</code>. If it returns <code>(-1, -1)</code> (meaning no empty cells are left), the <code>board</code> is solved, so it returns <code>true</code>.</li>
+    <li><strong>Recursive Step:</strong> If an empty cell <code>(row, col)</code> is found:
+        <ul>
+            <li>Iterate <code>num</code> from 1 to 9:
+                <ul>
+                    <li><strong>Validity Check:</strong> If <code>is_valid_placement(board, num, row, col)</code> returns <code>true</code> (placing <code>num</code> at <code>(row, col)</code> is valid):
+                        <ul>
+                            <li><strong>Place Number:</strong> Place <code>num</code> at <code>board[row][col]</code>.</li>
+                            <li><strong>Recur:</strong> Recursively call <code>solve_sudoku(board)</code> to attempt to solve the rest of the <code>board</code>.</li>
+                            <li>If the recursive call returns <code>true</code> (a solution was found down this path), then this <code>num</code> was correct, and we propagate <code>true</code> back up.</li>
+                            <li><strong>Backtrack:</strong> If the recursive call returns <code>false</code> (this <code>num</code> did not lead to a solution), remove <code>num</code> from <code>board[row][col]</code> (reset to 0). This "undoes" the choice, allowing the loop to try the next <code>num</code>.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            <li>If the loop finishes (all numbers 1-9 have been tried for <code>(row, col)</code> and none led to a solution), return <code>false</code>. This signifies a dead end from the current <code>board</code> state, and the previous recursive call will backtrack.</li>
+        </ul>
+    </li>
+</ol>
+    </div></div>
+</div>
+
+<div id="application-content"><div class="markdown-content">
+    <h3>Application</h3>
+    <p>Solving <code>Sudoku</code> puzzles using <code>backtracking</code> is a direct application of <code>constraint satisfaction problems</code> and illustrates fundamental algorithmic principles applicable to a broader range of challenges:</p>
+    <ul>
+        <li><strong>Constraint Satisfaction Problems (CSPs):</strong> Sudoku is a classic example of a CSP. The <code>backtracking</code> approach is generalizable to other CSPs like coloring graphs, scheduling tasks, and solving logic puzzles.</li>
+        <li><strong>Game Development:</strong> Developing AI for puzzle games or generating puzzles (e.g., generating solvable Sudoku grids).</li>
+        <li><strong>Resource Allocation:</strong> Similar to N-Queens, but for specific grid-based allocations, where resources (numbers) must be placed without violating rules (constraints).</li>
+        <li><strong>Automated Reasoning:</strong> In artificial intelligence, <code>backtracking</code> forms the basis for search algorithms used in expert systems and automated planning.</li>
+        <li><strong>Combinatorial Optimization:</strong> Finding one or all solutions from a finite set of possibilities that satisfy certain criteria.</li>
+    </ul>
+    </p>
+</div></div>

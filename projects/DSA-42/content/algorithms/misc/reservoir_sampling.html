@@ -1,0 +1,341 @@
+<div id="explanation-content">
+    <p><code>Reservoir Sampling</code> is a family of algorithms for selecting a simple random sample of <code>k</code> items from a <code>population</code> of <code>unknown size</code> <code>n</code>. This is particularly useful when the data comes in a stream and its total size is not known beforehand. It allows you to maintain a <code>sample</code> of <code>k</code> items such that at any point, the <code>sample</code> is a <code>uniform random sample</code> of the items seen so far.</p>
+    <p>The most common version, <code>Algorithm R</code> by Alan Waterman, is simple to implement and requires only <code>O(k)</code> space.</p>
+</div>
+
+<div id="expanded-explanation-content">
+    <h3>How it Works (Expanded)</h3>
+    <p>The <code>Reservoir Sampling (Algorithm R)</code> algorithm works by maintaining a "reservoir" <code>array</code> of size <code>k</code>. It processes the stream of items one by one. The first <code>k</code> items are placed directly into the reservoir. For each subsequent <code>item i</code> (where <code>i > k</code>), the algorithm generates a random number <code>j</code> between 0 and <code>i</code> (inclusive). If <code>j < k</code>, the <code>item</code> at <code>reservoir[j]</code> is replaced with <code>item i</code>.</p>
+    <div class="explanation-fence">
+Example: Select k=3 items from a stream [1, 2, 3, 4, 5, 6, 7, 8, ...]
+
+1. Initialize reservoir:
+   - Reservoir = [1, 2, 3]
+
+2. Process item i=4 (index 3):
+   - Generate random j from 0 to 3. Say j=1.
+   - j < k? (1 < 3) Yes.
+   - Reservoir[1] = 4. Reservoir becomes [1, 4, 3].
+
+3. Process item i=5 (index 4):
+   - Generate random j from 0 to 4. Say j=4.
+   - j < k? (4 < 3) No.
+   - Reservoir remains [1, 4, 3].
+
+4. Process item i=6 (index 5):
+   - Generate random j from 0 to 5. Say j=0.
+   - j < k? (0 < 3) Yes.
+   - Reservoir[0] = 6. Reservoir becomes [6, 4, 3].
+
+... and so on. At any point, the reservoir holds a uniform random sample of size 3 from the items processed so far.
+    </div>
+    <p><strong>Algorithm Steps (Algorithm R):</strong></p>
+    <ol>
+        <li>Create a <code>reservoir</code> array of size <code>k</code> and fill it with the first <code>k</code> items from the input stream.</li>
+        <li>For each subsequent <code>item i</code> (from <code>k+1</code> to <code>n</code>):
+            <ul>
+                <li>Generate a random integer <code>j</code> from 0 to <code>i-1</code>.</li>
+                <li>If <code>j < k</code>:
+                    <ul>
+                        <li>Replace <code>reservoir[j]</code> with <code>item i</code>.</li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+        <li>After iterating through all items, the <code>reservoir</code> will contain a uniform random sample of <code>k</code> items from the entire population.</li>
+    </ol>
+    <p><strong>Time Complexity:</strong> <code>O(N)</code>, where <code>N</code> is the total number of items in the stream, as we process each item once.</p>
+    <p><strong>Space Complexity:</strong> <code>O(k)</code> for the <code>reservoir</code> array.</p>
+</div>
+
+<div id="code-implementations">
+    <pre data-lang="python"><code class="language-python">import random
+
+def reservoir_sampling(stream, k):
+    """
+    Selects k items from a stream of unknown size using Reservoir Sampling (Algorithm R).
+    <code>stream</code>: an iterable of items.
+    <code>k</code>: the size of the sample.
+    """
+    if k <= 0:
+        return []
+
+    reservoir = []
+    
+    # Fill the reservoir with the first k items
+    for i, item in enumerate(stream):
+        if i < k:
+            reservoir.append(item)
+        else:
+            # Generate a random index j from 0 to i
+            j = random.randint(0, i)
+            # If j is within the reservoir size, replace the element
+            if j < k:
+                reservoir[j] = item
+    
+    return reservoir
+
+# Example
+# data_stream = [i for i in range(1, 101)] # Stream of numbers 1-100
+# sample_size = 10
+# sample = reservoir_sampling(data_stream, sample_size)
+# print(f"Sample of size {sample_size}:", sample)
+# print(f"Length of sample: {len(sample)}") # Expected: 10
+</code></pre>
+
+    <pre data-lang="javascript"><code class="language-javascript">function reservoirSampling(stream, k) {
+    /*<em>
+     </em> Selects k items from a stream of unknown size using Reservoir Sampling.
+     <em> <code>stream</code>: an array representing the data stream.
+     </em> <code>k</code>: the size of the sample.
+     <em>/
+    if (k <= 0) {
+        return [];
+    }
+
+    const reservoir = [];
+    
+    stream.forEach((item, i) => {
+        if (i < k) {
+            reservoir.push(item);
+        } else {
+            // Generate a random index j from 0 to i
+            const j = Math.floor(Math.random() </em> (i + 1));
+            // If j is within the reservoir size, replace the element
+            if (j < k) {
+                reservoir[j] = item;
+            }
+        }
+    });
+    
+    return reservoir;
+}
+
+// const dataStream = Array.from({length: 100}, (_, i) => i + 1); // Stream of numbers 1-100
+// const sampleSize = 10;
+// const sample = reservoirSampling(dataStream, sampleSize);
+// console.log(<code>Sample of size ${sampleSize}:</code>, sample);
+// console.log(<code>Length of sample: ${sample.length}</code>); // Expected: 10
+</code></pre>
+
+    <pre data-lang="typescript"><code class="language-typescript">function reservoirSamplingTS&lt;T&gt;(stream: T[], k: number): T[] {
+    /*<em>
+     </em> Selects k items from a stream of unknown size using Reservoir Sampling.
+     <em> <code>stream</code>: an array representing the data stream.
+     </em> <code>k</code>: the size of the sample.
+     <em>/
+    if (k <= 0) {
+        return [];
+    }
+
+    const reservoir: T[] = [];
+    
+    stream.forEach((item, i) => {
+        if (i &lt; k) {
+            reservoir.push(item);
+        } else {
+            // Generate a random index j from 0 to i
+            const j = Math.floor(Math.random() </em> (i + 1));
+            // If j is within the reservoir size, replace the element
+            if (j &lt; k) {
+                reservoir[j] = item;
+            }
+        }
+    });
+    
+    return reservoir;
+}
+
+// const dataStreamTS: number[] = Array.from({length: 100}, (_, i) => i + 1);
+// const sampleSizeTS = 10;
+// const sampleTS = reservoirSamplingTS(dataStreamTS, sampleSizeTS);
+// console.log(<code>Sample of size ${sampleSizeTS}:</code>, sampleTS);
+// console.log(<code>Length of sample: ${sampleTS.length}</code>); // Expected: 10
+</code></pre>
+    
+    <pre data-lang="cpp"><code class="language-cpp">#include &lt;vector&gt;
+#include &lt;iostream&gt;
+#include &lt;random&gt;    // For std::mt19937 and std::uniform_int_distribution
+
+std::vector&lt;int&gt; reservoirSampling(const std::vector&lt;int&gt;& stream, int k) {
+    if (k &lt;= 0) {
+        return {};
+    }
+
+    std::vector&lt;int&gt; reservoir;
+    
+    // Create a random number generator
+    std::random_device rd;
+    std::mt19937 g(rd());
+
+    for (int i = 0; i &lt; stream.size(); ++i) {
+        if (i &lt; k) {
+            reservoir.push_back(stream[i]);
+        } else {
+            // Generate a random index j from 0 to i
+            std::uniform_int_distribution&lt;int&gt; dist(0, i);
+            int j = dist(g);
+            // If j is within the reservoir size, replace the element
+            if (j &lt; k) {
+                reservoir[j] = stream[i];
+            }
+        }
+    }
+    
+    return reservoir;
+}
+
+// int main() {
+//     std::vector&lt;int&gt; data_stream;
+//     for(int i = 1; i &lt;= 100; ++i) data_stream.push_back(i);
+    
+//     int sample_size = 10;
+//     std::vector&lt;int&gt; sample = reservoirSampling(data_stream, sample_size);
+
+//     std::cout &lt;&lt; "Sample of size " &lt;&lt; sample_size &lt;&lt; ": ";
+//     for(int val : sample) {
+//         std::cout &lt;&lt; val &lt;&lt; " ";
+//     }
+//     std::cout &lt;&lt; std::endl;
+//     std::cout &lt;&lt; "Length of sample: " &lt;&lt; sample.size() &lt;&lt; std::endl; // 10
+//     return 0;
+// }
+</code></pre>
+
+    <pre data-lang="go"><code class="language-go">package main
+
+import (
+    "fmt"
+    "math/rand"
+    "time"
+)
+
+func reservoirSampling(stream []interface{}, k int) []interface{} {
+    if k &lt;= 0 {
+        return nil
+    }
+
+    reservoir := make([]interface{}, 0, k)
+    rand.Seed(time.Now().UnixNano())
+
+    for i, item := range stream {
+        if i &lt; k {
+            reservoir = append(reservoir, item)
+        } else {
+            // Generate a random index j from 0 to i
+            j := rand.Intn(i + 1)
+            // If j is within the reservoir size, replace the element
+            if j &lt; k {
+                reservoir[j] = item
+            }
+        }
+    }
+    
+    return reservoir
+}
+
+// func main() {
+//     dataStream := make([]interface{}, 100)
+//     for i := 0; i &lt; 100; i++ {
+//         dataStream[i] = i + 1
+//     }
+    
+//     sampleSize := 10
+//     sample := reservoirSampling(dataStream, sampleSize)
+    
+//     fmt.Printf("Sample of size %d: %v\n", sampleSize, sample)
+//     fmt.Printf("Length of sample: %d\n", len(sample)) // 10
+// }
+</code></pre>
+    
+    <pre data-lang="d"><code class="language-d">import std.stdio;
+import std.random;
+import std.array;
+
+T[] reservoirSampling(T)(T[] stream, int k) {
+    if (k &lt;= 0) {
+        return [];
+    }
+
+    T[] reservoir;
+    reservoir.reserve(k); // Pre-allocate capacity
+    
+    auto rnd = Random(unpredictableSeed);
+
+    foreach (i, item; stream) {
+        if (i &lt; k) {
+            reservoir ~= item;
+        } else {
+            // Generate a random index j from 0 to i
+            auto j = uniform(0, i + 1, rnd);
+            // If j is within the reservoir size, replace the element
+            if (j &lt; k) {
+                reservoir[j] = item;
+            }
+        }
+    }
+    
+    return reservoir;
+}
+
+// void main() {
+//     int[] dataStream;
+//     foreach (i; 1 .. 101) {
+//         dataStream ~= i;
+//     }
+    
+//     int sampleSize = 10;
+//     auto sample = reservoirSampling(dataStream, sampleSize);
+
+//     writefln("Sample of size %s: %s", sampleSize, sample);
+//     writeln("Length of sample: ", sample.length); // 10
+// }
+</code></pre>
+</div>
+
+<div id="code-explanation-content"><div class="markdown-content">
+    <h3>Code Walkthrough</h3>
+    <p><code>Reservoir Sampling (Algorithm R)</code> is an elegant algorithm for selecting a random sample of <code>k</code> items from a data stream of unknown size <code>N</code>.</p>
+    <div class="explanation-fence">
+<strong><code>reservoir_sampling(stream, k)</code> Function:</strong>
+<ul>
+    <li><code>stream</code>: An iterable source of data.</li>
+    <li><code>k</code>: The desired size of the random sample.</li>
+</ul>
+<br>
+<strong>Algorithm Steps:</strong>
+<ol>
+    <li><strong>Initialization:</strong> An empty <code>reservoir</code> array is created.</li>
+    <li><strong>Iterate Through Stream:</strong> The algorithm iterates through the <code>stream</code>, keeping track of the current <code>index i</code>.
+        <ul>
+            <li><strong>Fill Initial Reservoir:</strong> For the first <code>k</code> items (<code>i &lt; k</code>), they are directly added to the <code>reservoir</code>.</li>
+            <li><strong>Process Subsequent Items:</strong> For each <code>item i</code> from <code>k+1</code> onwards:
+                <ul>
+                    <li>A random integer <code>j</code> is generated between 0 and <code>i</code> (inclusive).</li>
+                    <li><strong>Replacement Logic:</strong> If <code>j</code> is less than <code>k</code> (the size of the reservoir), the <code>item</code> at <code>reservoir[j]</code> is replaced with the current <code>item</code> from the stream.</li>
+                    <li>The probability of this replacement for any <code>item i</code> is <code>k / (i+1)</code>. This ensures that at any point <code>i</code>, any <code>item</code> from the beginning up to <code>i</code> has an equal probability (<code>k / (i+1)</code>) of being in the reservoir.</li>
+                </ul>
+            </li>
+        </ul>
+    </li>
+</ol>
+<br>
+<strong>Result:</strong>
+<ul>
+    <li>After the entire <code>stream</code> has been processed, the <code>reservoir</code> contains a simple random sample of <code>k</code> items from the whole stream.</li>
+</ul>
+    </div></div>
+</div>
+
+<div id="application-content"><div class="markdown-content">
+    <h3>Application</h3>
+    <p><code>Reservoir Sampling</code> is crucial in scenarios where data is too large to fit into memory or is arriving in a continuous stream, and a representative random sample is needed:</p>
+    <ul>
+        <li><strong>Big Data Analytics:</strong> Sampling a small subset of a massive dataset (e.g., from a log file, a database query, or a sensor stream) for statistical analysis, machine learning model training, or data exploration.</li>
+        <li><strong>Online Advertising:</strong> Randomly selecting an ad to display from a large pool of eligible ads for a given user impression, where the pool size is unknown.</li>
+        <li><strong>Network Traffic Monitoring:</strong> Capturing a random sample of network packets for analysis without storing the entire traffic stream.</li>
+        <li><strong>Streaming Algorithms:</strong> As a fundamental building block in various streaming algorithms that need to maintain a random sample of the data seen so far.</li>
+        <li><strong>Database Query Optimization:</strong> Estimating query result sizes or data distributions by sampling from large tables.</li>
+    </ul>
+    </p>
+</div></div>

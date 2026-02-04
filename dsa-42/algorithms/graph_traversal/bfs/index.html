@@ -1,0 +1,238 @@
+<!doctype html><html lang=en-us><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Breadth-First Search (BFS) | SDET Interview Preparation Kit</title><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/css/style.css><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/css/terminal.css><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel=stylesheet><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/lib/katex/katex.min.css><script defer src=https://notxkcd.github.io/sdet-prep-site/lib/katex/katex.min.js></script><script defer src=https://notxkcd.github.io/sdet-prep-site/lib/katex/contrib/auto-render.min.js onload=renderMathInElement(document.body)></script><script>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1}]})})</script></head><body id=theme-body><button id=theme-toggle>Switch Theme</button><header><nav><ul><li><a href=https://notxkcd.github.io/sdet-prep-site/>Index</a></li></ul></nav><div class=site-breadcrumb><a href=https://notxkcd.github.io/sdet-prep-site/>Home</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/>SDET Interview Dashboard</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/>42 Algorithms & 42 Data Structures</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/algorithms/>Algorithms</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/algorithms/graph_traversal/>Graph Traversal</a>
+<span>/</span> Breadth-First Search (BFS)</div></header><main><article><h1>Breadth-First Search (BFS)</h1><div class=content-body style=margin-top:2rem><p><code>Breadth-First Search (BFS)</code> is a fundamental graph traversal algorithm that explores a graph &ldquo;layer by layer&rdquo;. Starting from a given source <code>node</code>, it explores all of its immediate neighbors first, before moving on to the next level of neighbors. It is often used to find the shortest path between two <code>nodes</code> in an unweighted graph.</p><p>The algorithm uses a <code>queue</code> to keep track of the <code>nodes</code> to visit next. This ensures that <code>nodes</code> are visited in the order of their distance from the source, guaranteeing that the first time a <code>node</code> is reached, it is via the shortest path.</p><h2 id=how-it-works>How it Works</h2><h3 id=how-it-works-expanded>How it Works (Expanded)</h3><p><code>BFS</code> maintains a <code>queue</code> of <code>nodes</code> to visit and a set of <code>visited</code> nodes to avoid cycles and redundant processing.</p><hr><p>Example: Traverse a simple graph
+Graph: A -> B, A -> C, B -> D</p><ol><li>Start at A. Queue: [A]. Visited: {A}.</li><li>Dequeue A. Visit its neighbors B and C.</li></ol><ul><li>Enqueue B. Visited: {A, B}. Queue: [B].</li><li>Enqueue C. Visited: {A, B, C}. Queue: [B, C].</li></ul><ol start=3><li>Dequeue B. Visit its neighbor D.</li></ol><ul><li>Enqueue D. Visited: {A, B, C, D}. Queue: [C, D].</li></ul><ol start=4><li>Dequeue C. No unvisited neighbors.</li><li>Dequeue D. No unvisited neighbors.</li><li>Queue is empty. Search is complete.</li></ol><p>Traversal Order: A, B, C, D</p><p><a href=#code-walkthrough>Jump to Code Walkthrough</a></p><h2 id=implementation>Implementation</h2><h3 id=python>Python</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#dc322f;font-weight:700>from</span> <span style=color:#268bd2>collections</span> <span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>deque</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>def</span> <span style=color:#268bd2>bfs</span>(<span style=color:#268bd2>graph</span>, <span style=color:#268bd2>start_node</span>):
+</span></span><span style=display:flex><span>    <span style=color:#2aa198>&#34;&#34;&#34;
+</span></span></span><span style=display:flex><span><span style=color:#2aa198>    Performs BFS on a graph represented as an adjacency list.
+</span></span></span><span style=display:flex><span><span style=color:#2aa198>    &lt;code&gt;graph&lt;/code&gt; is a dict where keys are nodes and values are lists of neighbors.
+</span></span></span><span style=display:flex><span><span style=color:#2aa198>    &#34;&#34;&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> <span style=color:#268bd2>start_node</span> <span style=color:#859900>not</span> <span style=color:#859900>in</span> <span style=color:#268bd2>graph</span>:
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> []
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>visited</span> = {<span style=color:#268bd2>start_node</span>}
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>queue</span> = <span style=color:#268bd2>deque</span>([<span style=color:#268bd2>start_node</span>])
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>traversal_order</span> = []
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>while</span> <span style=color:#268bd2>queue</span>:
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>current_node</span> = <span style=color:#268bd2>queue</span>.<span style=color:#268bd2>popleft</span>()
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>traversal_order</span>.<span style=color:#268bd2>append</span>(<span style=color:#268bd2>current_node</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>for</span> <span style=color:#268bd2>neighbor</span> <span style=color:#859900>in</span> <span style=color:#268bd2>graph</span>.<span style=color:#268bd2>get</span>(<span style=color:#268bd2>current_node</span>, []):
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> <span style=color:#268bd2>neighbor</span> <span style=color:#859900>not</span> <span style=color:#859900>in</span> <span style=color:#268bd2>visited</span>:
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>visited</span>.<span style=color:#268bd2>add</span>(<span style=color:#268bd2>neighbor</span>)
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>queue</span>.<span style=color:#268bd2>append</span>(<span style=color:#268bd2>neighbor</span>)
+</span></span><span style=display:flex><span>                
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>traversal_order</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># Example</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># graph = {</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#     &#39;A&#39;: [&#39;B&#39;, &#39;C&#39;],</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#     &#39;B&#39;: [&#39;D&#39;],</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#     &#39;C&#39;: [],</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#     &#39;D&#39;: []</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># }</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># print(bfs(graph, &#39;A&#39;)) # [&#39;A&#39;, &#39;B&#39;, &#39;C&#39;, &#39;D&#39;]</span>
+</span></span></code></pre></div><h3 id=javascript>Javascript</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=display:flex><span><span style=color:#859900>function</span> <span style=color:#268bd2>bfs</span>(<span style=color:#268bd2>graph</span>, <span style=color:#268bd2>startNode</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> (!<span style=color:#268bd2>graph</span>[<span style=color:#268bd2>startNode</span>]) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> [];
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>const</span> <span style=color:#268bd2>visited</span> = <span style=color:#859900>new</span> <span style=color:#268bd2>Set</span>([<span style=color:#268bd2>startNode</span>]);
+</span></span><span style=display:flex><span>    <span style=color:#859900>const</span> <span style=color:#268bd2>queue</span> = [<span style=color:#268bd2>startNode</span>];
+</span></span><span style=display:flex><span>    <span style=color:#859900>const</span> <span style=color:#268bd2>traversalOrder</span> = [];
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>while</span> (<span style=color:#268bd2>queue</span>.<span style=color:#268bd2>length</span> &gt; <span style=color:#2aa198;font-weight:700>0</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>const</span> <span style=color:#268bd2>currentNode</span> = <span style=color:#268bd2>queue</span>.<span style=color:#268bd2>shift</span>(); <span style=color:#93a1a1;font-style:italic>// Dequeue
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        <span style=color:#268bd2>traversalOrder</span>.<span style=color:#268bd2>push</span>(<span style=color:#268bd2>currentNode</span>);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>const</span> <span style=color:#268bd2>neighbors</span> = <span style=color:#268bd2>graph</span>[<span style=color:#268bd2>currentNode</span>] || [];
+</span></span><span style=display:flex><span>        <span style=color:#859900>for</span> (<span style=color:#859900>const</span> <span style=color:#268bd2>neighbor</span> <span style=color:#859900>of</span> <span style=color:#268bd2>neighbors</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> (!<span style=color:#268bd2>visited</span>.<span style=color:#268bd2>has</span>(<span style=color:#268bd2>neighbor</span>)) {
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>visited</span>.<span style=color:#268bd2>add</span>(<span style=color:#268bd2>neighbor</span>);
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>queue</span>.<span style=color:#268bd2>push</span>(<span style=color:#268bd2>neighbor</span>); <span style=color:#93a1a1;font-style:italic>// Enqueue
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>traversalOrder</span>;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const graph = {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     &#39;A&#39;: [&#39;B&#39;, &#39;C&#39;],
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     &#39;B&#39;: [&#39;D&#39;],
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     &#39;C&#39;: [],
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     &#39;D&#39;: []
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// };
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// console.log(bfs(graph, &#39;A&#39;)); // [&#39;A&#39;, &#39;B&#39;, &#39;C&#39;, &#39;D&#39;]
+</span></span></span></code></pre></div><h3 id=typescript>Typescript</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-typescript data-lang=typescript><span style=display:flex><span><span style=color:#859900>function</span> <span style=color:#268bd2>bfsTS</span>(<span style=color:#268bd2>graph</span>: <span style=color:#859900;font-weight:700>Record</span>&lt;<span style=color:#268bd2;font-weight:700>string</span>, <span style=color:#268bd2>string</span>[]&gt;, <span style=color:#268bd2>startNode</span>: <span style=color:#859900;font-weight:700>string</span>): <span style=color:#859900;font-weight:700>string</span>[] {
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> (!<span style=color:#268bd2>graph</span>[<span style=color:#268bd2>startNode</span>]) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> [];
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>const</span> <span style=color:#268bd2>visited</span> = <span style=color:#859900>new</span> <span style=color:#268bd2>Set</span>&lt;<span style=color:#268bd2;font-weight:700>string</span>&gt;([<span style=color:#268bd2>startNode</span>]);
+</span></span><span style=display:flex><span>    <span style=color:#859900>const</span> <span style=color:#268bd2>queue</span>: <span style=color:#859900;font-weight:700>string</span>[] = [<span style=color:#268bd2>startNode</span>];
+</span></span><span style=display:flex><span>    <span style=color:#859900>const</span> <span style=color:#268bd2>traversalOrder</span>: <span style=color:#859900;font-weight:700>string</span>[] = [];
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>while</span> (<span style=color:#268bd2>queue</span>.<span style=color:#268bd2>length</span> &gt; <span style=color:#2aa198;font-weight:700>0</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>const</span> <span style=color:#268bd2>currentNode</span> = <span style=color:#268bd2>queue</span>.<span style=color:#268bd2>shift</span>()!; <span style=color:#93a1a1;font-style:italic>// Dequeue
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        <span style=color:#268bd2>traversalOrder</span>.<span style=color:#268bd2>push</span>(<span style=color:#268bd2>currentNode</span>);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>const</span> <span style=color:#268bd2>neighbors</span> = <span style=color:#268bd2>graph</span>[<span style=color:#268bd2>currentNode</span>] || [];
+</span></span><span style=display:flex><span>        <span style=color:#859900>for</span> (<span style=color:#859900>const</span> <span style=color:#268bd2>neighbor</span> <span style=color:#859900>of</span> <span style=color:#268bd2>neighbors</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> (!<span style=color:#268bd2>visited</span>.<span style=color:#268bd2>has</span>(<span style=color:#268bd2>neighbor</span>)) {
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>visited</span>.<span style=color:#268bd2>add</span>(<span style=color:#268bd2>neighbor</span>);
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>queue</span>.<span style=color:#268bd2>push</span>(<span style=color:#268bd2>neighbor</span>); <span style=color:#93a1a1;font-style:italic>// Enqueue
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>traversalOrder</span>;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const graphTS: Record&lt;string, string[]&gt; = {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     &#39;A&#39;: [&#39;B&#39;, &#39;C&#39;],
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     &#39;B&#39;: [&#39;D&#39;],
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     &#39;C&#39;: [],
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     &#39;D&#39;: []
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// };
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// console.log(bfsTS(graphTS, &#39;A&#39;)); // [&#39;A&#39;, &#39;B&#39;, &#39;C&#39;, &#39;D&#39;]
+</span></span></span></code></pre></div><h3 id=cpp>Cpp</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-cpp data-lang=cpp><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;iostream&gt;</span><span style=color:#93a1a1;font-style:italic>
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;vector&gt;</span><span style=color:#93a1a1;font-style:italic>
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;queue&gt;</span><span style=color:#93a1a1;font-style:italic>
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;map&gt;</span><span style=color:#93a1a1;font-style:italic>
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;set&gt;</span><span style=color:#93a1a1;font-style:italic>
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#268bd2>std</span>::<span style=color:#268bd2>vector</span>&lt;<span style=color:#859900;font-weight:700>char</span>&gt; <span style=color:#268bd2>bfs</span>(<span style=color:#859900>const</span> <span style=color:#268bd2>std</span>::<span style=color:#268bd2>map</span>&lt;<span style=color:#859900;font-weight:700>char</span>, <span style=color:#268bd2>std</span>::<span style=color:#268bd2>vector</span>&lt;<span style=color:#859900;font-weight:700>char</span>&gt;&gt;&amp; <span style=color:#268bd2>graph</span>, <span style=color:#859900;font-weight:700>char</span> <span style=color:#268bd2>startNode</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> (<span style=color:#268bd2>graph</span>.<span style=color:#268bd2>find</span>(<span style=color:#268bd2>startNode</span>) == <span style=color:#268bd2>graph</span>.<span style=color:#268bd2>end</span>()) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> {};
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>std</span>::<span style=color:#268bd2>set</span>&lt;<span style=color:#859900;font-weight:700>char</span>&gt; <span style=color:#268bd2>visited</span>;
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>std</span>::<span style=color:#268bd2>queue</span>&lt;<span style=color:#859900;font-weight:700>char</span>&gt; <span style=color:#268bd2>q</span>;
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>std</span>::<span style=color:#268bd2>vector</span>&lt;<span style=color:#859900;font-weight:700>char</span>&gt; <span style=color:#268bd2>traversalOrder</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>visited</span>.<span style=color:#268bd2>insert</span>(<span style=color:#268bd2>startNode</span>);
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>q</span>.<span style=color:#268bd2>push</span>(<span style=color:#268bd2>startNode</span>);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>while</span> (!<span style=color:#268bd2>q</span>.<span style=color:#268bd2>empty</span>()) {
+</span></span><span style=display:flex><span>        <span style=color:#859900;font-weight:700>char</span> <span style=color:#268bd2>currentNode</span> = <span style=color:#268bd2>q</span>.<span style=color:#268bd2>front</span>();
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>q</span>.<span style=color:#268bd2>pop</span>();
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>traversalOrder</span>.<span style=color:#268bd2>push_back</span>(<span style=color:#268bd2>currentNode</span>);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>auto</span> <span style=color:#268bd2>it</span> = <span style=color:#268bd2>graph</span>.<span style=color:#268bd2>find</span>(<span style=color:#268bd2>currentNode</span>);
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>it</span> != <span style=color:#268bd2>graph</span>.<span style=color:#268bd2>end</span>()) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>for</span> (<span style=color:#859900;font-weight:700>char</span> <span style=color:#268bd2>neighbor</span> : <span style=color:#268bd2>it</span>-&gt;<span style=color:#268bd2>second</span>) {
+</span></span><span style=display:flex><span>                <span style=color:#859900>if</span> (<span style=color:#268bd2>visited</span>.<span style=color:#268bd2>find</span>(<span style=color:#268bd2>neighbor</span>) == <span style=color:#268bd2>visited</span>.<span style=color:#268bd2>end</span>()) {
+</span></span><span style=display:flex><span>                    <span style=color:#268bd2>visited</span>.<span style=color:#268bd2>insert</span>(<span style=color:#268bd2>neighbor</span>);
+</span></span><span style=display:flex><span>                    <span style=color:#268bd2>q</span>.<span style=color:#268bd2>push</span>(<span style=color:#268bd2>neighbor</span>);
+</span></span><span style=display:flex><span>                }
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>traversalOrder</span>;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// int main() {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     std::map&lt;char, std::vector&lt;char&gt;&gt; graph = {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         {&#39;A&#39;, {&#39;B&#39;, &#39;C&#39;}},
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         {&#39;B&#39;, {&#39;D&#39;}},
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         {&#39;C&#39;, {}},
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         {&#39;D&#39;, {}}
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     };
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     std::vector&lt;char&gt; result = bfs(graph, &#39;A&#39;);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     for(char node : result) {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         std::cout &lt;&lt; node &lt;&lt; &#34; &#34;; // A B C D
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     }
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     std::cout &lt;&lt; std::endl;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// }
+</span></span></span></code></pre></div><h3 id=go>Go</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#dc322f;font-weight:700>package</span> <span style=color:#268bd2>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#2aa198>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>func</span> <span style=color:#268bd2>bfs</span>(<span style=color:#268bd2>graph</span> <span style=color:#859900>map</span>[<span style=color:#859900;font-weight:700>string</span>][]<span style=color:#859900;font-weight:700>string</span>, <span style=color:#268bd2>startNode</span> <span style=color:#859900;font-weight:700>string</span>) []<span style=color:#859900;font-weight:700>string</span> {
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> <span style=color:#268bd2>_</span>, <span style=color:#268bd2>ok</span> := <span style=color:#268bd2>graph</span>[<span style=color:#268bd2>startNode</span>]; !<span style=color:#268bd2>ok</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#859900;font-weight:700>nil</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>visited</span> := <span style=color:#cb4b16>make</span>(<span style=color:#859900>map</span>[<span style=color:#859900;font-weight:700>string</span>]<span style=color:#859900;font-weight:700>bool</span>)
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>queue</span> := []<span style=color:#859900;font-weight:700>string</span>{<span style=color:#268bd2>startNode</span>}
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>traversalOrder</span> := []<span style=color:#859900;font-weight:700>string</span>{}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>visited</span>[<span style=color:#268bd2>startNode</span>] = <span style=color:#859900;font-weight:700>true</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>for</span> <span style=color:#cb4b16>len</span>(<span style=color:#268bd2>queue</span>) &gt; <span style=color:#2aa198;font-weight:700>0</span> {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>currentNode</span> := <span style=color:#268bd2>queue</span>[<span style=color:#2aa198;font-weight:700>0</span>]
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>queue</span> = <span style=color:#268bd2>queue</span>[<span style=color:#2aa198;font-weight:700>1</span>:] <span style=color:#93a1a1;font-style:italic>// Dequeue</span>
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>traversalOrder</span> = <span style=color:#cb4b16>append</span>(<span style=color:#268bd2>traversalOrder</span>, <span style=color:#268bd2>currentNode</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>for</span> <span style=color:#268bd2>_</span>, <span style=color:#268bd2>neighbor</span> := <span style=color:#859900>range</span> <span style=color:#268bd2>graph</span>[<span style=color:#268bd2>currentNode</span>] {
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> !<span style=color:#268bd2>visited</span>[<span style=color:#268bd2>neighbor</span>] {
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>visited</span>[<span style=color:#268bd2>neighbor</span>] = <span style=color:#859900;font-weight:700>true</span>
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>queue</span> = <span style=color:#cb4b16>append</span>(<span style=color:#268bd2>queue</span>, <span style=color:#268bd2>neighbor</span>) <span style=color:#93a1a1;font-style:italic>// Enqueue</span>
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>traversalOrder</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// func main() {</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     graph := map[string][]string{</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         &#34;A&#34;: {&#34;B&#34;, &#34;C&#34;},</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         &#34;B&#34;: {&#34;D&#34;},</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         &#34;C&#34;: {},</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         &#34;D&#34;: {},</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     }</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     fmt.Println(bfs(graph, &#34;A&#34;)) // [A B C D]</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// }</span>
+</span></span></code></pre></div><h3 id=d>D</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-d data-lang=d><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>std.stdio</span>;
+</span></span><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>std.collections</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#cb4b16>string</span>[] <span style=color:#268bd2>bfs</span>(<span style=color:#cb4b16>string</span>[][<span style=color:#cb4b16>string</span>] <span style=color:#268bd2>graph</span>, <span style=color:#cb4b16>string</span> <span style=color:#268bd2>startNode</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> (<span style=color:#268bd2>startNode</span> !<span style=color:#859900>in</span> <span style=color:#268bd2>graph</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> [];
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>bool</span>[<span style=color:#cb4b16>string</span>] <span style=color:#268bd2>visited</span>;
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>ArrayQueue</span>!<span style=color:#cb4b16>string</span> <span style=color:#268bd2>queue</span>;
+</span></span><span style=display:flex><span>    <span style=color:#cb4b16>string</span>[] <span style=color:#268bd2>traversalOrder</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>visited</span>[<span style=color:#268bd2>startNode</span>] = <span style=color:#859900;font-weight:700>true</span>;
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>queue</span>.<span style=color:#268bd2>put</span>(<span style=color:#268bd2>startNode</span>);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>while</span> (!<span style=color:#268bd2>queue</span>.<span style=color:#268bd2>empty</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>string</span> <span style=color:#268bd2>currentNode</span> = <span style=color:#268bd2>queue</span>.<span style=color:#268bd2>get</span>();
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>traversalOrder</span> ~= <span style=color:#268bd2>currentNode</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#859900>auto</span> <span style=color:#268bd2>neighbors</span> = <span style=color:#268bd2>startNode</span> <span style=color:#859900>in</span> <span style=color:#268bd2>graph</span>) {
+</span></span><span style=display:flex><span>             <span style=color:#859900>foreach</span> (<span style=color:#268bd2>neighbor</span>; *<span style=color:#268bd2>neighbors</span>) {
+</span></span><span style=display:flex><span>                <span style=color:#859900>if</span> (<span style=color:#268bd2>neighbor</span> !<span style=color:#859900>in</span> <span style=color:#268bd2>visited</span>) {
+</span></span><span style=display:flex><span>                    <span style=color:#268bd2>visited</span>[<span style=color:#268bd2>neighbor</span>] = <span style=color:#859900;font-weight:700>true</span>;
+</span></span><span style=display:flex><span>                    <span style=color:#268bd2>queue</span>.<span style=color:#268bd2>put</span>(<span style=color:#268bd2>neighbor</span>);
+</span></span><span style=display:flex><span>                }
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>traversalOrder</span>;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// void main() {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     auto graph = [
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         &#34;A&#34;: [&#34;B&#34;, &#34;C&#34;],
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         &#34;B&#34;: [&#34;D&#34;],
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         &#34;C&#34;: [],
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         &#34;D&#34;: []
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     ];
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     writeln(bfs(graph, &#34;A&#34;)); // [&#34;A&#34;, &#34;B&#34;, &#34;C&#34;, &#34;D&#34;]
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// }
+</span></span></span></code></pre></div><h2 id=code-walkthrough>Code Walkthrough</h2><p><a href=#implementation>Back to Implementation</a></p><h3 id=code-walkthrough-1>Code Walkthrough</h3><p>The implementation of <code>BFS</code> is straightforward and relies on a <code>queue</code> and a way to track visited <code>nodes</code> to prevent infinite loops in graphs with cycles.</p><hr><ul><li><p><strong>Initialization:</strong></p></li><li><p>A <code>queue</code> is created to hold the <code>nodes</code> that are waiting to be processed. The <code>startNode</code> is added to it.</p></li><li><p>A <code>visited</code> set (or hash map) is created to keep track of <code>nodes</code> that have already been enqueued. This is crucial to avoid processing the same <code>node</code> multiple times and getting stuck in cycles. The <code>startNode</code> is marked as visited.</p></li><li><p>An <code>traversalOrder</code> array is initialized to store the result.</p></li></li><li><p><strong>Main Loop:</strong> The loop continues as long as the <code>queue</code> is not empty.</p></li><li><p><strong>Dequeue:</strong> The <code>currentNode</code> is removed from the front of the <code>queue</code>.</p></li><li><p><strong>Process:</strong> The <code>currentNode</code> is added to the <code>traversalOrder</code>.</p></li><li><p><strong>Explore Neighbors:</strong> The algorithm iterates through the neighbors of the <code>currentNode</code>. For each <code>neighbor</code>:</p></li><li><p>It checks if the <code>neighbor</code> has already been <code>visited</code>.</p></li><li><p>If not, the <code>neighbor</code> is marked as <code>visited</code> and enqueued.</p><pre><code>      &lt;/li&gt;
+</code></pre></li></li><li><p><strong>Return:</strong> Once the <code>queue</code> is empty, it means all reachable <code>nodes</code> have been visited, and the <code>traversalOrder</code> is returned.</p></li></ul><p><a href=#implementation>Back to Implementation</a></p><h2 id=applications>Applications</h2><h3 id=application>Application</h3><p><code>BFS</code> is a fundamental algorithm with a wide range of applications in computer science and graph theory.</p><ul><li><strong>Shortest Path in Unweighted Graphs:</strong> It is the standard algorithm for finding the shortest path from a source <code>node</code> to all other <code>nodes</code> in an unweighted graph. The first time <code>BFS</code> visits a <code>node</code>, it does so via the shortest possible path.</li><li><strong>Network Broadcasting:</strong> Simulating the broadcast of a message in a network to all connected devices.</li><li><strong>Web Crawlers (Crawling):</strong> Used to discover all pages on a website starting from a homepage. Each page is a <code>node</code>, and hyperlinks are edges.</li><li><strong>Finding Connected Components:</strong> By running <code>BFS</code> starting from an arbitrary <code>node</code>, you can find all <code>nodes</code> in its connected component. Repeating this for all unvisited <code>nodes</code> finds all components.</li><li><strong>Solving Puzzles:</strong> Finding the shortest number of steps to solve puzzles like Rubik&rsquo;s Cubes or finding the shortest path in a maze.</li></ul></div></article><div class=navigation style="margin-top:5rem;display:flex;justify-content:space-between;border-top:1px solid var(--border);padding-top:2rem"><a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/algorithms/graph_traversal/dfs/ class=nav-btn>← Previous</a>
+<a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/algorithms/graph_traversal/ class=nav-btn>Up</a>
+<a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/algorithms/graph_traversal/a_star/ class=nav-btn>Next →</a></div></main><footer class=footer><p>Built with Hugo. No scripts. No tracking. Just the truth.</p></footer><script>document.addEventListener("DOMContentLoaded",function(){const n=document.body,s=document.createTreeWalker(n,NodeFilter.SHOW_TEXT,null,!1);let e;const t=[];for(;e=s.nextNode();)e.nodeValue.includes("[-]")&&t.push(e);t.forEach(e=>{const t=document.createElement("span");t.innerHTML=e.nodeValue.replace(/\[-\]/g,'<span class="started-icon" title="Started"></span>'),e.parentNode.replaceChild(t,e)})})</script><script>const body=document.getElementById("theme-body"),btn=document.getElementById("theme-toggle"),currentTheme=localStorage.getItem("theme");function updateButtonText(){body.classList.contains("theme-terminal")?btn.textContent="Light Mode":btn.textContent="Dark Mode"}currentTheme==="terminal"&&body.classList.add("theme-terminal"),updateButtonText(),btn.addEventListener("click",()=>{body.classList.toggle("theme-terminal"),updateButtonText();let e="natural";body.classList.contains("theme-terminal")&&(e="terminal"),localStorage.setItem("theme",e)})</script></body></html>

@@ -1,0 +1,404 @@
+<div id="explanation-content">
+    <p>The <code>Longest Common Subsequence (LCS)</code> problem is a classic problem in <code>computer science</code> and <code>dynamic programming</code>. Given two sequences (e.g., strings or arrays), the goal is to find the longest sequence that is a <code>subsequence</code> of both. A <code>subsequence</code> is formed by deleting zero or more <code>elements</code> from a sequence without changing the order of the remaining <code>elements</code>.</p>
+    <p>Unlike the <code>longest common substring</code> problem (where characters must be consecutive), <code>LCS</code> does not require consecutive characters. It has numerous applications in bioinformatics (e.g., comparing DNA sequences) and text analysis (e.g., diff utilities).</p>
+</div>
+
+<div id="expanded-explanation-content">
+    <h3>How it Works (Expanded)</h3>
+    <p>The <code>LCS problem</code> can be efficiently solved using <code>dynamic programming</code>. We build a 2D table (or matrix) where <code>dp[i][j]</code> stores the length of the <code>LCS</code> of the prefixes <code>X[0...i-1]</code> and <code>Y[0...j-1]</code> of the two input sequences <code>X</code> and <code>Y</code>.</p>
+    <div class="explanation-fence">
+Example: LCS of X = "AGGTAB" and Y = "GXTXAYB"
+
+Initialize a DP table (matrix) of size (m+1) x (n+1) with zeros.
+
+Table Cells:
+- If X[i-1] == Y[j-1]: dp[i][j] = 1 + dp[i-1][j-1]
+  (Characters match, so extend the LCS from diagonal)
+- Else: dp[i][j] = max(dp[i-1][j], dp[i][j-1])
+  (Characters don't match, take max LCS from previous row/column)
+
+The final dp[m][n] value will be the length of the LCS.
+To reconstruct the LCS itself, backtrack from dp[m][n] using the rules.
+    </div>
+    <p><strong>Recurrence Relation:</strong></p>
+    <ul>
+        <li>If <code>X[i-1] == Y[j-1]</code> (current characters match):
+            <code>dp[i][j] = 1 + dp[i-1][j-1]</code></li>
+        <li>Else (current characters do not match):
+            <code>dp[i][j] = max(dp[i-1][j], dp[i][j-1])</code></li>
+        <li>Base cases: <code>dp[i][0] = 0</code> and <code>dp[0][j] = 0</code> (LCS with an empty string is 0).</li>
+    </ul>
+    <p><strong>Algorithm Steps:</strong></p>
+    <ol>
+        <li>Create a 2D <code>dp</code> table of size <code>(m+1) x (n+1)</code>, where <code>m</code> and <code>n</code> are the lengths of sequences <code>X</code> and <code>Y</code>. Initialize all cells to 0.</li>
+        <li>Fill the <code>dp</code> table iteratively:
+            <ul>
+                <li>For each <code>i</code> from 1 to <code>m</code>:</li>
+                <li>For each <code>j</code> from 1 to <code>n</code>:</li>
+                <li>Apply the recurrence relation.</li>
+            </ul>
+        </li>
+        <li>The length of the <code>LCS</code> will be <code>dp[m][n]</code>.</li>
+        <li>To reconstruct the <code>LCS</code> string itself, backtrack from <code>dp[m][n]</code> to <code>dp[0][0]</code>, following the path that yielded the <code>LCS</code> length (i.e., if characters matched, move diagonally; otherwise, move up or left to the cell with the larger value).</li>
+    </ol>
+    <p><strong>Time Complexity:</strong> <code>O(M <em> N)</code>, where <code>M</code> and <code>N</code> are the lengths of the two sequences. This is because each cell in the <code>M x N</code> DP table is computed in constant time.</p>
+    <p><strong>Space Complexity:</strong> <code>O(M </em> N)</code> for the <code>dp</code> table. Can be optimized to <code>O(min(M, N))</code> if only the length is needed or if only previous rows are stored.</p>
+</div>
+
+<div id="code-implementations">
+    <pre data-lang="python"><code class="language-python">def longest_common_subsequence(X, Y):
+    m = len(X)
+    n = len(Y)
+
+    # dp[i][j] stores the length of LCS of X[0..i-1] and Y[0..j-1]
+    dp = [[0 for _ in range(n + 1)] for _ in range(m + 1)]
+
+    # Fill dp table in bottom-up manner
+    for i in range(1, m + 1):
+        for j in range(1, n + 1):
+            if X[i - 1] == Y[j - 1]:
+                dp[i][j] = 1 + dp[i - 1][j - 1]
+            else:
+                dp[i][j] = max(dp[i - 1][j], dp[i][j - 1])
+    
+    # dp[m][n] contains the length of LCS
+    length_lcs = dp[m][n]
+
+    # Reconstruct the LCS string
+    lcs_string = [""] * length_lcs
+    i, j = m, n
+    k = length_lcs - 1
+
+    while i > 0 and j > 0:
+        if X[i - 1] == Y[j - 1]:
+            lcs_string[k] = X[i - 1]
+            i -= 1
+            j -= 1
+            k -= 1
+        elif dp[i - 1][j] > dp[i][j - 1]:
+            i -= 1
+        else:
+            j -= 1
+            
+    return "".join(lcs_string)
+
+# Example
+# X = "AGGTAB"
+# Y = "GXTXAYB"
+# print(longest_common_subsequence(X, Y)) # GTAB
+</code></pre>
+
+    <pre data-lang="javascript"><code class="language-javascript">function longestCommonSubsequence(X, Y) {
+    const m = X.length;
+    const n = Y.length;
+
+    // dp[i][j] stores the length of LCS of X[0..i-1] and Y[0..j-1]
+    const dp = Array(m + 1).fill(0).map(() => Array(n + 1).fill(0));
+
+    // Fill dp table in bottom-up manner
+    for (let i = 1; i <= m; i++) {
+        for (let j = 1; j <= n; j++) {
+            if (X[i - 1] === Y[j - 1]) {
+                dp[i][j] = 1 + dp[i - 1][j - 1];
+            } else {
+                dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+            }
+        }
+    }
+    
+    // dp[m][n] contains the length of LCS
+    const lengthLCS = dp[m][n];
+
+    // Reconstruct the LCS string
+    let lcsString = Array(lengthLCS);
+    let i = m, j = n;
+    let k = lengthLCS - 1;
+
+    while (i > 0 && j > 0) {
+        if (X[i - 1] === Y[j - 1]) {
+            lcsString[k] = X[i - 1];
+            i--;
+            j--;
+            k--;
+        } else if (dp[i - 1][j] > dp[i][j - 1]) {
+            i--;
+        } else {
+            j--;
+        }
+    }
+            
+    return lcsString.join("");
+}
+
+// const X = "AGGTAB";
+// const Y = "GXTXAYB";
+// console.log(longestCommonSubsequence(X, Y)); // GTAB
+</code></pre>
+
+    <pre data-lang="typescript"><code class="language-typescript">function longestCommonSubsequenceTS(X: string, Y: string): string {
+    const m = X.length;
+    const n = Y.length;
+
+    // dp[i][j] stores the length of LCS of X[0..i-1] and Y[0..j-1]
+    const dp: number[][] = Array(m + 1).fill(0).map(() => Array(n + 1).fill(0));
+
+    // Fill dp table in bottom-up manner
+    for (let i = 1; i <= m; i++) {
+        for (let j = 1; j <= n; j++) {
+            if (X[i - 1] === Y[j - 1]) {
+                dp[i][j] = 1 + dp[i - 1][j - 1];
+            } else {
+                dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+            }
+        }
+    }
+    
+    // dp[m][n] contains the length of LCS
+    const lengthLCS = dp[m][n];
+
+    // Reconstruct the LCS string
+    const lcsString: string[] = Array(lengthLCS);
+    let i = m, j = n;
+    let k = lengthLCS - 1;
+
+    while (i > 0 && j > 0) {
+        if (X[i - 1] === Y[j - 1]) {
+            lcsString[k] = X[i - 1];
+            i--;
+            j--;
+            k--;
+        } else if (dp[i - 1][j] > dp[i][j - 1]) {
+            i--;
+        } else {
+            j--;
+        }
+    }
+            
+    return lcsString.join("");
+}
+
+// const XTS = "AGGTAB";
+// const YTS = "GXTXAYB";
+// console.log(longestCommonSubsequenceTS(XTS, YTS)); // GTAB
+</code></pre>
+    
+    <pre data-lang="cpp"><code class="language-cpp">#include &lt;string&gt;
+#include &lt;vector&gt;
+#include &lt;iostream&gt;
+#include &lt;algorithm&gt; // For std::max
+
+std::string longestCommonSubsequence(const std::string& X, const std::string& Y) {
+    int m = X.length();
+    int n = Y.length();
+
+    // dp[i][j] stores the length of LCS of X[0..i-1] and Y[0..j-1]
+    std::vector&lt;std::vector&lt;int&gt;&gt; dp(m + 1, std::vector&lt;int&gt;(n + 1, 0));
+
+    // Fill dp table in bottom-up manner
+    for (int i = 1; i <= m; i++) {
+        for (int j = 1; j <= n; j++) {
+            if (X[i - 1] == Y[j - 1]) {
+                dp[i][j] = 1 + dp[i - 1][j - 1];
+            } else {
+                dp[i][j] = std::max(dp[i - 1][j], dp[i][j - 1]);
+            }
+        }
+    }
+    
+    // dp[m][n] contains the length of LCS
+    int length_lcs = dp[m][n];
+
+    // Reconstruct the LCS string
+    std::string lcs_string(length_lcs, ' '); // Initialize with spaces
+    int i = m, j = n;
+    int k = length_lcs - 1;
+
+    while (i > 0 && j > 0) {
+        if (X[i - 1] == Y[j - 1]) {
+            lcs_string[k] = X[i - 1];
+            i--;
+            j--;
+            k--;
+        } else if (dp[i - 1][j] > dp[i][j - 1]) {
+            i--;
+        } else {
+            j--;
+        }
+    }
+            
+    return lcs_string;
+}
+
+// int main() {
+//     std::string X = "AGGTAB";
+//     std::string Y = "GXTXAYB";
+//     std::cout << "LCS: " << longestCommonSubsequence(X, Y) << std::endl; // GTAB
+//     return 0;
+// }
+</code></pre>
+
+    <pre data-lang="go"><code class="language-go">package main
+
+import "fmt"
+
+func longestCommonSubsequence(X, Y string) string {
+    m := len(X)
+    n := len(Y)
+
+    // dp[i][j] stores the length of LCS of X[0..i-1] and Y[0..j-1]
+    dp := make([][]int, m+1)
+    for i := range dp {
+        dp[i] = make([]int, n+1)
+    }
+
+    // Fill dp table in bottom-up manner
+    for i := 1; i <= m; i++ {
+        for j := 1; j <= n; j++ {
+            if X[i-1] == Y[j-1] {
+                dp[i][j] = 1 + dp[i-1][j-1]
+            } else {
+                dp[i][j] = max(dp[i-1][j], dp[i][j-1])
+            }
+        }
+    }
+    
+    // dp[m][n] contains the length of LCS
+    lengthLCS := dp[m][n]
+
+    // Reconstruct the LCS string
+    lcsString := make([]byte, lengthLCS)
+    i, j := m, n
+    k := lengthLCS - 1
+
+    for i > 0 && j > 0 {
+        if X[i-1] == Y[j-1] {
+            lcsString[k] = X[i-1]
+            i--
+            j--
+            k--
+        } else if dp[i-1][j] > dp[i][j-1] {
+            i--
+        } else {
+            j--
+        }
+    }
+            
+    return string(lcsString)
+}
+
+func max(a, b int) int {
+    if a > b {
+        return a
+    }
+    return b
+}
+
+// func main() {
+//     X := "AGGTAB"
+//     Y := "GXTXAYB"
+//     fmt.Println("LCS:", longestCommonSubsequence(X, Y)) // GTAB
+// }
+</code></pre>
+    
+    <pre data-lang="d"><code class="language-d">import std.stdio;
+import std.array;
+import std.algorithm; // For std.algorithm.max
+
+string longestCommonSubsequence(string X, string Y) {
+    auto m = X.length;
+    auto n = Y.length;
+
+    // dp[i][j] stores the length of LCS of X[0..i-1] and Y[0..j-1]
+    auto dp = new int[m + 1][n + 1];
+
+    // Fill dp table in bottom-up manner
+    foreach (i; 1 .. m + 1) {
+        foreach (j; 1 .. n + 1) {
+            if (X[i - 1] == Y[j - 1]) {
+                dp[i][j] = 1 + dp[i - 1][j - 1];
+            } else {
+                dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]);
+            }
+        }
+    }
+    
+    // dp[m][n] contains the length of LCS
+    auto lengthLCS = dp[m][n];
+
+    // Reconstruct the LCS string
+    auto lcsString = new char[lengthLCS];
+    int i = cast(int)m, j = cast(int)n;
+    int k = cast(int)lengthLCS - 1;
+
+    while (i > 0 && j > 0) {
+        if (X[i - 1] == Y[j - 1]) {
+            lcsString[k] = X[i - 1];
+            i--;
+            j--;
+            k--;
+        } else if (dp[i - 1][j] > dp[i][j - 1]) {
+            i--;
+        } else {
+            j--;
+        }
+    }
+            
+    return cast(string)lcsString;
+}
+
+// void main() {
+//     string X = "AGGTAB";
+//     string Y = "GXTXAYB";
+//     writeln("LCS: ", longestCommonSubsequence(X, Y)); // GTAB
+// }
+</code></pre>
+</div>
+
+<div id="code-explanation-content"><div class="markdown-content">
+    <h3>Code Walkthrough</h3>
+    <p>The <code>Longest Common Subsequence</code> problem is a prime example of <code>dynamic programming</code>, building up a solution from smaller subproblems.</p>
+    <div class="explanation-fence">
+<strong>Initialization:</strong>
+<ul>
+    <li>A 2D <code>dp</code> table (<code>m+1</code> rows, <code>n+1</code> columns) is created and initialized with zeros. <code>dp[i][j]</code> will store the length of the <code>LCS</code> for prefixes of length <code>i</code> from <code>X</code> and <code>j</code> from <code>Y</code>.</li>
+</ul>
+<br>
+<strong>Filling the DP Table (Calculating LCS Length):</strong>
+<ul>
+    <li>The <code>dp</code> table is filled iteratively, typically from <code>dp[1][1]</code> up to <code>dp[m][n]</code>.</li>
+    <li>For each cell <code>dp[i][j]</code>:
+        <ul>
+            <li>If <code>X[i-1]</code> (the <code>i</code>-th character of <code>X</code>) matches <code>Y[j-1]</code> (the <code>j</code>-th character of <code>Y</code>), then the <code>LCS</code> length is <code>1</code> plus the <code>LCS</code> length of the previous prefixes (<code>dp[i-1][j-1]</code>). This means we've found one more matching character.</li>
+            <li>If they don't match, the <code>LCS</code> length for <code>dp[i][j]</code> is the maximum of:
+                <ul>
+                    <li><code>dp[i-1][j]</code> (LCS of <code>X[0...i-2]</code> and <code>Y[0...j-1]</code>, effectively skipping <code>X[i-1]</code>).</li>
+                    <li><code>dp[i][j-1]</code> (LCS of <code>X[0...i-1]</code> and <code>Y[0...j-2]</code>, effectively skipping <code>Y[j-1]</code>).</li>
+                </ul>
+            </li>
+        </ul>
+    </li>
+</ul>
+<br>
+<strong>Reconstructing the LCS String:</strong>
+<ul>
+    <li>After the <code>dp</code> table is filled, <code>dp[m][n]</code> holds the length of the <code>LCS</code>.</li>
+    <li>To reconstruct the string, we start from <code>dp[m][n]</code> and backtrack to <code>dp[0][0]</code>.</li>
+    <li>If <code>X[i-1] == Y[j-1]</code>, it means these characters contributed to the <code>LCS</code>. We add <code>X[i-1]</code> to our <code>LCS string</code> and move diagonally up-left (<code>i--</code>, <code>j--</code>).</li>
+    <li>If <code>X[i-1] != Y[j-1]</code>, we move to the cell (either <code>dp[i-1][j]</code> or <code>dp[i][j-1]</code>) that has the larger <code>LCS</code> length, indicating which character was "skipped".</li>
+    <li>The <code>LCS string</code> is built in reverse order, so it needs to be reversed or assembled by prepending characters.</li>
+</ul>
+    </div></div>
+</div>
+
+<div id="application-content"><div class="markdown-content">
+    <h3>Application</h3>
+    <p>The <code>Longest Common Subsequence (LCS)</code> problem and its solution using <code>dynamic programming</code> have widespread applications:</p>
+    <ul>
+        <li><strong>Bioinformatics:</strong> Comparing DNA, RNA, or protein sequences to find similarities. The <code>LCS</code> provides a measure of how related two biological sequences are.</li>
+        <li><strong>Diff Utilities:</strong> The <code>diff</code> command (and similar version control tools like <code>Git</code>) use algorithms based on <code>LCS</code> to find the differences between two files. This helps in identifying minimal changes.</li>
+        <li><strong>Plagiarism Detection:</strong> Finding common subsequences between two documents can indicate potential plagiarism.</li>
+        <li><strong>Text Editing and Spell Checkers:</strong> Can be used to suggest corrections by finding the <code>LCS</code> between a misspelled word and dictionary words, or to determine edit distance.</li>
+        <li><strong>Data Compression:</strong> In some forms of data compression, finding recurring patterns (or subsequences) can be beneficial.</li>
+    </ul>
+    </p>
+</div></div>

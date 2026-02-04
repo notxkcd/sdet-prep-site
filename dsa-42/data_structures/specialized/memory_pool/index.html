@@ -1,0 +1,218 @@
+<!doctype html><html lang=en-us><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Memory Pool | SDET Interview Preparation Kit</title><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/css/style.css><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/css/terminal.css><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel=stylesheet><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/lib/katex/katex.min.css><script defer src=https://notxkcd.github.io/sdet-prep-site/lib/katex/katex.min.js></script><script defer src=https://notxkcd.github.io/sdet-prep-site/lib/katex/contrib/auto-render.min.js onload=renderMathInElement(document.body)></script><script>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1}]})})</script></head><body id=theme-body><button id=theme-toggle>Switch Theme</button><header><nav><ul><li><a href=https://notxkcd.github.io/sdet-prep-site/>Index</a></li></ul></nav><div class=site-breadcrumb><a href=https://notxkcd.github.io/sdet-prep-site/>Home</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/>SDET Interview Dashboard</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/>42 Algorithms & 42 Data Structures</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/data_structures/>Data Structures</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/data_structures/specialized/>Specialized</a>
+<span>/</span> Memory Pool</div></header><main><article><h1>Memory Pool</h1><div class=content-body style=margin-top:2rem><p>A <code>Memory Pool</code> (also known as an <code>Object Pool</code>) is a design pattern used to manage memory more efficiently in situations where a large number of objects are created and destroyed frequently. Instead of allocating and deallocating memory for each object individually, a <code>Memory Pool</code> pre-allocates a fixed block of memory and then manages it internally.</p><p>This approach significantly reduces the overhead associated with frequent system-level <code>memory allocation</code> and <code>deallocation</code> calls (like <code>malloc</code>/<code>free</code> in C/C++ or <code>new</code>/<code>delete</code>). It&rsquo;s particularly useful in performance-critical applications like game development, embedded systems, and high-performance computing.</p><h2 id=how-it-works>How it Works</h2><h3 id=how-it-works-expanded>How it Works (Expanded)</h3><p>A <code>Memory Pool</code> typically works by:</p><ul><li><strong>Pre-allocation:</strong> At initialization, a large contiguous block of <code>memory</code> is allocated from the operating system (or standard heap). This block is then divided into smaller, uniform-sized chunks, each capable of holding one <code>object</code> of a specific type.</li><li><strong>Internal Management:</strong> The <code>pool</code> maintains a <code>list</code> of available (free) <code>memory chunks</code>. When an application requests an <code>object</code>, the <code>pool</code> simply returns a free <code>chunk</code> from its internal <code>list</code>. When an <code>object</code> is &ldquo;destroyed&rdquo; or no longer needed, its <code>memory chunk</code> is returned to the <code>pool</code>&rsquo;s free <code>list</code>, rather than being returned to the operating system.</li></ul><hr><p>Initial State (Pool of 4 objects):
+[Obj1_Free] -> [Obj2_Free] -> [Obj3_Free] -> [Obj4_Free] -> NULL</p><p>After requesting 2 objects:
+[Obj1_Used] [Obj2_Used] [Obj3_Free] -> [Obj4_Free] -> NULL</p><p>After releasing Obj1:
+[Obj1_Free] -> [Obj3_Free] -> [Obj4_Free] -> NULL
+(Obj2 is still Used)</p><p><a href=#code-walkthrough>Jump to Code Walkthrough</a></p><h2 id=implementation>Implementation</h2><h3 id=python>Python</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># Conceptual Object Pool in Python (illustrates the idea, Python&#39;s GC handles memory)</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>class</span> <span style=color:#cb4b16>ReusableObject</span>:
+</span></span><span style=display:flex><span>    <span style=color:#859900>def</span> <span style=color:#268bd2>__init__</span>(<span style=color:#cb4b16>self</span>, <span style=color:#268bd2>obj_id</span>):
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>obj_id</span> = <span style=color:#268bd2>obj_id</span>
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>in_use</span> = <span style=color:#859900;font-weight:700>False</span>
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>print</span>(<span style=color:#2aa198>f</span><span style=color:#2aa198>&#34;Object </span><span style=color:#2aa198>{</span><span style=color:#cb4b16>self</span>.<span style=color:#268bd2>obj_id</span><span style=color:#2aa198>}</span><span style=color:#2aa198> created.&#34;</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>def</span> <span style=color:#268bd2>reset</span>(<span style=color:#cb4b16>self</span>):
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic># Reset object state for reuse</span>
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>print</span>(<span style=color:#2aa198>f</span><span style=color:#2aa198>&#34;Object </span><span style=color:#2aa198>{</span><span style=color:#cb4b16>self</span>.<span style=color:#268bd2>obj_id</span><span style=color:#2aa198>}</span><span style=color:#2aa198> reset.&#34;</span>)
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>in_use</span> = <span style=color:#859900;font-weight:700>False</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>def</span> <span style=color:#268bd2>use</span>(<span style=color:#cb4b16>self</span>):
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>in_use</span> = <span style=color:#859900;font-weight:700>True</span>
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>print</span>(<span style=color:#2aa198>f</span><span style=color:#2aa198>&#34;Object </span><span style=color:#2aa198>{</span><span style=color:#cb4b16>self</span>.<span style=color:#268bd2>obj_id</span><span style=color:#2aa198>}</span><span style=color:#2aa198> is now in use.&#34;</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>class</span> <span style=color:#cb4b16>ObjectPool</span>:
+</span></span><span style=display:flex><span>    <span style=color:#859900>def</span> <span style=color:#268bd2>__init__</span>(<span style=color:#cb4b16>self</span>, <span style=color:#268bd2>pool_size</span>):
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>_pool</span> = []
+</span></span><span style=display:flex><span>        <span style=color:#859900>for</span> <span style=color:#268bd2>i</span> <span style=color:#859900>in</span> <span style=color:#cb4b16>range</span>(<span style=color:#268bd2>pool_size</span>):
+</span></span><span style=display:flex><span>            <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>_pool</span>.<span style=color:#268bd2>append</span>(<span style=color:#268bd2>ReusableObject</span>(<span style=color:#268bd2>i</span>))
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>_free_objects</span> = <span style=color:#cb4b16>list</span>(<span style=color:#cb4b16>self</span>.<span style=color:#268bd2>_pool</span>) <span style=color:#93a1a1;font-style:italic># All objects initially free</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>def</span> <span style=color:#268bd2>acquire_object</span>(<span style=color:#cb4b16>self</span>):
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> <span style=color:#859900>not</span> <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>_free_objects</span>:
+</span></span><span style=display:flex><span>            <span style=color:#cb4b16>print</span>(<span style=color:#2aa198>&#34;Pool exhausted, cannot acquire object.&#34;</span>)
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span> <span style=color:#859900;font-weight:700>None</span>
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>obj</span> = <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>_free_objects</span>.<span style=color:#268bd2>pop</span>(<span style=color:#2aa198;font-weight:700>0</span>) <span style=color:#93a1a1;font-style:italic># Get first free object</span>
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>obj</span>.<span style=color:#268bd2>in_use</span> = <span style=color:#859900;font-weight:700>True</span>
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>print</span>(<span style=color:#2aa198>f</span><span style=color:#2aa198>&#34;Acquired object </span><span style=color:#2aa198>{</span><span style=color:#268bd2>obj</span>.<span style=color:#268bd2>obj_id</span><span style=color:#2aa198>}</span><span style=color:#2aa198>.&#34;</span>)
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>obj</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>def</span> <span style=color:#268bd2>release_object</span>(<span style=color:#cb4b16>self</span>, <span style=color:#268bd2>obj</span>):
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> <span style=color:#268bd2>obj</span> <span style=color:#859900>is</span> <span style=color:#859900>not</span> <span style=color:#859900;font-weight:700>None</span> <span style=color:#859900>and</span> <span style=color:#268bd2>obj</span>.<span style=color:#268bd2>in_use</span>:
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>obj</span>.<span style=color:#268bd2>reset</span>()
+</span></span><span style=display:flex><span>            <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>_free_objects</span>.<span style=color:#268bd2>append</span>(<span style=color:#268bd2>obj</span>) <span style=color:#93a1a1;font-style:italic># Return to free list</span>
+</span></span><span style=display:flex><span>            <span style=color:#cb4b16>print</span>(<span style=color:#2aa198>f</span><span style=color:#2aa198>&#34;Released object </span><span style=color:#2aa198>{</span><span style=color:#268bd2>obj</span>.<span style=color:#268bd2>obj_id</span><span style=color:#2aa198>}</span><span style=color:#2aa198>.&#34;</span>)
+</span></span><span style=display:flex><span>        <span style=color:#859900>else</span>:
+</span></span><span style=display:flex><span>            <span style=color:#cb4b16>print</span>(<span style=color:#2aa198>&#34;Cannot release object not in use or invalid.&#34;</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># Example Usage:</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># pool = ObjectPool(3)</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># obj_a = pool.acquire_object()</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># obj_b = pool.acquire_object()</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># obj_c = pool.acquire_object()</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># obj_d = pool.acquire_object() # This will fail</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># pool.release_object(obj_a)</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># obj_e = pool.acquire_object() # Should get obj_a back</span>
+</span></span></code></pre></div><h3 id=javascript>Javascript</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// Conceptual Object Pool in JavaScript (illustrates the idea)
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#859900>class</span> <span style=color:#268bd2>ReusableObject</span> {
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>constructor</span>(<span style=color:#268bd2>objId</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>objId</span> = <span style=color:#268bd2>objId</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>inUse</span> = <span style=color:#859900;font-weight:700>false</span>;
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>console</span>.<span style=color:#268bd2>log</span>(&lt;<span style=color:#268bd2>code</span>&gt;<span style=color:#cb4b16>Object</span> <span style=color:#268bd2>$</span>{<span style=color:#859900>this</span>.<span style=color:#268bd2>objId</span>} <span style=color:#268bd2>created</span>.&lt;/code&gt;);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>reset</span>() {
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic>// Reset object state for reuse
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        <span style=color:#268bd2>console</span>.<span style=color:#268bd2>log</span>(&lt;<span style=color:#268bd2>code</span>&gt;<span style=color:#cb4b16>Object</span> <span style=color:#268bd2>$</span>{<span style=color:#859900>this</span>.<span style=color:#268bd2>objId</span>} <span style=color:#268bd2>reset</span>.&lt;/code&gt;);
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>inUse</span> = <span style=color:#859900;font-weight:700>false</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>use</span>() {
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>inUse</span> = <span style=color:#859900;font-weight:700>true</span>;
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>console</span>.<span style=color:#268bd2>log</span>(&lt;<span style=color:#268bd2>code</span>&gt;<span style=color:#cb4b16>Object</span> <span style=color:#268bd2>$</span>{<span style=color:#859900>this</span>.<span style=color:#268bd2>objId</span>} <span style=color:#268bd2>is</span> <span style=color:#268bd2>now</span> <span style=color:#859900>in</span> <span style=color:#268bd2>use</span>.&lt;/code&gt;);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>class</span> <span style=color:#268bd2>ObjectPool</span> {
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>constructor</span>(<span style=color:#268bd2>poolSize</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>_pool</span> = [];
+</span></span><span style=display:flex><span>        <span style=color:#859900>for</span> (<span style=color:#859900>let</span> <span style=color:#268bd2>i</span> = <span style=color:#2aa198;font-weight:700>0</span>; <span style=color:#268bd2>i</span> &lt; <span style=color:#268bd2>poolSize</span>; <span style=color:#268bd2>i</span>++) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>this</span>.<span style=color:#268bd2>_pool</span>.<span style=color:#268bd2>push</span>(<span style=color:#859900>new</span> <span style=color:#268bd2>ReusableObject</span>(<span style=color:#268bd2>i</span>));
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>_freeObjects</span> = [...<span style=color:#859900>this</span>.<span style=color:#268bd2>_pool</span>]; <span style=color:#93a1a1;font-style:italic>// All objects initially free
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>acquireObject</span>() {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#859900>this</span>.<span style=color:#268bd2>_freeObjects</span>.<span style=color:#268bd2>length</span> === <span style=color:#2aa198;font-weight:700>0</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>console</span>.<span style=color:#268bd2>log</span>(<span style=color:#2aa198>&#34;Pool exhausted, cannot acquire object.&#34;</span>);
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span> <span style=color:#859900;font-weight:700>null</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#859900>const</span> <span style=color:#268bd2>obj</span> = <span style=color:#859900>this</span>.<span style=color:#268bd2>_freeObjects</span>.<span style=color:#268bd2>shift</span>(); <span style=color:#93a1a1;font-style:italic>// Get first free object
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        <span style=color:#268bd2>obj</span>.<span style=color:#268bd2>inUse</span> = <span style=color:#859900;font-weight:700>true</span>;
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>console</span>.<span style=color:#268bd2>log</span>(&lt;<span style=color:#268bd2>code</span>&gt;<span style=color:#268bd2>Acquired</span> <span style=color:#268bd2>object</span> <span style=color:#268bd2>$</span>{<span style=color:#268bd2>obj</span>.<span style=color:#268bd2>objId</span>}.&lt;/code&gt;);
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>obj</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>releaseObject</span>(<span style=color:#268bd2>obj</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>obj</span> &amp;&amp; <span style=color:#268bd2>obj</span>.<span style=color:#268bd2>inUse</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>obj</span>.<span style=color:#268bd2>reset</span>();
+</span></span><span style=display:flex><span>            <span style=color:#859900>this</span>.<span style=color:#268bd2>_freeObjects</span>.<span style=color:#268bd2>push</span>(<span style=color:#268bd2>obj</span>); <span style=color:#93a1a1;font-style:italic>// Return to free list
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#268bd2>console</span>.<span style=color:#268bd2>log</span>(&lt;<span style=color:#268bd2>code</span>&gt;<span style=color:#268bd2>Released</span> <span style=color:#268bd2>object</span> <span style=color:#268bd2>$</span>{<span style=color:#268bd2>obj</span>.<span style=color:#268bd2>objId</span>}.&lt;/code&gt;);
+</span></span><span style=display:flex><span>        } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>console</span>.<span style=color:#268bd2>log</span>(<span style=color:#2aa198>&#34;Cannot release object not in use or invalid.&#34;</span>);
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// Example Usage:
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const pool = new ObjectPool(3);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const objA = pool.acquireObject();
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const objB = pool.acquireObject();
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const objC = pool.acquireObject();
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const objD = pool.acquireObject(); // This will fail
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// pool.releaseObject(objA);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const objE = pool.acquireObject(); // Should get objA back
+</span></span></span></code></pre></div><h3 id=cpp>Cpp</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-cpp data-lang=cpp><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;iostream&gt;</span><span style=color:#93a1a1;font-style:italic>
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;vector&gt;</span><span style=color:#93a1a1;font-style:italic>
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;memory&gt;</span><span style=color:#93a1a1;font-style:italic> </span><span style=color:#93a1a1;font-style:italic>// For std::shared_ptr or std::unique_ptr for real-world scenarios
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// A simple reusable object
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span><span style=color:#859900>class</span> <span style=color:#cb4b16>ReusableObject</span> {
+</span></span><span style=display:flex><span><span style=color:#859900>private</span>:
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>id</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>bool</span> <span style=color:#268bd2>in_use</span>;
+</span></span><span style=display:flex><span><span style=color:#859900>public</span>:
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>ReusableObject</span>(<span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>obj_id</span>) : <span style=color:#268bd2>id</span>(<span style=color:#268bd2>obj_id</span>), <span style=color:#268bd2>in_use</span>(<span style=color:#cb4b16>false</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>std</span>::<span style=color:#268bd2>cout</span> &lt;&lt; <span style=color:#2aa198>&#34;Object &#34;</span> &lt;&lt; <span style=color:#268bd2>id</span> &lt;&lt; <span style=color:#2aa198>&#34; created.&#34;</span> &lt;&lt; <span style=color:#268bd2>std</span>::<span style=color:#268bd2>endl</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>void</span> <span style=color:#268bd2>reset</span>() {
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic>// Reset object state for reuse
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        <span style=color:#268bd2>std</span>::<span style=color:#268bd2>cout</span> &lt;&lt; <span style=color:#2aa198>&#34;Object &#34;</span> &lt;&lt; <span style=color:#268bd2>id</span> &lt;&lt; <span style=color:#2aa198>&#34; reset.&#34;</span> &lt;&lt; <span style=color:#268bd2>std</span>::<span style=color:#268bd2>endl</span>;
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>in_use</span> = <span style=color:#cb4b16>false</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>void</span> <span style=color:#268bd2>use</span>() {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>in_use</span> = <span style=color:#cb4b16>true</span>;
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>std</span>::<span style=color:#268bd2>cout</span> &lt;&lt; <span style=color:#2aa198>&#34;Object &#34;</span> &lt;&lt; <span style=color:#268bd2>id</span> &lt;&lt; <span style=color:#2aa198>&#34; is now in use.&#34;</span> &lt;&lt; <span style=color:#268bd2>std</span>::<span style=color:#268bd2>endl</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>bool</span> <span style=color:#268bd2>isInUse</span>() <span style=color:#859900>const</span> { <span style=color:#859900>return</span> <span style=color:#268bd2>in_use</span>; }
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>getId</span>() <span style=color:#859900>const</span> { <span style=color:#859900>return</span> <span style=color:#268bd2>id</span>; }
+</span></span><span style=display:flex><span>};
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// A simple object pool
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span><span style=color:#859900>class</span> <span style=color:#cb4b16>ObjectPool</span> {
+</span></span><span style=display:flex><span><span style=color:#859900>private</span>:
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>std</span>::<span style=color:#268bd2>vector</span>&lt;<span style=color:#268bd2>ReusableObject</span>&lt;/<span style=color:#268bd2>em</span>&gt;&gt; <span style=color:#268bd2>pool</span>;
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>std</span>::<span style=color:#268bd2>vector</span>&lt;<span style=color:#268bd2>ReusableObject</span>&lt;<span style=color:#268bd2>em</span>&gt;&gt; <span style=color:#268bd2>free_objects</span>; <span style=color:#93a1a1;font-style:italic>// Store pointers to free objects
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>pool_size</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>public</span>:
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>ObjectPool</span>(<span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>size</span>) : <span style=color:#268bd2>pool_size</span>(<span style=color:#268bd2>size</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>for</span> (<span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>i</span> = <span style=color:#2aa198;font-weight:700>0</span>; <span style=color:#268bd2>i</span> &lt; <span style=color:#268bd2>pool_size</span>; ++<span style=color:#268bd2>i</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>ReusableObject</span>&lt;/<span style=color:#268bd2>em</span>&gt; <span style=color:#268bd2>obj</span> = <span style=color:#859900>new</span> <span style=color:#268bd2>ReusableObject</span>(<span style=color:#268bd2>i</span>);
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>pool</span>.<span style=color:#268bd2>push_back</span>(<span style=color:#268bd2>obj</span>);
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>free_objects</span>.<span style=color:#268bd2>push_back</span>(<span style=color:#268bd2>obj</span>); <span style=color:#93a1a1;font-style:italic>// Initially all objects are free
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    ~<span style=color:#268bd2>ObjectPool</span>() {
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic>// Deallocate all objects created by the pool
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        <span style=color:#859900>for</span> (<span style=color:#268bd2>ReusableObject</span>&lt;<span style=color:#268bd2>em</span>&gt; <span style=color:#268bd2>obj</span> : <span style=color:#268bd2>pool</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>delete</span> <span style=color:#268bd2>obj</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>pool</span>.<span style=color:#268bd2>clear</span>();
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>free_objects</span>.<span style=color:#268bd2>clear</span>();
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>ReusableObject</span>&lt;/<span style=color:#268bd2>em</span>&gt; <span style=color:#268bd2>acquireObject</span>() {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>free_objects</span>.<span style=color:#268bd2>empty</span>()) {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>std</span>::<span style=color:#268bd2>cout</span> &lt;&lt; <span style=color:#2aa198>&#34;Pool exhausted, cannot acquire object.&#34;</span> &lt;&lt; <span style=color:#268bd2>std</span>::<span style=color:#268bd2>endl</span>;
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span> <span style=color:#859900>nullptr</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>ReusableObject</span>&lt;<span style=color:#268bd2>em</span>&gt; <span style=color:#268bd2>obj</span> = <span style=color:#268bd2>free_objects</span>.<span style=color:#268bd2>back</span>(); <span style=color:#93a1a1;font-style:italic>// Get last free object
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        <span style=color:#268bd2>free_objects</span>.<span style=color:#268bd2>pop_back</span>();                   <span style=color:#93a1a1;font-style:italic>// Remove from free list
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        <span style=color:#268bd2>obj</span>-&gt;<span style=color:#268bd2>use</span>();
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>std</span>::<span style=color:#268bd2>cout</span> &lt;&lt; <span style=color:#2aa198>&#34;Acquired object &#34;</span> &lt;&lt; <span style=color:#268bd2>obj</span>-&gt;<span style=color:#268bd2>getId</span>() &lt;&lt; <span style=color:#2aa198>&#34;.&#34;</span> &lt;&lt; <span style=color:#268bd2>std</span>::<span style=color:#268bd2>endl</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>obj</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>void</span> <span style=color:#268bd2>releaseObject</span>(<span style=color:#268bd2>ReusableObject</span>&lt;/<span style=color:#268bd2>em</span>&gt; <span style=color:#268bd2>obj</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>obj</span> != <span style=color:#859900>nullptr</span> &amp;&amp; <span style=color:#268bd2>obj</span>-&gt;<span style=color:#268bd2>isInUse</span>()) {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>obj</span>-&gt;<span style=color:#268bd2>reset</span>();
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>free_objects</span>.<span style=color:#268bd2>push_back</span>(<span style=color:#268bd2>obj</span>); <span style=color:#93a1a1;font-style:italic>// Return to free list
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#268bd2>std</span>::<span style=color:#268bd2>cout</span> &lt;&lt; <span style=color:#2aa198>&#34;Released object &#34;</span> &lt;&lt; <span style=color:#268bd2>obj</span>-&gt;<span style=color:#268bd2>getId</span>() &lt;&lt; <span style=color:#2aa198>&#34;.&#34;</span> &lt;&lt; <span style=color:#268bd2>std</span>::<span style=color:#268bd2>endl</span>;
+</span></span><span style=display:flex><span>        } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>std</span>::<span style=color:#268bd2>cout</span> &lt;&lt; <span style=color:#2aa198>&#34;Cannot release object not in use or invalid.&#34;</span> &lt;&lt; <span style=color:#268bd2>std</span>::<span style=color:#268bd2>endl</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>};
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// Example Usage:
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// int main() {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     ObjectPool pool(3);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     ReusableObject&lt;em&gt; objA = pool.acquireObject();
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     ReusableObject&lt;/em&gt; objB = pool.acquireObject();
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     ReusableObject&lt;em&gt; objC = pool.acquireObject();
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     ReusableObject&lt;/em&gt; objD = pool.acquireObject(); // This will fail
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     pool.releaseObject(objA);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     ReusableObject* objE = pool.acquireObject(); // Should get objA back
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     // Note: Objects are automatically deallocated when pool goes out of scope.
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     return 0;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// }
+</span></span></span></code></pre></div><h2 id=code-walkthrough>Code Walkthrough</h2><p><a href=#implementation>Back to Implementation</a></p><h3 id=code-walkthrough-1>Code Walkthrough</h3><p>A <code>Memory Pool</code> is typically implemented with a <code>class</code> that manages an <code>array</code> of pre-allocated <code>objects</code> or raw <code>memory</code> blocks.</p><hr><p><strong><code>ReusableObject</code> Class:</strong> A simple <code>class</code> representing the type of <code>object</code> the <code>pool</code> will manage.</p><ul><li><code>obj_id</code>: An identifier for the <code>object</code>.</li><li><code>in_use</code>: A boolean flag to track if the <code>object</code> is currently active.</li><li><code>reset()</code>: A method to reset the <code>object</code>&rsquo;s state when it&rsquo;s returned to the <code>pool</code>.</li><li><code>use()</code>: A method to mark the <code>object</code> as in use.</li></ul><p><strong><code>ObjectPool</code> Class:</strong> The core of the <code>Memory Pool</code>.</p><ul><li><p><code>_pool</code>: A <code>list</code>/<code>vector</code> holding all the pre-allocated <code>ReusableObject</code> instances.</p></li><li><p><code>_free_objects</code>: A <code>list</code>/<code>vector</code> (often a <code>stack</code> or <code>queue</code> for <code>O(1)</code> access) of currently available (free) <code>ReusableObject</code>s.</p></li><li><p><code>pool_size</code>: The maximum number of <code>objects</code> the <code>pool</code> can manage.</p></li><li><p><strong><code>acquire_object()</code>:</strong></p></li><li><p>Checks if there are any free <code>objects</code> in <code>_free_objects</code>.</p></li><li><p>If available, it takes an <code>object</code> from <code>_free_objects</code>, marks it as <code>in use</code>, and returns it.</p></li><li><p>If the <code>pool</code> is exhausted, it returns <code>None</code> or throws an error.</p></li></li><li><p><strong><code>release_object(obj)</code>:</strong></p></li><li><p>Takes a used <code>object</code>, calls its <code>reset()</code> method to clean its state.</p></li><li><p>Adds the <code>object</code> back to the <code>_free_objects</code> <code>list</code>.</p></li></li></ul><p><a href=#implementation>Back to Implementation</a></p><h2 id=applications>Applications</h2><h3 id=application>Application</h3><p>Memory Pools (or Object Pools) are a critical performance optimization in many domains. In <strong>game engines</strong>, they are used to manage frequently created and destroyed objects like bullets, particles, and enemies, avoiding the performance hit of constant memory allocation. <strong>High-performance network servers</strong> use pools to manage connection objects, which are opened and closed at a high frequency. Similarly, in <strong>real-time and embedded systems</strong>, pools provide deterministic, constant-time memory allocation, which is essential for meeting strict timing deadlines and preventing system stalls caused by standard memory management.</p></div></article><div class=navigation style="margin-top:5rem;display:flex;justify-content:space-between;border-top:1px solid var(--border);padding-top:2rem"><a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/data_structures/specialized/metric_tree/ class=nav-btn>← Previous</a>
+<a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/data_structures/specialized/ class=nav-btn>Up</a>
+<a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/data_structures/specialized/leftist_heap/ class=nav-btn>Next →</a></div></main><footer class=footer><p>Built with Hugo. No scripts. No tracking. Just the truth.</p></footer><script>document.addEventListener("DOMContentLoaded",function(){const n=document.body,s=document.createTreeWalker(n,NodeFilter.SHOW_TEXT,null,!1);let e;const t=[];for(;e=s.nextNode();)e.nodeValue.includes("[-]")&&t.push(e);t.forEach(e=>{const t=document.createElement("span");t.innerHTML=e.nodeValue.replace(/\[-\]/g,'<span class="started-icon" title="Started"></span>'),e.parentNode.replaceChild(t,e)})})</script><script>const body=document.getElementById("theme-body"),btn=document.getElementById("theme-toggle"),currentTheme=localStorage.getItem("theme");function updateButtonText(){body.classList.contains("theme-terminal")?btn.textContent="Light Mode":btn.textContent="Dark Mode"}currentTheme==="terminal"&&body.classList.add("theme-terminal"),updateButtonText(),btn.addEventListener("click",()=>{body.classList.toggle("theme-terminal"),updateButtonText();let e="natural";body.classList.contains("theme-terminal")&&(e="terminal"),localStorage.setItem("theme",e)})</script></body></html>

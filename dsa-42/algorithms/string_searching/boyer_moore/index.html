@@ -1,0 +1,387 @@
+<!doctype html><html lang=en-us><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Boyer-Moore Algorithm | SDET Interview Preparation Kit</title><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/css/style.css><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/css/terminal.css><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel=stylesheet><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/lib/katex/katex.min.css><script defer src=https://notxkcd.github.io/sdet-prep-site/lib/katex/katex.min.js></script><script defer src=https://notxkcd.github.io/sdet-prep-site/lib/katex/contrib/auto-render.min.js onload=renderMathInElement(document.body)></script><script>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1}]})})</script></head><body id=theme-body><button id=theme-toggle>Switch Theme</button><header><nav><ul><li><a href=https://notxkcd.github.io/sdet-prep-site/>Index</a></li></ul></nav><div class=site-breadcrumb><a href=https://notxkcd.github.io/sdet-prep-site/>Home</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/>SDET Interview Dashboard</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/>42 Algorithms & 42 Data Structures</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/algorithms/>Algorithms</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/algorithms/string_searching/>String Searching</a>
+<span>/</span> Boyer-Moore Algorithm</div></header><main><article><h1>Boyer-Moore Algorithm</h1><div class=content-body style=margin-top:2rem><p>The <code>Boyer-Moore Algorithm</code> is an efficient string searching algorithm that is often cited as the most efficient practical string-matching algorithm. Unlike naive approaches that compare characters from left to right, <code>Boyer-Moore</code> starts comparing from the rightmost character of the <code>pattern</code>.</p><p>Its main advantage comes from two <code>heuristics</code>: the <strong>bad-character heuristic</strong> and the <strong>good-suffix heuristic</strong>, which allow it to skip large portions of the <code>text</code>, especially when the alphabet size is large. This often results in sublinear time complexity in the average case.</p><h2 id=how-it-works>How it Works</h2><h3 id=how-it-works-expanded>How it Works (Expanded)</h3><p>The <code>Boyer-Moore Algorithm</code> preprocesses the <code>pattern</code> (but not the <code>text</code>) to generate two tables: the <strong>bad-character shift table</strong> and the <strong>good-suffix shift table</strong>. During searching, when a mismatch occurs, it calculates a shift for the pattern based on both <code>heuristics</code> and applies the larger of the two shifts.</p><hr><p>Example: Search for Pattern &ldquo;EXAMPLE&rdquo; in Text &ldquo;HERE IS A SIMPLE EXAMPLE&rdquo;</p><ol><li><p>Mismatch:
+Text: &mldr; SIMPLE EXA_MPLE
+Pattern: EXAMPLE
+^
+&lsquo;M&rsquo; in text mismatches &lsquo;L&rsquo; in pattern.</p></li><li><p>Bad-Character Heuristic:</p></li></ol><ul><li>&lsquo;M&rsquo; (bad character) is not in &ldquo;EXAMPLE&rdquo;.</li><li>Shift pattern past &lsquo;M&rsquo; in text.</li></ul><ol start=3><li>Good-Suffix Heuristic:</li></ol><ul><li>&ldquo;LE&rdquo; (matched suffix) has an occurrence of &ldquo;LE&rdquo; elsewhere in &ldquo;EXAMPLE&rdquo;.</li><li>Shift pattern to align matched suffix.</li></ul><p>The algorithm takes the maximum of the shifts proposed by these two heuristics.</p><p><a href=#code-walkthrough>Jump to Code Walkthrough</a></p><h2 id=implementation>Implementation</h2><h3 id=python>Python</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># Simple Boyer-Moore implementation focusing on the Bad Character Heuristic</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># (Good Suffix Heuristic is more complex and often omitted for basic demos)</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>def</span> <span style=color:#268bd2>build_bad_char_table</span>(<span style=color:#268bd2>pattern</span>):
+</span></span><span style=display:flex><span>    <span style=color:#2aa198>&#34;&#34;&#34;
+</span></span></span><span style=display:flex><span><span style=color:#2aa198>    Builds the bad character shift table.
+</span></span></span><span style=display:flex><span><span style=color:#2aa198>    For each character, stores the index of its rightmost occurrence in the pattern.
+</span></span></span><span style=display:flex><span><span style=color:#2aa198>    If a character is not in the pattern, it&#39;s considered to be -1.
+</span></span></span><span style=display:flex><span><span style=color:#2aa198>    &#34;&#34;&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>bad_char</span> = {}
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>m</span> = <span style=color:#cb4b16>len</span>(<span style=color:#268bd2>pattern</span>)
+</span></span><span style=display:flex><span>    <span style=color:#859900>for</span> <span style=color:#268bd2>i</span> <span style=color:#859900>in</span> <span style=color:#cb4b16>range</span>(<span style=color:#268bd2>m</span> - <span style=color:#2aa198;font-weight:700>1</span>): <span style=color:#93a1a1;font-style:italic># Exclude last character for shifts</span>
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>bad_char</span>[<span style=color:#268bd2>pattern</span>[<span style=color:#268bd2>i</span>]] = <span style=color:#268bd2>i</span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>bad_char</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>def</span> <span style=color:#268bd2>boyer_moore_search</span>(<span style=color:#268bd2>text</span>, <span style=color:#268bd2>pattern</span>):
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>n</span> = <span style=color:#cb4b16>len</span>(<span style=color:#268bd2>text</span>)
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>m</span> = <span style=color:#cb4b16>len</span>(<span style=color:#268bd2>pattern</span>)
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> <span style=color:#268bd2>m</span> == <span style=color:#2aa198;font-weight:700>0</span>: <span style=color:#859900>return</span> []
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> <span style=color:#268bd2>n</span> == <span style=color:#2aa198;font-weight:700>0</span> <span style=color:#859900>or</span> <span style=color:#268bd2>m</span> &gt; <span style=color:#268bd2>n</span>: <span style=color:#859900>return</span> []
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>bad_char_table</span> = <span style=color:#268bd2>build_bad_char_table</span>(<span style=color:#268bd2>pattern</span>)
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>results</span> = []
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>s</span> = <span style=color:#2aa198;font-weight:700>0</span> <span style=color:#93a1a1;font-style:italic># s is shift of the pattern with respect to text</span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>while</span> <span style=color:#268bd2>s</span> &lt;= (<span style=color:#268bd2>n</span> - <span style=color:#268bd2>m</span>):
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>j</span> = <span style=color:#268bd2>m</span> - <span style=color:#2aa198;font-weight:700>1</span> <span style=color:#93a1a1;font-style:italic># Start comparing from rightmost character of pattern</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic># Keep reducing index j of pattern while characters are matching</span>
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic># and j is not -1</span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>while</span> <span style=color:#268bd2>j</span> &gt;= <span style=color:#2aa198;font-weight:700>0</span> <span style=color:#859900>and</span> <span style=color:#268bd2>pattern</span>[<span style=color:#268bd2>j</span>] == <span style=color:#268bd2>text</span>[<span style=color:#268bd2>s</span> + <span style=color:#268bd2>j</span>]:
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>j</span> -= <span style=color:#2aa198;font-weight:700>1</span>
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic># If the pattern is found (j becomes -1)</span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> <span style=color:#268bd2>j</span> &lt; <span style=color:#2aa198;font-weight:700>0</span>:
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>results</span>.<span style=color:#268bd2>append</span>(<span style=color:#268bd2>s</span>)
+</span></span><span style=display:flex><span>            <span style=color:#93a1a1;font-style:italic># Shift the pattern so that the next character in text aligns</span>
+</span></span><span style=display:flex><span>            <span style=color:#93a1a1;font-style:italic># with its last occurrence in pattern. If there&#39;s no next character</span>
+</span></span><span style=display:flex><span>            <span style=color:#93a1a1;font-style:italic># or it&#39;s not in bad_char_table, shift by 1.</span>
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>s</span> += (<span style=color:#268bd2>m</span> - <span style=color:#268bd2>bad_char_table</span>.<span style=color:#268bd2>get</span>(<span style=color:#268bd2>text</span>[<span style=color:#268bd2>s</span> + <span style=color:#268bd2>m</span>], -<span style=color:#2aa198;font-weight:700>1</span>) <span style=color:#859900>if</span> <span style=color:#268bd2>s</span> + <span style=color:#268bd2>m</span> &lt; <span style=color:#268bd2>n</span> <span style=color:#859900>else</span> <span style=color:#2aa198;font-weight:700>1</span>)
+</span></span><span style=display:flex><span>        <span style=color:#859900>else</span>:
+</span></span><span style=display:flex><span>            <span style=color:#93a1a1;font-style:italic># Character at text[s+j] did not match with pattern[j].</span>
+</span></span><span style=display:flex><span>            <span style=color:#93a1a1;font-style:italic># Shift the pattern.</span>
+</span></span><span style=display:flex><span>            <span style=color:#93a1a1;font-style:italic># max(1, j - bad_char_table.get(text[s + j], -1)):</span>
+</span></span><span style=display:flex><span>            <span style=color:#93a1a1;font-style:italic># 1. If bad character is not in pattern, bad_char_table.get returns -1.</span>
+</span></span><span style=display:flex><span>            <span style=color:#93a1a1;font-style:italic>#    Shift is j - (-1) = j + 1.</span>
+</span></span><span style=display:flex><span>            <span style=color:#93a1a1;font-style:italic># 2. If bad character is in pattern, shift is j - last_occurrence_index.</span>
+</span></span><span style=display:flex><span>            <span style=color:#93a1a1;font-style:italic>#    Take max(1, ...) to ensure at least a shift of 1.</span>
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>s</span> += <span style=color:#cb4b16>max</span>(<span style=color:#2aa198;font-weight:700>1</span>, <span style=color:#268bd2>j</span> - <span style=color:#268bd2>bad_char_table</span>.<span style=color:#268bd2>get</span>(<span style=color:#268bd2>text</span>[<span style=color:#268bd2>s</span> + <span style=color:#268bd2>j</span>], -<span style=color:#2aa198;font-weight:700>1</span>))
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>results</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># Example</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># text = &#34;ABAAABCD&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># pattern = &#34;ABC&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># print(boyer_moore_search(text, pattern)) # [4]</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># text2 = &#34;TESTTEXT&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># pattern2 = &#34;TEXT&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># print(boyer_moore_search(text2, pattern2)) # [4]</span>
+</span></span></code></pre></div><h3 id=javascript>Javascript</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=display:flex><span><span style=color:#859900>function</span> <span style=color:#268bd2>buildBadCharTable</span>(<span style=color:#268bd2>pattern</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#859900>const</span> <span style=color:#268bd2>badChar</span> = <span style=color:#859900>new</span> <span style=color:#268bd2>Map</span>();
+</span></span><span style=display:flex><span>    <span style=color:#859900>const</span> <span style=color:#268bd2>m</span> = <span style=color:#268bd2>pattern</span>.<span style=color:#268bd2>length</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900>for</span> (<span style=color:#859900>let</span> <span style=color:#268bd2>i</span> = <span style=color:#2aa198;font-weight:700>0</span>; <span style=color:#268bd2>i</span> &lt; <span style=color:#268bd2>m</span> - <span style=color:#2aa198;font-weight:700>1</span>; <span style=color:#268bd2>i</span>++) { <span style=color:#93a1a1;font-style:italic>// Exclude last character for shifts
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        <span style=color:#268bd2>badChar</span>.<span style=color:#268bd2>set</span>(<span style=color:#268bd2>pattern</span>[<span style=color:#268bd2>i</span>], <span style=color:#268bd2>i</span>);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>badChar</span>;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>function</span> <span style=color:#268bd2>boyerMooreSearch</span>(<span style=color:#268bd2>text</span>, <span style=color:#268bd2>pattern</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#859900>const</span> <span style=color:#268bd2>n</span> = <span style=color:#268bd2>text</span>.<span style=color:#268bd2>length</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900>const</span> <span style=color:#268bd2>m</span> = <span style=color:#268bd2>pattern</span>.<span style=color:#268bd2>length</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> (<span style=color:#268bd2>m</span> === <span style=color:#2aa198;font-weight:700>0</span>) <span style=color:#859900>return</span> [];
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> (<span style=color:#268bd2>n</span> === <span style=color:#2aa198;font-weight:700>0</span> || <span style=color:#268bd2>m</span> &gt; <span style=color:#268bd2>n</span>) <span style=color:#859900>return</span> [];
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>const</span> <span style=color:#268bd2>badCharTable</span> = <span style=color:#268bd2>buildBadCharTable</span>(<span style=color:#268bd2>pattern</span>);
+</span></span><span style=display:flex><span>    <span style=color:#859900>const</span> <span style=color:#268bd2>results</span> = [];
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#859900>let</span> <span style=color:#268bd2>s</span> = <span style=color:#2aa198;font-weight:700>0</span>; <span style=color:#93a1a1;font-style:italic>// s is shift of the pattern with respect to text
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900>while</span> (<span style=color:#268bd2>s</span> &lt;= (<span style=color:#268bd2>n</span> - <span style=color:#268bd2>m</span>)) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>let</span> <span style=color:#268bd2>j</span> = <span style=color:#268bd2>m</span> - <span style=color:#2aa198;font-weight:700>1</span>; <span style=color:#93a1a1;font-style:italic>// Start comparing from rightmost character of pattern
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic>// Keep reducing index j of pattern while characters are matching
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        <span style=color:#93a1a1;font-style:italic>// and j is not -1
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        <span style=color:#859900>while</span> (<span style=color:#268bd2>j</span> &gt;= <span style=color:#2aa198;font-weight:700>0</span> &amp;&amp; <span style=color:#268bd2>pattern</span>[<span style=color:#268bd2>j</span>] === <span style=color:#268bd2>text</span>[<span style=color:#268bd2>s</span> + <span style=color:#268bd2>j</span>]) {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>j</span>--;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic>// If the pattern is found (j becomes -1)
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>j</span> &lt; <span style=color:#2aa198;font-weight:700>0</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>results</span>.<span style=color:#268bd2>push</span>(<span style=color:#268bd2>s</span>);
+</span></span><span style=display:flex><span>            <span style=color:#93a1a1;font-style:italic>// Shift the pattern. If there&#39;s a next character in text that could
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#93a1a1;font-style:italic>// align with a pattern character, align it. Otherwise, shift by 1.
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#93a1a1;font-style:italic>// Simplified shift for basic bad-character-only implementation.
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#268bd2>s</span> += (<span style=color:#268bd2>s</span> + <span style=color:#268bd2>m</span> &lt; <span style=color:#268bd2>n</span> &amp;&amp; <span style=color:#268bd2>badCharTable</span>.<span style=color:#268bd2>has</span>(<span style=color:#268bd2>text</span>[<span style=color:#268bd2>s</span> + <span style=color:#268bd2>m</span>])) ? <span style=color:#268bd2>m</span> - <span style=color:#268bd2>badCharTable</span>.<span style=color:#268bd2>get</span>(<span style=color:#268bd2>text</span>[<span style=color:#268bd2>s</span> + <span style=color:#268bd2>m</span>]) : <span style=color:#2aa198;font-weight:700>1</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>            <span style=color:#93a1a1;font-style:italic>// Character at text[s+j] did not match with pattern[j].
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#93a1a1;font-style:italic>// Shift the pattern using bad character heuristic.
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#93a1a1;font-style:italic>// badCharTable.get(text[s+j]) || -1: if char not in pattern, use -1.
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#859900>const</span> <span style=color:#268bd2>lastOcc</span> = <span style=color:#268bd2>badCharTable</span>.<span style=color:#268bd2>has</span>(<span style=color:#268bd2>text</span>[<span style=color:#268bd2>s</span> + <span style=color:#268bd2>j</span>]) ? <span style=color:#268bd2>badCharTable</span>.<span style=color:#268bd2>get</span>(<span style=color:#268bd2>text</span>[<span style=color:#268bd2>s</span> + <span style=color:#268bd2>j</span>]) : -<span style=color:#2aa198;font-weight:700>1</span>;
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>s</span> += <span style=color:#cb4b16>Math</span>.<span style=color:#268bd2>max</span>(<span style=color:#2aa198;font-weight:700>1</span>, <span style=color:#268bd2>j</span> - <span style=color:#268bd2>lastOcc</span>);
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>results</span>;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const text = &#34;ABAAABCD&#34;;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const pattern = &#34;ABC&#34;;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// console.log(boyerMooreSearch(text, pattern)); // [4]
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const text2 = &#34;TESTTEXT&#34;;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const pattern2 = &#34;TEXT&#34;;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// console.log(boyerMooreSearch(text2, pattern2)); // [4]
+</span></span></span></code></pre></div><h3 id=typescript>Typescript</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-typescript data-lang=typescript><span style=display:flex><span><span style=color:#859900>function</span> <span style=color:#268bd2>buildBadCharTableTS</span>(<span style=color:#268bd2>pattern</span>: <span style=color:#859900;font-weight:700>string</span>): <span style=color:#268bd2>Map</span>&lt;<span style=color:#268bd2;font-weight:700>string</span>, <span style=color:#268bd2>number</span>&gt; {
+</span></span><span style=display:flex><span>    <span style=color:#859900>const</span> <span style=color:#268bd2>badChar</span> = <span style=color:#859900>new</span> <span style=color:#268bd2>Map</span>&lt;<span style=color:#268bd2;font-weight:700>string</span>, <span style=color:#268bd2>number</span>&gt;();
+</span></span><span style=display:flex><span>    <span style=color:#859900>const</span> <span style=color:#268bd2>m</span> = <span style=color:#268bd2>pattern</span>.<span style=color:#268bd2>length</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900>for</span> (<span style=color:#859900>let</span> <span style=color:#268bd2>i</span> = <span style=color:#2aa198;font-weight:700>0</span>; <span style=color:#268bd2>i</span> &lt; <span style=color:#268bd2>m</span> - <span style=color:#2aa198;font-weight:700>1</span>; <span style=color:#268bd2>i</span>++) { <span style=color:#93a1a1;font-style:italic>// Exclude last character for shifts
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        <span style=color:#268bd2>badChar</span>.<span style=color:#859900>set</span>(<span style=color:#268bd2>pattern</span>[<span style=color:#268bd2>i</span>], <span style=color:#268bd2>i</span>);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>badChar</span>;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>function</span> <span style=color:#268bd2>boyerMooreSearchTS</span>(<span style=color:#268bd2>text</span>: <span style=color:#859900;font-weight:700>string</span>, <span style=color:#268bd2>pattern</span>: <span style=color:#859900;font-weight:700>string</span>): <span style=color:#859900;font-weight:700>number</span>[] {
+</span></span><span style=display:flex><span>    <span style=color:#859900>const</span> <span style=color:#268bd2>n</span> = <span style=color:#268bd2>text</span>.<span style=color:#268bd2>length</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900>const</span> <span style=color:#268bd2>m</span> = <span style=color:#268bd2>pattern</span>.<span style=color:#268bd2>length</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> (<span style=color:#268bd2>m</span> === <span style=color:#2aa198;font-weight:700>0</span>) <span style=color:#859900>return</span> [];
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> (<span style=color:#268bd2>n</span> === <span style=color:#2aa198;font-weight:700>0</span> || <span style=color:#268bd2>m</span> &gt; <span style=color:#268bd2>n</span>) <span style=color:#859900>return</span> [];
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>const</span> <span style=color:#268bd2>badCharTable</span> = <span style=color:#268bd2>buildBadCharTableTS</span>(<span style=color:#268bd2>pattern</span>);
+</span></span><span style=display:flex><span>    <span style=color:#859900>const</span> <span style=color:#268bd2>results</span>: <span style=color:#859900;font-weight:700>number</span>[] = [];
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#859900>let</span> <span style=color:#268bd2>s</span> = <span style=color:#2aa198;font-weight:700>0</span>; <span style=color:#93a1a1;font-style:italic>// s is shift of the pattern with respect to text
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900>while</span> (<span style=color:#268bd2>s</span> &lt;= (<span style=color:#268bd2>n</span> - <span style=color:#268bd2>m</span>)) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>let</span> <span style=color:#268bd2>j</span> = <span style=color:#268bd2>m</span> - <span style=color:#2aa198;font-weight:700>1</span>; <span style=color:#93a1a1;font-style:italic>// Start comparing from rightmost character of pattern
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>while</span> (<span style=color:#268bd2>j</span> &gt;= <span style=color:#2aa198;font-weight:700>0</span> &amp;&amp; <span style=color:#268bd2>pattern</span>[<span style=color:#268bd2>j</span>] === <span style=color:#268bd2>text</span>[<span style=color:#268bd2>s</span> + <span style=color:#268bd2>j</span>]) {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>j</span>--;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>j</span> &lt; <span style=color:#2aa198;font-weight:700>0</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>results</span>.<span style=color:#268bd2>push</span>(<span style=color:#268bd2>s</span>);
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>s</span> += (<span style=color:#268bd2>s</span> + <span style=color:#268bd2>m</span> &lt; <span style=color:#268bd2>n</span> &amp;&amp; <span style=color:#268bd2>badCharTable</span>.<span style=color:#268bd2>has</span>(<span style=color:#268bd2>text</span>[<span style=color:#268bd2>s</span> + <span style=color:#268bd2>m</span>])) ? <span style=color:#268bd2>m</span> - <span style=color:#268bd2>badCharTable</span>.<span style=color:#859900>get</span>(<span style=color:#268bd2>text</span>[<span style=color:#268bd2>s</span> + <span style=color:#268bd2>m</span>])! : <span style=color:#2aa198;font-weight:700>1</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>            <span style=color:#859900>const</span> <span style=color:#268bd2>lastOcc</span> = <span style=color:#268bd2>badCharTable</span>.<span style=color:#268bd2>has</span>(<span style=color:#268bd2>text</span>[<span style=color:#268bd2>s</span> + <span style=color:#268bd2>j</span>]) ? <span style=color:#268bd2>badCharTable</span>.<span style=color:#859900>get</span>(<span style=color:#268bd2>text</span>[<span style=color:#268bd2>s</span> + <span style=color:#268bd2>j</span>])! : -<span style=color:#2aa198;font-weight:700>1</span>;
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>s</span> += <span style=color:#cb4b16>Math</span>.<span style=color:#268bd2>max</span>(<span style=color:#2aa198;font-weight:700>1</span>, <span style=color:#268bd2>j</span> - <span style=color:#268bd2>lastOcc</span>);
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>results</span>;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const textTS = &#34;ABAAABCD&#34;;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const patternTS = &#34;ABC&#34;;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// console.log(boyerMooreSearchTS(textTS, patternTS)); // [4]
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const text2TS = &#34;TESTTEXT&#34;;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const pattern2TS = &#34;TEXT&#34;;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// console.log(boyerMooreSearchTS(text2TS, pattern2TS)); // [4]
+</span></span></span></code></pre></div><h3 id=cpp>Cpp</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-cpp data-lang=cpp><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;string&gt;</span><span style=color:#93a1a1;font-style:italic>
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;vector&gt;</span><span style=color:#93a1a1;font-style:italic>
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;iostream&gt;</span><span style=color:#93a1a1;font-style:italic>
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;map&gt;</span><span style=color:#93a1a1;font-style:italic>
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;algorithm&gt;</span><span style=color:#93a1a1;font-style:italic> </span><span style=color:#93a1a1;font-style:italic>// For std::max
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// Max characters in alphabet (for ASCII)
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span><span style=color:#859900>const</span> <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>ALPHABET_SIZE</span> = <span style=color:#2aa198;font-weight:700>256</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900;font-weight:700>void</span> <span style=color:#268bd2>buildBadCharTable</span>(<span style=color:#859900>const</span> <span style=color:#268bd2>std</span>::<span style=color:#268bd2>string</span>&amp; <span style=color:#268bd2>pattern</span>, <span style=color:#268bd2>std</span>::<span style=color:#268bd2>map</span>&lt;<span style=color:#859900;font-weight:700>char</span>, <span style=color:#859900;font-weight:700>int</span>&gt;&amp; <span style=color:#268bd2>bad_char</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>m</span> = <span style=color:#268bd2>pattern</span>.<span style=color:#268bd2>length</span>();
+</span></span><span style=display:flex><span>    <span style=color:#859900>for</span> (<span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>i</span> = <span style=color:#2aa198;font-weight:700>0</span>; <span style=color:#268bd2>i</span> &lt; <span style=color:#268bd2>m</span> - <span style=color:#2aa198;font-weight:700>1</span>; <span style=color:#268bd2>i</span>++) { <span style=color:#93a1a1;font-style:italic>// Exclude last character for shifts
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        <span style=color:#268bd2>bad_char</span>[<span style=color:#268bd2>pattern</span>[<span style=color:#268bd2>i</span>]] = <span style=color:#268bd2>i</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#268bd2>std</span>::<span style=color:#268bd2>vector</span>&lt;<span style=color:#859900;font-weight:700>int</span>&gt; <span style=color:#268bd2>boyerMooreSearch</span>(<span style=color:#859900>const</span> <span style=color:#268bd2>std</span>::<span style=color:#268bd2>string</span>&amp; <span style=color:#268bd2>text</span>, <span style=color:#859900>const</span> <span style=color:#268bd2>std</span>::<span style=color:#268bd2>string</span>&amp; <span style=color:#268bd2>pattern</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>n</span> = <span style=color:#268bd2>text</span>.<span style=color:#268bd2>length</span>();
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>m</span> = <span style=color:#268bd2>pattern</span>.<span style=color:#268bd2>length</span>();
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> (<span style=color:#268bd2>m</span> == <span style=color:#2aa198;font-weight:700>0</span>) <span style=color:#859900>return</span> {};
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> (<span style=color:#268bd2>n</span> == <span style=color:#2aa198;font-weight:700>0</span> || <span style=color:#268bd2>m</span> &gt; <span style=color:#268bd2>n</span>) <span style=color:#859900>return</span> {};
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>std</span>::<span style=color:#268bd2>map</span>&lt;<span style=color:#859900;font-weight:700>char</span>, <span style=color:#859900;font-weight:700>int</span>&gt; <span style=color:#268bd2>bad_char_table</span>;
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>buildBadCharTable</span>(<span style=color:#268bd2>pattern</span>, <span style=color:#268bd2>bad_char_table</span>);
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>std</span>::<span style=color:#268bd2>vector</span>&lt;<span style=color:#859900;font-weight:700>int</span>&gt; <span style=color:#268bd2>results</span>;
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>s</span> = <span style=color:#2aa198;font-weight:700>0</span>; <span style=color:#93a1a1;font-style:italic>// s is shift of the pattern with respect to text
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900>while</span> (<span style=color:#268bd2>s</span> &lt;= (<span style=color:#268bd2>n</span> - <span style=color:#268bd2>m</span>)) {
+</span></span><span style=display:flex><span>        <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>j</span> = <span style=color:#268bd2>m</span> - <span style=color:#2aa198;font-weight:700>1</span>; <span style=color:#93a1a1;font-style:italic>// Start comparing from rightmost character of pattern
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>while</span> (<span style=color:#268bd2>j</span> &gt;= <span style=color:#2aa198;font-weight:700>0</span> &amp;&amp; <span style=color:#268bd2>pattern</span>[<span style=color:#268bd2>j</span>] == <span style=color:#268bd2>text</span>[<span style=color:#268bd2>s</span> + <span style=color:#268bd2>j</span>]) {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>j</span>--;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>j</span> &lt; <span style=color:#2aa198;font-weight:700>0</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>results</span>.<span style=color:#268bd2>push_back</span>(<span style=color:#268bd2>s</span>);
+</span></span><span style=display:flex><span>            <span style=color:#93a1a1;font-style:italic>// Shift the pattern. If there&#39;s a next character in text that could
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#93a1a1;font-style:italic>// align with a pattern character, align it. Otherwise, shift by 1.
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#268bd2>s</span> += (<span style=color:#268bd2>s</span> + <span style=color:#268bd2>m</span> &lt; <span style=color:#268bd2>n</span> &amp;&amp; <span style=color:#268bd2>bad_char_table</span>.<span style=color:#268bd2>count</span>(<span style=color:#268bd2>text</span>[<span style=color:#268bd2>s</span> + <span style=color:#268bd2>m</span>])) ? <span style=color:#268bd2>m</span> - <span style=color:#268bd2>bad_char_table</span>[<span style=color:#268bd2>text</span>[<span style=color:#268bd2>s</span> + <span style=color:#268bd2>m</span>]] : <span style=color:#2aa198;font-weight:700>1</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>            <span style=color:#93a1a1;font-style:italic>// Character at text[s+j] did not match with pattern[j].
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#93a1a1;font-style:italic>// Shift the pattern using bad character heuristic.
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>last_occ</span> = <span style=color:#268bd2>bad_char_table</span>.<span style=color:#268bd2>count</span>(<span style=color:#268bd2>text</span>[<span style=color:#268bd2>s</span> + <span style=color:#268bd2>j</span>]) ? <span style=color:#268bd2>bad_char_table</span>[<span style=color:#268bd2>text</span>[<span style=color:#268bd2>s</span> + <span style=color:#268bd2>j</span>]] : -<span style=color:#2aa198;font-weight:700>1</span>;
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>s</span> += <span style=color:#268bd2>std</span>::<span style=color:#268bd2>max</span>(<span style=color:#2aa198;font-weight:700>1</span>, <span style=color:#268bd2>j</span> - <span style=color:#268bd2>last_occ</span>);
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>results</span>;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// int main() {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     std::string text = &#34;ABAAABCD&#34;;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     std::string pattern = &#34;ABC&#34;;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     std::vector&lt;int&gt; matches = boyerMooreSearch(text, pattern);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     for(int pos : matches) {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         std::cout &lt;&lt; &#34;Pattern found at index &#34; &lt;&lt; pos &lt;&lt; std::endl; // 4
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     }
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     std::string text2 = &#34;TESTTEXT&#34;;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     std::string pattern2 = &#34;TEXT&#34;;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     matches = boyerMooreSearch(text2, pattern2);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     for(int pos : matches) {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//         std::cout &lt;&lt; &#34;Pattern found at index &#34; &lt;&lt; pos &lt;&lt; std::endl; // 4
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     }
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     return 0;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// }
+</span></span></span></code></pre></div><h3 id=go>Go</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#dc322f;font-weight:700>package</span> <span style=color:#268bd2>main</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#2aa198>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>func</span> <span style=color:#268bd2>buildBadCharTable</span>(<span style=color:#268bd2>pattern</span> <span style=color:#859900;font-weight:700>string</span>) <span style=color:#859900>map</span>[<span style=color:#859900;font-weight:700>rune</span>]<span style=color:#859900;font-weight:700>int</span> {
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>badChar</span> := <span style=color:#cb4b16>make</span>(<span style=color:#859900>map</span>[<span style=color:#859900;font-weight:700>rune</span>]<span style=color:#859900;font-weight:700>int</span>)
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>m</span> := <span style=color:#cb4b16>len</span>(<span style=color:#268bd2>pattern</span>)
+</span></span><span style=display:flex><span>    <span style=color:#859900>for</span> <span style=color:#268bd2>i</span> := <span style=color:#2aa198;font-weight:700>0</span>; <span style=color:#268bd2>i</span> &lt; <span style=color:#268bd2>m</span>-<span style=color:#2aa198;font-weight:700>1</span>; <span style=color:#268bd2>i</span>++ { <span style=color:#93a1a1;font-style:italic>// Exclude last character for shifts</span>
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>badChar</span>[<span style=color:#cb4b16>rune</span>(<span style=color:#268bd2>pattern</span>[<span style=color:#268bd2>i</span>])] = <span style=color:#268bd2>i</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>badChar</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>func</span> <span style=color:#268bd2>boyerMooreSearch</span>(<span style=color:#268bd2>text</span>, <span style=color:#268bd2>pattern</span> <span style=color:#859900;font-weight:700>string</span>) []<span style=color:#859900;font-weight:700>int</span> {
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>n</span> := <span style=color:#cb4b16>len</span>(<span style=color:#268bd2>text</span>)
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>m</span> := <span style=color:#cb4b16>len</span>(<span style=color:#268bd2>pattern</span>)
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> <span style=color:#268bd2>m</span> == <span style=color:#2aa198;font-weight:700>0</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> []<span style=color:#859900;font-weight:700>int</span>{}
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> <span style=color:#268bd2>n</span> == <span style=color:#2aa198;font-weight:700>0</span> || <span style=color:#268bd2>m</span> &gt; <span style=color:#268bd2>n</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> []<span style=color:#859900;font-weight:700>int</span>{}
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>badCharTable</span> := <span style=color:#268bd2>buildBadCharTable</span>(<span style=color:#268bd2>pattern</span>)
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>results</span> := []<span style=color:#859900;font-weight:700>int</span>{}
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>s</span> := <span style=color:#2aa198;font-weight:700>0</span> <span style=color:#93a1a1;font-style:italic>// s is shift of the pattern with respect to text</span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>for</span> <span style=color:#268bd2>s</span> &lt;= (<span style=color:#268bd2>n</span> - <span style=color:#268bd2>m</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>j</span> := <span style=color:#268bd2>m</span> - <span style=color:#2aa198;font-weight:700>1</span> <span style=color:#93a1a1;font-style:italic>// Start comparing from rightmost character of pattern</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>for</span> <span style=color:#268bd2>j</span> &gt;= <span style=color:#2aa198;font-weight:700>0</span> &amp;&amp; <span style=color:#268bd2>pattern</span>[<span style=color:#268bd2>j</span>] == <span style=color:#268bd2>text</span>[<span style=color:#268bd2>s</span>+<span style=color:#268bd2>j</span>] {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>j</span>--
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> <span style=color:#268bd2>j</span> &lt; <span style=color:#2aa198;font-weight:700>0</span> {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>results</span> = <span style=color:#cb4b16>append</span>(<span style=color:#268bd2>results</span>, <span style=color:#268bd2>s</span>)
+</span></span><span style=display:flex><span>            <span style=color:#93a1a1;font-style:italic>// Shift the pattern. Simplified shift for basic bad-character-only.</span>
+</span></span><span style=display:flex><span>            <span style=color:#93a1a1;font-style:italic>// If there&#39;s a next character in text that could align with a pattern character, align it.</span>
+</span></span><span style=display:flex><span>            <span style=color:#93a1a1;font-style:italic>// Otherwise, shift by 1.</span>
+</span></span><span style=display:flex><span>            <span style=color:#859900>var</span> <span style=color:#268bd2>nextCharShift</span> <span style=color:#859900;font-weight:700>int</span> = <span style=color:#2aa198;font-weight:700>1</span>
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> <span style=color:#268bd2>s</span>+<span style=color:#268bd2>m</span> &lt; <span style=color:#268bd2>n</span> {
+</span></span><span style=display:flex><span>                <span style=color:#859900>if</span> <span style=color:#268bd2>val</span>, <span style=color:#268bd2>ok</span> := <span style=color:#268bd2>badCharTable</span>[<span style=color:#cb4b16>rune</span>(<span style=color:#268bd2>text</span>[<span style=color:#268bd2>s</span>+<span style=color:#268bd2>m</span>])]; <span style=color:#268bd2>ok</span> {
+</span></span><span style=display:flex><span>                    <span style=color:#268bd2>nextCharShift</span> = <span style=color:#268bd2>m</span> - <span style=color:#268bd2>val</span>
+</span></span><span style=display:flex><span>                }
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>s</span> += <span style=color:#268bd2>nextCharShift</span>
+</span></span><span style=display:flex><span>        } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>            <span style=color:#93a1a1;font-style:italic>// Character at text[s+j] did not match with pattern[j].</span>
+</span></span><span style=display:flex><span>            <span style=color:#93a1a1;font-style:italic>// Shift the pattern using bad character heuristic.</span>
+</span></span><span style=display:flex><span>            <span style=color:#859900>var</span> <span style=color:#268bd2>lastOcc</span> <span style=color:#859900;font-weight:700>int</span> = -<span style=color:#2aa198;font-weight:700>1</span>
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> <span style=color:#268bd2>val</span>, <span style=color:#268bd2>ok</span> := <span style=color:#268bd2>badCharTable</span>[<span style=color:#cb4b16>rune</span>(<span style=color:#268bd2>text</span>[<span style=color:#268bd2>s</span>+<span style=color:#268bd2>j</span>])]; <span style=color:#268bd2>ok</span> {
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>lastOcc</span> = <span style=color:#268bd2>val</span>
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>s</span> += <span style=color:#cb4b16>max</span>(<span style=color:#2aa198;font-weight:700>1</span>, <span style=color:#268bd2>j</span>-<span style=color:#268bd2>lastOcc</span>)
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>results</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>func</span> <span style=color:#cb4b16>max</span>(<span style=color:#268bd2>a</span>, <span style=color:#268bd2>b</span> <span style=color:#859900;font-weight:700>int</span>) <span style=color:#859900;font-weight:700>int</span> {
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> <span style=color:#268bd2>a</span> &gt; <span style=color:#268bd2>b</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>a</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>b</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// func main() {</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     text := &#34;ABAAABCD&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     pattern := &#34;ABC&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     fmt.Println(boyerMooreSearch(text, pattern)) // [4]</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     text2 := &#34;TESTTEXT&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     pattern2 := &#34;TEXT&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     fmt.Println(boyerMooreSearch(text2, pattern2)) // [4]</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// }</span>
+</span></span></code></pre></div><h3 id=d>D</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-d data-lang=d><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>std.stdio</span>;
+</span></span><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>std.array</span>;
+</span></span><span style=display:flex><span><span style=color:#dc322f;font-weight:700>import</span> <span style=color:#268bd2>std.algorithm</span>; <span style=color:#93a1a1;font-style:italic>// For std.algorithm.max
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// Simple Boyer-Moore implementation focusing on the Bad Character Heuristic
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// (Good Suffix Heuristic is more complex and often omitted for basic demos)
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#859900;font-weight:700>int</span>[<span style=color:#859900;font-weight:700>char</span>] <span style=color:#268bd2>buildBadCharTable</span>(<span style=color:#cb4b16>string</span> <span style=color:#268bd2>pattern</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span>[<span style=color:#859900;font-weight:700>char</span>] <span style=color:#268bd2>badChar</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900>auto</span> <span style=color:#268bd2>m</span> = <span style=color:#268bd2>pattern</span>.<span style=color:#268bd2>length</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900>foreach</span> (<span style=color:#268bd2>i</span>; <span style=color:#2aa198;font-weight:700>0</span> .. <span style=color:#268bd2>m</span> - <span style=color:#2aa198;font-weight:700>1</span>) { <span style=color:#93a1a1;font-style:italic>// Exclude last character for shifts
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        <span style=color:#268bd2>badChar</span>[<span style=color:#268bd2>pattern</span>[<span style=color:#268bd2>i</span>]] = <span style=color:#268bd2>i</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>badChar</span>;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900;font-weight:700>int</span>[] <span style=color:#268bd2>boyerMooreSearch</span>(<span style=color:#cb4b16>string</span> <span style=color:#268bd2>text</span>, <span style=color:#cb4b16>string</span> <span style=color:#268bd2>pattern</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#859900>auto</span> <span style=color:#268bd2>n</span> = <span style=color:#268bd2>text</span>.<span style=color:#268bd2>length</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900>auto</span> <span style=color:#268bd2>m</span> = <span style=color:#268bd2>pattern</span>.<span style=color:#268bd2>length</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> (<span style=color:#268bd2>m</span> == <span style=color:#2aa198;font-weight:700>0</span>) <span style=color:#859900>return</span> [];
+</span></span><span style=display:flex><span>    <span style=color:#859900>if</span> (<span style=color:#268bd2>n</span> == <span style=color:#2aa198;font-weight:700>0</span> || <span style=color:#268bd2>m</span> &gt; <span style=color:#268bd2>n</span>) <span style=color:#859900>return</span> [];
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>auto</span> <span style=color:#268bd2>badCharTable</span> = <span style=color:#268bd2>buildBadCharTable</span>(<span style=color:#268bd2>pattern</span>);
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span>[] <span style=color:#268bd2>results</span>;
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>s</span> = <span style=color:#2aa198;font-weight:700>0</span>; <span style=color:#93a1a1;font-style:italic>// s is shift of the pattern with respect to text
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900>while</span> (<span style=color:#268bd2>s</span> &lt;= (<span style=color:#268bd2>n</span> - <span style=color:#268bd2>m</span>)) {
+</span></span><span style=display:flex><span>        <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>j</span> = <span style=color:#268bd2>m</span> - <span style=color:#2aa198;font-weight:700>1</span>; <span style=color:#93a1a1;font-style:italic>// Start comparing from rightmost character of pattern
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic>// Keep reducing index j of pattern while characters are matching
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        <span style=color:#93a1a1;font-style:italic>// and j is not -1
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        <span style=color:#859900>while</span> (<span style=color:#268bd2>j</span> &gt;= <span style=color:#2aa198;font-weight:700>0</span> &amp;&amp; <span style=color:#268bd2>pattern</span>[<span style=color:#268bd2>j</span>] == <span style=color:#268bd2>text</span>[<span style=color:#268bd2>s</span> + <span style=color:#268bd2>j</span>]) {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>j</span>--;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic>// If the pattern is found (j becomes -1)
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>j</span> &lt; <span style=color:#2aa198;font-weight:700>0</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>results</span> ~= <span style=color:#268bd2>s</span>;
+</span></span><span style=display:flex><span>            <span style=color:#93a1a1;font-style:italic>// Shift the pattern. Simplified shift for basic bad-character-only.
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#93a1a1;font-style:italic>// If there&#39;s a next character in text that could align with a pattern character, align it.
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#93a1a1;font-style:italic>// Otherwise, shift by 1.
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>nextCharShift</span> = <span style=color:#2aa198;font-weight:700>1</span>;
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> (<span style=color:#268bd2>s</span> + <span style=color:#268bd2>m</span> &lt; <span style=color:#268bd2>n</span>) {
+</span></span><span style=display:flex><span>                <span style=color:#859900>if</span> (<span style=color:#859900>auto</span> <span style=color:#268bd2>p</span> = <span style=color:#268bd2>text</span>[<span style=color:#268bd2>s</span> + <span style=color:#268bd2>m</span>] <span style=color:#859900>in</span> <span style=color:#268bd2>badCharTable</span>) {
+</span></span><span style=display:flex><span>                    <span style=color:#268bd2>nextCharShift</span> = <span style=color:#268bd2>m</span> - &lt;/<span style=color:#268bd2>em</span>&gt;<span style=color:#268bd2>p</span>;
+</span></span><span style=display:flex><span>                }
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>s</span> += <span style=color:#268bd2>nextCharShift</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>            <span style=color:#93a1a1;font-style:italic>// Character at text[s+j] did not match with pattern[j].
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#93a1a1;font-style:italic>// Shift the pattern using bad character heuristic.
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>lastOcc</span> = -<span style=color:#2aa198;font-weight:700>1</span>;
+</span></span><span style=display:flex><span>            <span style=color:#859900>if</span> (<span style=color:#859900>auto</span> <span style=color:#268bd2>p</span> = <span style=color:#268bd2>text</span>[<span style=color:#268bd2>s</span> + <span style=color:#268bd2>j</span>] <span style=color:#859900>in</span> <span style=color:#268bd2>badCharTable</span>) {
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>lastOcc</span> = *<span style=color:#268bd2>p</span>;
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>s</span> += <span style=color:#268bd2>max</span>(<span style=color:#2aa198;font-weight:700>1</span>, <span style=color:#268bd2>j</span> - <span style=color:#268bd2>lastOcc</span>);
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>return</span> <span style=color:#268bd2>results</span>;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// void main() {
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     string text = &#34;ABAAABCD&#34;;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     string pattern = &#34;ABC&#34;;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     writeln(boyerMooreSearch(text, pattern)); // [4]
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     string text2 = &#34;TESTTEXT&#34;;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     string pattern2 = &#34;TEXT&#34;;
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     writeln(boyerMooreSearch(text2, pattern2)); // [4]
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// }
+</span></span></span></code></pre></div><h2 id=code-walkthrough>Code Walkthrough</h2><p><a href=#implementation>Back to Implementation</a></p><h3 id=code-walkthrough-1>Code Walkthrough</h3><p>The <code>Boyer-Moore Algorithm</code> often uses two preprocessing steps and two <code>heuristics</code>. The provided code focuses on the simpler <strong>bad-character heuristic</strong> for demonstration.</p><hr><p><strong><code>buildBadCharTable(pattern)</code> Function:</strong></p><ul><li>This function creates a map (or <code>array</code> if the alphabet is small) that stores the last occurrence of each character in the <code>pattern</code>.</li><li>For a character <code>c</code>, <code>bad_char_table[c]</code> stores its rightmost <code>index</code> in the <code>pattern</code>.</li><li>This table is used when a mismatch occurs to determine how far to shift the <code>pattern</code>.</li></ul><p><strong><code>boyerMooreSearch(text, pattern)</code> Function:</strong></p><ul><li><code>n</code>, <code>m</code>: Lengths of <code>text</code> and <code>pattern</code>.</li><li><code>s</code>: The current shift of the <code>pattern</code> with respect to the <code>text</code>.</li></ul><p><strong>Search Loop:</strong></p><ul><li><p>The <code>while</code> loop continues as long as the <code>pattern</code> can still fit within the <code>text</code>.</p></li><li><p><strong>Comparison:</strong> Characters are compared from right to left, starting at <code>pattern[m-1]</code> and <code>text[s + m - 1]</code>. The <code>j</code> pointer moves leftwards.</p></li><li><p><strong>Match Found:</strong> If <code>j</code> becomes less than 0, it means the entire <code>pattern</code> has matched. The starting <code>index</code> <code>s</code> is recorded. The <code>pattern</code> is then shifted to find the next possible match. (The shift logic after a full match can be complex; a simplified shift by 1 or by using the <code>bad-character heuristic</code> with the character <code>text[s+m]</code> is often used for basic implementations.)</p></li><li><p><strong>Mismatch Occurred:</strong> If a mismatch is found at <code>pattern[j]</code> with <code>text[s + j]</code>:</p></li><li><p>Consult the <code>bad_char_table</code> for the character <code>text[s + j]</code> (the &ldquo;bad character&rdquo;).</p></li><li><p>If the <code>bad character</code> <code>c</code> is not in the <code>pattern</code> (or its last occurrence is <code>last_occ = -1</code>), the <code>pattern</code> can be shifted <code>j + 1</code> positions to the right.</p></li><li><p>If <code>c</code> is in the <code>pattern</code> at <code>index last_occ</code>, the <code>pattern</code> is shifted such that <code>pattern[last_occ]</code> aligns with <code>text[s + j]</code>. The shift amount is <code>j - last_occ</code>.</p></li><li><p>The algorithm always takes <code>max(1, calculated_shift)</code> to ensure progress.</p></li></li></ul><p><a href=#implementation>Back to Implementation</a></p><h2 id=applications>Applications</h2><h3 id=application>Application</h3><p>The <code>Boyer-Moore Algorithm</code> is one of the most efficient string-matching algorithms in practice, especially for long <code>texts</code> and <code>patterns</code> and large alphabets.</p><ul><li><strong>Text Editors and Word Processors:</strong> Widely used for implementing &ldquo;find&rdquo; functionality due to its speed.</li><li><strong>Command-Line Utilities:</strong> Tools like <code>grep</code> often use <code>Boyer-Moore</code> or its variants for fast text searching.</li><li><strong>Compiler/Interpreter Lexical Analysis:</strong> Searching for keywords and identifiers in source code.</li><li><strong>Intrusion Detection Systems (IDS):</strong> Scanning network traffic for known attack signatures, where <code>patterns</code> can be quite long.</li><li><strong>Bioinformatics:</strong> Searching for genetic sequences.</li></ul></div></article><div class=navigation style="margin-top:5rem;display:flex;justify-content:space-between;border-top:1px solid var(--border);padding-top:2rem"><a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/algorithms/string_searching/kmp/ class=nav-btn>← Previous</a>
+<a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/algorithms/string_searching/ class=nav-btn>Up</a>
+<span></span></div></main><footer class=footer><p>Built with Hugo. No scripts. No tracking. Just the truth.</p></footer><script>document.addEventListener("DOMContentLoaded",function(){const n=document.body,s=document.createTreeWalker(n,NodeFilter.SHOW_TEXT,null,!1);let e;const t=[];for(;e=s.nextNode();)e.nodeValue.includes("[-]")&&t.push(e);t.forEach(e=>{const t=document.createElement("span");t.innerHTML=e.nodeValue.replace(/\[-\]/g,'<span class="started-icon" title="Started"></span>'),e.parentNode.replaceChild(t,e)})})</script><script>const body=document.getElementById("theme-body"),btn=document.getElementById("theme-toggle"),currentTheme=localStorage.getItem("theme");function updateButtonText(){body.classList.contains("theme-terminal")?btn.textContent="Light Mode":btn.textContent="Dark Mode"}currentTheme==="terminal"&&body.classList.add("theme-terminal"),updateButtonText(),btn.addEventListener("click",()=>{body.classList.toggle("theme-terminal"),updateButtonText();let e="natural";body.classList.contains("theme-terminal")&&(e="terminal"),localStorage.setItem("theme",e)})</script></body></html>

@@ -1,0 +1,566 @@
+<div id="explanation-content">
+    <p>The <code>N-Queens Problem</code> is a classic problem in computer science and a perfect example for illustrating <code>backtracking algorithms</code>. The goal is to place <code>N</code> non-attacking <code>queens</code> on an <code>N x N</code> chessboard. A <code>queen</code> can attack any piece located on the same row, column, or diagonal.</p>
+    <p>The problem is to find all distinct configurations (or just one configuration) where no two <code>queens</code> threaten each other. For <code>N=1</code>, there is 1 solution. For <code>N=2</code> and <code>N=3</code>, there are no solutions. For <code>N=4</code>, there are 2 solutions.</p>
+</div>
+
+<div id="expanded-explanation-content">
+    <h3>How it Works (Expanded)</h3>
+    <div class="markdown-content">
+    <p>The <code>N-Queens Problem</code> is typically solved using a <code>backtracking algorithm</code>. We try to place <code>queens</code> one by one, row by row. If placing a <code>queen</code> in a certain <code>position</code> leads to a conflict (i.e., it's attacked by another <code>queen</code>), we backtrack and try a different <code>position</code>.</p>
+    </div>
+    <div class="explanation-fence">
+Example: N = 4
+
+1. Place Q1 at (0,0). Safe.
+   Board:
+   Q . . .
+   . . . .
+   . . . .
+   . . . .
+
+2. Try to place Q2 in row 1:
+   - (1,0): Attacked by Q1 (col).
+   - (1,1): Attacked by Q1 (diag).
+   - (1,2): Safe. Place Q2 at (1,2).
+     Board:
+     Q . . .
+     . . Q .
+     . . . .
+     . . . .
+
+3. Try to place Q3 in row 2:
+   - (2,0): Safe. Place Q3 at (2,0).
+     Board:
+     Q . . .
+     . . Q .
+     Q . . .
+     . . . .
+
+4. Try to place Q4 in row 3:
+   - (3,0): Attacked by Q3 (col).
+   - (3,1): Attacked by Q3 (diag).
+   - (3,2): Attacked by Q2 (col) and Q3 (diag).
+   - (3,3): Attacked by Q2 (diag).
+   - No safe spot for Q4 in row 3. Backtrack.
+
+5. Backtrack Q3. Remove Q3 from (2,0). Try (2,1):
+   - (2,1): Attacked by Q1 (diag) and Q2 (diag).
+   - (2,2): Attacked by Q2 (col).
+   - (2,3): Safe. Place Q3 at (2,3).
+     Board:
+     Q . . .
+     . . Q .
+     . . . Q
+     . . . .
+
+6. Try to place Q4 in row 3:
+   - (3,0): Safe. Place Q4 at (3,0).
+     Board:
+     Q . . .
+     . . Q .
+     . . . Q
+     Q . . .
+     Solution 1 found!
+
+Continue backtracking to find Solution 2.
+    </div>
+    <div class="markdown-content">
+    <p><strong>Algorithm Steps:</strong></p>
+    <ol>
+        <li>Define a function (e.g., <code>solveNQueens</code>) that takes the current <code>chessboard</code> configuration, the current <code>row</code> to place a <code>queen</code>, and <code>N</code>.</li>
+        <li><strong>Base Case:</strong> If the current <code>row</code> is equal to <code>N</code>, it means <code>N</code> <code>queens</code> have been successfully placed. A solution has been found. Store or print this <code>configuration</code>.</li>
+        <li><strong>Recursive Step:</strong> For the current <code>row</code>:
+            <ul>
+                <li>Iterate through each <code>column</code> from 0 to <code>N-1</code>.</li>
+                <li>Check if placing a <code>queen</code> at <code>(row, col)</code> is <code>safe</code> (i.e., not attacked by any previously placed <code>queen</code>).</li>
+                <li>If it is <code>safe</code>:
+                    <ul>
+                        <li>Place a <code>queen</code> at <code>(row, col)</code>.</li>
+                        <li>Recursively call <code>solveNQueens</code> for the next <code>row</code> (<code>row + 1</code>).</li>
+                        <li><strong>Backtrack:</strong> After the recursive call returns (either a solution was found or the path led to a dead end), remove the <code>queen</code> from <code>(row, col)</code> to explore other possibilities.</li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+    </ol>
+    <p><strong>Safety Check:</strong> To check if a position <code>(row, col)</code> is safe, you need to check:
+    <ul>
+        <li>No other <code>queen</code> in the same <code>column</code>.</li>
+        <li>No other <code>queen</code> in the same <code>main diagonal</code> (<code>row - col</code> is constant).</li>
+        <li>No other <code>queen</code> in the same <code>anti-diagonal</code> (<code>row + col</code> is constant).</li>
+    </ul>
+    </p>
+    <p><strong>Time Complexity:</strong> The exact time complexity is complex to determine but is roughly <code>O(N!)</code>. This is because in the worst case, it explores <code>N!</code> possible placements, though backtracking prunes many branches. For <code>N=14</code>, it's still feasible, but grows very fast.</p>
+    <p><strong>Space Complexity:</strong> <code>O(N^2)</code> for storing the chessboard (or <code>O(N)</code> for tracking queen positions in a 1D array per row, and <code>O(N)</code> for recursion stack depth).</p>
+    </div>
+</div>
+
+<div id="code-implementations">
+    <pre data-lang="python"><code class="language-python">def solve_n_queens(n):
+    """
+    Solves the N-Queens problem using backtracking.
+    Returns a list of all distinct solutions. Each solution is a list of strings
+    representing the chessboard.
+    """
+    board = [['.' for _ in range(n)] for _ in range(n)]
+    solutions = []
+
+    # Helper function to check if a queen can be placed at board[row][col]
+    def is_safe(current_board, r, c):
+        # Check this row on left side
+        # Not needed as we place queen row by row
+        
+        # Check upper diagonal on left side
+        for i, j in zip(range(r, -1, -1), range(c, -1, -1)):
+            if current_board[i][j] == 'Q':
+                return False
+        
+        # Check lower diagonal on left side
+        for i, j in zip(range(r, n, 1), range(c, -1, -1)):
+            if current_board[i][j] == 'Q':
+                return False
+        
+        # Check this column upwards
+        for i in range(r):
+            if current_board[i][c] == 'Q':
+                return False
+
+        return True
+
+    # Main backtracking function
+    def backtrack(r):
+        if r == n: # All queens placed
+            solutions.append(["".join(row) for row in board])
+            return
+        
+        for c in range(n): # Try placing queen in each column of current row
+            if is_safe(board, r, c):
+                board[r][c] = 'Q' # Place queen
+                backtrack(r + 1)  # Recur for next row
+                board[r][c] = '.' # Backtrack: remove queen
+    
+    backtrack(0) # Start from first row
+    return solutions
+
+# Example
+# n_val = 4
+# solutions_4_queens = solve_n_queens(n_val)
+# for sol in solutions_4_queens:
+#     for row in sol:
+#         print(row)
+#     print()
+# # Expected: 2 solutions
+</code></pre>
+
+    <pre data-lang="javascript"><code class="language-javascript">function solveNQueens(n) {
+    const solutions = [];
+    // Initialize an empty board
+    const board = Array(n).fill(0).map(() => Array(n).fill('.'));
+
+    // Helper function to check if a queen can be placed at board[row][col]
+    function isSafe(r, c) {
+        // Check column upwards
+        for (let i = 0; i < r; i++) {
+            if (board[i][c] === 'Q') {
+                return false;
+            }
+        }
+
+        // Check upper-left diagonal
+        for (let i = r - 1, j = c - 1; i >= 0 && j >= 0; i--, j--) {
+            if (board[i][j] === 'Q') {
+                return false;
+            }
+        }
+
+        // Check upper-right diagonal
+        for (let i = r - 1, j = c + 1; i >= 0 && j < n; i--, j++) {
+            if (board[i][j] === 'Q') {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    // Main backtracking function
+    function backtrack(r) {
+        if (r === n) { // All queens placed
+            solutions.push(board.map(row => row.join('')));
+            return;
+        }
+        
+        for (let c = 0; c < n; c++) { // Try placing queen in each column of current row
+            if (isSafe(r, c)) {
+                board[r][c] = 'Q'; // Place queen
+                backtrack(r + 1);  // Recur for next row
+                board[r][c] = '.'; // Backtrack: remove queen
+            }
+        }
+    }
+
+    backtrack(0); // Start from first row
+    return solutions;
+}
+
+// const nVal = 4;
+// const solutions4Queens = solveNQueens(nVal);
+// solutions4Queens.forEach(sol => {
+//     sol.forEach(row => console.log(row));
+//     console.log();
+// });
+</code></pre>
+
+    <pre data-lang="typescript"><code class="language-typescript">function solveNQueensTS(n: number): string[][] {
+    const solutions: string[][] = [];
+    // Initialize an empty board
+    const board: string[][] = Array(n).fill(0).map(() => Array(n).fill('.'));
+
+    // Helper function to check if a queen can be placed at board[row][col]
+    function isSafe(r: number, c: number): boolean {
+        // Check column upwards
+        for (let i = 0; i < r; i++) {
+            if (board[i][c] === 'Q') {
+                return false;
+            }
+        }
+
+        // Check upper-left diagonal
+        for (let i = r - 1, j = c - 1; i >= 0 && j >= 0; i--, j--) {
+            if (board[i][j] === 'Q') {
+                return false;
+            }
+        }
+
+        // Check upper-right diagonal
+        for (let i = r - 1, j = c + 1; i >= 0 && j < n; i--, j++) {
+            if (board[i][j] === 'Q') {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    // Main backtracking function
+    function backtrack(r: number): void {
+        if (r === n) { // All queens placed
+            solutions.push(board.map(row => row.join('')));
+            return;
+        }
+        
+        for (let c = 0; c < n; c++) { // Try placing queen in each column of current row
+            if (isSafe(r, c)) {
+                board[r][c] = 'Q'; // Place queen
+                backtrack(r + 1);  // Recur for next row
+                board[r][c] = '.'; // Backtrack: remove queen
+            }
+        }
+    }
+
+    backtrack(0); // Start from first row
+    return solutions;
+}
+
+// const nValTS = 4;
+// const solutions4QueensTS = solveNQueensTS(nValTS);
+// solutions4QueensTS.forEach(sol => {
+//     sol.forEach(row => console.log(row));
+//     console.log();
+// });
+</code></pre>
+    
+    <pre data-lang="cpp"><code class="language-cpp">#include &lt;vector&gt;
+#include &lt;string&gt;
+#include &lt;iostream&gt;
+#include &lt;numeric&gt; // For std::iota
+
+class NQueens {
+private:
+    std::vector&lt;std::vector&lt;std::string&gt;&gt; solutions;
+    std::vector&lt;std::string&gt; board;
+    int N;
+
+    // Helper function to check if a queen can be placed at board[row][col]
+    bool isSafe(int r, int c) {
+        // Check column upwards
+        for (int i = 0; i < r; i++) {
+            if (board[i][c] == 'Q') {
+                return false;
+            }
+        }
+
+        // Check upper-left diagonal
+        for (int i = r - 1, j = c - 1; i >= 0 && j >= 0; i--, j--) {
+            if (board[i][j] == 'Q') {
+                return false;
+            }
+        }
+
+        // Check upper-right diagonal
+        for (int i = r - 1, j = c + 1; i >= 0 && j < N; i++, j++) {
+            if (board[i][j] == 'Q') {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    // Main backtracking function
+    void backtrack(int r) {
+        if (r == N) { // All queens placed
+            solutions.push_back(board);
+            return;
+        }
+        
+        for (int c = 0; c < N; c++) { // Try placing queen in each column of current row
+            if (isSafe(r, c)) {
+                board[r][c] = 'Q'; // Place queen
+                backtrack(r + 1);  // Recur for next row
+                board[r][c] = '.'; // Backtrack: remove queen
+            }
+        }
+    }
+
+public:
+    std::vector&lt;std::vector&lt;std::string&gt;&gt; solveNQueens(int n) {
+        N = n;
+        board.assign(N, std::string(N, '.')); // Initialize empty board
+        solutions.clear();
+        backtrack(0); // Start from first row
+        return solutions;
+    }
+};
+
+// int main() {
+//     NQueens solver;
+//     int n_val = 4;
+//     std::vector<std::vector<std::string>> solutions_4_queens = solver.solveNQueens(n_val);
+//     for (const auto& sol : solutions_4_queens) {
+//         for (const auto& row : sol) {
+//             std::cout << row << std::endl;
+//         }
+//         std::cout << std::endl;
+//     }
+//     return 0;
+// }
+</code></pre>
+
+    <pre data-lang="go"><code class="language-go">package main
+
+import "fmt"
+import "strings"
+
+func solveNQueens(n int) [][]string {
+    solutions := [][]string{}
+    board := make([][]rune, n)
+    for i := range board {
+        board[i] = make([]rune, n)
+        for j := range board[i] {
+            board[i][j] = '.'
+        }
+    }
+
+    // Helper function to check if a queen can be placed at board[row][col]
+    // Checks only rows above the current row
+    func isSafe(r, c int) bool {
+        // Check column upwards
+        for i := 0; i < r; i++ {
+            if board[i][c] == 'Q' {
+                return false
+            }
+        }
+
+        // Check upper-left diagonal
+        for i, j := r-1, c-1; i >= 0 && j >= 0; i, j = i-1, j-1 {
+            if board[i][j] == 'Q' {
+                return false
+            }
+        }
+
+        // Check upper-right diagonal
+        for i, j := r-1, c+1; i >= 0 && j < n; i, j = i-1, j+1 {
+            if board[i][j] == 'Q' {
+                return false
+            }
+        }
+
+        return true
+    }
+
+    // Main backtracking function
+    var backtrack func(r int)
+    backtrack = func(r int) {
+        if r == n { // All queens placed
+            solution := make([]string, n)
+            for i, row := range board {
+                solution[i] = string(row)
+            }
+            solutions = append(solutions, solution)
+            return
+        }
+        
+        for c := 0; c < n; c++ { // Try placing queen in each column of current row
+            if isSafe(r, c) {
+                board[r][c] = 'Q' // Place queen
+                backtrack(r + 1)  // Recur for next row
+                board[r][c] = '.' // Backtrack: remove queen
+            }
+        }
+    }
+
+    backtrack(0) // Start from first row
+    return solutions
+}
+
+// func main() {
+//     nVal := 4
+//     solutions4Queens := solveNQueens(nVal)
+//     for _, sol := range solutions4Queens {
+//         for _, row := range sol {
+//             fmt.Println(row)
+//         }
+//         fmt.Println()
+//     }
+// }
+</code></pre>
+    
+    <pre data-lang="d"><code class="language-d">import std.stdio;
+import std.array;
+import std.string;
+import std.algorithm; // For std.algorithm.max, min
+
+class NQueens {
+private:
+    string[][] solutions;
+    char[][] board;
+    int N;
+
+    // Helper function to check if a queen can be placed at board[row][col]
+    bool isSafe(int r, int c) {
+        // Check column upwards
+        foreach (i; 0 .. r) {
+            if (board[i][c] == 'Q') {
+                return false;
+            }
+        }
+
+        // Check upper-left diagonal
+        for (int i = r - 1, j = c - 1; i >= 0 && j >= 0; i--, j--) {
+            if (board[i][j] == 'Q') {
+                return false;
+            }
+        }
+
+        // Check upper-right diagonal
+        for (int i = r - 1, j = c + 1; i >= 0 && j < N; i++, j++) {
+            if (board[i][j] == 'Q') {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    // Main backtracking function
+    void backtrack(int r) {
+        if (r == N) { // All queens placed
+            solutions ~= board.map!(row => new string(row)).array;
+            return;
+        }
+        
+        foreach (c; 0 .. N) { // Try placing queen in each column of current row
+            if (isSafe(r, c)) {
+                board[r][c] = 'Q'; // Place queen
+                backtrack(r + 1);  // Recur for next row
+                board[r][c] = '.'; // Backtrack: remove queen
+            }
+        }
+    }
+
+public:
+    string[][] solveNQueens(int n) {
+        N = n;
+        board = new char[N][N];
+        foreach (ref row; board) {
+            row[] = '.'; // Initialize empty board
+        }
+        solutions.clear();
+        backtrack(0); // Start from first row
+        return solutions;
+    }
+}
+
+// void main() {
+//     auto solver = new NQueens();
+//     int nVal = 4;
+//     auto solutions4Queens = solver.solveNQueens(nVal);
+//     foreach (sol; solutions4Queens) {
+//         foreach (row; sol) {
+//             writeln(row);
+//         }
+//         writeln();
+//     }
+// }
+</code></pre>
+</div>
+
+<div id="code-explanation-content"><div class="markdown-content">
+    <h3>Code Walkthrough</h3>
+    <div class="markdown-content">
+    <p>The <code>N-Queens Problem</code> is a classic example of how <code>backtracking</code> systematically explores potential solutions, pruning branches that violate constraints.</p>
+    </div></div>
+    <div class="explanation-fence">
+<strong><code>isSafe(r, c)</code> Function:</strong>
+<ul>
+    <li>This helper function checks if placing a <code>queen</code> at <code>(r, c)</code> (current <code>row</code>, current <code>column</code>) is valid.</li>
+    <li>It only needs to check conflicts with <code>queens</code> placed in previous rows (i.e., <code>rows 0</code> to <code>r-1</code>), because <code>queens</code> are placed one per row.</li>
+    <li><strong>Checks:</strong>
+        <ul>
+            <li><code>Column</code>: Iterates upwards through the current <code>column c</code>.</li>
+            <li><code>Upper-Left Diagonal</code>: Iterates diagonally upwards and to the left.</li>
+            <li><code>Upper-Right Diagonal</code>: Iterates diagonally upwards and to the right.</li>
+        </ul>
+    </li>
+</ul>
+<br>
+<strong><code>backtrack(r)</code> Function (Main Backtracking Logic):</strong>
+<ul>
+    <li><code>r</code>: Represents the current <code>row</code> in which the algorithm is trying to place a <code>queen</code>.</li>
+</ul>
+<br>
+<strong>Algorithm Steps:</strong>
+<ol>
+    <li><strong>Base Case:</strong> If <code>r == n</code> (meaning all <code>N</code> <code>queens</code> have been successfully placed in <code>rows 0</code> to <code>N-1</code>), a solution is found. The current <code>board configuration</code> is stored, and the function returns.</li>
+    <li><strong>Recursive Step:</strong> For the <code>current row r</code>:
+        <ul>
+            <li>Iterate through each <code>column c</code> from 0 to <code>N-1</code>.</li>
+            <li><strong>Safety Check:</strong> If <code>isSafe(r, c)</code> returns <code>true</code> (no conflicts with previously placed <code>queens</code>):
+                <ul>
+                    <li>**Place Queen:** Place a <code>queen</code> at <code>board[r][c]</code>.</li>
+                    <li>**Recur:** Recursively call <code>backtrack(r + 1)</code> to try placing a <code>queen</code> in the next <code>row</code>.</li>
+                    <li>**Backtrack:** After the recursive call returns (regardless of whether it found a solution or hit a dead end), remove the <code>queen</code> from <code>board[r][c]</code> (set it back to '.'). This "undoes" the choice and allows the algorithm to explore other <code>column</code> placements in the current <code>row</code>.</li>
+                </ul>
+            </li>
+        </ul>
+    </li>
+</ol>
+    </div>
+</div>
+
+<div id="application-content"><div class="markdown-content">
+    <h3>Application</h3>
+    <div class="markdown-content">
+    <p>The <code>N-Queens Problem</code> is a classical puzzle and a fundamental example of problems solved using the <code>backtracking paradigm</code>. While the problem itself is specific, its solution approach is broadly applicable:</p>
+    <ul>
+        <li><strong>Constraint Satisfaction Problems (CSPs):</strong> Many real-world problems can be modeled as CSPs (e.g., scheduling, resource allocation), and backtracking is a common technique for solving them.</li>
+        <li><strong>Game AI:</strong> Used in developing AI for games like Chess, where finding optimal moves or checking for specific board states involves exploring a tree of possibilities.</li>
+        <li><strong>Automated Theorem Proving:</strong> In logic and mathematics, finding proofs often involves exploring a search space of logical deductions.</li>
+        <li><strong>Combinatorial Optimization:</strong> Finding all valid arrangements or subsets that satisfy certain conditions.</li>
+        <li><strong>Sudoku Solvers:</strong> A variant of backtracking can be used to solve Sudoku puzzles.</li>
+        <li><strong>Route Finding in Restricted Environments:</strong> For example, finding paths in a maze or a robot navigating an environment with specific placement constraints.</li>
+    </ul>
+    </p>
+    </div></div>
+</div>

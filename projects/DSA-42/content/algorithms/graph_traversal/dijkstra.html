@@ -1,0 +1,461 @@
+<div id="explanation-content">
+    <p><code>Dijkstra's Algorithm</code> is a classic and widely used algorithm for finding the shortest paths between <code>nodes</code> in a graph, which may represent, for example, road networks. It was conceived by computer scientist Edsger W. Dijkstra in 1956. The algorithm finds the shortest path from a given "source" <code>node</code> to all other _nodes_ in a weighted graph with non-negative edge weights.</p>
+    <p>It works by maintaining a set of visited <code>nodes</code> and their shortest known distances from the source. It iteratively selects the unvisited <code>node</code> with the smallest known distance, marks it as visited, and updates the distances of its neighbors.</p>
+</div>
+
+<div id="expanded-explanation-content">
+    <h3>How it Works (Expanded)</h3>
+    <p><code>Dijkstra's Algorithm</code> uses a <code>priority queue</code> to efficiently select the unvisited <code>node</code> with the smallest distance at each step. This ensures that once a _node_ is marked as visited, the path found to it is the shortest possible one.</p>
+    <div class="explanation-fence">
+Example: Find shortest paths from A
+Graph: A-B(1), A-C(4), B-C(2), B-D(5), C-D(1)
+
+1. Start at A. Distances: {A:0, B:inf, C:inf, D:inf}. Priority Queue (PQ): [(0,A)].
+2. Pop (0,A). Path to A is 0.
+   - Visit neighbors B, C.
+   - Update dist(B): 0+1=1. Push (1,B) to PQ.
+   - Update dist(C): 0+4=4. Push (4,C) to PQ.
+   - PQ: [(1,B), (4,C)].
+3. Pop (1,B). Path to B is 1.
+   - Visit neighbors C, D.
+   - Update dist(C): 1+2=3 < 4. Update. Push (3,C) to PQ.
+   - Update dist(D): 1+5=6. Push (6,D) to PQ.
+   - PQ: [(3,C), (4,C - stale), (6,D)].
+4. Pop (3,C). Path to C is 3.
+   - Visit neighbor D.
+   - Update dist(D): 3+1=4 < 6. Update. Push (4,D) to PQ.
+   - PQ: [(4,C), (4,D), (6,D - stale)].
+5. Pop (4,C). C already visited with shorter path. Ignore.
+6. Pop (4,D). Path to D is 4.
+   - All neighbors visited.
+7. ... and so on until PQ is empty.
+
+Final shortest paths from A: A:0, B:1, C:3, D:4
+    </div>
+    <p><strong>Steps:</strong></p>
+    <ol>
+        <li>Initialize <code>distances</code> for all <code>nodes</code> to infinity, except for the <code>source</code> node, which is 0.</li>
+        <li>Create a <code>priority queue</code> and add the <code>source node</code> with a priority of 0.</li>
+        <li>While the <code>priority queue</code> is not empty:
+            <ul>
+                <li>Extract the <code>node</code> with the smallest distance (highest priority) from the <code>priority queue</code>. Let this be <code>currentNode</code>.</li>
+                <li>If <code>currentNode</code> has already been visited with a shorter path, skip it.</li>
+                <li>Mark <code>currentNode</code> as visited.</li>
+                <li>For each neighbor of <code>currentNode</code>:
+                    <ul>
+                        <li>Calculate the distance to the neighbor through <code>currentNode</code>.</li>
+                        <li>If this new path is shorter than the previously known distance to the neighbor, update the neighbor's distance and add it to the <code>priority queue</code>.</li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+    </ol>
+    <p><strong>Time Complexity:</strong> <code>O(E + V log V)</code> with a binary heap-based priority queue, or <code>O(E log V)</code> for a simple implementation. <code>V</code> is the number of vertices and <code>E</code> is the number of edges.</p>
+    <p><strong>Space Complexity:</strong> <code>O(V)</code> to store distances and the priority queue.</p>
+</div>
+
+<div id="code-implementations">
+    <pre data-lang="python"><code class="language-python">import heapq
+
+def dijkstra(graph, start_node):
+    """
+    Finds the shortest paths from a start_node to all other nodes in a weighted graph.
+    <code>graph</code> is a dict of dicts: {node: {neighbor: weight}}.
+    """
+    distances = {node: float('infinity') for node in graph}
+    distances[start_node] = 0
+    
+    priority_queue = [(0, start_node)]
+    
+    while priority_queue:
+        current_distance, current_node = heapq.heappop(priority_queue)
+        
+        # Nodes can be added to the priority queue multiple times. We only
+        # process a node the first time we remove it from the priority queue.
+        if current_distance > distances[current_node]:
+            continue
+            
+        for neighbor, weight in graph[current_node].items():
+            distance = current_distance + weight
+            
+            # If we found a shorter path to the neighbor
+            if distance < distances[neighbor]:
+                distances[neighbor] = distance
+                heapq.heappush(priority_queue, (distance, neighbor))
+                
+    return distances
+
+# Example
+# graph = {
+#     'A': {'B': 1, 'C': 4},
+#     'B': {'A': 1, 'C': 2, 'D': 5},
+#     'C': {'A': 4, 'B': 2, 'D': 1},
+#     'D': {'B': 5, 'C': 1}
+# }
+# print(dijkstra(graph, 'A')) # {'A': 0, 'B': 1, 'C': 3, 'D': 4}
+</code></pre>
+
+    <pre data-lang="javascript"><code class="language-javascript">// JavaScript doesn't have a built-in Priority Queue, so a simple array-based one is used.
+// For production, a library like 'tinyqueue' or a custom min-heap implementation is better.
+
+function dijkstra(graph, startNode) {
+    const distances = {};
+    const visited = new Set();
+    const pq = []; // Simple priority queue (array)
+
+    // Initialize distances
+    for (const node in graph) {
+        distances[node] = Infinity;
+    }
+    distances[startNode] = 0;
+    
+    pq.push({ node: startNode, distance: 0 });
+
+    while (pq.length > 0) {
+        // Sort to simulate priority queue (inefficient but simple for demo)
+        pq.sort((a, b) => a.distance - b.distance);
+        const { node: currentNode, distance: currentDistance } = pq.shift();
+
+        if (visited.has(currentNode)) {
+            continue;
+        }
+        visited.add(currentNode);
+
+        if (currentDistance > distances[currentNode]) {
+            continue;
+        }
+
+        const neighbors = graph[currentNode] || {};
+        for (const neighbor in neighbors) {
+            const weight = neighbors[neighbor];
+            const distance = currentDistance + weight;
+
+            if (distance < distances[neighbor]) {
+                distances[neighbor] = distance;
+                pq.push({ node: neighbor, distance: distance });
+            }
+        }
+    }
+    
+    return distances;
+}
+
+// const graph = {
+//     'A': { 'B': 1, 'C': 4 },
+//     'B': { 'A': 1, 'C': 2, 'D': 5 },
+//     'C': { 'A': 4, 'B': 2, 'D': 1 },
+//     'D': { 'B': 5, 'C': 1 }
+// };
+// console.log(dijkstra(graph, 'A')); // { A: 0, B: 1, C: 3, D: 4 }
+</code></pre>
+
+    <pre data-lang="typescript"><code class="language-typescript">interface Graph {
+    [key: string]: { [key: string]: number };
+}
+
+interface Distance {
+    [key: string]: number;
+}
+
+interface PQNode {
+    node: string;
+    distance: number;
+}
+
+function dijkstraTS(graph: Graph, startNode: string): Distance {
+    const distances: Distance = {};
+    const visited: Set<string> = new Set();
+    const pq: PQNode[] = []; // Simple priority queue (array)
+
+    // Initialize distances
+    for (const node in graph) {
+        distances[node] = Infinity;
+    }
+    distances[startNode] = 0;
+    
+    pq.push({ node: startNode, distance: 0 });
+
+    while (pq.length > 0) {
+        // Sort to simulate priority queue
+        pq.sort((a, b) => a.distance - b.distance);
+        const { node: currentNode, distance: currentDistance } = pq.shift()!;
+
+        if (visited.has(currentNode)) {
+            continue;
+        }
+        visited.add(currentNode);
+
+        if (currentDistance > distances[currentNode]) {
+            continue;
+        }
+
+        const neighbors = graph[currentNode] || {};
+        for (const neighbor in neighbors) {
+            const weight = neighbors[neighbor];
+            const distance = currentDistance + weight;
+
+            if (distance < distances[neighbor]) {
+                distances[neighbor] = distance;
+                pq.push({ node: neighbor, distance: distance });
+            }
+        }
+    }
+    
+    return distances;
+}
+
+// const graphTS: Graph = {
+//     'A': { 'B': 1, 'C': 4 },
+//     'B': { 'A': 1, 'C': 2, 'D': 5 },
+//     'C': { 'A': 4, 'B': 2, 'D': 1 },
+//     'D': { 'B': 5, 'C': 1 }
+// };
+// console.log(dijkstraTS(graphTS, 'A')); // { A: 0, B: 1, C: 3, D: 4 }
+</code></pre>
+    
+    <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;queue&gt;
+#include &lt;map&gt;
+#include &lt;limits&gt; // For std::numeric_limits
+#include &lt;utility&gt; // For std::pair
+
+using Graph = std::map&lt;char, std::map&lt;char, int&gt;&gt;;
+using Distances = std::map&lt;char, int&gt;;
+
+Distances dijkstra(const Graph& graph, char startNode) {
+    Distances distances;
+    for (const auto& pair : graph) {
+        distances[pair.first] = std::numeric_limits<int>::max();
+    }
+    distances[startNode] = 0;
+
+    using PQElement = std::pair<int, char>;
+    std::priority_queue<PQElement, std::vector<PQElement>, std::greater<PQElement>> pq;
+    
+    pq.push({0, startNode});
+
+    while (!pq.empty()) {
+        int currentDistance = pq.top().first;
+        char currentNode = pq.top().second;
+        pq.pop();
+
+        if (currentDistance > distances[currentNode]) {
+            continue;
+        }
+
+        auto it = graph.find(currentNode);
+        if (it != graph.end()) {
+            for (const auto& neighbor_pair : it->second) {
+                char neighbor = neighbor_pair.first;
+                int weight = neighbor_pair.second;
+                int distance = currentDistance + weight;
+
+                if (distance < distances[neighbor]) {
+                    distances[neighbor] = distance;
+                    pq.push({distance, neighbor});
+                }
+            }
+        }
+    }
+
+    return distances;
+}
+
+// int main() {
+//     Graph graph = {
+//         {'A', {{'B', 1}, {'C', 4}}},
+//         {'B', {{'A', 1}, {'C', 2}, {'D', 5}}},
+//         {'C', {{'A', 4}, {'B', 2}, {'D', 1}}},
+//         {'D', {{'B', 5}, {'C', 1}}}
+//     };
+//     Distances result = dijkstra(graph, 'A');
+//     for (const auto& pair : result) {
+//         std::cout << pair.first << ": " << pair.second << std::endl;
+//     }
+// }
+</code></pre>
+
+    <pre data-lang="go"><code class="language-go">package main
+
+import (
+    "container/heap"
+    "fmt"
+    "math"
+)
+
+// Item for the priority queue
+type Item struct {
+    node     string
+    distance int
+    index    int // Index of the item in the heap
+}
+
+// A PriorityQueue implements heap.Interface and holds Items.
+type PriorityQueue []<em>Item
+
+func (pq PriorityQueue) Len() int { return len(pq) }
+
+func (pq PriorityQueue) Less(i, j int) bool {
+    return pq[i].distance < pq[j].distance
+}
+
+func (pq PriorityQueue) Swap(i, j int) {
+    pq[i], pq[j] = pq[j], pq[i]
+    pq[i].index = i
+    pq[j].index = j
+}
+
+func (pq </em>PriorityQueue) Push(x interface{}) {
+    n := len(<em>pq)
+    item := x.(</em>Item)
+    item.index = n
+    <em>pq = append(</em>pq, item)
+}
+
+func (pq <em>PriorityQueue) Pop() interface{} {
+    old := </em>pq
+    n := len(old)
+    item := old[n-1]
+    old[n-1] = nil  // avoid memory leak
+    item.index = -1 // for safety
+    <em>pq = old[0 : n-1]
+    return item
+}
+
+func dijkstra(graph map[string]map[string]int, startNode string) map[string]int {
+    distances := make(map[string]int)
+    for node := range graph {
+        distances[node] = math.MaxInt32
+    }
+    distances[startNode] = 0
+
+    pq := make(PriorityQueue, 0)
+    heap.Init(&pq)
+    
+    heap.Push(&pq, &Item{node: startNode, distance: 0})
+
+    for pq.Len() > 0 {
+        currentItem := heap.Pop(&pq).(</em>Item)
+        currentNode := currentItem.node
+        currentDistance := currentItem.distance
+
+        if currentDistance > distances[currentNode] {
+            continue
+        }
+
+        for neighbor, weight := range graph[currentNode] {
+            distance := currentDistance + weight
+            if distance < distances[neighbor] {
+                distances[neighbor] = distance
+                heap.Push(&pq, &Item{node: neighbor, distance: distance})
+            }
+        }
+    }
+
+    return distances
+}
+
+// func main() {
+//     graph := map[string]map[string]int{
+//         "A": {"B": 1, "C": 4},
+//         "B": {"A": 1, "C": 2, "D": 5},
+//         "C": {"A": 4, "B": 2, "D": 1},
+//         "D": {"B": 5, "C": 1},
+//     }
+//     fmt.Println(dijkstra(graph, "A")) // map[A:0 B:1 C:3 D:4]
+// }
+</code></pre>
+    
+    <pre data-lang="d"><code class="language-d">import std.stdio;
+import std.container.binaryheap;
+import std.typecons;
+import std.experimental.allocator;
+
+auto dijkstra(int[string][string] graph, string startNode) {
+    auto distances = new int[string];
+    foreach (node; graph.keys) {
+        distances[node] = int.max;
+    }
+    distances[startNode] = 0;
+
+    alias PQElement = Tuple!(int, "distance", string, "node");
+    auto pq = binaryHeap!PQElement((a, b) => a.distance < b.distance)();
+
+    pq.insert(PQElement(0, startNode));
+    
+    auto visited = new bool[string];
+
+    while (!pq.empty) {
+        auto current = pq.front;
+        pq.removeFront();
+
+        int currentDistance = current.distance;
+        string currentNode = current.node;
+
+        if (currentNode in visited) continue;
+        visited[currentNode] = true;
+        
+        if (currentDistance > distances[currentNode]) continue;
+
+        if (auto pNeighbors = currentNode in graph) {
+            foreach (neighbor, weight; *pNeighbors) {
+                int distance = currentDistance + weight;
+                if (distance < distances[neighbor]) {
+                    distances[neighbor] = distance;
+                    pq.insert(PQElement(distance, neighbor));
+                }
+            }
+        }
+    }
+
+    return distances;
+}
+
+// void main() {
+//     auto graph = [
+//         "A": ["B": 1, "C": 4],
+//         "B": ["A": 1, "C": 2, "D": 5],
+//         "C": ["A": 4, "B": 2, "D": 1],
+//         "D": ["B": 5, "C": 1]
+//     ];
+//     auto result = dijkstra(graph, "A");
+//     writeln(result); // ["D":4, "C":3, "B":1, "A":0]
+// }
+</code></pre>
+</div>
+
+<div id="code-explanation-content"><div class="markdown-content">
+    <h3>Code Walkthrough</h3>
+    <p><code>Dijkstra's Algorithm</code> is most efficiently implemented using a <code>priority queue</code> to store unvisited nodes, prioritized by their current shortest distance from the source.</p>
+    <div class="explanation-fence">
+<strong>Initialization:</strong>
+<ol>
+    <li>A <code>distances</code> map or dictionary is created to store the shortest distance found so far from the <code>startNode</code> to every other <code>node</code>. It's initialized with <code>infinity</code> for all nodes except the <code>startNode</code>, which is 0.</li>
+    <li>A <code>priority queue</code> (<code>pq</code>) is created. It will store pairs of <code>(distance, node)</code>. In languages without a native min-priority queue (like JavaScript), this is often simulated with a sorted array for simplicity, though a heap is far more efficient.</li>
+    <li>The starting pair <code>(0, startNode)</code> is added to the <code>pq</code>.</li>
+</ol>
+<br>
+<strong>Main Loop:</strong>
+<ol>
+    <li>The loop continues as long as the <code>pq</code> is not empty.</li>
+    <li><strong>Extract Min:</strong> The element with the smallest distance is extracted from the <code>pq</code>. This is <code>currentNode</code>.</li>
+    <li><strong>Skip Stale Entries:</strong> A crucial optimization is to check if the extracted <code>currentDistance</code> is greater than the <code>distance</code> already stored for <code>currentNode</code>. If it is, it means we've found a shorter path to this <code>node</code> already, so we can ignore this "stale" entry in the <code>pq</code> and continue.</li>
+    <li><strong>Explore Neighbors:</strong> For each <code>neighbor</code> of <code>currentNode</code>, calculate the new potential distance (<code>currentDistance + weight</code>).</li>
+    <li><strong>Update and Enqueue:</strong> If this new <code>distance</code> is shorter than the known <code>distance</code> to the <code>neighbor</code>, update the <code>distances</code> map and add the new, better path <code>(distance, neighbor)</code> to the <code>pq</code>.</li>
+</ol>
+    </div></div>
+</div>
+
+<div id="application-content"><div class="markdown-content">
+    <h3>Application</h3>
+    <p><code>Dijkstra's Algorithm</code> is fundamental to solving shortest path problems in various domains, provided the edge weights are non-negative.</p>
+    <ul>
+        <li><strong>Routing and Navigation:</strong> Used in GPS systems and network routing protocols (like OSPF) to find the shortest path between two points.</li>
+        <li><strong>Network Analysis:</strong> Finding the cheapest or fastest way to send data through a computer network.</li>
+        <li><strong>Robotics and AI:</strong> Pathfinding for autonomous vehicles or characters in a game world.</li>
+        <li><strong>Bioinformatics:</strong> Finding optimal alignments or pathways in metabolic networks.</li>
+        <li><strong>Social Network Analysis:</strong> Calculating the "degree of separation" between people.</li>
+    </ul>
+    </p>
+</div></div>

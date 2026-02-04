@@ -1,0 +1,105 @@
+<div id="explanation-content">
+    <p>Imagine a stack of plates: you can only put a new plate on top, and you can only take the top plate off. A Stack data structure works exactly like this, following the <code>LIFO</code> (<code>Last-In, First-Out</code>) principle.</p>
+    <p>It's used everywhere from managing function calls in a program (the <code>call stack</code>) to undo/redo features in software.</p>
+</div>
+
+<div id="expanded-explanation-content">
+    <h3>How it Works (Expanded)</h3>
+    <p>A Stack is an abstract data type (ADT) that maintains a collection of elements. It has two primary operations:</p>
+    <ol>
+        <li><strong><code>Push</code>:</strong> Adds an element to the top of the stack.</li>
+        <li><strong><code>Pop</code>:</strong> Removes and returns the element from the top of the stack.</li>
+    </ol>
+    <p>The <code>LIFO</code> principle means the last element added is always the first one to be removed. Think of a spring-loaded plate dispenser in a cafeteria.</p>
+    <div class="explanation-fence">
+    |   |    <- TOP
+    | D |
+    | C |
+    | B |
+    | A |
+    -----
+    </div>
+    <p>When you 'push' E, it goes on top of D. When you 'pop', E comes off first, then D, and so on.</p>
+    <p><strong>Common Uses:</strong> Function call management, expression evaluation, backtracking algorithms, undo/redo features, browser history.</p>
+    <p><strong>Time Complexity:</strong> <code>Push</code> and <code>Pop</code> operations are typically <code>O(1)</code> if implemented efficiently (e.g., using an array that resizes, or a linked list).</p>
+</div>
+
+<div id="code-implementations">
+    <pre data-lang="python"><code class="language-python"># Python's list can be used as a stack.
+my_stack = []
+
+# Push (O(1))
+my_stack.append('A')
+my_stack.append('B')
+my_stack.append('C')
+print("Stack after pushes:", my_stack)
+
+# Pop (O(1))
+top_item = my_stack.pop()
+print("Popped item:", top_item)
+print("Stack after pop:", my_stack)
+
+# Peek/Top (O(1))
+if my_stack:
+    print("Top item (peek):", my_stack[-1])
+</code></pre>
+
+    <pre data-lang="javascript"><code class="language-javascript">// JavaScript's Array can be used as a stack.
+let myStack = [];
+
+// Push (O(1))
+myStack.push('A');
+myStack.push('B');
+myStack.push('C');
+console.log("Stack after pushes:", myStack); // Output: ["A", "B", "C"]
+
+// Pop (O(1))
+let topItem = myStack.pop();
+console.log("Popped item:", topItem); // Output: C
+console.log("Stack after pop:", myStack); // Output: ["A", "B"]
+
+// Peek/Top (O(1))
+if (myStack.length > 0) {
+    console.log("Top item (peek):", myStack[myStack.length - 1]); // Output: B
+}
+</code></pre>
+
+    <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;stack&gt; // Standard Library Stack
+
+int main() {
+    std::stack&lt;char&gt; myStack;
+
+    // Push (O(1))
+    myStack.push('A');
+    myStack.push('B');
+    myStack.push('C');
+    std::cout &lt;&lt; "Stack size after pushes: " &lt;&lt; myStack.size() &lt;&lt; std::endl;
+
+    // Pop (O(1))
+    char topItem = myStack.top(); // Get top element
+    myStack.pop();                 // Remove top element
+    std::cout &lt;&lt; "Popped item: " &lt;&lt; topItem &lt;&lt; std::endl;
+    std::cout &lt;&lt; "Stack size after pop: " &lt;&lt; myStack.size() &lt;&lt; std::endl;
+
+    // Peek/Top (O(1))
+    if (!myStack.empty()) {
+        std::cout &lt;&lt; "Top item (peek): " &lt;&lt; myStack.top() &lt;&lt; std::endl;
+    }
+    return 0;
+}
+</code></pre>
+</div>
+
+<div id="code-explanation-content"><div class="markdown-content">
+    <h3>Code Walkthrough</h3>
+    <p>Implementing a stack is straightforward in most languages, often using built-in array capabilities or a linked list.</p>
+    <div class="explanation-fence">
+<strong>Python:</strong> Uses a standard <code>list</code>. <code>append()</code> is used for <code>push</code>, and <code>pop()</code> for <code>pop</code>. <code>list[-1]</code> accesses the top element without removing it.
+<br><br>
+<strong>JavaScript:</strong> Uses a standard <code>Array</code>. <code>push()</code> for <code>push</code>, and <code>pop()</code> for <code>pop</code>. <code>array[array.length - 1]</code> accesses the top element.
+<br><br>
+<strong>C++:</strong> The Standard Template Library (STL) provides a dedicated <code>std::stack</code> adapter. <code>push()</code> for <code>push</code>, <code>pop()</code> for <code>pop</code> (removes, doesn't return), and <code>top()</code> to peek at the top element.
+    </div></div>
+    <p>The key is consistently performing operations at one end of the collection.</p>
+</div>

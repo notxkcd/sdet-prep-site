@@ -1,0 +1,282 @@
+<div id="explanation-content">
+    <p>The <code>Rod Cutting Problem</code> is a classic optimization problem that can be efficiently solved using <code>dynamic programming</code>. Given a rod of length <code>N</code> and a table of <code>prices</code> for <code>pieces</code> of various lengths, the goal is to cut the rod into smaller <code>pieces</code> to maximize the total <code>price</code> obtained. Each <code>piece</code> of length <code>i</code> has a corresponding <code>price[i-1]</code> (assuming 0-indexed <code>prices</code> array).</p>
+    <p>The key challenge is that we can cut the rod into any number of <code>pieces</code>, and <code>pieces</code> of the same length can be used multiple times.</p>
+</div>
+
+<div id="expanded-explanation-content">
+    <h3>How it Works (Expanded)</h3>
+    <p>The <code>Rod Cutting Problem</code> has optimal substructure and overlapping subproblems, making it suitable for <code>dynamic programming</code>. We define <code>dp[i]</code> as the maximum <code>price</code> obtainable from a rod of length <code>i</code>.</p>
+    <div class="explanation-fence">
+Example: Rod Length = 4, Prices = [1, 5, 8, 9] (i.e., length 1 = 1, length 2 = 5, length 3 = 8, length 4 = 9)
+
+dp array of size (N+1), initialized with zeros.
+dp = [0, 0, 0, 0, 0]
+
+Iterate for each rod length 'i' from 1 to 4:
+  Iterate for each possible cut length 'j' from 1 to i:
+    dp[i] = max(dp[i], prices[j-1] + dp[i-j])
+
+Trace:
+- dp[0] = 0
+- dp[1]: max(prices[0] + dp[0]) = 1 + 0 = 1. dp = [0, 1, 0, 0, 0]
+- dp[2]:
+  - cut 1: prices[0] + dp[1] = 1 + 1 = 2
+  - cut 2: prices[1] + dp[0] = 5 + 0 = 5
+  - dp[2] = max(2, 5) = 5. dp = [0, 1, 5, 0, 0]
+- dp[3]:
+  - cut 1: prices[0] + dp[2] = 1 + 5 = 6
+  - cut 2: prices[1] + dp[1] = 5 + 1 = 6
+  - cut 3: prices[2] + dp[0] = 8 + 0 = 8
+  - dp[3] = max(6, 6, 8) = 8. dp = [0, 1, 5, 8, 0]
+- dp[4]:
+  - cut 1: prices[0] + dp[3] = 1 + 8 = 9
+  - cut 2: prices[1] + dp[2] = 5 + 5 = 10
+  - cut 3: prices[2] + dp[1] = 8 + 1 = 9
+  - cut 4: prices[3] + dp[0] = 9 + 0 = 9
+  - dp[4] = max(9, 10, 9, 9) = 10. dp = [0, 1, 5, 8, 10]
+
+Final dp[4] = 10
+    </div>
+    <p><strong>Recurrence Relation:</strong></p>
+    <ul>
+        <li><code>dp[i]</code> = maximum <code>price</code> obtainable from a rod of length <code>i</code>.</li>
+        <li>Base case: <code>dp[0] = 0</code>.</li>
+        <li>For <code>i > 0</code>:
+            <code>dp[i] = max(prices[j-1] + dp[i-j])</code> for all <code>j</code> from 1 to <code>i</code>.
+            This represents trying all possible first cuts of length <code>j</code>, adding its price, and then finding the optimal solution for the remaining rod of length <code>i-j</code>.</li>
+    </ul>
+    <p><strong>Algorithm Steps:</strong></p>
+    <ol>
+        <li>Create a 1D <code>dp array</code> of size <code>N + 1</code>. Initialize <code>dp[0]</code> to 0 and other <code>dp[i]</code> to 0.</li>
+        <li>Iterate <code>i</code> (representing current rod length) from 1 to <code>N</code>:
+            <ul>
+                <li>Initialize <code>max_val</code> for <code>dp[i]</code> to a very small number (or 0).</li>
+                <li>Iterate <code>j</code> (representing the length of the first piece cut) from 1 to <code>i</code>:</li>
+                <li><code>max_val = max(max_val, prices[j-1] + dp[i-j])</code></li>
+                <li><code>dp[i] = max_val</code></li>
+            </ul>
+        </li>
+        <li>The maximum <code>price</code> will be <code>dp[N]</code>.</li>
+    </ol>
+    <p><strong>Time Complexity:</strong> <code>O(N^2)</code>, where <code>N</code> is the length of the rod. Two nested loops iterate up to <code>N</code> times.</p>
+    <p><strong>Space Complexity:</strong> <code>O(N)</code> for the <code>dp array</code>.</p>
+</div>
+
+<div id="code-implementations">
+    <pre data-lang="python"><code class="language-python">def rod_cutting(prices, N):
+    # dp[i] will store the maximum profit obtainable from a rod of length i
+    dp = [0] * (N + 1)
+    
+    # dp[0] is 0 as no profit from rod of length 0
+
+    # Fill dp table for all rod lengths from 1 to N
+    for i in range(1, N + 1):
+        max_val = 0
+        # For each length i, consider all possible first cuts of length j
+        for j in range(1, i + 1):
+            # prices array is 0-indexed, so price of length j is prices[j-1]
+            max_val = max(max_val, prices[j - 1] + dp[i - j])
+        dp[i] = max_val
+            
+    return dp[N]
+
+# Example
+# prices = [1, 5, 8, 9, 10, 17, 17, 20] (prices for lengths 1 to 8)
+# N = 4 # Rod length
+# print(rod_cutting(prices, N)) # Expected: 10 (cut into two pieces of length 2, 5+5=10)
+</code></pre>
+
+    <pre data-lang="javascript"><code class="language-javascript">function rodCutting(prices, N) {
+    // dp[i] will store the maximum profit obtainable from a rod of length i
+    const dp = Array(N + 1).fill(0);
+    
+    // dp[0] is 0 as no profit from rod of length 0
+
+    // Fill dp table for all rod lengths from 1 to N
+    for (let i = 1; i <= N; i++) {
+        let maxVal = 0;
+        // For each length i, consider all possible first cuts of length j
+        for (let j = 1; j <= i; j++) {
+            // prices array is 0-indexed, so price of length j is prices[j-1]
+            maxVal = Math.max(maxVal, prices[j - 1] + dp[i - j]);
+        }
+        dp[i] = maxVal;
+    }
+            
+    return dp[N];
+}
+
+// const prices = [1, 5, 8, 9, 10, 17, 17, 20]; // prices for lengths 1 to 8
+// const N = 4; // Rod length
+// console.log(rodCutting(prices, N)); // Expected: 10
+</code></pre>
+
+    <pre data-lang="typescript"><code class="language-typescript">function rodCuttingTS(prices: number[], N: number): number {
+    // dp[i] will store the maximum profit obtainable from a rod of length i
+    const dp: number[] = Array(N + 1).fill(0);
+    
+    // dp[0] is 0 as no profit from rod of length 0
+
+    // Fill dp table for all rod lengths from 1 to N
+    for (let i = 1; i <= N; i++) {
+        let maxVal = 0;
+        // For each length i, consider all possible first cuts of length j
+        for (let j = 1; j <= i; j++) {
+            // prices array is 0-indexed, so price of length j is prices[j-1]
+            maxVal = Math.max(maxVal, prices[j - 1] + dp[i - j]);
+        }
+        dp[i] = maxVal;
+    }
+            
+    return dp[N];
+}
+
+// const pricesTS = [1, 5, 8, 9, 10, 17, 17, 20]; // prices for lengths 1 to 8
+// const NTS = 4; // Rod length
+// console.log(rodCuttingTS(pricesTS, NTS)); // Expected: 10
+</code></pre>
+    
+    <pre data-lang="cpp"><code class="language-cpp">#include &lt;vector&gt;
+#include &lt;iostream&gt;
+#include &lt;algorithm&gt; // For std::max
+
+int rodCutting(const std::vector&lt;int&gt;& prices, int N) {
+    // dp[i] will store the maximum profit obtainable from a rod of length i
+    std::vector&lt;int&gt; dp(N + 1, 0);
+    
+    // dp[0] is 0 as no profit from rod of length 0
+
+    // Fill dp table for all rod lengths from 1 to N
+    for (int i = 1; i <= N; i++) {
+        int max_val = 0;
+        // For each length i, consider all possible first cuts of length j
+        for (int j = 1; j <= i; j++) {
+            // prices array is 0-indexed, so price of length j is prices[j-1]
+            max_val = std::max(max_val, prices[j - 1] + dp[i - j]);
+        }
+        dp[i] = max_val;
+    }
+            
+    return dp[N];
+}
+
+// int main() {
+//     std::vector<int> prices = {1, 5, 8, 9, 10, 17, 17, 20}; // prices for lengths 1 to 8
+//     int N = 4; // Rod length
+//     std::cout << "Max profit for rod of length 4: " << rodCutting(prices, N) << std::endl; // 10
+//     return 0;
+// }
+</code></pre>
+
+    <pre data-lang="go"><code class="language-go">package main
+
+import "fmt"
+
+func rodCutting(prices []int, N int) int {
+    // dp[i] will store the maximum profit obtainable from a rod of length i
+    dp := make([]int, N+1)
+    
+    // dp[0] is 0 as no profit from rod of length 0
+
+    // Fill dp table for all rod lengths from 1 to N
+    for i := 1; i <= N; i++ {
+        maxVal := 0
+        // For each length i, consider all possible first cuts of length j
+        for j := 1; j <= i; j++ {
+            // prices array is 0-indexed, so price of length j is prices[j-1]
+            maxVal = max(maxVal, prices[j-1] + dp[i-j])
+        }
+        dp[i] = maxVal
+    }
+            
+    return dp[N]
+}
+
+func max(a, b int) int {
+    if a > b {
+        return a
+    }
+    return b
+}
+
+// func main() {
+//     prices := []int{1, 5, 8, 9, 10, 17, 17, 20} // prices for lengths 1 to 8
+//     N := 4 // Rod length
+//     fmt.Println("Max profit for rod of length 4:", rodCutting(prices, N)) // 10
+// }
+</code></pre>
+    
+    <pre data-lang="d"><code class="language-d">import std.stdio;
+import std.array;
+import std.algorithm; // For std.algorithm.max
+
+int rodCutting(int[] prices, int N) {
+    // dp[i] will store the maximum profit obtainable from a rod of length i
+    auto dp = new int[N + 1]; // Initialize with zeros
+    
+    // dp[0] is 0 as no profit from rod of length 0
+
+    // Fill dp table for all rod lengths from 1 to N
+    foreach (i; 1 .. N + 1) {
+        int maxVal = 0;
+        // For each length i, consider all possible first cuts of length j
+        foreach (j; 1 .. i + 1) {
+            // prices array is 0-indexed, so price of length j is prices[j-1]
+            maxVal = max(maxVal, prices[j - 1] + dp[i - j]);
+        }
+        dp[i] = maxVal;
+    }
+            
+    return dp[N];
+}
+
+// void main() {
+//     auto prices = [1, 5, 8, 9, 10, 17, 17, 20]; // prices for lengths 1 to 8
+//     int N = 4; // Rod length
+//     writeln("Max profit for rod of length 4: ", rodCutting(prices, N)); // 10
+// }
+</code></pre>
+</div>
+
+<div id="code-explanation-content"><div class="markdown-content">
+    <h3>Code Walkthrough</h3>
+    <p>The <code>Rod Cutting Problem</code> is solved using a 1D <code>dynamic programming</code> array, where each element represents the maximum profit for a rod of a specific length.</p>
+    <div class="explanation-fence">
+<strong>Initialization:</strong>
+<ul>
+    <li><code>N</code>: The total length of the rod.</li>
+    <li><code>prices</code>: An array where <code>prices[k]</code> is the price for a piece of length <code>k+1</code>.</li>
+    <li>A 1D <code>dp</code> array of size <code>N + 1</code> is created. <code>dp[i]</code> will store the maximum profit obtainable from a rod of length <code>i</code>.</li>
+    <li><code>dp[0]</code> is initialized to 0 (a rod of length 0 yields no profit).</li>
+    <li>All other <code>dp[i]</code> values are initialized to 0.</li>
+</ul>
+<br>
+<strong>Filling the DP Table:</strong>
+<ul>
+    <li>The <code>dp</code> table is filled iteratively for <code>i</code> (representing the current rod length) from 1 to <code>N</code>.</li>
+    <li>For each <code>rod length i</code>, the algorithm aims to find the maximum profit by considering all possible ways to make the first cut.</li>
+    <li>It iterates <code>j</code> (representing the length of the first piece cut) from 1 to <code>i</code>.</li>
+    <li>For each <code>j</code>, it calculates a potential profit: <code>prices[j-1]</code> (the price of the first piece of length <code>j</code>) plus <code>dp[i-j]</code> (the maximum profit from the remaining rod of length <code>i-j</code>).</li>
+    <li><code>max_val</code> tracks the highest profit found for the current <code>rod length i</code> by comparing all <code>j</code> options.</li>
+    <li><code>dp[i]</code> is then updated with this <code>max_val</code>.</li>
+</ul>
+<br>
+<strong>Result:</strong>
+<ul>
+    <li>The final answer, the maximum profit for the original rod of length <code>N</code>, is stored in <code>dp[N]</code>.</li>
+</ul>
+    </div></div>
+</div>
+
+<div id="application-content"><div class="markdown-content">
+    <h3>Application</h3>
+    <p>The <code>Rod Cutting Problem</code> is a model for various optimization scenarios:</p>
+    <ul>
+        <li><strong>Resource Allocation:</strong> Deciding how to best allocate a finite resource (e.g., time, budget, raw material) into smaller, valued units to maximize overall gain.</li>
+        <li><strong>Production Planning:</strong> Optimizing the cutting of raw materials (like metal bars, timber, fabric rolls) into smaller pieces to meet demand while maximizing revenue.</li>
+        <li><strong>Manufacturing:</strong> In industries where products are cut from larger stock, this problem helps determine the most profitable cutting patterns.</li>
+        <li><strong>Service Provision:</strong> Imagine selling services where longer service periods can be broken down into shorter, more profitable segments.</li>
+        <li><strong>Project Management:</strong> Breaking down a large project into smaller tasks with associated costs and benefits, and finding the optimal way to combine them.</li>
+    </ul>
+    </p>
+</div></div>

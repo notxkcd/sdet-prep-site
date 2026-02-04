@@ -1,0 +1,447 @@
+<div id="explanation-content">
+    <p>The <code>Matrix Chain Multiplication</code> problem is a classic optimization problem that can be efficiently solved using <code>dynamic programming</code>. Given a sequence of matrices, the goal is to find the most efficient way to multiply these matrices. The problem is not about performing the actual multiplications, but merely determining the order of parenthesization that minimizes the total number of scalar multiplications.</p>
+    <p>Matrix multiplication is associative, meaning that the order in which matrices are multiplied does not affect the final product. However, the number of scalar multiplications required can vary dramatically depending on the order of parenthesization.</p>
+</div>
+
+<div id="expanded-explanation-content">
+    <h3>How it Works (Expanded)</h3>
+    <p>To multiply a <code>p x q</code> matrix <code>A</code> by a <code>q x r</code> matrix <code>B</code>, the resulting matrix <code>C</code> will be <code>p x r</code>, and it will require <code>p <em> q </em> r</code> scalar multiplications. The key insight is that for a chain of matrices <code>A1 <em> A2 </em> ... <em> An</code>, a final multiplication splits the chain into two sub-chains: <code>(A1 </em> ... <em> Ak) </em> (Ak+1 <em> ... </em> An)</code>. The optimal solution for the whole chain contains optimal solutions for its sub-chains.</p>
+    <div class="explanation-fence">
+Example: Chain of matrices A1, A2, A3, A4
+Dimensions: A1(10x100), A2(100x5), A3(5x50), A4(50x1)
+
+Possible parenthesizations:
+- ((A1A2)A3)A4:
+  - (A1A2) costs 10<em>100</em>5 = 5000 (result 10x5)
+  - ((A1A2)A3) costs 5000 + 10<em>5</em>50 = 7500 (result 10x50)
+  - (((A1A2)A3)A4) costs 7500 + 10<em>50</em>1 = 8000
+- (A1(A2A3))A4:
+  - (A2A3) costs 100<em>5</em>50 = 25000 (result 100x50)
+  - (A1(A2A3)) costs 25000 + 10<em>100</em>50 = 75000 (result 10x50)
+  - ((A1(A2A3))A4) costs 75000 + 10<em>50</em>1 = 75500
+- ... and so on.
+
+The goal is to find the minimum.
+    </div>
+    <p>We use a 2D <code>DP table</code> <code>m[i][j]</code> to store the minimum number of scalar multiplications needed to multiply the matrix chain from <code>Ai</code> to <code>Aj</code>. <code>p</code> is an array where <code>p[i-1]</code> and <code>p[i]</code> are the dimensions of matrix <code>Ai</code> (<code>p[i-1] x p[i]</code>).</p>
+    <p><strong>Recurrence Relation:</strong></p>
+    <ul>
+        <li><code>m[i][i] = 0</code> (cost of multiplying a single matrix is 0).</li>
+        <li>For <code>i < j</code>:
+            <code>m[i][j] = min(m[i][k] + m[k+1][j] + p[i-1]<em>p[k]</em>p[j])</code> for <code>i <= k < j</code>.
+            This means we try all possible split points <code>k</code> for the chain <code>Ai...Aj</code>, and choose the <code>k</code> that yields the minimum total multiplications.</li>
+    </ul>
+    <p><strong>Algorithm Steps:</strong></p>
+    <ol>
+        <li>Define <code>p</code> as an <code>array</code> of dimensions. If there are <code>n</code> matrices <code>A1, ..., An</code>, then <code>p</code> will have <code>n+1</code> elements, where <code>Ai</code> has dimensions <code>p[i-1] x p[i]</code>.</li>
+        <li>Create a 2D <code>dp</code> table <code>m[n][n]</code> to store minimum costs. Initialize <code>m[i][i] = 0</code>.</li>
+        <li>Iterate <code>L</code> (chain length) from 2 to <code>n</code>.</li>
+        <li>For each <code>L</code>, iterate <code>i</code> (start of chain) from 1 to <code>n - L + 1</code>.</li>
+        <li>Calculate <code>j = i + L - 1</code> (end of chain).</li>
+        <li>For each <code>m[i][j]</code>, find the minimum cost by trying all possible split points <code>k</code> between <code>i</code> and <code>j</code>.</li>
+        <li>The minimum number of scalar multiplications will be <code>m[1][n]</code>.</li>
+    </ol>
+    <p><strong>Time Complexity:</strong> <code>O(N^3)</code>, where <code>N</code> is the number of matrices. This comes from three nested loops (<code>L</code>, <code>i</code>, <code>k</code>).</p>
+    <p><strong>Space Complexity:</strong> <code>O(N^2)</code> for the <code>m</code> table. An additional <code>s</code> table of <code>O(N^2)</code> is often used to store the optimal split points for reconstructing the parenthesization.</p>
+</div>
+
+<div id="code-implementations">
+    <pre data-lang="python"><code class="language-python">import sys
+
+def matrix_chain_order(dims):
+    n = len(dims) - 1 # Number of matrices
+    
+    # m[i][j] stores the minimum number of scalar multiplications
+    # needed to compute the matrix A[i]...A[j]
+    m = [[0 for _ in range(n)] for _ in range(n)]
+    
+    # s[i][j] stores the index k where the optimal split occurs
+    s = [[0 for _ in range(n)] for _ in range(n)]
+
+    # chain length L from 2 to n
+    for L in range(2, n + 1):
+        for i in range(n - L + 1):
+            j = i + L - 1
+            m[i][j] = sys.maxsize # Initialize with a very large value
+
+            # Try all possible split points k
+            for k in range(i, j):
+                # cost = cost of (A[i]...A[k]) + cost of (A[k+1]...A[j]) + cost of multiplying results
+                cost = m[i][k] + m[k + 1][j] + dims[i] <em> dims[k + 1] </em> dims[j + 1]
+                if cost < m[i][j]:
+                    m[i][j] = cost
+                    s[i][j] = k # Store the split point
+
+    return m[0][n-1], s # Return min multiplications and split points
+
+def print_optimal_parenthesization(s, i, j, names):
+    if i == j:
+        return names[i]
+    else:
+        return "(" + print_optimal_parenthesization(s, i, s[i][j], names) + \
+               print_optimal_parenthesization(s, s[i][j] + 1, j, names) + ")"
+
+# Example
+# A1: 10x100, A2: 100x5, A3: 5x50, A4: 50x1
+# Dimensions array: p = [p0, p1, p2, p3, p4] => A1(p0xp1), A2(p1xp2), ...
+# So, dims = [10, 100, 5, 50, 1]
+# min_mults, splits = matrix_chain_order(dims)
+# print("Minimum scalar multiplications:", min_mults) # Expected: 1550
+# # To reconstruct parenthesization:
+# matrix_names = ["A1", "A2", "A3", "A4"]
+# print("Optimal Parenthesization:", print_optimal_parenthesization(splits, 0, len(dims) - 2, matrix_names)) # Expected: ((A1(A2A3))A4)
+</code></pre>
+
+    <pre data-lang="javascript"><code class="language-javascript">function matrixChainOrder(dims) {
+    const n = dims.length - 1; // Number of matrices
+    
+    // m[i][j] stores the minimum number of scalar multiplications
+    // needed to compute the matrix A[i]...A[j]
+    const m = Array(n).fill(0).map(() => Array(n).fill(0));
+    
+    // s[i][j] stores the index k where the optimal split occurs
+    const s = Array(n).fill(0).map(() => Array(n).fill(0));
+
+    // chain length L from 2 to n
+    for (let L = 2; L <= n; L++) {
+        for (let i = 0; i <= n - L; i++) {
+            const j = i + L - 1;
+            m[i][j] = Infinity; // Initialize with a very large value
+
+            // Try all possible split points k
+            for (let k = i; k < j; k++) {
+                // cost = cost of (A[i]...A[k]) + cost of (A[k+1]...A[j]) + cost of multiplying results
+                const cost = m[i][k] + m[k + 1][j] + dims[i] <em> dims[k + 1] </em> dims[j + 1];
+                if (cost < m[i][j]) {
+                    m[i][j] = cost;
+                    s[i][j] = k; // Store the split point
+                }
+            }
+        }
+    }
+
+    return { minMults: m[0][n-1], splits: s };
+}
+
+function printOptimalParenthesization(s, i, j, names) {
+    if (i === j) {
+        return names[i];
+    } else {
+        return "(" + printOptimalParenthesization(s, i, s[i][j], names) +
+               printOptimalParenthesization(s, s[i][j] + 1, j, names) + ")";
+    }
+}
+
+// const dims = [10, 100, 5, 50, 1]; // A1(10x100), A2(100x5), A3(5x50), A4(50x1)
+// const { minMults, splits } = matrixChainOrder(dims);
+// console.log("Minimum scalar multiplications:", minMults); // Expected: 1550
+// const matrixNames = ["A1", "A2", "A3", "A4"];
+// console.log("Optimal Parenthesization:", printOptimalParenthesization(splits, 0, dims.length - 2, matrixNames)); // Expected: ((A1(A2A3))A4)
+</code></pre>
+
+    <pre data-lang="typescript"><code class="language-typescript">function matrixChainOrderTS(dims: number[]): { minMults: number; splits: number[][] } {
+    const n = dims.length - 1; // Number of matrices
+    
+    // m[i][j] stores the minimum number of scalar multiplications
+    // needed to compute the matrix A[i]...A[j]
+    const m: number[][] = Array(n).fill(0).map(() => Array(n).fill(0));
+    
+    // s[i][j] stores the index k where the optimal split occurs
+    const s: number[][] = Array(n).fill(0).map(() => Array(n).fill(0));
+
+    // chain length L from 2 to n
+    for (let L = 2; L <= n; L++) {
+        for (let i = 0; i <= n - L; i++) {
+            const j = i + L - 1;
+            m[i][j] = Infinity; // Initialize with a very large value
+
+            // Try all possible split points k
+            for (let k = i; k < j; k++) {
+                // cost = cost of (A[i]...A[k]) + cost of (A[k+1]...A[j]) + cost of multiplying results
+                const cost = m[i][k] + m[k + 1][j] + dims[i] <em> dims[k + 1] </em> dims[j + 1];
+                if (cost < m[i][j]) {
+                    m[i][j] = cost;
+                    s[i][j] = k; // Store the split point
+                }
+            }
+        }
+    }
+
+    return { minMults: m[0][n-1], splits: s };
+}
+
+function printOptimalParenthesizationTS(s: number[][], i: number, j: number, names: string[]): string {
+    if (i === j) {
+        return names[i];
+    } else {
+        return "(" + printOptimalParenthesizationTS(s, i, s[i][j], names) +
+               printOptimalParenthesizationTS(s, s[i][j] + 1, j, names) + ")";
+    }
+}
+
+// const dimsTS = [10, 100, 5, 50, 1]; // A1(10x100), A2(100x5), A3(5x50), A4(50x1)
+// const { minMults: minMultsTS, splits: splitsTS } = matrixChainOrderTS(dimsTS);
+// console.log("Minimum scalar multiplications:", minMultsTS); // Expected: 1550
+// const matrixNamesTS = ["A1", "A2", "A3", "A4"];
+// console.log("Optimal Parenthesization:", printOptimalParenthesizationTS(splitsTS, 0, dimsTS.length - 2, matrixNamesTS)); // Expected: ((A1(A2A3))A4)
+</code></pre>
+    
+    <pre data-lang="cpp"><code class="language-cpp">#include &lt;vector&gt;
+#include &lt;iostream&gt;
+#include &lt;algorithm&gt; // For std::min
+#include &lt;limits&gt;    // For std::numeric_limits
+
+std::pair&lt;int, std::vector&lt;std::vector&lt;int&gt;&gt;&gt; matrixChainOrder(const std::vector&lt;int&gt;& dims) {
+    int n = dims.size() - 1; // Number of matrices
+    
+    // m[i][j] stores the minimum number of scalar multiplications
+    // needed to compute the matrix A[i]...A[j]
+    std::vector&lt;std::vector&lt;int&gt;&gt; m(n, std::vector&lt;int&gt;(n, 0));
+    
+    // s[i][j] stores the index k where the optimal split occurs
+    std::vector&lt;std::vector&lt;int&gt;&gt; s(n, std::vector&lt;int&gt;(n, 0));
+
+    // chain length L from 2 to n
+    for (int L = 2; L <= n; L++) {
+        for (int i = 0; i <= n - L; i++) {
+            int j = i + L - 1;
+            m[i][j] = std::numeric_limits&lt;int&gt;::max(); // Initialize with a very large value
+
+            // Try all possible split points k
+            for (int k = i; k &lt; j; k++) {
+                // cost = cost of (A[i]...A[k]) + cost of (A[k+1]...A[j]) + cost of multiplying results
+                int cost = m[i][k] + m[k + 1][j] + dims[i] <em> dims[k + 1] </em> dims[j + 1];
+                if (cost &lt; m[i][j]) {
+                    m[i][j] = cost;
+                    s[i][j] = k; // Store the split point
+                }
+            }
+        }
+    }
+
+    return {m[0][n-1], s};
+}
+
+void printOptimalParenthesization(const std::vector&lt;std::vector&lt;int&gt;&gt;& s, int i, int j, const std::vector&lt;std::string&gt;& names) {
+    if (i == j) {
+        std::cout &lt;&lt; names[i];
+    } else {
+        std::cout &lt;&lt; "(";
+        printOptimalParenthesization(s, i, s[i][j], names);
+        printOptimalParenthesization(s, s[i][j] + 1, j, names);
+        std::cout &lt;&lt; ")";
+    }
+}
+
+// int main() {
+//     // A1: 10x100, A2: 100x5, A3: 5x50, A4: 50x1
+//     // Dimensions array: p = [p0, p1, p2, p3, p4] => A1(p0xp1), A2(p1xp2), ...
+//     std::vector&lt;int&gt; dims = {10, 100, 5, 50, 1};
+//     std::vector&lt;std::string&gt; matrix_names = {"A1", "A2", "A3", "A4"};
+
+//     auto result = matrixChainOrder(dims);
+//     int min_mults = result.first;
+//     std::vector&lt;std::vector&lt;int&gt;&gt; splits = result.second;
+
+//     std::cout &lt;&lt; "Minimum scalar multiplications: " &lt;&lt; min_mults &lt;&lt; std::endl; // 1550
+//     std::cout &lt;&lt; "Optimal Parenthesization: ";
+//     printOptimalParenthesization(splits, 0, dims.size() - 2, matrix_names); // ((A1(A2A3))A4)
+//     std::cout &lt;&lt; std::endl;
+//     return 0;
+// }
+</code></pre>
+    
+    <pre data-lang="go"><code class="language-go">package main
+
+import (
+    "fmt"
+    "math"
+    "strings"
+)
+
+func matrixChainOrder(dims []int) (int, [][]int) {
+    n := len(dims) - 1 // Number of matrices
+    
+    // m[i][j] stores the minimum number of scalar multiplications
+    // needed to compute the matrix A[i]...A[j]
+    m := make([][]int, n)
+    for i := range m {
+        m[i] = make([]int, n)
+    }
+    
+    // s[i][j] stores the index k where the optimal split occurs
+    s := make([][]int, n)
+    for i := range s {
+        s[i] = make([]int, n)
+    }
+
+    // chain length L from 2 to n
+    for L := 2; L &lt;= n; L++ {
+        for i := 0; i &lt;= n - L; i++ {
+            j := i + L - 1
+            m[i][j] = math.MaxInt32 // Initialize with a very large value
+
+            // Try all possible split points k
+            for k := i; k &lt; j; k++ {
+                // cost = cost of (A[i]...A[k]) + cost of (A[k+1]...A[j]) + cost of multiplying results
+                cost := m[i][k] + m[k+1][j] + dims[i]<em>dims[k+1]</em>dims[j+1]
+                if cost &lt; m[i][j] {
+                    m[i][j] = cost
+                    s[i][j] = k // Store the split point
+                }
+            }
+        }
+    }
+
+    return m[0][n-1], s
+}
+
+func printOptimalParenthesization(s [][]int, i, j int, names []string) string {
+    if i == j {
+        return names[i]
+    } else {
+        var builder strings.Builder
+        builder.WriteString("(")
+        builder.WriteString(printOptimalParenthesization(s, i, s[i][j], names))
+        builder.WriteString(printOptimalParenthesization(s, s[i][j]+1, j, names))
+        builder.WriteString(")")
+        return builder.String()
+    }
+}
+
+// func main() {
+//     // A1: 10x100, A2: 100x5, A3: 5x50, A4: 50x1
+//     // Dimensions array: p = [p0, p1, p2, p3, p4] => A1(p0xp1), A2(p1xp2), ...
+//     dims := []int{10, 100, 5, 50, 1}
+//     matrixNames := []string{"A1", "A2", "A3", "A4"}
+
+//     minMults, splits := matrixChainOrder(dims)
+//     fmt.Println("Minimum scalar multiplications:", minMults) // 1550
+//     fmt.Print("Optimal Parenthesization: ")
+//     fmt.Println(printOptimalParenthesization(splits, 0, len(dims)-2, matrixNames)) // ((A1(A2A3))A4)
+// }
+</code></pre>
+    
+    <pre data-lang="d"><code class="language-d">import std.stdio;
+import std.array;
+import std.algorithm; // For std.algorithm.min
+import std.string;
+import std.conv;
+
+Tuple!(int, "minMults", int[][], "splits") matrixChainOrder(int[] dims) {
+    auto n = dims.length - 1; // Number of matrices
+    
+    // m[i][j] stores the minimum number of scalar multiplications
+    // needed to compute the matrix A[i]...A[j]
+    auto m = new int[n][n];
+    
+    // s[i][j] stores the index k where the optimal split occurs
+    auto s = new int[n][n];
+
+    // Initialize m[i][i] to 0 for single matrices
+    foreach (i; 0 .. n) {
+        m[i][i] = 0;
+    }
+
+    // chain length L from 2 to n
+    foreach (L; 2 .. n + 1) {
+        foreach (i; 0 .. n - L + 1) {
+            auto j = i + L - 1;
+            m[i][j] = int.max; // Initialize with a very large value
+
+            // Try all possible split points k
+            foreach (k; i .. j) {
+                // cost = cost of (A[i]...A[k]) + cost of (A[k+1]...A[j]) + cost of multiplying results
+                auto cost = m[i][k] + m[k + 1][j] + dims[i] <em> dims[k + 1] </em> dims[j + 1];
+                if (cost &lt; m[i][j]) {
+                    m[i][j] = cost;
+                    s[i][j] = k; // Store the split point
+                }
+            }
+        }
+    }
+
+    return typeof(return)(m[0][n-1], s);
+}
+
+string printOptimalParenthesization(int[][] s, int i, int j, string[] names) {
+    if (i == j) {
+        return names[i];
+    } else {
+        return "(" ~ printOptimalParenthesization(s, i, s[i][j], names) ~
+               printOptimalParenthesization(s, s[i][j] + 1, j, names) ~ ")";
+    }
+}
+
+// void main() {
+//     // A1: 10x100, A2: 100x5, A3: 5x50, A4: 50x1
+//     // Dimensions array: p = [p0, p1, p2, p3, p4] => A1(p0xp1), A2(p1xp2), ...
+//     auto dims = [10, 100, 5, 50, 1];
+//     string[] matrixNames = ["A1", "A2", "A3", "A4"];
+
+//     auto result = matrixChainOrder(dims);
+//     int minMults = result.minMults;
+//     int[][] splits = result.splits;
+
+//     writeln("Minimum scalar multiplications: ", minMults); // 1550
+//     write("Optimal Parenthesization: ");
+//     writeln(printOptimalParenthesization(splits, 0, dims.length - 2, matrixNames)); // ((A1(A2A3))A4)
+// }
+</code></pre>
+    
+</div>
+
+<div id="code-explanation-content"><div class="markdown-content">
+    <h3>Code Walkthrough</h3>
+    <p>The <code>Matrix Chain Multiplication</code> algorithm uses <code>dynamic programming</code> to compute the minimum scalar multiplications by breaking the problem into overlapping subproblems.</p>
+    <div class="explanation-fence">
+<strong>Input (<code>dims</code> array):</strong>
+<ul>
+    <li>The dimensions of <code>n</code> matrices <code>A1, ..., An</code> are represented by an <code>array p</code> of size <code>n+1</code>.</li>
+    <li><code>Matrix Ai</code> has dimensions <code>p[i-1] x p[i]</code>.</li>
+    <li>For example, if <code>dims = [10, 100, 5, 50, 1]</code>, then <code>A1</code> is 10x100, <code>A2</code> is 100x5, <code>A3</code> is 5x50, <code>A4</code> is 50x1.</li>
+</ul>
+<br>
+<strong>Initialization:</strong>
+<ul>
+    <li><code>m[i][j]</code>: A 2D array (DP table) where <code>m[i][j]</code> stores the minimum scalar multiplications needed to multiply the chain of matrices from <code>A_i</code> to <code>A_j</code>.</li>
+    <li><code>s[i][j]</code>: An additional 2D array to store the optimal split point <code>k</code> for the chain <code>A_i...A_j</code>. This is used to reconstruct the optimal parenthesization.</li>
+    <li>All <code>m[i][i]</code> are initialized to 0, as multiplying a single matrix requires no scalar multiplications.</li>
+</ul>
+<br>
+<strong>Filling the DP Table (<code>m</code> array):</strong>
+<ul>
+    <li>The algorithm iterates through <code>L</code>, the chain <code>length</code>, from 2 to <code>n</code>.</li>
+    <li>For each <code>length L</code>, it iterates through <code>i</code>, the starting <code>index</code> of the chain (from 0 to <code>n - L</code>).</li>
+    <li><code>j</code> is calculated as <code>i + L - 1</code>, the ending <code>index</code> of the current chain.</li>
+    <li>For each <code>chain A_i...A_j</code>, <code>m[i][j]</code> is initially set to infinity.</li>
+    <li>The inner loop iterates through <code>k</code>, all possible split points for the chain <code>A_i...A_j</code> (<code>i <= k < j</code>).</li>
+    <li>The cost for a split at <code>k</code> is calculated as <code>m[i][k] + m[k+1][j] + dims[i]<em>dims[k+1]</em>dims[j+1]</code>.
+        <ul>
+            <li><code>m[i][k]</code> is the cost to multiply <code>A_i...A_k</code>.</li>
+            <li><code>m[k+1][j]</code> is the cost to multiply <code>A_k+1...A_j</code>.</li>
+            <li><code>dims[i]<em>dims[k+1]</em>dims[j+1]</code> is the cost to multiply the two resulting matrices (dimensions <code>dims[i] x dims[k+1]</code> and <code>dims[k+1] x dims[j+1]</code>).</li>
+        </ul>
+    </li>
+    <li>If this <code>cost</code> is less than the current <code>m[i][j]</code>, <code>m[i][j]</code> is updated, and the split point <code>k</code> is stored in <code>s[i][j]</code>.</li>
+</ul>
+<br>
+<strong>Result:</strong>
+<ul>
+    <li>The minimum scalar multiplications for the entire chain <code>A_0...A_n-1</code> is <code>m[0][n-1]</code>.</li>
+    <li>The <code>print_optimal_parenthesization</code> function uses the <code>s</code> table to recursively reconstruct the optimal parenthesization.</li>
+</ul>
+    </div></div>
+</div>
+
+<div id="application-content"><div class="markdown-content">
+    <h3>Application</h3>
+    <p>The <code>Matrix Chain Multiplication</code> algorithm is a foundational problem in <code>dynamic programming</code> with applications in various fields:</p>
+    <ul>
+        <li><strong>Compiler Optimization:</strong> Optimizing the order of matrix multiplications in mathematical expressions within programming languages. Compilers can use this to generate more efficient code.</li>
+        <li><strong>Computer Graphics:</strong> In 3D graphics, transformations (translation, rotation, scaling) are often represented as matrices. Optimizing the order of these matrix multiplications can significantly improve rendering performance.</li>
+        <li><strong>Scientific Computing:</strong> Any field involving extensive matrix algebra, such as physics, engineering, and data science, can benefit from optimizing matrix multiplication sequences for performance.</li>
+        <li><strong>Bioinformatics:</strong> Some algorithms, particularly in sequence alignment, might involve operations that can be modeled as matrix chain multiplications, where the goal is to reduce computational cost.</li>
+    </ul>
+    </p>
+</div></div>

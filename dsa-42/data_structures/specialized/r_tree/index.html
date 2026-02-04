@@ -1,0 +1,287 @@
+<!doctype html><html lang=en-us><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>R-Tree | SDET Interview Preparation Kit</title><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/css/style.css><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/css/terminal.css><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel=stylesheet><link rel=stylesheet href=https://notxkcd.github.io/sdet-prep-site/lib/katex/katex.min.css><script defer src=https://notxkcd.github.io/sdet-prep-site/lib/katex/katex.min.js></script><script defer src=https://notxkcd.github.io/sdet-prep-site/lib/katex/contrib/auto-render.min.js onload=renderMathInElement(document.body)></script><script>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1}]})})</script></head><body id=theme-body><button id=theme-toggle>Switch Theme</button><header><nav><ul><li><a href=https://notxkcd.github.io/sdet-prep-site/>Index</a></li></ul></nav><div class=site-breadcrumb><a href=https://notxkcd.github.io/sdet-prep-site/>Home</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/>SDET Interview Dashboard</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/>42 Algorithms & 42 Data Structures</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/data_structures/>Data Structures</a>
+<span>/</span> <a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/data_structures/specialized/>Specialized</a>
+<span>/</span> R-Tree</div></header><main><article><h1>R-Tree</h1><div class=content-body style=margin-top:2rem><p>An R-Tree is a tree data structure used for spatial access methods, i.e., for organizing spatial data (e.g., rectangles, polygons) in dynamic applications where the objects change frequently. It&rsquo;s particularly well-suited for two-dimensional data, such as geographical coordinates or bounding boxes of objects in an image.</p><p>R-Trees are used in geographical information systems (GIS), computer-aided design (CAD), and database systems for efficient spatial queries like &ldquo;find all restaurants within this map area.&rdquo;</p><h2 id=how-it-works>How it Works</h2><h3 id=how-it-works-expanded>How it Works (Expanded)</h3><p>Unlike K-D trees or Quadtrees which subdivide space based on fixed rules, R-Trees group nearby objects into minimum bounding rectangles (MBRs). MBRs for child nodes are then grouped into larger MBRs for parent nodes, and so on, up to the root.</p><hr><p>Key Concept: Minimum Bounding Rectangles (MBRs)</p><p>[ MBR for Node A ]
+[ +&mdash;&mdash;&mdash;&mdash;&mdash;+ ]
+[ | MBR for NWA | ]
+[ | +&mdash;+ +&mdash;+ | ]
+[ | |obj| |obj| | ]
+[ | +&mdash;+ +&mdash;+ | ]
+[ | +&mdash;+ +&mdash;+ | ]
+[ | |obj| |obj| | ]
+[ | +&mdash;+ +&mdash;+ | ]
+[ +&mdash;&mdash;&mdash;&mdash;&mdash;+ ]
+[ MBR for Node B ]</p><p><a href=#code-walkthrough>Jump to Code Walkthrough</a></p><h2 id=implementation>Implementation</h2><h3 id=python>Python</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># Simplified R-Tree concept - full implementation is complex and extensive.</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># This demonstrates the idea of MBR and hierarchical structure.</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>class</span> <span style=color:#cb4b16>Rect</span>:
+</span></span><span style=display:flex><span>    <span style=color:#859900>def</span> <span style=color:#268bd2>__init__</span>(<span style=color:#cb4b16>self</span>, <span style=color:#268bd2>x_min</span>, <span style=color:#268bd2>y_min</span>, <span style=color:#268bd2>x_max</span>, <span style=color:#268bd2>y_max</span>):
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>x_min</span> = <span style=color:#268bd2>x_min</span>
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>y_min</span> = <span style=color:#268bd2>y_min</span>
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>x_max</span> = <span style=color:#268bd2>x_max</span>
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>y_max</span> = <span style=color:#268bd2>y_max</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>def</span> <span style=color:#268bd2>intersects</span>(<span style=color:#cb4b16>self</span>, <span style=color:#268bd2>other_rect</span>):
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#859900>not</span> (<span style=color:#cb4b16>self</span>.<span style=color:#268bd2>x_max</span> &lt; <span style=color:#268bd2>other_rect</span>.<span style=color:#268bd2>x_min</span> <span style=color:#859900>or</span>
+</span></span><span style=display:flex><span>                    <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>x_min</span> &gt; <span style=color:#268bd2>other_rect</span>.<span style=color:#268bd2>x_max</span> <span style=color:#859900>or</span>
+</span></span><span style=display:flex><span>                    <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>y_max</span> &lt; <span style=color:#268bd2>other_rect</span>.<span style=color:#268bd2>y_min</span> <span style=color:#859900>or</span>
+</span></span><span style=display:flex><span>                    <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>y_min</span> &gt; <span style=color:#268bd2>other_rect</span>.<span style=color:#268bd2>y_max</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>def</span> <span style=color:#268bd2>contains</span>(<span style=color:#cb4b16>self</span>, <span style=color:#268bd2>other_rect</span>):
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> (<span style=color:#cb4b16>self</span>.<span style=color:#268bd2>x_min</span> &lt;= <span style=color:#268bd2>other_rect</span>.<span style=color:#268bd2>x_min</span> <span style=color:#859900>and</span>
+</span></span><span style=display:flex><span>                <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>y_min</span> &lt;= <span style=color:#268bd2>other_rect</span>.<span style=color:#268bd2>y_min</span> <span style=color:#859900>and</span>
+</span></span><span style=display:flex><span>                <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>x_max</span> &gt;= <span style=color:#268bd2>other_rect</span>.<span style=color:#268bd2>x_max</span> <span style=color:#859900>and</span>
+</span></span><span style=display:flex><span>                <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>y_max</span> &gt;= <span style=color:#268bd2>other_rect</span>.<span style=color:#268bd2>y_max</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>def</span> <span style=color:#268bd2>enlarge</span>(<span style=color:#cb4b16>self</span>, <span style=color:#268bd2>other_rect</span>):
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>x_min</span> = <span style=color:#cb4b16>min</span>(<span style=color:#cb4b16>self</span>.<span style=color:#268bd2>x_min</span>, <span style=color:#268bd2>other_rect</span>.<span style=color:#268bd2>x_min</span>)
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>y_min</span> = <span style=color:#cb4b16>min</span>(<span style=color:#cb4b16>self</span>.<span style=color:#268bd2>y_min</span>, <span style=color:#268bd2>other_rect</span>.<span style=color:#268bd2>y_min</span>)
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>x_max</span> = <span style=color:#cb4b16>max</span>(<span style=color:#cb4b16>self</span>.<span style=color:#268bd2>x_max</span>, <span style=color:#268bd2>other_rect</span>.<span style=color:#268bd2>x_max</span>)
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>y_max</span> = <span style=color:#cb4b16>max</span>(<span style=color:#cb4b16>self</span>.<span style=color:#268bd2>y_max</span>, <span style=color:#268bd2>other_rect</span>.<span style=color:#268bd2>y_max</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># In a real R-Tree, nodes would have multiple entries (MBRs and pointers)</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># and complex split algorithms. This is highly simplified for conceptual understanding.</span>
+</span></span><span style=display:flex><span><span style=color:#859900>class</span> <span style=color:#cb4b16>RTreeNode</span>:
+</span></span><span style=display:flex><span>    <span style=color:#859900>def</span> <span style=color:#268bd2>__init__</span>(<span style=color:#cb4b16>self</span>, <span style=color:#268bd2>mbr</span>, <span style=color:#268bd2>is_leaf</span>=<span style=color:#859900;font-weight:700>True</span>):
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>mbr</span> = <span style=color:#268bd2>mbr</span> <span style=color:#93a1a1;font-style:italic># Minimum Bounding Rectangle</span>
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>is_leaf</span> = <span style=color:#268bd2>is_leaf</span>
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>children</span> = [] <span style=color:#93a1a1;font-style:italic># List of child RTreeNodes or actual data objects (Rects)</span>
+</span></span><span style=display:flex><span>        <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>capacity</span> = <span style=color:#2aa198;font-weight:700>4</span> <span style=color:#93a1a1;font-style:italic># Max entries per node (simplified)</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>def</span> <span style=color:#268bd2>insert</span>(<span style=color:#cb4b16>self</span>, <span style=color:#268bd2>rect</span>):
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic># Very simplified insert logic</span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>is_leaf</span>:
+</span></span><span style=display:flex><span>            <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>children</span>.<span style=color:#268bd2>append</span>(<span style=color:#268bd2>rect</span>)
+</span></span><span style=display:flex><span>            <span style=color:#93a1a1;font-style:italic># In a real R-Tree, if capacity is exceeded, node splits.</span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>else</span>:
+</span></span><span style=display:flex><span>            <span style=color:#93a1a1;font-style:italic># Choose best child for insertion (least enlargement or overlap)</span>
+</span></span><span style=display:flex><span>            <span style=color:#93a1a1;font-style:italic># This is complex in full R-Tree, simplified to just first child.</span>
+</span></span><span style=display:flex><span>            <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>children</span>[<span style=color:#2aa198;font-weight:700>0</span>].<span style=color:#268bd2>insert</span>(<span style=color:#268bd2>rect</span>)
+</span></span><span style=display:flex><span>            <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>mbr</span>.<span style=color:#268bd2>enlarge</span>(<span style=color:#268bd2>rect</span>) <span style=color:#93a1a1;font-style:italic># Enlarge parent MBR</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900>def</span> <span style=color:#268bd2>query</span>(<span style=color:#cb4b16>self</span>, <span style=color:#268bd2>query_rect</span>, <span style=color:#268bd2>found_items</span>=<span style=color:#859900;font-weight:700>None</span>):
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> <span style=color:#268bd2>found_items</span> <span style=color:#859900>is</span> <span style=color:#859900;font-weight:700>None</span>:
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>found_items</span> = []
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> <span style=color:#859900>not</span> <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>mbr</span>.<span style=color:#268bd2>intersects</span>(<span style=color:#268bd2>query_rect</span>):
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span> <span style=color:#268bd2>found_items</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>is_leaf</span>:
+</span></span><span style=display:flex><span>            <span style=color:#859900>for</span> <span style=color:#268bd2>item_rect</span> <span style=color:#859900>in</span> <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>children</span>:
+</span></span><span style=display:flex><span>                <span style=color:#859900>if</span> <span style=color:#268bd2>query_rect</span>.<span style=color:#268bd2>intersects</span>(<span style=color:#268bd2>item_rect</span>): <span style=color:#93a1a1;font-style:italic># Assuming item_rects are also Rect objects</span>
+</span></span><span style=display:flex><span>                    <span style=color:#268bd2>found_items</span>.<span style=color:#268bd2>append</span>(<span style=color:#268bd2>item_rect</span>)
+</span></span><span style=display:flex><span>        <span style=color:#859900>else</span>:
+</span></span><span style=display:flex><span>            <span style=color:#859900>for</span> <span style=color:#268bd2>child_node</span> <span style=color:#859900>in</span> <span style=color:#cb4b16>self</span>.<span style=color:#268bd2>children</span>:
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>child_node</span>.<span style=color:#268bd2>query</span>(<span style=color:#268bd2>query_rect</span>, <span style=color:#268bd2>found_items</span>)
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>found_items</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># Example Usage (highly simplified):</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># data_rects = [</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#     Rect(0,0,1,1), Rect(1,1,2,2), Rect(5,5,6,6), Rect(6,6,7,7)</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># ]</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># root_mbr = Rect(0,0,10,10)</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># r_tree = RTreeNode(root_mbr, is_leaf=False) # Root is usually not a leaf</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># # For conceptual demo, manually create a child</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># child1_mbr = Rect(0,0,3,3)</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># child1 = RTreeNode(child1_mbr, is_leaf=True)</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># child1.insert(data_rects[0])</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># child1.insert(data_rects[1])</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># r_tree.children.append(child1)</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># r_tree.mbr.enlarge(child1_mbr) # Update root MBR</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># query_area = Rect(0.5, 0.5, 1.5, 1.5)</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># results = r_tree.query(query_area)</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic># for r in results:</span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#     print(f&#34;Found: ({r.x_min},{r.y_min})-({r.x_max},{r.y_max})&#34;)</span>
+</span></span></code></pre></div><h3 id=javascript>Javascript</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// Simplified R-Tree concept - full implementation is complex and extensive.
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#859900>class</span> <span style=color:#268bd2>Rect</span> {
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>constructor</span>(<span style=color:#268bd2>xMin</span>, <span style=color:#268bd2>yMin</span>, <span style=color:#268bd2>xMax</span>, <span style=color:#268bd2>yMax</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>xMin</span> = <span style=color:#268bd2>xMin</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>yMin</span> = <span style=color:#268bd2>yMin</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>xMax</span> = <span style=color:#268bd2>xMax</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>yMax</span> = <span style=color:#268bd2>yMax</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>intersects</span>(<span style=color:#268bd2>otherRect</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> !(
+</span></span><span style=display:flex><span>            <span style=color:#859900>this</span>.<span style=color:#268bd2>xMax</span> &lt; <span style=color:#268bd2>otherRect</span>.<span style=color:#268bd2>xMin</span> ||
+</span></span><span style=display:flex><span>            <span style=color:#859900>this</span>.<span style=color:#268bd2>xMin</span> &gt; <span style=color:#268bd2>otherRect</span>.<span style=color:#268bd2>xMax</span> ||
+</span></span><span style=display:flex><span>            <span style=color:#859900>this</span>.<span style=color:#268bd2>yMax</span> &lt; <span style=color:#268bd2>otherRect</span>.<span style=color:#268bd2>yMin</span> ||
+</span></span><span style=display:flex><span>            <span style=color:#859900>this</span>.<span style=color:#268bd2>yMin</span> &gt; <span style=color:#268bd2>otherRect</span>.<span style=color:#268bd2>yMax</span>
+</span></span><span style=display:flex><span>        );
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>contains</span>(<span style=color:#268bd2>otherRect</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> (
+</span></span><span style=display:flex><span>            <span style=color:#859900>this</span>.<span style=color:#268bd2>xMin</span> &lt;= <span style=color:#268bd2>otherRect</span>.<span style=color:#268bd2>xMin</span> &amp;&amp;
+</span></span><span style=display:flex><span>            <span style=color:#859900>this</span>.<span style=color:#268bd2>yMin</span> &lt;= <span style=color:#268bd2>otherRect</span>.<span style=color:#268bd2>yMin</span> &amp;&amp;
+</span></span><span style=display:flex><span>            <span style=color:#859900>this</span>.<span style=color:#268bd2>xMax</span> &gt;= <span style=color:#268bd2>otherRect</span>.<span style=color:#268bd2>xMax</span> &amp;&amp;
+</span></span><span style=display:flex><span>            <span style=color:#859900>this</span>.<span style=color:#268bd2>yMax</span> &gt;= <span style=color:#268bd2>otherRect</span>.<span style=color:#268bd2>yMax</span>
+</span></span><span style=display:flex><span>        );
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>enlarge</span>(<span style=color:#268bd2>otherRect</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>xMin</span> = <span style=color:#cb4b16>Math</span>.<span style=color:#268bd2>min</span>(<span style=color:#859900>this</span>.<span style=color:#268bd2>xMin</span>, <span style=color:#268bd2>otherRect</span>.<span style=color:#268bd2>xMin</span>);
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>yMin</span> = <span style=color:#cb4b16>Math</span>.<span style=color:#268bd2>min</span>(<span style=color:#859900>this</span>.<span style=color:#268bd2>yMin</span>, <span style=color:#268bd2>otherRect</span>.<span style=color:#268bd2>yMin</span>);
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>xMax</span> = <span style=color:#cb4b16>Math</span>.<span style=color:#268bd2>max</span>(<span style=color:#859900>this</span>.<span style=color:#268bd2>xMax</span>, <span style=color:#268bd2>otherRect</span>.<span style=color:#268bd2>xMax</span>);
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>yMax</span> = <span style=color:#cb4b16>Math</span>.<span style=color:#268bd2>max</span>(<span style=color:#859900>this</span>.<span style=color:#268bd2>yMax</span>, <span style=color:#268bd2>otherRect</span>.<span style=color:#268bd2>yMax</span>);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#859900>class</span> <span style=color:#268bd2>RTreeNode</span> {
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>constructor</span>(<span style=color:#268bd2>mbr</span>, <span style=color:#268bd2>isLeaf</span> = <span style=color:#859900;font-weight:700>true</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>mbr</span> = <span style=color:#268bd2>mbr</span>; <span style=color:#93a1a1;font-style:italic>// Minimum Bounding Rectangle
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>isLeaf</span> = <span style=color:#268bd2>isLeaf</span>;
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>children</span> = [];
+</span></span><span style=display:flex><span>        <span style=color:#859900>this</span>.<span style=color:#268bd2>capacity</span> = <span style=color:#2aa198;font-weight:700>4</span>; <span style=color:#93a1a1;font-style:italic>// Simplified capacity
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>insert</span>(<span style=color:#268bd2>rect</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#93a1a1;font-style:italic>// Very simplified insert logic
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        <span style=color:#859900>if</span> (<span style=color:#859900>this</span>.<span style=color:#268bd2>isLeaf</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>this</span>.<span style=color:#268bd2>children</span>.<span style=color:#268bd2>push</span>(<span style=color:#268bd2>rect</span>);
+</span></span><span style=display:flex><span>        } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>            <span style=color:#93a1a1;font-style:italic>// In a real R-Tree, choose best child, potentially split nodes.
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#93a1a1;font-style:italic>// Simplified to just first child for concept.
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#859900>if</span> (<span style=color:#859900>this</span>.<span style=color:#268bd2>children</span>.<span style=color:#268bd2>length</span> &gt; <span style=color:#2aa198;font-weight:700>0</span>) {
+</span></span><span style=display:flex><span>                <span style=color:#859900>this</span>.<span style=color:#268bd2>children</span>[<span style=color:#2aa198;font-weight:700>0</span>].<span style=color:#268bd2>insert</span>(<span style=color:#268bd2>rect</span>);
+</span></span><span style=display:flex><span>            } <span style=color:#859900>else</span> { <span style=color:#93a1a1;font-style:italic>// If no children, make it a leaf and add
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>                <span style=color:#859900>this</span>.<span style=color:#268bd2>isLeaf</span> = <span style=color:#859900;font-weight:700>true</span>;
+</span></span><span style=display:flex><span>                <span style=color:#859900>this</span>.<span style=color:#268bd2>children</span>.<span style=color:#268bd2>push</span>(<span style=color:#268bd2>rect</span>);
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>            <span style=color:#859900>this</span>.<span style=color:#268bd2>mbr</span>.<span style=color:#268bd2>enlarge</span>(<span style=color:#268bd2>rect</span>);
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>query</span>(<span style=color:#268bd2>queryRect</span>, <span style=color:#268bd2>foundItems</span> = []) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (!<span style=color:#859900>this</span>.<span style=color:#268bd2>mbr</span>.<span style=color:#268bd2>intersects</span>(<span style=color:#268bd2>queryRect</span>)) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span> <span style=color:#268bd2>foundItems</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#859900>this</span>.<span style=color:#268bd2>isLeaf</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>for</span> (<span style=color:#859900>let</span> <span style=color:#268bd2>itemRect</span> <span style=color:#859900>of</span> <span style=color:#859900>this</span>.<span style=color:#268bd2>children</span>) {
+</span></span><span style=display:flex><span>                <span style=color:#859900>if</span> (<span style=color:#268bd2>queryRect</span>.<span style=color:#268bd2>intersects</span>(<span style=color:#268bd2>itemRect</span>)) {
+</span></span><span style=display:flex><span>                    <span style=color:#268bd2>foundItems</span>.<span style=color:#268bd2>push</span>(<span style=color:#268bd2>itemRect</span>);
+</span></span><span style=display:flex><span>                }
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>            <span style=color:#859900>for</span> (<span style=color:#859900>let</span> <span style=color:#268bd2>childNode</span> <span style=color:#859900>of</span> <span style=color:#859900>this</span>.<span style=color:#268bd2>children</span>) {
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>childNode</span>.<span style=color:#268bd2>query</span>(<span style=color:#268bd2>queryRect</span>, <span style=color:#268bd2>foundItems</span>);
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>foundItems</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// Example Usage (highly simplified - for conceptual understanding only):
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const dataRects = [
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>//     new Rect(0,0,1,1), new Rect(1,1,2,2), new Rect(5,5,6,6), new Rect(6,6,7,7)
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// ];
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const rootMbr = new Rect(0,0,10,10);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const rTree = new RTreeNode(rootMbr, false); // Root is usually not a leaf
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// // Manually creating a child node for demonstration
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const child1Mbr = new Rect(0,0,3,3);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const child1 = new RTreeNode(child1Mbr, true);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// child1.insert(dataRects[0]);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// child1.insert(dataRects[1]);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// rTree.children.push(child1);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// rTree.mbr.enlarge(child1Mbr);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const queryArea = new Rect(0.5, 0.5, 1.5, 1.5);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// const results = rTree.query(queryArea);
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// results.forEach(r =&gt; console.log(&lt;code&gt;Found: (${r.xMin},${r.yMin})-(${r.xMax},${r.yMax})&lt;/code&gt;));
+</span></span></span></code></pre></div><h3 id=cpp>Cpp</h3><div class=highlight><pre tabindex=0 style=color:#586e75;background-color:#eee8d5;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-cpp data-lang=cpp><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;iostream&gt;</span><span style=color:#93a1a1;font-style:italic>
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;vector&gt;</span><span style=color:#93a1a1;font-style:italic>
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>#include</span> <span style=color:#93a1a1;font-style:italic>&lt;algorithm&gt;</span><span style=color:#93a1a1;font-style:italic> </span><span style=color:#93a1a1;font-style:italic>// For std::min, std::max
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#859900>class</span> <span style=color:#cb4b16>Rect</span> {
+</span></span><span style=display:flex><span><span style=color:#859900>public</span>:
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>double</span> <span style=color:#268bd2>x_min</span>, <span style=color:#268bd2>y_min</span>, <span style=color:#268bd2>x_max</span>, <span style=color:#268bd2>y_max</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>Rect</span>(<span style=color:#859900;font-weight:700>double</span> <span style=color:#268bd2>x1</span>, <span style=color:#859900;font-weight:700>double</span> <span style=color:#268bd2>y1</span>, <span style=color:#859900;font-weight:700>double</span> <span style=color:#268bd2>x2</span>, <span style=color:#859900;font-weight:700>double</span> <span style=color:#268bd2>y2</span>) : <span style=color:#268bd2>x_min</span>(<span style=color:#268bd2>x1</span>), <span style=color:#268bd2>y_min</span>(<span style=color:#268bd2>y1</span>), <span style=color:#268bd2>x_max</span>(<span style=color:#268bd2>x2</span>), <span style=color:#268bd2>y_max</span>(<span style=color:#268bd2>y2</span>) {}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>bool</span> <span style=color:#268bd2>intersects</span>(<span style=color:#859900>const</span> <span style=color:#268bd2>Rect</span>&amp; <span style=color:#268bd2>other_rect</span>) <span style=color:#859900>const</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> !(<span style=color:#268bd2>x_max</span> &lt; <span style=color:#268bd2>other_rect</span>.<span style=color:#268bd2>x_min</span> ||
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>x_min</span> &gt; <span style=color:#268bd2>other_rect</span>.<span style=color:#268bd2>x_max</span> ||
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>y_max</span> &lt; <span style=color:#268bd2>other_rect</span>.<span style=color:#268bd2>y_min</span> ||
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>y_min</span> &gt; <span style=color:#268bd2>other_rect</span>.<span style=color:#268bd2>y_max</span>);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>bool</span> <span style=color:#268bd2>contains</span>(<span style=color:#859900>const</span> <span style=color:#268bd2>Rect</span>&amp; <span style=color:#268bd2>other_rect</span>) <span style=color:#859900>const</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> (<span style=color:#268bd2>x_min</span> &lt;= <span style=color:#268bd2>other_rect</span>.<span style=color:#268bd2>x_min</span> &amp;&amp;
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>y_min</span> &lt;= <span style=color:#268bd2>other_rect</span>.<span style=color:#268bd2>y_min</span> &amp;&amp;
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>x_max</span> &gt;= <span style=color:#268bd2>other_rect</span>.<span style=color:#268bd2>x_max</span> &amp;&amp;
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>y_max</span> &gt;= <span style=color:#268bd2>other_rect</span>.<span style=color:#268bd2>y_max</span>);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>void</span> <span style=color:#268bd2>enlarge</span>(<span style=color:#859900>const</span> <span style=color:#268bd2>Rect</span>&amp; <span style=color:#268bd2>other_rect</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>x_min</span> = <span style=color:#268bd2>std</span>::<span style=color:#268bd2>min</span>(<span style=color:#268bd2>x_min</span>, <span style=color:#268bd2>other_rect</span>.<span style=color:#268bd2>x_min</span>);
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>y_min</span> = <span style=color:#268bd2>std</span>::<span style=color:#268bd2>min</span>(<span style=color:#268bd2>y_min</span>, <span style=color:#268bd2>other_rect</span>.<span style=color:#268bd2>y_min</span>);
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>x_max</span> = <span style=color:#268bd2>std</span>::<span style=color:#268bd2>max</span>(<span style=color:#268bd2>x_max</span>, <span style=color:#268bd2>other_rect</span>.<span style=color:#268bd2>x_max</span>);
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>y_max</span> = <span style=color:#268bd2>std</span>::<span style=color:#268bd2>max</span>(<span style=color:#268bd2>y_max</span>, <span style=color:#268bd2>other_rect</span>.<span style=color:#268bd2>y_max</span>);
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>};
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic>// Simplified R-Tree Node (a full R-Tree is very complex)
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span><span style=color:#859900>class</span> <span style=color:#cb4b16>RTreeNode</span> {
+</span></span><span style=display:flex><span><span style=color:#859900>public</span>:
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>Rect</span> <span style=color:#268bd2>mbr</span>;
+</span></span><span style=display:flex><span>    <span style=color:#859900;font-weight:700>bool</span> <span style=color:#268bd2>is_leaf</span>;
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>std</span>::<span style=color:#268bd2>vector</span>&lt;<span style=color:#268bd2>RTreeNode</span>&lt;<span style=color:#268bd2>em</span>&gt;&gt; <span style=color:#268bd2>children_nodes</span>; <span style=color:#93a1a1;font-style:italic>// For internal nodes
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#268bd2>std</span>::<span style=color:#268bd2>vector</span>&lt;<span style=color:#268bd2>Rect</span>&gt; <span style=color:#268bd2>children_data</span>;     <span style=color:#93a1a1;font-style:italic>// For leaf nodes
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>capacity</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>RTreeNode</span>(<span style=color:#268bd2>Rect</span> <span style=color:#268bd2>bounding_rect</span>, <span style=color:#859900;font-weight:700>bool</span> <span style=color:#268bd2>leaf</span> = <span style=color:#cb4b16>true</span>, <span style=color:#859900;font-weight:700>int</span> <span style=color:#268bd2>cap</span> = <span style=color:#2aa198;font-weight:700>4</span>) :
+</span></span><span style=display:flex><span>        <span style=color:#268bd2>mbr</span>(<span style=color:#268bd2>bounding_rect</span>), <span style=color:#268bd2>is_leaf</span>(<span style=color:#268bd2>leaf</span>), <span style=color:#268bd2>capacity</span>(<span style=color:#268bd2>cap</span>) {}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    ~<span style=color:#268bd2>RTreeNode</span>() {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (!<span style=color:#268bd2>is_leaf</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>for</span> (<span style=color:#268bd2>RTreeNode</span>&lt;/<span style=color:#268bd2>em</span>&gt; <span style=color:#268bd2>child</span> : <span style=color:#268bd2>children_nodes</span>) {
+</span></span><span style=display:flex><span>                <span style=color:#859900>delete</span> <span style=color:#268bd2>child</span>;
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#93a1a1;font-style:italic>// Very simplified insert logic
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>    <span style=color:#859900;font-weight:700>void</span> <span style=color:#268bd2>insert</span>(<span style=color:#859900>const</span> <span style=color:#268bd2>Rect</span>&amp; <span style=color:#268bd2>rect</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>is_leaf</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>children_data</span>.<span style=color:#268bd2>push_back</span>(<span style=color:#268bd2>rect</span>);
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>mbr</span>.<span style=color:#268bd2>enlarge</span>(<span style=color:#268bd2>rect</span>); <span style=color:#93a1a1;font-style:italic>// Enlarge this leaf&#39;s MBR
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>            <span style=color:#93a1a1;font-style:italic>// In a real R-Tree, choose best child to insert into
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#93a1a1;font-style:italic>// For this concept, just add as a new child or into first child
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            <span style=color:#859900>if</span> (<span style=color:#268bd2>children_nodes</span>.<span style=color:#268bd2>empty</span>()) {
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>children_nodes</span>.<span style=color:#268bd2>push_back</span>(<span style=color:#859900>new</span> <span style=color:#268bd2>RTreeNode</span>(<span style=color:#268bd2>rect</span>, <span style=color:#cb4b16>true</span>, <span style=color:#268bd2>capacity</span>)); <span style=color:#93a1a1;font-style:italic>// Create a new leaf child
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>            } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>children_nodes</span>[<span style=color:#2aa198;font-weight:700>0</span>]-&gt;<span style=color:#268bd2>insert</span>(<span style=color:#268bd2>rect</span>);
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>            <span style=color:#268bd2>mbr</span>.<span style=color:#268bd2>enlarge</span>(<span style=color:#268bd2>rect</span>); <span style=color:#93a1a1;font-style:italic>// Enlarge parent MBR
+</span></span></span><span style=display:flex><span><span style=color:#93a1a1;font-style:italic></span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#268bd2>std</span>::<span style=color:#268bd2>vector</span>&lt;<span style=color:#268bd2>Rect</span>&gt; <span style=color:#268bd2>query</span>(<span style=color:#859900>const</span> <span style=color:#268bd2>Rect</span>&amp; <span style=color:#268bd2>query_rect</span>, <span style=color:#268bd2>std</span>::<span style=color:#268bd2>vector</span>&lt;<span style=color:#268bd2>Rect</span>&gt; <span style=color:#268bd2>found_items</span> = {}) <span style=color:#859900>const</span> {
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (!<span style=color:#268bd2>mbr</span>.<span style=color:#268bd2>intersects</span>(<span style=color:#268bd2>query_rect</span>)) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>return</span> <span style=color:#268bd2>found_items</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#859900>if</span> (<span style=color:#268bd2>is_leaf</span>) {
+</span></span><span style=display:flex><span>            <span style=color:#859900>for</span> (<span style=color:#859900>const</span> <span style=color:#859900>auto</span>&amp; <span style=color:#268bd2>item_rect</span> : <span style=color:#268bd2>children_data</span>) {
+</span></span><span style=display:flex><span>                <span style=color:#859900>if</span> (<span style=color:#268bd2>query_rect</span>.<span style=color:#268bd2>intersects</span>(<span style=color:#268bd2>item_rect</span>)) {
+</span></span><span style=display:flex><span>                    <span style=color:#268bd2>found_items</span>.<span style=color:#268bd2>push_back</span>(<span style=color:#268bd2>item_rect</span>);
+</span></span><span style=display:flex><span>                }
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        } <span style=color:#859900>else</span> {
+</span></span><span style=display:flex><span>            <span style=color:#859900>for</span> (<span style=color:#859900>const</span> <span style=color:#859900>auto</span>&amp; <span style=color:#268bd2>child_node</span> : <span style=color:#268bd2>children_nodes</span>) {
+</span></span><span style=display:flex><span>                <span style=color:#268bd2>found_items</span> = <span style=color:#268bd2>child_node</span>-&gt;<span style=color:#268bd2>query</span>(<span style=color:#268bd2>query_rect</span>, <span style=color:#268bd2>found_items</span>);
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        <span style=color:#859900>return</span> <span style=color:#268bd2>found_items</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>};
+</span></span></code></pre></div><h2 id=code-walkthrough>Code Walkthrough</h2><p><a href=#implementation>Back to Implementation</a></p><h3 id=code-walkthrough-1>Code Walkthrough</h3><p>A full R-Tree implementation is quite complex, involving intricate algorithms for node splitting and choosing insertion paths. The provided code is a highly simplified conceptual demonstration.</p><hr><p><strong><code>Rect</code> Class:</strong> Represents a rectangular area, used for both data objects and Minimum Bounding Rectangles (MBRs) of nodes.</p><ul><li><code>x_min, y_min, x_max, y_max</code>: Coordinates defining the rectangle.</li><li><code>intersects(other_rect)</code>: Checks if this rectangle overlaps with another.</li><li><code>contains(other_rect)</code>: Checks if this rectangle fully contains another.</li><li><code>enlarge(other_rect)</code>: Expands this rectangle to encompass another rectangle.</li></ul><p><strong><code>RTreeNode</code> Class (Simplified):</strong> Represents a node in the R-Tree.</p><ul><li><p><code>mbr</code>: The <code>Minimum Bounding Rectangle</code> for this node.</p></li><li><p><code>is_leaf</code>: A boolean indicating if this is a leaf <code>node</code> (stores actual data <code>objects</code>) or an internal <code>node</code> (stores child <code>nodes</code>).</p></li><li><p><code>children_nodes</code> (for internal <code>nodes</code>) or <code>children_data</code> (for leaf <code>nodes</code>): Stores either pointers to child <code>RTreeNode</code>s or the actual <code>Rect</code> data <code>objects</code>.</p></li><li><p><code>capacity</code>: The maximum number of entries (children or data <code>objects</code>) a <code>node</code> can hold.</p></li><li><p><strong><code>insert(rect)</code> (Simplified):</strong></p></li><li><p>If it&rsquo;s a <code>leaf node</code>, it adds the <code>rect</code> to <code>children_data</code> and enlarges its <code>mbr</code>.</p></li><li><p>If it&rsquo;s an internal <code>node</code>, it (conceptually) picks a child to insert into (simplified to just the first child) and enlarges its own <code>mbr</code> to cover the new <code>rect</code>. Real R-Trees have complex algorithms to select the best child.</p></li></li><li><p><strong><code>query(query_rect, found_items)</code>:</strong></p></li><li><p>Checks if this <code>node</code>&rsquo;s <code>mbr</code> intersects the <code>query_rect</code>. If not, it prunes this branch.</p></li><li><p>If it&rsquo;s a <code>leaf node</code>, it checks its <code>children_data</code> for direct intersections with <code>query_rect</code> and adds them to <code>found_items</code>.</p></li><li><p>If it&rsquo;s an internal <code>node</code>, it recursively calls <code>query</code> on its child <code>nodes</code> whose <code>mbr</code>s intersect the <code>query_rect</code>.</p></li></li></ul><p><a href=#implementation>Back to Implementation</a></p><h2 id=applications>Applications</h2><h3 id=application>Application</h3><p>R-Trees are a cornerstone of spatial databases and geographical information systems (GIS). They are used by database systems like <strong>PostGIS (for PostgreSQL)</strong> and <strong>MySQL Spatial</strong> to provide efficient indexing of geospatial data. This allows for fast queries like &ldquo;find all parks within 5 miles of this point.&rdquo; They are also used in computer-aided design (CAD) systems for storing the layout of objects on a blueprint and in real-time mapping services to quickly fetch map features within the user&rsquo;s viewport.</p></div></article><div class=navigation style="margin-top:5rem;display:flex;justify-content:space-between;border-top:1px solid var(--border);padding-top:2rem"><a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/data_structures/specialized/red_black_tree/ class=nav-btn>← Previous</a>
+<a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/data_structures/specialized/ class=nav-btn>Up</a>
+<a href=https://notxkcd.github.io/sdet-prep-site/dsa-42/data_structures/specialized/quadtree/ class=nav-btn>Next →</a></div></main><footer class=footer><p>Built with Hugo. No scripts. No tracking. Just the truth.</p></footer><script>document.addEventListener("DOMContentLoaded",function(){const n=document.body,s=document.createTreeWalker(n,NodeFilter.SHOW_TEXT,null,!1);let e;const t=[];for(;e=s.nextNode();)e.nodeValue.includes("[-]")&&t.push(e);t.forEach(e=>{const t=document.createElement("span");t.innerHTML=e.nodeValue.replace(/\[-\]/g,'<span class="started-icon" title="Started"></span>'),e.parentNode.replaceChild(t,e)})})</script><script>const body=document.getElementById("theme-body"),btn=document.getElementById("theme-toggle"),currentTheme=localStorage.getItem("theme");function updateButtonText(){body.classList.contains("theme-terminal")?btn.textContent="Light Mode":btn.textContent="Dark Mode"}currentTheme==="terminal"&&body.classList.add("theme-terminal"),updateButtonText(),btn.addEventListener("click",()=>{body.classList.toggle("theme-terminal"),updateButtonText();let e="natural";body.classList.contains("theme-terminal")&&(e="terminal"),localStorage.setItem("theme",e)})</script></body></html>

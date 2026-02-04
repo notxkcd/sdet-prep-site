@@ -1,0 +1,149 @@
+<div id="explanation-content">
+    <p>Imagine a treasure hunt. Each clue tells you where the next one is. A Linked List is just like that. It's a chain of nodes, where each node contains some data and a pointer to the next node in the chain.</p>
+    <p>Unlike an array, the elements are not stored in contiguous memory locations. This gives it flexibility – it's easy to add or remove items without reorganizing the entire structure. But it also means you can't instantly jump to the 10th item; you have to follow the chain from the beginning.</p>
+</div>
+
+<div id="expanded-explanation-content">
+    <h3>How it Works (Expanded)</h3>
+    <p>A Linked List is a dynamic data structure, meaning its size can change during runtime. Each 'node' in the list typically holds two things:</p>
+    <ol>
+        <li>The actual <code>data</code> or value.</li>
+        <li>A <code>reference</code> (or link) to the next node in the sequence.</li>
+    </ol>
+    <p>The very first node is called the <code>head</code>. If the list is empty, the <code>head</code> is usually <code>null</code>. The last node's <code>next</code> reference points to <code>null</code>, signifying the end of the list.</p>
+    <div class="explanation-fence">
+[Data|Next] -> [Data|Next] -> [Data|Next] -> null
+  ^                                         ^
+  |                                         |
+ Head                                       Tail (Next is null)
+    </div>
+    <p><strong>Advantages:</strong> Efficient insertions and deletions. You just change a few pointers.</p>
+    <p><strong>Disadvantages:</strong> Slower access time. To get to the Nth element, you must traverse N nodes. Uses more memory per element due to storing pointers.</p>
+</div>
+
+<div id="code-implementations">
+    <pre data-lang="python"><code class="language-python"># Node class
+class Node:
+    def __init__(self, data):
+        self.data = data
+        self.next = None
+
+# Linked List class
+class LinkedList:
+    def __init__(self):
+        self.head = None
+
+    def append(self, data):
+        new_node = Node(data)
+        if not self.head:
+            self.head = new_node
+            return
+        last_node = self.head
+        while last_node.next:
+            last_node = last_node.next
+        last_node.next = new_node
+
+    def display(self, node=None): # Added node=None for proper iteration in display
+        if node is None:
+            node = self.head
+        elements = []
+        current_node = node
+        while current_node:
+            elements.append(str(current_node.data))
+            current_node = current_node.next
+        print(" -> ".join(elements))
+</code></pre>
+
+    <pre data-lang="javascript"><code class="language-javascript">class Node {
+    constructor(data) {
+        this.data = data;
+        this.next = null;
+    }
+}
+
+class LinkedList {
+    constructor() {
+        this.head = null;
+    }
+
+    append(data) {
+        const newNode = new Node(data);
+        if (!this.head) {
+            this.head = newNode;
+            return;
+        }
+        let currentNode = this.head;
+        while (currentNode.next) {
+            currentNode = currentNode.next;
+        }
+        currentNode.next = newNode;
+    }
+
+    display() {
+        const elements = [];
+        let currentNode = this.head;
+        while (currentNode) {
+            elements.push(currentNode.data);
+            currentNode = currentNode.next;
+        }
+        console.log(elements.join(' -> '));
+    }
+}
+</code></pre>
+
+    <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+class Node {
+public:
+    int data;
+    Node<em> next;
+
+    Node(int val) : data(val), next(nullptr) {}
+};
+
+class LinkedList {
+public:
+    Node</em> head;
+
+    LinkedList() : head(nullptr) {}
+
+    void append(int data) {
+        Node<em> newNode = new Node(data);
+        if (!head) {
+            head = newNode;
+            return;
+        }
+        Node</em> currentNode = head;
+        while (currentNode->next) {
+            currentNode = currentNode->next;
+        }
+        currentNode->next = newNode;
+    }
+
+    void display() {
+        Node* currentNode = head;
+        while (currentNode) {
+            std::cout &lt;&lt; currentNode->data &lt;&lt; " -> ";
+            currentNode = currentNode->next;
+        }
+        std::cout &lt;&lt; "null" &lt;&lt; std::endl;
+    }
+};
+</code></pre>
+</div>
+
+<div id="code-explanation-content"><div class="markdown-content">
+    <h3>Code Walkthrough</h3>
+    <p>The code defines two main components:</p>
+    <div class="explanation-fence">
+<strong><code>Node</code> Class:</strong> Represents an individual element.
+- <code>data</code>: The value stored in the node.
+- <code>next</code>: A pointer to the next node in the chain.
+
+<strong><code>LinkedList</code> Class:</strong> Manages the chain of nodes.
+- <code>head</code>: A pointer to the very first node.
+- <code>append(data)</code>: Adds a new node to the end.
+- <code>display()</code>: Traverses the list and prints values.
+    </div></div>
+    <p>The core idea is always manipulating these <code>next</code> pointers to build and modify the chain.</p>
+</div>

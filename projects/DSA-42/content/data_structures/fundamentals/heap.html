@@ -1,0 +1,194 @@
+<div id="explanation-content">
+    <p>Imagine a corporate hierarchy where the CEO is always at the top, and managers report to directors, who report to the CEO. A Heap data structure is similar: it's a tree-based structure (specifically a <code>binary tree</code>) that satisfies the '<code>heap property</code>'.</p>
+    <p>In a '<code>Max-Heap</code>', the <code>value</code> of each <code>node</code> is greater than or equal to the <code>value</code> of its children. In a '<code>Min-Heap</code>', the <code>value</code> of each <code>node</code> is less than or equal to the <code>value</code> of its children.</p>
+    <p>Heaps are commonly used to implement '<code>Priority Queues</code>' – queues where elements are dequeued based on priority, not just arrival order.</p>
+</div>
+
+<div id="expanded-explanation-content">
+    <h3>How it Works (Expanded)</h3>
+    <p>Heaps are typically implemented using an <code>array</code> because of their specific structure: a <code>complete binary tree</code>. This means all levels of the tree are fully filled, except possibly the last level, which is filled from <code>left</code> to <code>right</code>. This allows for efficient mapping of tree nodes to <code>array</code> indices.</p>
+    <div class="explanation-fence">
+Heap (Array Representation): 
+Index:  0  1  2  3  4  5  6
+Value: [10, 8, 9, 4, 5, 7, 3]  (Max-Heap example) 
+
+Tree Representation:
+        (10)
+       /    \
+      (8)    (9)
+     /  \   /  \
+    (4) (5)(7) (3)
+    </div>
+    <p><strong><code>Heap Property</code>:</strong>
+    <ul>
+        <li><strong><code>Max-Heap</code>:</strong> Parent <code>node</code> <code>value</code> &gt;= child <code>node</code> <code>value</code>.</li>
+        <li><strong><code>Min-Heap</code>:</strong> Parent <code>node</code> <code>value</code> &lt;= child <code>node</code> <code>value</code>.</li>
+    </ul>
+    </p>
+    <p><strong>Operations:</strong>
+    <ul>
+        <li><strong><code>Insert</code> (<code>Push</code>):</strong> Add new element to the end of the <code>array</code>, then '<code>heapify up</code>' (swap with parent) until <code>heap property</code> is restored. <code>O(log n)</code>.</li>
+        <li><strong><code>Delete Max/Min</code> (<code>Pop</code>):</strong> Remove the <code>root</code> (<code>max/min</code> element), replace it with the last element of the <code>array</code>, then '<code>heapify down</code>' (swap with largest/smallest child) until <code>heap property</code> is restored. <code>O(log n)</code>.</li>
+        <li><strong><code>Peek Max/Min</code>:</strong> Return the <code>root</code> element. <code>O(1)</code>.</li>
+    </ul>
+    </p>
+    <p><strong>Time Complexity:</strong> <code>Insertion</code> and <code>deletion</code> are <code>O(log n)</code>. <code>Peeking</code> is <code>O(1)</code>.</p>
+</div>
+
+<div id="code-implementations">
+    <pre data-lang="python"><code class="language-python">import heapq
+
+# Python's heapq module implements a min-heap.
+# By default, it stores elements such that the smallest is always at index 0.
+
+my_min_heap = []
+
+# Insert (O(log n))
+heapq.heappush(my_min_heap, 10)
+heapq.heappush(my_min_heap, 8)
+heapq.heappush(my_min_heap, 9)
+heapq.heappush(my_min_heap, 4)
+print("Heap after pushes:", my_min_heap) # Not necessarily sorted, but smallest is first: [4, 8, 9, 10]
+
+# Pop (O(log n)) - removes and returns smallest element
+smallest_item = heapq.heappop(my_min_heap)
+print("Popped smallest item:", smallest_item) # Output: 4
+print("Heap after pop:", my_min_heap) # [8, 10, 9]
+
+# Peek (O(1)) - smallest element
+if my_min_heap:
+    print("Smallest item (peek):", my_min_heap[0]) # Output: 8
+
+# To implement a max-heap, store negative of values:
+my_max_heap = []
+heapq.heappush(my_max_heap, -10)
+heapq.heappush(my_max_heap, -8)
+heapq.heappush(my_max_heap, -9)
+print("Max-Heap (internal):", my_max_heap) # [-10, -8, -9]
+max_item = -heapq.heappop(my_max_heap)
+print("Popped largest item:", max_item) # Output: 10
+</code></pre>
+
+    <pre data-lang="javascript"><code class="language-javascript">// JavaScript does not have a built-in Heap. 
+// This is a simplified MinHeap implementation using an Array.
+
+class MinHeap {
+    constructor() {
+        this.heap = [];
+    }
+
+    getParentIndex(i) { return Math.floor((i - 1) / 2); }
+    getLeftChildIndex(i) { return 2 <em> i + 1; }
+    getRightChildIndex(i) { return 2 </em> i + 2; }
+
+    hasParent(i) { return this.getParentIndex(i) >= 0; }
+    hasLeftChild(i) { return this.getLeftChildIndex(i) < this.heap.length; }
+    hasRightChild(i) { return this.getRightChildIndex(i) < this.heap.length; }
+
+    getParent(i) { return this.heap[this.getParentIndex(i)]; }
+    getLeftChild(i) { return this.heap[this.getLeftChildIndex(i)]; }
+    getRightChild(i) { return this.heap[this.getRightChildIndex(i)]; }
+
+    swap(i, j) {
+        [this.heap[i], this.heap[j]] = [this.heap[j], this.heap[i]];
+    }
+
+    peek() {
+        if (this.heap.length === 0) return null;
+        return this.heap[0];
+    }
+
+    insert(item) {
+        this.heap.push(item);
+        this.heapifyUp();
+    }
+
+    extractMin() {
+        if (this.heap.length === 0) return null;
+        if (this.heap.length === 1) return this.heap.pop();
+
+        const item = this.heap[0];
+        this.heap[0] = this.heap.pop();
+        this.heapifyDown();
+        return item;
+    }
+
+    heapifyUp() {
+        let index = this.heap.length - 1;
+        while (this.hasParent(index) && this.getParent(index) > this.heap[index]) {
+            this.swap(this.getParentIndex(index), index);
+            index = this.getParentIndex(index);
+        }
+    }
+
+    heapifyDown() {
+        let index = 0;
+        while (this.hasLeftChild(index)) {
+            let smallerChildIndex = this.getLeftChildIndex(index);
+            if (this.hasRightChild(index) && this.getRightChild(index) < this.getLeftChild(index)) {
+                smallerChildIndex = this.getRightChildIndex(index);
+            }
+
+            if (this.heap[index] < this.heap[smallerChildIndex]) {
+                break;
+            } else {
+                this.swap(index, smallerChildIndex);
+            }
+            index = smallerChildIndex;
+        }
+    }
+}
+</code></pre>
+
+    <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;queue&gt; // Standard Library Priority Queue (Max-Heap by default)
+
+int main() {
+    // Max-Heap example (default for std::priority_queue)
+    std::priority_queue&lt;int&gt; maxHeap;
+
+    // Insert (O(log n))
+    maxHeap.push(10);
+    maxHeap.push(8);
+    maxHeap.push(9);
+    maxHeap.push(4);
+    std::cout &lt;&lt; "Max-Heap top (peek): " &lt;&lt; maxHeap.top() &lt;&lt; std::endl; // Output: 10
+
+    // Pop (O(log n))
+    std::cout &lt;&lt; "Popped largest item: " &lt;&lt; maxHeap.top() &lt;&lt; std::endl; // Output: 10
+    maxHeap.pop();
+    std::cout &lt;&lt; "Max-Heap top after pop: " &lt;&lt; maxHeap.top() &lt;&lt; std::endl; // Output: 9
+
+    std::cout &lt;&lt; "--------------------" &lt;&lt; std::endl;
+
+    // Min-Heap example (using std::greater&lt;int&gt;)
+    std::priority_queue&lt;int, std::vector&lt;int&gt;, std::greater&lt;int&gt;&gt; minHeap;
+
+    minHeap.push(10);
+    minHeap.push(8);
+    minHeap.push(9);
+    minHeap.push(4);
+    std::cout &lt;&lt; "Min-Heap top (peek): " &lt;&lt; minHeap.top() &lt;&lt; std::endl; // Output: 4
+
+    std::cout &lt;&lt; "Popped smallest item: " &lt;&lt; minHeap.top() &lt;&lt; std::endl; // Output: 4
+    minHeap.pop();
+    std::cout &lt;&lt; "Min-Heap top after pop: " &lt;&lt; minHeap.top() &lt;&lt; std::endl; // Output: 8
+
+    return 0;
+}
+</code></pre>
+</div>
+
+<div id="code-explanation-content"><div class="markdown-content">
+    <h3>Code Walkthrough</h3>
+    <p>Python and C++ offer built-in Heap/Priority Queue implementations, while JavaScript typically requires a custom class.</p>
+    <div class="explanation-fence">
+<strong>Python:</strong> The <code>heapq</code> module provides <code>min-heap</code> functionality. Elements are stored in a <code>list</code>, and <code>heappush</code>/<code>heappop</code> maintain the <code>heap property</code>. To simulate a <code>max-heap</code>, you push/pop the negative of <code>values</code>.
+<br><br>
+<strong>JavaScript:</strong> Requires a custom <code>MinHeap</code> (or <code>MaxHeap</code>) <code>class</code>. This involves implementing <code>insert</code> (<code>heapifyUp</code>) and <code>extractMin</code> (<code>heapifyDown</code>) methods that use an <code>array</code> and ensure the <code>heap property</code> is maintained by swapping elements.
+<br><br>
+<strong>C++:</strong> The STL provides <code>std::priority_queue</code>, which is a container adapter that uses a <code>heap</code> internally. By default, it's a <code>max-heap</code>. You can make it a <code>min-heap</code> by providing <code>std::greater&lt;int&gt;</code> as a <code>comparator</code>.
+    </div></div>
+    <p>Understanding the <code>heapify-up</code> and <code>heapify-down</code> operations is <code>key</code> to comprehending heaps.</p>
+</div>
