@@ -2,10 +2,12 @@
 title: "Cognizant Interview Questions"
 ---
 
-## Available Interviews
+## Interview Rounds
 
-- [Cognizant](./main/)
-- [Cognizant-2](./round-2/)
-- [Cognizant-3](./round-3/)
-- [Cognizant-4](./round-4/)
-- [Cognizant-5](./round-5/)
+| ID | Round | Status |
+| :--- | :--- | :---: |
+| 01 | [Main](./main/) | [ ] |
+| 02 | [Round 2](./round-2/) | [ ] |
+| 03 | [Round 3](./round-3/) | [ ] |
+| 04 | [Round 4](./round-4/) | [ ] |
+| 05 | [Round 5](./round-5/) | [ ] |

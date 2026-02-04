@@ -4,7 +4,8 @@ date: 2026-01-30
 draft: false
 ---
 
+## Questions
 
-Browse the categorized collection of Selenium interview questions and answers.
-
-- **[Questions & Answers](questions)**
+| ID | Topic | Status |
+| :--- | :--- | :---: |
+| 01 | [Questions](./questions/) | [ ] |

@@ -2,6 +2,8 @@
 title: "L T Infotech Interview Questions"
 ---
 
-## Available Interviews
+## Interview Rounds
 
-- [L & T Infotech](./main/)
+| ID | Round | Status |
+| :--- | :--- | :---: |
+| 01 | [Main](./main/) | [ ] |

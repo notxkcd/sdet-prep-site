@@ -2,7 +2,9 @@
 title: "Icu Medicals Interview Questions"
 ---
 
-## Available Interviews
+## Interview Rounds
 
-- [ICU Medicals](./main/)
-- [ICU_Medicals-2](./round-2/)
+| ID | Round | Status |
+| :--- | :--- | :---: |
+| 01 | [Main](./main/) | [ ] |
+| 02 | [Round 2](./round-2/) | [ ] |

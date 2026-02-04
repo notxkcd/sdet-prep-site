@@ -2,7 +2,9 @@
 title: "L T Interview Questions"
 ---
 
-## Available Interviews
+## Interview Rounds
 
-- [L_T-2](./round-2/)
-- [L_T-3](./round-3/)
+| ID | Round | Status |
+| :--- | :--- | :---: |
+| 01 | [Round 2](./round-2/) | [ ] |
+| 02 | [Round 3](./round-3/) | [ ] |

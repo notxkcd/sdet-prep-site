@@ -2,8 +2,10 @@
 title: "Hexaware Interview Questions"
 ---
 
-## Available Interviews
+## Interview Rounds
 
-- [Hexaware](./main/)
-- [Hexaware-3](./round-3/)
-- [Hexaware-4](./round-4/)
+| ID | Round | Status |
+| :--- | :--- | :---: |
+| 01 | [Main](./main/) | [ ] |
+| 02 | [Round 3](./round-3/) | [ ] |
+| 03 | [Round 4](./round-4/) | [ ] |

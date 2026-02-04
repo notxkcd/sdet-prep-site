@@ -2,6 +2,8 @@
 title: "Lt Mindtree Interview Questions"
 ---
 
-## Available Interviews
+## Interview Rounds
 
-- [Lt_Mindtree](./main/)
+| ID | Round | Status |
+| :--- | :--- | :---: |
+| 01 | [Main](./main/) | [ ] |

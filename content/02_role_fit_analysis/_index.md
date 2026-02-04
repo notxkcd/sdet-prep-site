@@ -17,6 +17,6 @@ weight: 2
 *   **Backend / API SDET:** Your API experience seems secondary ("Experienced in API testing..."). Dedicated backend SDET roles require deeper coding skills (Java streams, complex JSON parsing, mocking services).
 
 ## Who Would Shortlist You?
-1.  **Service-Based MNCs:** They need volume. Your 2.5 years of Java/Selenium fits their standard grid perfectly.
-2.  **Startups (Series A/B):** If they need a solo tester to "do everything" (Manual + set up basic Automation), they might take a chance on you because you are affordable and eager.
-3.  **Contract-to-Hire Roles:** Staffing agencies often look for profiles exactly like yours to fill seats at larger banks or insurance clients.
+| 1.  **Service-Based MNCs:** They need volume. Your 2.5 years of Java/Selenium fits their standard grid perfectly.
+| 2.  **Startups (Series A/B):** If they need a solo tester to "do everything" (Manual + set up basic Automation), they might take a chance on you because you are affordable and eager.
+| 3.  **Contract-to-Hire Roles:** Staffing agencies often look for profiles exactly like yours to fill seats at larger banks or insurance clients.

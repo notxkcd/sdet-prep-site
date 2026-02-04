@@ -2,12 +2,14 @@
 title: "Expleo Interview Questions"
 ---
 
-## Available Interviews
+## Interview Rounds
 
-- [Expleo](./main/)
-- [Expleo-2](./round-2/)
-- [Expleo-3](./round-3/)
-- [Expleo-4](./round-4/)
-- [Expleo-5](./round-5/)
-- [Expleo-6](./round-6/)
-- [Expleo-7](./round-7/)
+| ID | Round | Status |
+| :--- | :--- | :---: |
+| 01 | [Main](./main/) | [ ] |
+| 02 | [Round 2](./round-2/) | [ ] |
+| 03 | [Round 3](./round-3/) | [ ] |
+| 04 | [Round 4](./round-4/) | [ ] |
+| 05 | [Round 5](./round-5/) | [ ] |
+| 06 | [Round 6](./round-6/) | [ ] |
+| 07 | [Round 7](./round-7/) | [ ] |

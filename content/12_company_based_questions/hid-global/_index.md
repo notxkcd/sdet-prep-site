@@ -2,9 +2,11 @@
 title: "Hid Global Interview Questions"
 ---
 
-## Available Interviews
+## Interview Rounds
 
-- [HID Global](./main/)
-- [HID_Global-2](./round-2/)
-- [HID_Global-3](./round-3/)
-- [HID_Global-4](./round-4/)
+| ID | Round | Status |
+| :--- | :--- | :---: |
+| 01 | [Main](./main/) | [ ] |
+| 02 | [Round 2](./round-2/) | [ ] |
+| 03 | [Round 3](./round-3/) | [ ] |
+| 04 | [Round 4](./round-4/) | [ ] |

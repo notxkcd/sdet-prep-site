@@ -2,6 +2,8 @@
 title: "Bnp Paribas Interview Questions"
 ---
 
-## Available Interviews
+## Interview Rounds
 
-- [BNP Paribas](./main/)
+| ID | Round | Status |
+| :--- | :--- | :---: |
+| 01 | [Main](./main/) | [ ] |

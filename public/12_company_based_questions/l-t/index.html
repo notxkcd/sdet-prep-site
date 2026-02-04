@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en-us">
-<head><script src="/sdet-prep-site/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=sdet-prep-site/livereload" data-no-instant defer></script>
+<head><script src="/sdet-prep-site/livereload.js?mindelay=10&amp;v=2&amp;port=41691&amp;path=sdet-prep-site/livereload" data-no-instant defer></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>L T Interview Questions | SDET Interview Preparation Kit</title>
-    <link rel="stylesheet" href="http://localhost:1313/sdet-prep-site/css/style.css">
-    <link rel="stylesheet" href="http://localhost:1313/sdet-prep-site/css/terminal.css">
+    <link rel="stylesheet" href="http://localhost:41691/sdet-prep-site/css/style.css">
+    <link rel="stylesheet" href="http://localhost:41691/sdet-prep-site/css/terminal.css">
     
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -13,9 +13,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
     
     
-    <link rel="stylesheet" href="http://localhost:1313/sdet-prep-site/lib/katex/katex.min.css">
-    <script defer src="http://localhost:1313/sdet-prep-site/lib/katex/katex.min.js"></script>
-    <script defer src="http://localhost:1313/sdet-prep-site/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <link rel="stylesheet" href="http://localhost:41691/sdet-prep-site/lib/katex/katex.min.css">
+    <script defer src="http://localhost:41691/sdet-prep-site/lib/katex/katex.min.js"></script>
+    <script defer src="http://localhost:41691/sdet-prep-site/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             renderMathInElement(document.body, {
@@ -32,19 +32,19 @@
     <header>
         <nav>
             <ul>
-                <li><a href="http://localhost:1313/sdet-prep-site/">Index</a></li>
+                <li><a href="http://localhost:41691/sdet-prep-site/">Index</a></li>
                 
             </ul>
         </nav>
         <div class="site-breadcrumb">
-            <a href="http://localhost:1313/sdet-prep-site/">Home</a>
+            <a href="http://localhost:41691/sdet-prep-site/">Home</a>
             
                 
-                    <span>/</span> <a href="http://localhost:1313/sdet-prep-site/">SDET Interview Dashboard</a>
+                    <span>/</span> <a href="http://localhost:41691/sdet-prep-site/">SDET Interview Dashboard</a>
                 
             
                 
-                    <span>/</span> <a href="http://localhost:1313/sdet-prep-site/12_company_based_questions/">Interview Questions</a>
+                    <span>/</span> <a href="http://localhost:41691/sdet-prep-site/12_company_based_questions/">Interview Questions</a>
                 
             
             
@@ -67,11 +67,28 @@
     
     
     
-    <h2 id="available-interviews">Available Interviews</h2>
-<ul>
-<li><a href="./round-2/">L_T-2</a></li>
-<li><a href="./round-3/">L_T-3</a></li>
-</ul>
+    <h2 id="interview-rounds">Interview Rounds</h2>
+<table>
+  <thead>
+      <tr>
+          <th style="text-align: left">ID</th>
+          <th style="text-align: left">Round</th>
+          <th style="text-align: center">Status</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td style="text-align: left">01</td>
+          <td style="text-align: left"><a href="./round-2/">Round 2</a></td>
+          <td style="text-align: center"><input type="checkbox" disabled></td>
+      </tr>
+      <tr>
+          <td style="text-align: left">02</td>
+          <td style="text-align: left"><a href="./round-3/">Round 3</a></td>
+          <td style="text-align: center"><input type="checkbox" disabled></td>
+      </tr>
+  </tbody>
+</table>
 
 </div>
 
@@ -84,6 +101,25 @@
     <footer class="footer">
         <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
     </footer>
+
+    <script>
+        
+        document.addEventListener("DOMContentLoaded", function() {
+            const content = document.body;
+            
+            const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT, null, false);
+            let node;
+            const nodesToReplace = [];
+            while(node = walker.nextNode()) {
+                if (node.nodeValue.includes("[-]")) nodesToReplace.push(node);
+            }
+            nodesToReplace.forEach(textNode => {
+                const span = document.createElement('span');
+                span.innerHTML = textNode.nodeValue.replace(/\[-\]/g, '<span class="started-icon" title="Started"></span>');
+                textNode.parentNode.replaceChild(span, textNode);
+            });
+        });
+    </script>
 
     <script>
         const body = document.getElementById('theme-body');

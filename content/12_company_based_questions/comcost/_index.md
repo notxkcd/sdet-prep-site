@@ -2,6 +2,8 @@
 title: "Comcost Interview Questions"
 ---
 
-## Available Interviews
+## Interview Rounds
 
-- [ComCost](./main/)
+| ID | Round | Status |
+| :--- | :--- | :---: |
+| 01 | [Main](./main/) | [ ] |

@@ -12,7 +12,7 @@ draft: false
 | 01 | [4Labs Technologies Pvt Ltd Interview Questions](./4labs-technologies-pvt-ltd/) | [ ] |
 | 02 | [Accenture Interview Questions](./accenture/) | [ ] |
 | 03 | [Agilisium Interview Questions](./agilisium/) | [ ] |
-| 04 | [Amazon Interview Questions](./amazon/) | [ ] |
+| 04 | [Amazon Interview Questions](./amazon/) | [-] |
 | 05 | [Bnp Paribas Interview Questions](./bnp-paribas/) | [ ] |
 | 06 | [Capgemini Interview Questions](./capgemini/) | [ ] |
 | 07 | [Cgi Interview Questions](./cgi/) | [ ] |

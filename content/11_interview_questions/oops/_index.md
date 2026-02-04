@@ -24,14 +24,14 @@ OOPS is widely used in software development, including web apps, mobile apps, ga
 
 The main OOPS concepts are often referred to as the "four pillars," but some languages or contexts include additional ones like association, aggregation, and composition. Here's a full breakdown:
 
-1. **Encapsulation**:
+| 1. **Encapsulation**:
    - This is the bundling of data (attributes) and methods (functions) that operate on the data into a single unit called a class.
    - It hides the internal details of an object and exposes only necessary parts through public methods (getters/setters).
    - Achieved using access modifiers like private, protected, public.
    - Benefits: Data security, reduces complexity, prevents accidental changes.
    - Example: In a BankAccount class, the balance is private, and you access it via deposit() or withdraw() methods.
 
-2. **Inheritance**:
+| 2. **Inheritance**:
    - Allows a new class (subclass/child) to inherit properties and methods from an existing class (superclass/parent).
    - Promotes code reuse and establishes a "is-a" relationship (e.g., Dog is-a Animal).
    - Types: Single (one parent), Multiple (multiple parents, not supported in Java to avoid diamond problem), Multilevel (chain of inheritance), Hierarchical (multiple children from one parent), Hybrid (combination).
@@ -39,7 +39,7 @@ The main OOPS concepts are often referred to as the "four pillars," but some lan
    - Benefits: Reduces redundancy, supports polymorphism.
    - Drawback: Can lead to tight coupling if overused.
 
-3. **Polymorphism**:
+| 3. **Polymorphism**:
    - Means "many forms" – allows objects of different classes to be treated as objects of a common superclass.
    - Types:
      - Compile-time (Method Overloading): Same method name with different parameters in the same class.
@@ -48,7 +48,7 @@ The main OOPS concepts are often referred to as the "four pillars," but some lan
    - Benefits: Flexibility, integration of different objects seamlessly.
    - Example: A Shape class with draw() method; Circle and Rectangle override it to draw differently.
 
-4. **Abstraction**:
+| 4. **Abstraction**:
    - Hides complex implementation details and shows only essential features.
    - Achieved using abstract classes (can't be instantiated, may have abstract methods) or interfaces (purely abstract, define contracts).
    - In Java: `abstract` keyword for classes/methods; `interface` for pure abstraction.

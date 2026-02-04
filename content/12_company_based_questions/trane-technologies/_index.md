@@ -2,6 +2,8 @@
 title: "Trane Technologies Interview Questions"
 ---
 
-## Available Interviews
+## Interview Rounds
 
-- [Trane technologies](./main/)
+| ID | Round | Status |
+| :--- | :--- | :---: |
+| 01 | [Main](./main/) | [ ] |

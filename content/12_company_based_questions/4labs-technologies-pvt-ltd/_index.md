@@ -2,6 +2,8 @@
 title: "4Labs Technologies Pvt Ltd Interview Questions"
 ---
 
-## Available Interviews
+## Interview Rounds
 
-- [4Labs Technologies Pvt Ltd](./main/)
+| ID | Round | Status |
+| :--- | :--- | :---: |
+| 01 | [Main](./main/) | [ ] |

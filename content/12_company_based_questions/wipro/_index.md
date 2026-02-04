@@ -2,14 +2,16 @@
 title: "Wipro Interview Questions"
 ---
 
-## Available Interviews
+## Interview Rounds
 
-- [WIPRO](./main/)
-- [Wipro-2](./round-2/)
-- [Wipro-3](./round-3/)
-- [Wipro-4](./round-4/)
-- [Wipro-5](./round-5/)
-- [Wipro-6](./round-6/)
-- [Wipro-7](./round-7/)
-- [Wipro-8](./round-8/)
-- [Wipro-9](./round-9/)
+| ID | Round | Status |
+| :--- | :--- | :---: |
+| 01 | [Main](./main/) | [ ] |
+| 02 | [Round 2](./round-2/) | [ ] |
+| 03 | [Round 3](./round-3/) | [ ] |
+| 04 | [Round 4](./round-4/) | [ ] |
+| 05 | [Round 5](./round-5/) | [ ] |
+| 06 | [Round 6](./round-6/) | [ ] |
+| 07 | [Round 7](./round-7/) | [ ] |
+| 08 | [Round 8](./round-8/) | [ ] |
+| 09 | [Round 9](./round-9/) | [ ] |

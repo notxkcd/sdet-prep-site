@@ -2,6 +2,8 @@
 title: "Qualitykiosk 2025 Interview Questions"
 ---
 
-## Available Interviews
+## Interview Rounds
 
-- [QualityKiosk_2025-09](./round-09/)
+| ID | Round | Status |
+| :--- | :--- | :---: |
+| 01 | [Round 09](./round-09/) | [ ] |

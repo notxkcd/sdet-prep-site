@@ -2,6 +2,8 @@
 title: "Tenacitics India Pvt Ltd Interview Questions"
 ---
 
-## Available Interviews
+## Interview Rounds
 
-- [Tenacitics India Pvt Ltd](./main/)
+| ID | Round | Status |
+| :--- | :--- | :---: |
+| 01 | [Main](./main/) | [ ] |

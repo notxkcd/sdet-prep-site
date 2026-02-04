@@ -26,9 +26,9 @@ Modify the above test. Instead of hardcoding "Admin", read the username and pass
 
 ## Task 3: Rest Assured Basics
 Write a standalone Java class to:
-1.  Send a GET request to `https://reqres.in/api/users/2`
-2.  Assert that the Status Code is `200`.
-3.  Assert that the JSON body contains `"first_name": "Janet"`.
+| 1.  Send a GET request to `https://reqres.in/api/users/2`
+| 2.  Assert that the Status Code is `200`.
+| 3.  Assert that the JSON body contains `"first_name": "Janet"`.
 
 ## Task 4: SQL Challenge
 Assume a table `Students` with columns: `ID`, `Name`, `Marks`.
@@ -42,6 +42,6 @@ Imagine your test fails with `ElementClickInterceptedException`.
 
 ## Task 6: Jenkins Pipeline (Conceptual)
 You are asked to set up a Jenkins job that runs **only smoke tests** every time code is pushed to the `develop` branch.
-1.  How do you distinguish Smoke tests from Regression tests in your code? (e.g., TestNG groups or Cucumber tags).
-2.  What Jenkins plugin or feature would you use to trigger the build on push? (GitHub Webhook).
-3.  Write a simple `crontab` expression to run tests every day at 2 AM. (`0 2 * * *`).
+| 1.  How do you distinguish Smoke tests from Regression tests in your code? (e.g., TestNG groups or Cucumber tags).
+| 2.  What Jenkins plugin or feature would you use to trigger the build on push? (GitHub Webhook).
+| 3.  Write a simple `crontab` expression to run tests every day at 2 AM. (`0 2 * * *`).

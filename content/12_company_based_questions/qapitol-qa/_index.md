@@ -2,7 +2,9 @@
 title: "Qapitol Qa Interview Questions"
 ---
 
-## Available Interviews
+## Interview Rounds
 
-- [Qapitol Qa Interview Questions](./main/)
-- [Qapitol_QA-2](./round-2/)
+| ID | Round | Status |
+| :--- | :--- | :---: |
+| 01 | [Main](./main/) | [ ] |
+| 02 | [Round 2](./round-2/) | [ ] |

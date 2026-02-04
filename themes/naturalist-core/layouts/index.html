@@ -3,6 +3,34 @@
     {{ .Content }}
 </div>
 
+{{/* --- ACTIVE FOCUS SECTION --- */}}
+{{ $startedItems := slice }}
+{{ range .Site.AllPages }}
+    {{ if (in .RawContent "[-]") }}
+        {{ $startedItems = $startedItems | append . }}
+    {{ end }}
+{{ end }}
+
+{{ if gt (len $startedItems) 0 }}
+<div class="category-group focus-group">
+    <h2 class="category-title" style="color: #a68b5a;">⚡ Current Focus</h2>
+    <p class="meta">Tasks currently in progress across all sectors.</p>
+    <ul class="tutorial-list">
+        {{ range $startedItems }}
+        <li class="tutorial-item focus-item" style="border-left: 3px solid #a68b5a;">
+            <div class="tutorial-title">
+                <span class="started-icon" style="transform: scale(0.8); margin-right: 0.5rem;"></span>
+                <a href="{{ .Permalink }}">{{ .Title }}</a>
+            </div>
+            <div class="tutorial-desc">Last active in {{ .Section | humanize }}</div>
+        </li>
+        {{ end }}
+    </ul>
+</div>
+<hr style="margin: 3rem 0; opacity: 0.2;">
+{{ end }}
+{{/* --------------------------- */}}
+
 {{ $sections := .Sections }}
 {{/* Define the intentional order of categories */}}
 {{ $categories := slice "Mathematics" "Engineering" "Unix & Automation" "The Mind" "Body & Survival" "Faith" "Learn" "Projects" "DSA" "Java" }}

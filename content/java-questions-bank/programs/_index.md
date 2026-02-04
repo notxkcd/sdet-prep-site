@@ -12,7 +12,7 @@ A collection of Java programming challenges and logic puzzles with optimal solut
 |----|-----------|----------------------|--------|
 | 1  | [Q1](questions-sorted/q1-questions) | [Q1](q1) | [ ] |
 | 2  | [Q2](questions-sorted/q2-questions) | [Q2](q2) | [ ] |
-| 3  | [Q3](questions-sorted/q3-questions) | [Q3](q3) | [ ] |
+| 3  | [Q3](questions-sorted/q3-questions) | [Q3](q3) | [x] |
 | 4  | [Q4](questions-sorted/q4-questions) | [Q4](q4) | [ ] |
 | 5  | [Q5](questions-sorted/q5-questions) | [Q5](q5) | [ ] |
 | 6  | [Q6](questions-sorted/q6-questions) | [Q6](q6) | [ ] |

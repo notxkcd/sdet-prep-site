@@ -2,7 +2,9 @@
 title: "Cloud Revel Innovation Interview Questions"
 ---
 
-## Available Interviews
+## Interview Rounds
 
-- [Cloud_revel_innovation](./main/)
-- [Cloud_revel_innovation-2](./round-2/)
+| ID | Round | Status |
+| :--- | :--- | :---: |
+| 01 | [Main](./main/) | [ ] |
+| 02 | [Round 2](./round-2/) | [ ] |

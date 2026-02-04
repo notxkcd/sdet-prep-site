@@ -2,6 +2,8 @@
 title: "Gsr Interview Questions"
 ---
 
-## Available Interviews
+## Interview Rounds
 
-- [GSR](./main/)
+| ID | Round | Status |
+| :--- | :--- | :---: |
+| 01 | [Main](./main/) | [ ] |

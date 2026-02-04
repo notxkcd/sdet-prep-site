@@ -2,6 +2,8 @@
 title: "Maltras Business Economics Pvt Ltd Interview Questions"
 ---
 
-## Available Interviews
+## Interview Rounds
 
-- [Maltras business economics pvt ltd](./main/)
+| ID | Round | Status |
+| :--- | :--- | :---: |
+| 01 | [Main](./main/) | [ ] |

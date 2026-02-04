@@ -2,6 +2,8 @@
 title: "Synechron Interview Questions"
 ---
 
-## Available Interviews
+## Interview Rounds
 
-- [Synechron](./main/)
+| ID | Round | Status |
+| :--- | :--- | :---: |
+| 01 | [Main](./main/) | [ ] |

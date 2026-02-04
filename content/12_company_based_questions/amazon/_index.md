@@ -2,11 +2,13 @@
 title: "Amazon Interview Questions"
 ---
 
-## Available Interviews
+## Interview Rounds
 
-- [Amazon](./main/)
-- [Amazon-2](./round-2/)
-- [Amazon-3](./round-3/)
-- [Amazon-4](./round-4/)
-- [Amazon-5](./round-5/)
-- [Amazon-6](./round-6/)
+| ID | Round | Status |
+| :--- | :--- | :---: |
+| 01 | [Main](./main/) | [ ]  |
+| 02 | [Round 2](./round-2/) | [x]  |
+| 03 | [Round 3](./round-3/) | [ ]  |
+| 04 | [Round 4](./round-4/) | [ ]  |
+| 05 | [Round 5](./round-5/) | [ ]  |
+| 06 | [Round 6](./round-6/) | [ ] |

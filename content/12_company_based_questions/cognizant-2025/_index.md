@@ -2,6 +2,8 @@
 title: "Cognizant 2025 Interview Questions"
 ---
 
-## Available Interviews
+## Interview Rounds
 
-- [Cognizant_2025-02](./round-02/)
+| ID | Round | Status |
+| :--- | :--- | :---: |
+| 01 | [Round 02](./round-02/) | [ ] |

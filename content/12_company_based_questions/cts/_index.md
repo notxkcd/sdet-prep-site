@@ -2,11 +2,13 @@
 title: "Cts Interview Questions"
 ---
 
-## Available Interviews
+## Interview Rounds
 
-- [CTS](./main/)
-- [CTS-2](./round-2/)
-- [CTS-3](./round-3/)
-- [CTS-4](./round-4/)
-- [CTS-5](./round-5/)
-- [CTS-6](./round-6/)
+| ID | Round | Status |
+| :--- | :--- | :---: |
+| 01 | [Main](./main/) | [ ] |
+| 02 | [Round 2](./round-2/) | [ ] |
+| 03 | [Round 3](./round-3/) | [ ] |
+| 04 | [Round 4](./round-4/) | [ ] |
+| 05 | [Round 5](./round-5/) | [ ] |
+| 06 | [Round 6](./round-6/) | [ ] |

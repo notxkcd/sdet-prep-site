@@ -60,6 +60,25 @@
     </footer>
 
     <script>
+        // Convert [-] to the started-icon automatically
+        document.addEventListener("DOMContentLoaded", function() {
+            const content = document.body;
+            // Use a walker to find text nodes containing [-]
+            const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT, null, false);
+            let node;
+            const nodesToReplace = [];
+            while(node = walker.nextNode()) {
+                if (node.nodeValue.includes("[-]")) nodesToReplace.push(node);
+            }
+            nodesToReplace.forEach(textNode => {
+                const span = document.createElement('span');
+                span.innerHTML = textNode.nodeValue.replace(/\[-\]/g, '<span class="started-icon" title="Started"></span>');
+                textNode.parentNode.replaceChild(span, textNode);
+            });
+        });
+    </script>
+
+    <script>
         const body = document.getElementById('theme-body');
         const btn = document.getElementById('theme-toggle');
         const currentTheme = localStorage.getItem('theme');

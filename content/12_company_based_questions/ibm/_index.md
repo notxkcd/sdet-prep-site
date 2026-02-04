@@ -2,7 +2,9 @@
 title: "Ibm Interview Questions"
 ---
 
-## Available Interviews
+## Interview Rounds
 
-- [IBM](./main/)
-- [IBM-2](./round-2/)
+| ID | Round | Status |
+| :--- | :--- | :---: |
+| 01 | [Main](./main/) | [ ] |
+| 02 | [Round 2](./round-2/) | [ ] |

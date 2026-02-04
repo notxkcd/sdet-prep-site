@@ -2,7 +2,9 @@
 title: "Intech Hud Interview Questions"
 ---
 
-## Available Interviews
+## Interview Rounds
 
-- [Intech_hud](./main/)
-- [Intech_hud-2](./round-2/)
+| ID | Round | Status |
+| :--- | :--- | :---: |
+| 01 | [Main](./main/) | [ ] |
+| 02 | [Round 2](./round-2/) | [ ] |

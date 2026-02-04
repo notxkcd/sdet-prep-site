@@ -2,6 +2,8 @@
 title: "Msc Technology Interview Questions"
 ---
 
-## Available Interviews
+## Interview Rounds
 
-- [MSC technology](./main/)
+| ID | Round | Status |
+| :--- | :--- | :---: |
+| 01 | [Main](./main/) | [ ] |

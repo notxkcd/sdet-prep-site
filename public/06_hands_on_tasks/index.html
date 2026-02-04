@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en-us">
-<head><script src="/sdet-prep-site/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=sdet-prep-site/livereload" data-no-instant defer></script>
+<head><script src="/sdet-prep-site/livereload.js?mindelay=10&amp;v=2&amp;port=41691&amp;path=sdet-prep-site/livereload" data-no-instant defer></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hands-on Practical Tasks | SDET Interview Preparation Kit</title>
-    <link rel="stylesheet" href="http://localhost:1313/sdet-prep-site/css/style.css">
-    <link rel="stylesheet" href="http://localhost:1313/sdet-prep-site/css/terminal.css">
+    <link rel="stylesheet" href="http://localhost:41691/sdet-prep-site/css/style.css">
+    <link rel="stylesheet" href="http://localhost:41691/sdet-prep-site/css/terminal.css">
     
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -13,9 +13,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
     
     
-    <link rel="stylesheet" href="http://localhost:1313/sdet-prep-site/lib/katex/katex.min.css">
-    <script defer src="http://localhost:1313/sdet-prep-site/lib/katex/katex.min.js"></script>
-    <script defer src="http://localhost:1313/sdet-prep-site/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+    <link rel="stylesheet" href="http://localhost:41691/sdet-prep-site/lib/katex/katex.min.css">
+    <script defer src="http://localhost:41691/sdet-prep-site/lib/katex/katex.min.js"></script>
+    <script defer src="http://localhost:41691/sdet-prep-site/lib/katex/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             renderMathInElement(document.body, {
@@ -32,15 +32,15 @@
     <header>
         <nav>
             <ul>
-                <li><a href="http://localhost:1313/sdet-prep-site/">Index</a></li>
+                <li><a href="http://localhost:41691/sdet-prep-site/">Index</a></li>
                 
             </ul>
         </nav>
         <div class="site-breadcrumb">
-            <a href="http://localhost:1313/sdet-prep-site/">Home</a>
+            <a href="http://localhost:41691/sdet-prep-site/">Home</a>
             
                 
-                    <span>/</span> <a href="http://localhost:1313/sdet-prep-site/">SDET Interview Dashboard</a>
+                    <span>/</span> <a href="http://localhost:41691/sdet-prep-site/">SDET Interview Dashboard</a>
                 
             
             
@@ -78,12 +78,10 @@
 <h2 id="task-2-data-driven-test">Task 2: Data-Driven Test</h2>
 <p>Modify the above test. Instead of hardcoding &ldquo;Admin&rdquo;, read the username and password from a <code>config.properties</code> file or an Excel sheet (Apache POI).</p>
 <h2 id="task-3-rest-assured-basics">Task 3: Rest Assured Basics</h2>
-<p>Write a standalone Java class to:</p>
-<ol>
-<li>Send a GET request to <code>https://reqres.in/api/users/2</code></li>
-<li>Assert that the Status Code is <code>200</code>.</li>
-<li>Assert that the JSON body contains <code>&quot;first_name&quot;: &quot;Janet&quot;</code>.</li>
-</ol>
+<p>Write a standalone Java class to:
+| 1.  Send a GET request to <code>https://reqres.in/api/users/2</code>
+| 2.  Assert that the Status Code is <code>200</code>.
+| 3.  Assert that the JSON body contains <code>&quot;first_name&quot;: &quot;Janet&quot;</code>.</p>
 <h2 id="task-4-sql-challenge">Task 4: SQL Challenge</h2>
 <p>Assume a table <code>Students</code> with columns: <code>ID</code>, <code>Name</code>, <code>Marks</code>.</p>
 <ul>
@@ -97,12 +95,10 @@
 <li><strong>Write the code fix</strong> for one of them (e.g., using JavascriptExecutor).</li>
 </ul>
 <h2 id="task-6-jenkins-pipeline-conceptual">Task 6: Jenkins Pipeline (Conceptual)</h2>
-<p>You are asked to set up a Jenkins job that runs <strong>only smoke tests</strong> every time code is pushed to the <code>develop</code> branch.</p>
-<ol>
-<li>How do you distinguish Smoke tests from Regression tests in your code? (e.g., TestNG groups or Cucumber tags).</li>
-<li>What Jenkins plugin or feature would you use to trigger the build on push? (GitHub Webhook).</li>
-<li>Write a simple <code>crontab</code> expression to run tests every day at 2 AM. (<code>0 2 * * *</code>).</li>
-</ol>
+<p>You are asked to set up a Jenkins job that runs <strong>only smoke tests</strong> every time code is pushed to the <code>develop</code> branch.
+| 1.  How do you distinguish Smoke tests from Regression tests in your code? (e.g., TestNG groups or Cucumber tags).
+| 2.  What Jenkins plugin or feature would you use to trigger the build on push? (GitHub Webhook).
+| 3.  Write a simple <code>crontab</code> expression to run tests every day at 2 AM. (<code>0 2 * * *</code>).</p>
 
 </div>
 
@@ -115,6 +111,25 @@
     <footer class="footer">
         <p>Built with Hugo. No scripts. No tracking. Just the truth.</p>
     </footer>
+
+    <script>
+        
+        document.addEventListener("DOMContentLoaded", function() {
+            const content = document.body;
+            
+            const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT, null, false);
+            let node;
+            const nodesToReplace = [];
+            while(node = walker.nextNode()) {
+                if (node.nodeValue.includes("[-]")) nodesToReplace.push(node);
+            }
+            nodesToReplace.forEach(textNode => {
+                const span = document.createElement('span');
+                span.innerHTML = textNode.nodeValue.replace(/\[-\]/g, '<span class="started-icon" title="Started"></span>');
+                textNode.parentNode.replaceChild(span, textNode);
+            });
+        });
+    </script>
 
     <script>
         const body = document.getElementById('theme-body');

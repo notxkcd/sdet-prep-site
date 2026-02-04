@@ -2,6 +2,8 @@
 title: "Colan Infotech Interview Questions"
 ---
 
-## Available Interviews
+## Interview Rounds
 
-- [Colan Infotech](./main/)
+| ID | Round | Status |
+| :--- | :--- | :---: |
+| 01 | [Main](./main/) | [ ] |

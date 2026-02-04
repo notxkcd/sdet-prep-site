@@ -8,36 +8,36 @@ draft: false
 
 ## 🧩 Round 1
 
-1. **Self Introduction**
+| 1. **Self Introduction**
 
-2. **Maven Build Tool**
+| 2. **Maven Build Tool**
 
    * Explain what Maven is and its role in project management.
 
-3. **Write Any 5 Array Methods**
+| 3. **Write Any 5 Array Methods**
 
-4. **Method Overloading**
+| 4. **Method Overloading**
 
-5. **Types of Casting**
+| 5. **Types of Casting**
 
    * Example: Upcasting and Downcasting in Java.
 
-6. **How to Perform Right Click in Selenium**
+| 6. **How to Perform Right Click in Selenium**
 
-7. **Write Implicit Wait**
+| 7. **Write Implicit Wait**
 
    ```java
    driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
    ```
 
-8. **How to Scroll Using JavaScript Executor**
+| 8. **How to Scroll Using JavaScript Executor**
 
    ```java
    JavascriptExecutor js = (JavascriptExecutor) driver;
    js.executeScript("window.scrollBy(0,500)");
    ```
 
-9. **How to Open the Incognito Browser**
+| 9. **How to Open the Incognito Browser**
 
    ```java
    ChromeOptions options = new ChromeOptions();
@@ -45,7 +45,7 @@ draft: false
    WebDriver driver = new ChromeDriver(options);
    ```
 
-10. **Find the First Repeated Number in an Array**
+| 10. **Find the First Repeated Number in an Array**
 
     ```java
     int[] a = {1, 2, 3, 4, 5, 2, 3, 4};
@@ -58,17 +58,17 @@ draft: false
     }
     ```
 
-11. **Facing Critical Challenges in Your Project**
+| 11. **Facing Critical Challenges in Your Project**
 
     * Discuss automation or testing challenges you encountered.
 
-12. **Project Explanation**
+| 12. **Project Explanation**
 
 ---
 
 ## ⚙️ Round 2
 
-1. **Write a Code to Launch Browser and Open `deals.com`**
+| 1. **Write a Code to Launch Browser and Open `deals.com`**
 
    ```java
    WebDriver driver = new ChromeDriver();
@@ -76,7 +76,7 @@ draft: false
    driver.manage().window().maximize();
    ```
 
-2. **Get All Hyperlinks and Click on Links Containing “todaydeals”**
+| 2. **Get All Hyperlinks and Click on Links Containing “todaydeals”**
 
    ```java
    List<WebElement> links = driver.findElements(By.tagName("a"));
@@ -88,7 +88,7 @@ draft: false
    }
    ```
 
-3. **Optimize the Above Code Using Waits**
+| 3. **Optimize the Above Code Using Waits**
 
    ```java
    WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
@@ -101,13 +101,13 @@ draft: false
    }
    ```
 
-4. **Day-to-Day Activities**
+| 4. **Day-to-Day Activities**
 
-5. **Challenges Faced in Your Automation Framework**
+| 5. **Challenges Faced in Your Automation Framework**
 
-6. **Roles and Responsibilities**
+| 6. **Roles and Responsibilities**
 
-7. **Write the Workflow in Git Using Git Commands**
+| 7. **Write the Workflow in Git Using Git Commands**
 
    ```bash
    git clone <repo-url>
@@ -120,11 +120,11 @@ draft: false
    git push origin main
    ```
 
-8. **Jenkins Configuration**
+| 8. **Jenkins Configuration**
 
    * Explain how you integrate and run your test scripts in Jenkins.
 
-9. **Framework Explanation**
+| 9. **Framework Explanation**
 
    * Describe the structure, tools, and flow of your automation framework.
 

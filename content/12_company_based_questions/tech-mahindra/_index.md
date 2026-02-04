@@ -2,8 +2,10 @@
 title: "Tech Mahindra Interview Questions"
 ---
 
-## Available Interviews
+## Interview Rounds
 
-- [Tech Mahindra](./main/)
-- [Tech_Mahindra-2](./round-2/)
-- [Tech_Mahindra-3](./round-3/)
+| ID | Round | Status |
+| :--- | :--- | :---: |
+| 01 | [Main](./main/) | [ ] |
+| 02 | [Round 2](./round-2/) | [ ] |
+| 03 | [Round 3](./round-3/) | [ ] |

@@ -2,6 +2,8 @@
 title: "Cgi Interview Questions"
 ---
 
-## Available Interviews
+## Interview Rounds
 
-- [CGI](./main/)
+| ID | Round | Status |
+| :--- | :--- | :---: |
+| 01 | [Main](./main/) | [ ] |

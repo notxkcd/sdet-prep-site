@@ -30,9 +30,9 @@ draft: false
 
 A comprehensive repository of Java interview questions and coding tasks, meticulously organized by difficulty and paired with concise, memorable answers to streamline your technical preparation.
 
-1. **[Java Question Bank](java-questions-bank/)**
-2. **[Company Based Questions](12_company_based_questions/)**
-3. **[API from First Principles](api-from-first-principle/)**
+| 1. **[Java Question Bank](java-questions-bank/)**
+| 2. **[Company Based Questions](12_company_based_questions/)**
+| 3. **[API from First Principles](api-from-first-principle/)**
 
 
 {{% center %}}
@@ -54,10 +54,10 @@ A comprehensive repository of Java interview questions and coding tasks, meticul
 | Blog | Description  |
 | :--- | :--- |
 | **[Ultimate Java 21 Cheat Sheet](ultimate-questions-cheatsheet/java-ultimate-cheat-sheet/)** | **400+ Q&A (Java 8 to 21)** |
-| **[Java String-Regex Guide](java-string-regex-exercises/)** | **50+ Progressive Exercises** |
-| **[Java Generics Mastery](java-generics-exercises/)** | **60 Expert-Level Exercises** |
-| **[Java Generics Interview Q&A](java-generics-interview-qa/)** | **SDET Focus (Indian Market)** |
-| **[Java Collections Q&A](java-collections-interview-qa/)** | **Hierarchy & HashMap Internals** |
+| **[Java String-Regex Guide](ultimate-questions-cheatsheet/java-string-regex-exercises/)** | **50+ Progressive Exercises** |
+| **[Java Generics Mastery](ultimate-questions-cheatsheet/java-generics-exercises/)** | **60 Expert-Level Exercises** |
+| **[Java Generics Interview Q&A](ultimate-questions-cheatsheet/java-generics-interview-qa/)** | **SDET Focus (Indian Market)** |
+| **[Java Collections Q&A](ultimate-questions-cheatsheet/java-collections-interview-qa/)** | **Hierarchy & HashMap Internals** |
 | **[70 Java Collection Q&A](ultimate-questions-cheatsheet/70-java-collection-hugo-with-code)**| **70 Java Collections questions with interactive navigation**|
 | **[Git & Security Mastery](git/)** | **Basics, SSH, GPG, YubiKey & Supply Chain Security** |
 
